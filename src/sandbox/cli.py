@@ -10,5 +10,7 @@ def cli(number: int) -> None:
     print(Fibonacci.calculate(number))
 
 
+# pylint: disable=no-value-for-parameter
+
 if __name__ == "__main__":
     cli()
