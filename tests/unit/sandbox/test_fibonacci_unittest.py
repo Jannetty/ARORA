@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-from src.sandbox.fibonacci import Fibonacci
+from sandbox.fibonacci import Fibonacci
 
 
 class TestFibonacci(unittest.TestCase):

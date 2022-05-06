@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from src.sandbox.fibonacci import Fibonacci
+from sandbox.fibonacci import Fibonacci
 
 
 def test_fibonacci_first_seven_pytest():

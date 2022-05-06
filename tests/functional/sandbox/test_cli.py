@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import unittest
 from click.testing import CliRunner
-from src.sandbox.cli import cli
+from sandbox.cli import cli
 
 
 class TestCLI(unittest.TestCase):
