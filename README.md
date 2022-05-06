@@ -1,6 +1,7 @@
 # Python project template repository
 
 [![Build Status](https://github.com/bagherilab/python_project_template/workflows/build/badge.svg)](https://github.com/bagherilab/python_project_template/actions?query=workflow%3Abuild)
+[![Codecov](https://img.shields.io/codecov/c/gh/bagherilab/python_project_template?token=HYF4KEB84L)](https://codecov.io/gh/bagherilab/python_project_template)
 [![Lint Status](https://github.com/bagherilab/python_project_template/workflows/lint/badge.svg)](https://github.com/bagherilab/python_project_template/actions?query=workflow%3Alint)
 [![Documentation](https://github.com/bagherilab/python_project_template/workflows/documentation/badge.svg)](https://bagherilab.github.io/python_project_template/)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -147,3 +148,9 @@ It will also pull `README.md` into the main page.
 
 Note that the documentation workflow `.github/workflows/documentation.yml` does not import dependencies, which will break the building process.
 To avoid this, make sure to list your external dependencies in `conf.py` in the `autodoc_mock_imports` variable.
+
+### Codecov
+
+To use Codecov, you must set up the repo on [app.codecov.io](app.codecov.io) and add the code code token (`CODECOV_TOKEN`) as a repository secret.
+Make sure to also up the badge token (not that same as the secret token!) in your README.
+Coverage results from `.github/workflows/build.yml` will be automatically uploaded.
