@@ -1,4 +1,4 @@
-import sim.sim as sim
+from sim.simulation import sim
 
 """
 File to run simulation
