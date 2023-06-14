@@ -5,4 +5,5 @@ File to run simulation
 """
 
 if __name__ == '__main__':
-    sim.main()
+    timestep = 1
+    sim.main(timestep)
