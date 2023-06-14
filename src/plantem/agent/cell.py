@@ -1,13 +1,16 @@
 import arcade
+from circ_module import BaseCirculateModule
 
 class GrowingCell(arcade.Sprite):
 
     corners = None
+    circulator = None
 
     def __init__(self, corners: list):
         super().__init__()
         self.corners = corners
         self.color = [0,200,5]
+        circulator = BaseCirculateModule()
 
     def draw(self):
         arcade.draw_polygon_filled(point_list=self.corners, color=self.color)
