@@ -1,4 +1,4 @@
-from sim.simulation import sim
+from src.plantem.sim.simulation import sim
 
 """
 File to run simulation

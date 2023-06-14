@@ -1,7 +1,7 @@
 import arcade
-from agent.circ_module import BaseCirculateModule
-from loc.quad_perimeter import QuadPerimeter
-from loc.vertex import Vertex
+from src.plantem.agent.circ_module import BaseCirculateModule
+from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
+from src.plantem.loc.vertex.vertex import Vertex
 
 class GrowingCell(arcade.Sprite):
 

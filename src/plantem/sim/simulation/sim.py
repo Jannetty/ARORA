@@ -1,7 +1,7 @@
 import arcade
-import agent.cell as cell
-from sim.circulator import circulator
-from loc.vertex import Vertex
+import src.plantem.agent.cell as cell
+from src.plantem.sim.circulator import circulator
+from src.plantem.loc.vertex.vertex import Vertex
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600

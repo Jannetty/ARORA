@@ -1,4 +1,4 @@
-from loc.vertex import Vertex
+from src.plantem.loc.vertex.vertex import Vertex
 
 class QuadPerimeter():
 
