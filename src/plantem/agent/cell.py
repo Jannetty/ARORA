@@ -5,12 +5,14 @@ class GrowingCell(arcade.Sprite):
 
     corners = None
     circulator = None
+    sim = None
 
-    def __init__(self, corners: list):
+    def __init__(self, simulation, corners: list):
         super().__init__()
         self.corners = corners
         self.color = [0,200,5]
-        circulator = BaseCirculateModule()
+        circulator = BaseCirculateModule(self)
+        sim = simulation
 
     def draw(self):
         arcade.draw_polygon_filled(point_list=self.corners, color=self.color)

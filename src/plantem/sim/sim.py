@@ -24,7 +24,7 @@ class GrowingSim(arcade.Window):
 
         self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
-        this_cell = cell.GrowingCell([[100.0,100.0], [100.0,300.0], [300.0,300.0], [300.0,100.0],])
+        this_cell = cell.GrowingCell(self, [[100.0,100.0], [100.0,300.0], [300.0,300.0], [300.0,100.0],])
         self.cell_list.append(this_cell)
 
 
