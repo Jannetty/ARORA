@@ -12,11 +12,13 @@ class GrowingSim(arcade.Window):
     """
     Main application class.
     """
+    timestep = None
     circulator = None
 
-    def __init__(self, width, height, title):
+    def __init__(self, width, height, title, timestep):
         super().__init__(width, height, title)
 
+        self.timestep = timestep
         self.circulator = circulator.Circulator()
         self.tick = 0
         arcade.set_background_color(color=[250,250,250])
@@ -58,8 +60,8 @@ class GrowingSim(arcade.Window):
 
 
 
-def main():
+def main(timestep):
     """ Main function """
-    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep)
     simulation.setup()
     arcade.run()
