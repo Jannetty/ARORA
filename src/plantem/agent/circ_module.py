@@ -10,7 +10,7 @@ class BaseCirculateModule():
     cell = None
     #
 
-    def __init__(self, cell):
+    def __init__(self, cell, init_aux):
         self.cell = cell
         # initialize all values
         self.auxin_c = 1

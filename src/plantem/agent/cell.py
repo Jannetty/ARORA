@@ -7,11 +7,11 @@ class GrowingCell(arcade.Sprite):
     circulator = None
     sim = None
 
-    def __init__(self, simulation, corners: list):
+    def __init__(self, simulation, corners: list, init_aux):
         super().__init__()
         self.corners = corners
         self.color = [0,200,5]
-        circulator = BaseCirculateModule(self)
+        circulator = BaseCirculateModule(self, init_aux)
         sim = simulation
 
     def draw(self):
