@@ -32,15 +32,11 @@ class GrowingSim(arcade.Window):
         """
         Render the screen.
         """
-
-        # This command should happen before we start drawing. It will clear
-        # the screen to the background color, and erase what we drew last frame.
         self.clear()
-
         # Call draw() on all your sprite lists below
         for cell in self.cell_list:
             cell.draw()
-        #arcade.finish_render()
+
         
 
     def on_update(self, delta_time):
