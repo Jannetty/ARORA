@@ -7,10 +7,11 @@ class BaseCirculateModule():
     auxin = None
     ARR = None
     ARRA = None
+    cell = None
     #
 
-    def __init__(self):
-        pass
+    def __init__(self, cell):
+        self.cell = cell
         # initialize all values
 
     def update(self):
