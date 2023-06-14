@@ -1,7 +1,3 @@
-from plantem.sim.circulator import Circulator
-from plantem.agent.cell import GrowingCell
-
-
 class BaseCirculateModule():
 
     auxin = None
