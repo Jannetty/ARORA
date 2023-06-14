@@ -1,5 +1,6 @@
 import arcade
 import agent.cell as cell
+from circulator import Circulator
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -10,13 +11,14 @@ class GrowingSim(arcade.Window):
     """
     Main application class.
     """
+    circulator = None
 
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
 
+        self.circulator = Circulator()
         self.tick = 0
         arcade.set_background_color(color=[250,250,250])
-
         self.cell_list = None
 
     def setup(self):
