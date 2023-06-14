@@ -24,6 +24,9 @@ class GrowingSim(arcade.Window):
         arcade.set_background_color(color=[250,250,250])
         self.cell_list = None
 
+    def get_timestep():
+        return self.timestep
+
     def get_tick(self) -> int:
         return self.tick
 
