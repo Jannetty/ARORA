@@ -12,26 +12,18 @@ class GrowingCell(arcade.Sprite):
     def __init__(self, simulation, corners: list, init_aux):
         super().__init__()
 
-        perimeter = []
-        for corner in corners:
-            v = Vertex(corner[0], corner[1])
-            perimeter.append(v)
-        self.quad_perimeter = QuadPerimeter(perimeter)
+        self.quad_perimeter = QuadPerimeter(corners)
 
         self.color = [0,200,5]
         circulator = BaseCirculateModule(self, init_aux)
         sim = simulation
 
+    def get_area(self):
+        return self.quad_perimeter.get_area()
+
     def draw(self):
-        arcade.draw_polygon_filled(point_list=self.quad_perimeter.get_corners(), color=self.color)
-        arcade.draw_polygon_outline(point_list=self.quad_perimeter.get_corners(), color=[0,0,0])
+        arcade.draw_polygon_filled(point_list=self.quad_perimeter.get_corners_for_disp(), color=self.color)
+        arcade.draw_polygon_outline(point_list=self.quad_perimeter.get_corners_for_disp(), color=[0,0,0])
 
     def update(self):
-        corners = self.quad_perimeter.get_corners()
-        new_corners = []
-        for idx, corner in enumerate(corners):
-            new_corner = corner
-            if idx == 1 or idx == 2:
-                new_corner[1] = corner[1] + .3
-            new_corners.append(new_corner)
-        self.quad_perimeter.set_corners(new_corners)
+        pass

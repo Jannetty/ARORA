@@ -1,6 +1,7 @@
 import arcade
 import agent.cell as cell
 from sim.circulator import circulator
+from loc.vertex import Vertex
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -21,12 +22,15 @@ class GrowingSim(arcade.Window):
         arcade.set_background_color(color=[250,250,250])
         self.cell_list = None
 
+    def get_tick(self) -> int:
+        return self.tick
+
     def setup(self):
         """ Set up the game variables. Call to re-start the game. """
 
         self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
-        this_cell = cell.GrowingCell(self, [[100.0,100.0], [100.0,300.0], [300.0,300.0], [300.0,100.0]], 1)
+        this_cell = cell.GrowingCell(self, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], 1)
         self.cell_list.append(this_cell)
 
 
