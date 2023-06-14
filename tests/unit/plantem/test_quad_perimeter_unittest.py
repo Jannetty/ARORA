@@ -1,6 +1,6 @@
 import unittest
-from loc.quad_perimeter import QuadPerimeter, get_apical, get_basal, get_left, get_right
-from loc.vertex import Vertex
+from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter, get_apical, get_basal, get_left, get_right
+from src.plantem.loc.vertex.vertex import Vertex
 
 class TestQuadPerimeter(unittest.TestCase):
 
