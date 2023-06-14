@@ -6,16 +6,16 @@ class BaseCirculateModule():
     cell = None
     #
 
-    def __init__(self, cell, init_aux):
+    def __init__(self, cell, init_vals):
         self.cell = cell
-        # initialize all values
-        self.auxin_c = 1
-        self.ARR_c = 1
-        self.AUX_LAX_c = 1
-        self.PINA_c = 1
-        self.PINB_c = 1
-        self.PINL_c = 1
-        self.PINM_c = 1
+        # initialize all valuesz
+        self.init_auxin = init_vals.get("auxin")
+        self.init_ARR = init_vals.get("ARR")
+        self.init_AUX_LAX = init_vals.get("AUX/LAX")
+        self.init_PINA = init_vals.get("PINA")
+        self.init_PINB = init_vals.get("PINB")
+        self.init_PINL = init_vals.get("PINL")
+        self.init_PINM = init_vals.get("PINM")
 
     def update(self):
         pass
@@ -26,26 +26,30 @@ class BaseCirculateModule():
         curr_cell = self.cell
         cell_dict = curr_cell.sim.circulator.delta_auxins
 
-        # based calculations
-        auxin = 1 - 1*self.auxin_c
-        ARR = 1 * (1/(self.ARR_c + 1) - 1*self.ARR_c)
-        AUX_LAX = 1*(auxin/(auxin+1))*(1/(ARR/1)+1) - 1*self.AUX_LAX_c
+        # base calculations
+        auxin = 1 - 1*self.init_auxin
+        ARR = 1 * (1/(self.init_ARR + 1) - 1*self.init_ARR)
+        AUX_LAX = 1*(auxin/(auxin+1))*(1/(ARR/1)+1) - 1*self.init_AUX_LAX
         PIN = 1*(1/(ARR/1)+1)*(auxin/(auxin+1))
-        PINA = 0.25 * PIN - 1*self.PINA_c
-        PINB = 0.25 * PIN - 1*self.PINB_c
-        PINL = 0.25 * PIN - 1*self.PINL_c
-        PINM = 0.25 * PIN - 1*self.PINM_c
+        PINA = 0.25 * PIN - 1*self.init_PINA
+        PINB = 0.25 * PIN - 1*self.init_PINB
+        PINL = 0.25 * PIN - 1*self.init_PINL
+        PINM = 0.25 * PIN - 1*self.init_PINM
         AuxinA = 1 * 0.25 * AUX_LAX - 1 * PINA
         AuxinB = 1 * 0.25 * AUX_LAX - 1 * PINB
         AuxinL = 1 * 0.25 * AUX_LAX - 1 * PINL
         AuxinM = 1 * 0.25 * AUX_LAX - 1 * PINM
-
-        # find neighbor
-        neighbors = curr_cell.neighbor
         neighbors_aux = [AuxinA, AuxinB, AuxinL, AuxinM]
 
+        # find neighbor
+        neighborA = curr_cell.neighborA
+        neighborB = curr_cell.neighborB
+        neighborL = curr_cell.neighborL
+        neighborM = curr_cell.neighborM
+        neighbors = [neighborA, neighborB, neighborL, neighborM]
+
         # update current cell
-        delta_aux = sum(neighbors_aux)
+        delta_aux = AuxinA + AuxinB + AuxinL + AuxinM
         if curr_cell not in cell_dict:
             cell_dict[curr_cell] = delta_aux
         else:
@@ -57,3 +61,13 @@ class BaseCirculateModule():
                 cell_dict[neighbors[i]] = neighbors_aux[i]
             else:
                 cell_dict[neighbors[i]] += neighbors_aux[i]
+
+
+def calculate_auxin(self, ks, kd, timestep, area):
+    auxin = (ks - kd*self.init_auxin*area) * timestep
+    return auxin
+
+
+def calculate_ARR(self, ks, kd):
+    ARR = ks * (1/(self.init_ARR + 1) - kd*self.init_ARR)
+    return ARR

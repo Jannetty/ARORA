@@ -1,17 +1,18 @@
 import arcade
 from agent.circ_module import BaseCirculateModule
 
+
 class GrowingCell(arcade.Sprite):
 
     corners = None
     circulator = None
     sim = None
 
-    def __init__(self, simulation, corners: list, init_aux):
+    def __init__(self, simulation, corners: list, init_vals):
         super().__init__()
         self.corners = corners
         self.color = [0,200,5]
-        circulator = BaseCirculateModule(self, init_aux)
+        circulator = BaseCirculateModule(self, init_vals)
         sim = simulation
 
     def draw(self):
