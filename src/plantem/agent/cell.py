@@ -1,5 +1,5 @@
 import arcade
-from circ_module import BaseCirculateModule
+from agent.circ_module import BaseCirculateModule
 
 class GrowingCell(arcade.Sprite):
 
