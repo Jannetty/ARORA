@@ -1,5 +1,5 @@
 import unittest
-from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter, get_apical, get_basal, get_left, get_right
+from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter, get_apical, get_basal, get_left, get_right, get_len_perimeter_in_common
 from src.plantem.loc.vertex.vertex import Vertex
 
 class TestQuadPerimeter(unittest.TestCase):
@@ -70,7 +70,7 @@ class TestQuadPerimeter(unittest.TestCase):
         v3 = Vertex(300,300) # apical
         v4 = Vertex(300,100)
         this_qp = QuadPerimeter([v1,v2, v3, v4])
-        self.assertEqual(150, this_qp.get_midpointx())
+        self.assertEqual(200, this_qp.get_midpointx())
 
     def test_QuadPerimeter_get_perimeter_len(self):
         v1 = Vertex(100, 100) 
@@ -79,3 +79,51 @@ class TestQuadPerimeter(unittest.TestCase):
         v4 = Vertex(300,100)
         this_qp = QuadPerimeter([v1,v2, v3, v4])
         self.assertEqual(800, this_qp.get_perimeter_len())
+
+    def test_get_len_perimeter_in_common_right_neighbor(self):
+        v1 = Vertex(100, 100) 
+        v2 = Vertex(100, 300) # apical
+        v3 = Vertex(300,300) # apical
+        v4 = Vertex(300,100)
+        qp_1 = QuadPerimeter([v1,v2, v3, v4])
+        v5 = Vertex(500,100)
+        v6 = Vertex(500,300)
+        qp_2 = QuadPerimeter([v3, v4, v5, v6])
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'m'))
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'l'))
+
+    def test_get_len_perimeter_in_common_left_neighbor(self):
+        v1 = Vertex(100, 100) 
+        v2 = Vertex(100, 300) # apical
+        v3 = Vertex(300,300) # apical
+        v4 = Vertex(300,100)
+        qp_1 = QuadPerimeter([v1,v2, v3, v4])
+        v5 = Vertex(0,100)
+        v6 = Vertex(0,300)
+        qp_2 = QuadPerimeter([v3, v4, v5, v6])
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'m'))
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'l'))
+
+    def test_get_len_perimeter_in_common_top_neighbor(self):
+        v1 = Vertex(100, 100) 
+        v2 = Vertex(100, 300) # apical
+        v3 = Vertex(300,300) # apical
+        v4 = Vertex(300,100)
+        qp_1 = QuadPerimeter([v1,v2, v3, v4])
+        v5 = Vertex(100,500)
+        v6 = Vertex(300,500)
+        qp_2 = QuadPerimeter([v3, v2, v5, v6])
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'a'))
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'b'))
+
+    def test_get_len_perimeter_in_common_top_neighbor(self):
+        v1 = Vertex(100, 100) 
+        v2 = Vertex(100, 300) # apical
+        v3 = Vertex(300,300) # apical
+        v4 = Vertex(300,100)
+        qp_1 = QuadPerimeter([v1,v2, v3, v4])
+        v5 = Vertex(100,0)
+        v6 = Vertex(300,0)
+        qp_2 = QuadPerimeter([v3, v2, v5, v6])
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'a'))
+        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2,'b'))
