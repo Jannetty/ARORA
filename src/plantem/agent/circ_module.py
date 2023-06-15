@@ -1,5 +1,4 @@
-class BaseCirculateModule():
-
+class BaseCirculateModule:
     auxin = None
     ARR = None
     ARRA = None
@@ -27,14 +26,14 @@ class BaseCirculateModule():
         cell_dict = curr_cell.sim.circulator.delta_auxins
 
         # based calculations
-        auxin = 1 - 1*self.auxin_c
-        ARR = 1 * (1/(self.ARR_c + 1) - 1*self.ARR_c)
-        AUX_LAX = 1*(auxin/(auxin+1))*(1/(ARR/1)+1) - 1*self.AUX_LAX_c
-        PIN = 1*(1/(ARR/1)+1)*(auxin/(auxin+1))
-        PINA = 0.25 * PIN - 1*self.PINA_c
-        PINB = 0.25 * PIN - 1*self.PINB_c
-        PINL = 0.25 * PIN - 1*self.PINL_c
-        PINM = 0.25 * PIN - 1*self.PINM_c
+        auxin = 1 - 1 * self.auxin_c
+        ARR = 1 * (1 / (self.ARR_c + 1) - 1 * self.ARR_c)
+        AUX_LAX = 1 * (auxin / (auxin + 1)) * (1 / (ARR / 1) + 1) - 1 * self.AUX_LAX_c
+        PIN = 1 * (1 / (ARR / 1) + 1) * (auxin / (auxin + 1))
+        PINA = 0.25 * PIN - 1 * self.PINA_c
+        PINB = 0.25 * PIN - 1 * self.PINB_c
+        PINL = 0.25 * PIN - 1 * self.PINL_c
+        PINM = 0.25 * PIN - 1 * self.PINM_c
         AuxinA = 1 * 0.25 * AUX_LAX - 1 * PINA
         AuxinB = 1 * 0.25 * AUX_LAX - 1 * PINB
         AuxinL = 1 * 0.25 * AUX_LAX - 1 * PINL

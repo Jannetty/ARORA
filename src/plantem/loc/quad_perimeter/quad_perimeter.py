@@ -1,39 +1,46 @@
 from math import dist
 from src.plantem.loc.vertex.vertex import Vertex
 
-class QuadPerimeter():
 
-    _perimeter_vs = None # list of vertices
+class QuadPerimeter:
+    _perimeter_vs = None  # list of vertices
     _top_left = None
     _top_right = None
     _bottom_left = None
     _bottom_right = None
     _midpointx = None
 
-    def __init__(self, vertex_list : list):
+    def __init__(self, vertex_list: list):
         self._perimeter_vs = vertex_list
         self.__assign_corners()
         self.__calc_midpointx()
-    
+
     def __calc_midpointx(self):
         sumx = sum([corner.get_x() for corner in self._perimeter_vs])
-        self._midpointx = sumx/len(self._perimeter_vs)
-    
+        self._midpointx = sumx / len(self._perimeter_vs)
+
     def get_midpointx(self) -> float:
         return self._midpointx
-    
+
     def get_perimeter_len(self) -> float:
-        return self.get_left_memlen() + self.get_right_memlen() + self.get_apical_memlen() + self.get_basal_memlen()
-    
+        return (
+            self.get_left_memlen()
+            + self.get_right_memlen()
+            + self.get_apical_memlen()
+            + self.get_basal_memlen()
+        )
+
     def get_left_memlen(self) -> float:
         return dist(self._top_left.get_xy(), self._bottom_left.get_xy())
+
     def get_right_memlen(self) -> float:
         return dist(self._top_right.get_xy(), self._bottom_right.get_xy())
+
     def get_apical_memlen(self) -> float:
         return dist(self._top_left.get_xy(), self._top_right.get_xy())
+
     def get_basal_memlen(self) -> float:
         return dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
-
 
     def __assign_corners(self) -> None:
         top_row = get_apical(self._perimeter_vs)
@@ -49,63 +56,79 @@ class QuadPerimeter():
         bottom_right = [v for v in bottom_row if v in right_col]
         self._bottom_right = bottom_right[0]
 
-
     def get_corners(self) -> list:
         corners = []
         for vertex in self._perimeter_vs:
             corners.append(vertex.get_xy())
 
-    def get_corners_for_disp(self)-> list:
-        return [self._bottom_right.get_xy(), self._bottom_left.get_xy(), self._top_left.get_xy(), self._top_right.get_xy()]
-    
-    def set_corners(self, vertex_list : list) -> None:
+    def get_corners_for_disp(self) -> list:
+        return [
+            self._bottom_right.get_xy(),
+            self._bottom_left.get_xy(),
+            self._top_left.get_xy(),
+            self._top_right.get_xy(),
+        ]
+
+    def set_corners(self, vertex_list: list) -> None:
         self.perimeter_vs = vertex_list
         self.__assign_corners()
 
     def get_top_left(self) -> Vertex:
         return self._top_left
+
     def get_top_right(self) -> Vertex:
         return self._top_right
+
     def get_bottom_left(self) -> Vertex:
         return self._bottom_left
+
     def get_bottom_right(self) -> Vertex:
         return self._bottom_right
-    
+
     def get_area(self) -> float:
-        width = (self.top_right.get_x() - self.top_left.get_x())
-        height = (self.top_left.get_y() - self.bottom_left.get_y())
-        return (width*height)
+        width = self.top_right.get_x() - self.top_left.get_x()
+        height = self.top_left.get_y() - self.bottom_left.get_y()
+        return width * height
 
 
 def get_len_perimeter_in_common(cellqp, neighborqp, neighbor_direction: str) -> float:
     len = 0
-    if neighbor_direction == 'l' or neighbor_direction == 'm':
+    if neighbor_direction == "l" or neighbor_direction == "m":
         if cellqp.get_top_left().get_x() == neighborqp.get_top_right().get_x():
             # cell shares left membrane with neighbor's right membrane
-            len = get_overlap([cellqp.get_top_left().get_y(), cellqp.get_bottom_left().get_y()],\
-                        [neighborqp.get_top_right().get_y(), neighborqp.get_bottom_right().get_y()])
-        else :
+            len = get_overlap(
+                [cellqp.get_top_left().get_y(), cellqp.get_bottom_left().get_y()],
+                [neighborqp.get_top_right().get_y(), neighborqp.get_bottom_right().get_y()],
+            )
+        else:
             # cell shares right membrane with neighbor's left membrane
-            len = get_overlap([cellqp.get_top_right().get_y(), cellqp.get_bottom_right().get_y()],\
-                        [neighborqp.get_top_left().get_y(), neighborqp.get_bottom_left().get_y()])
+            len = get_overlap(
+                [cellqp.get_top_right().get_y(), cellqp.get_bottom_right().get_y()],
+                [neighborqp.get_top_left().get_y(), neighborqp.get_bottom_left().get_y()],
+            )
     else:
         if cellqp.get_top_left().get_y() == neighborqp.get_bottom_left().get_y():
             # cell shares top membrane with neighbor's bottom membrane
-            len = get_overlap([cellqp.get_top_left().get_x(), cellqp.get_top_right().get_x()],\
-                        [neighborqp.get_bottom_left().get_x(), neighborqp.get_bottom_right().get_x()])
+            len = get_overlap(
+                [cellqp.get_top_left().get_x(), cellqp.get_top_right().get_x()],
+                [neighborqp.get_bottom_left().get_x(), neighborqp.get_bottom_right().get_x()],
+            )
         else:
             # cell shares bottom membrane with neighbor's top membrane
-            len = get_overlap([cellqp.get_bottom_left().get_x(), cellqp.get_bottom_right().get_x()],\
-                        [neighborqp.get_top_left().get_x(), neighborqp.get_top_right().get_x()])
+            len = get_overlap(
+                [cellqp.get_bottom_left().get_x(), cellqp.get_bottom_right().get_x()],
+                [neighborqp.get_top_left().get_x(), neighborqp.get_top_right().get_x()],
+            )
     if len == 0:
         raise Exception("Neighbor list is incorrect, neighbor does not share membrane with cell")
     return len
-   
+
 
 def get_overlap(membrane1, membrane2):
     return max(0, min(max(membrane1), max(membrane2)) - max(min(membrane1), min(membrane2)))
 
-def get_apical(vertex_list : list)-> list:
+
+def get_apical(vertex_list: list) -> list:
     yvals = []
     for v in vertex_list:
         yvals.append(v.get_y())
@@ -113,11 +136,13 @@ def get_apical(vertex_list : list)-> list:
     apical_vs = [v for v in vertex_list if v.get_y() == maxy]
     return apical_vs
 
-def get_basal(vertex_list : list)-> list:
+
+def get_basal(vertex_list: list) -> list:
     apical = get_apical(vertex_list)
     return [v for v in vertex_list if v not in apical]
 
-def get_left(vertex_list : list)-> list:
+
+def get_left(vertex_list: list) -> list:
     xvals = []
     for v in vertex_list:
         xvals.append(v.get_x())
@@ -125,6 +150,7 @@ def get_left(vertex_list : list)-> list:
     left_vs = [v for v in vertex_list if v.get_x() == minx]
     return left_vs
 
-def get_right(vertex_list : list)-> list:
+
+def get_right(vertex_list: list) -> list:
     left = get_left(vertex_list)
     return [v for v in vertex_list if v not in left]
