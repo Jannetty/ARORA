@@ -1,9 +1,9 @@
 # Python project template repository
 
 [![Build Status](https://github.com/Jannetty/PythonRootDevModel/workflows/build/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions?query=workflow%3Abuild)
-[![Codecov](https://img.shields.io/codecov/c/gh/bagherilab/python_project_template?token=HYF4KEB84L)](https://codecov.io/gh/bagherilab/python_project_template)
-[![Lint Status](https://github.com/bagherilab/python_project_template/workflows/lint/badge.svg)](https://github.com/bagherilab/python_project_template/actions?query=workflow%3Alint)
-[![Documentation](https://github.com/bagherilab/python_project_template/workflows/documentation/badge.svg)](https://bagherilab.github.io/python_project_template/)
+[![Codecov](https://codecov.io/gh/Jannetty/PythonRootDevModel/branch/main/graph/badge.svg?token=SRGlpwpsbr)](https://codecov.io/gh/Jannetty/PythonRootDevModel)
+[![Lint Status](https://github.com/Jannetty/PythonRootDevModel/workflows/lint/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions?query=workflow%3Alint)
+[![Documentation](https://github.com/Jannetty/PythonRootDevModel/workflows/documentation/badge.svg)](https://jannetty.github.io/PythonRootDevModel/)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This repository is a template for Python projects that uses the GitHub Actions and the following tools:
