@@ -1,26 +1,30 @@
 import arcade
-from agent.circ_module import BaseCirculateModule
+from src.plantem.agent.circ_module import BaseCirculateModule
+from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
+from src.plantem.loc.vertex.vertex import Vertex
 
 
 class GrowingCell(arcade.Sprite):
 
-    corners = None
+    quad_perimeter = None
     circulator = None
     sim = None
 
     def __init__(self, simulation, corners: list, init_vals):
         super().__init__()
-        self.corners = corners
+
+        self.quad_perimeter = QuadPerimeter(corners)
+
         self.color = [0,200,5]
         circulator = BaseCirculateModule(self, init_vals)
         sim = simulation
 
+    def get_area(self):
+        return self.quad_perimeter.get_area()
+
     def draw(self):
-        arcade.draw_polygon_filled(point_list=self.corners, color=self.color)
-        arcade.draw_polygon_outline(point_list=self.corners, color=[0,0,0])
+        arcade.draw_polygon_filled(point_list=self.quad_perimeter.get_corners_for_disp(), color=self.color)
+        arcade.draw_polygon_outline(point_list=self.quad_perimeter.get_corners_for_disp(), color=[0,0,0])
 
     def update(self):
-        for idx, corner in enumerate(self.corners):
-            if idx == 1 or idx == 2:
-                new_corner = corner
-                new_corner[1] = corner[1] + .3
+        pass
