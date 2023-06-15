@@ -63,3 +63,19 @@ class TestQuadPerimeter(unittest.TestCase):
 
         corners_for_disp = [v4.get_xy(), v1.get_xy(), v2.get_xy(), v3.get_xy()]
         self.assertEqual(corners_for_disp, this_qp.get_corners_for_disp())
+
+    def test_QuadPerimeter_calc_midpointx_get_midpointx(self):
+        v1 = Vertex(100, 100) 
+        v2 = Vertex(100, 300) # apical
+        v3 = Vertex(300,300) # apical
+        v4 = Vertex(300,100)
+        this_qp = QuadPerimeter([v1,v2, v3, v4])
+        self.assertEqual(150, this_qp.get_midpointx())
+
+    def test_QuadPerimeter_get_perimeter_len(self):
+        v1 = Vertex(100, 100) 
+        v2 = Vertex(100, 300) # apical
+        v3 = Vertex(300,300) # apical
+        v4 = Vertex(300,100)
+        this_qp = QuadPerimeter([v1,v2, v3, v4])
+        self.assertEqual(800, this_qp.get_perimeter_len())
