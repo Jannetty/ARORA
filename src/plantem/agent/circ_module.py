@@ -1,12 +1,15 @@
-class BaseCirculateModule():
+from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter, get_len_perimeter_in_common
+
+
+class BaseCirculateModule:
 
     auxin = None
-    ARR = None
-    AUX_LAX = None
-    PINA = None
-    PINB = None
-    PINL = None
-    PINM = None
+    arr = None
+    aux_lax = None
+    pina = None
+    pinb = None
+    pinl = None
+    pinm = None
     cell = None
 
     def __init__(self, cell, init_vals):
@@ -15,23 +18,23 @@ class BaseCirculateModule():
         self.init_auxin = init_vals.get("auxin")
         self.auxin = self.init_auxin
 
-        self.init_ARR = init_vals.get("ARR")
-        self.ARR = self.init_ARR
+        self.init_arr = init_vals.get("arr")
+        self.arr = self.init_arr
 
-        self.init_AUX_LAX = init_vals.get("AUX/LAX")
-        self.AUX_LAX = self.init_AUX_LAX
+        self.init_aux_lax = init_vals.get("aux_lax")
+        self.aux_lax = self.init_aux_lax
 
-        self.init_PINA = init_vals.get("PINA")
-        self.PINA = self.init_PINA
+        self.init_pina = init_vals.get("pina")
+        self.pina = self.init_pina
 
-        self.init_PINB = init_vals.get("PINB")
-        self.PINB = self.init_PINB
+        self.init_pinb = init_vals.get("pinb")
+        self.pinb = self.init_pinb
 
-        self.init_PINL = init_vals.get("PINL")
-        self.PINL = self.init_PINL
+        self.init_pinl = init_vals.get("pinl")
+        self.pinl = self.init_pinl
 
-        self.init_PINM = init_vals.get("PINM")
-        self.PINM = self.init_PINM
+        self.init_pinm = init_vals.get("pinm")
+        self.pinm = self.init_pinm
 
         self.k_ARR_ARR = init_vals.get("k_ARR_ARR")
         self.k_auxin_AUXLAX = init_vals.get("k_auxin_AUXLAX")
@@ -40,7 +43,7 @@ class BaseCirculateModule():
 
         self.ks = init_vals.get("ks")
         self.kd = init_vals.get("kd")
-        
+
         self.timestep = 1
         self.area = 100
 
@@ -55,17 +58,17 @@ class BaseCirculateModule():
 
         # base calculations
         self.auxin = self.calculate_auxin(self.timestep, self.area)
-        self.ARR = self.calculate_ARR(self.timestep, self.area)
-        self.AUX_LAX = self.calculate_AUX_LAX(self.timestep, self.area)
-        self.PIN = self.calculate_PIN(self.timestep, self.area)
-        self.PINA = self.calculate_neighbor_PIN(self.init_PINA, self.timestep, self.area)
-        self.PINB = self.calculate_neighbor_PIN(self.init_PINB, self.timestep, self.area)
-        self.PINL = self.calculate_neighbor_PIN(self.init_PINL, self.timestep, self.area)
-        self.PINM = self.calculate_neighbor_PIN(self.init_PINM, self.timestep, self.area)
-        AuxinA = self.calculate_neighbor_auxin(self.init_PINA, self.timestep, self.area)
-        AuxinB = self.calculate_neighbor_auxin(self.init_PINB, self.timestep, self.area)
-        AuxinL = self.calculate_neighbor_auxin(self.init_PINL, self.timestep, self.area)
-        AuxinM = self.calculate_neighbor_auxin(self.init_PINM, self.timestep, self.area)
+        self.arr = self.calculate_arr(self.timestep, self.area)
+        self.aux_lax = self.calculate_aux_lax(self.timestep, self.area)
+        self.PIN = self.calculate_pin(self.timestep, self.area)
+        self.pina = self.calculate_neighbor_pin(self.init_pina, self.timestep, self.area)
+        self.pinb = self.calculate_neighbor_pin(self.init_pinb, self.timestep, self.area)
+        self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, self.area)
+        self.pinm = self.calculate_neighbor_pin(self.init_pinm, self.timestep, self.area)
+        AuxinA = self.calculate_neighbor_auxin(self.init_pina, self.timestep, self.area)
+        AuxinB = self.calculate_neighbor_auxin(self.init_pinb, self.timestep, self.area)
+        AuxinL = self.calculate_neighbor_auxin(self.init_pinl, self.timestep, self.area)
+        AuxinM = self.calculate_neighbor_auxin(self.init_pinm, self.timestep, self.area)
         neighbors_aux = [AuxinA, AuxinB, AuxinL, AuxinM]
 
         # find neighbors
@@ -82,37 +85,48 @@ class BaseCirculateModule():
 
     # Helper functions
     def calculate_auxin(self, timestep, area) -> float:
-        auxin = (self.ks - self.kd*self.init_auxin*area) * timestep
+        auxin = (self.ks - self.kd * self.init_auxin * area) * timestep
         return auxin
 
-    def calculate_ARR(self, timestep, area) -> float:
-        ARR = (self.ks * 1/(self.init_ARR/self.k_ARR_ARR + 1) - self.kd*self.init_ARR*area) * timestep
-        return ARR
+    def calculate_arr(self, timestep, area) -> float:
+        arr = (
+            self.ks * 1 / (self.init_arr / self.k_ARR_ARR + 1) - self.kd * self.init_arr * area
+        ) * timestep
+        return arr
 
-    def calculate_AUX_LAX(self, timestep, area) -> float:
+    def calculate_aux_lax(self, timestep, area) -> float:
         auxin = self.calculate_auxin(timestep, area)
-        AUX_LAX = (self.ks*(auxin/(auxin+self.k_auxin_AUXLAX)) - self.kd*self.init_AUX_LAX*area) * timestep
-        return AUX_LAX
+        aux_lax = (
+            self.ks * (auxin / (auxin + self.k_auxin_AUXLAX)) - self.kd * self.init_aux_lax * area
+        ) * timestep
+        return aux_lax
 
-    def calculate_PIN(self, timestep, area) -> float:
+    def calculate_pin(self, timestep, area) -> float:
         auxin = self.calculate_auxin(timestep, area)
-        ARR = self.calculate_ARR(timestep, area)
-        PIN = (self.ks * (1/(ARR/self.k_ARR_PIN + 1)) * (auxin/(auxin+self.k_auxin_PIN))) * timestep
-        return PIN
+        arr = self.calculate_arr(timestep, area)
+        pin = (
+            self.ks * (1 / (arr / self.k_ARR_PIN + 1)) * (auxin / (auxin + self.k_auxin_PIN))
+        ) * timestep
+        return pin
 
-    def calculate_neighbor_PIN(self, init, timestep, area) -> float:
-        PIN = self.calculate_PIN(timestep, area)
-        neighbor_PIN = (0.25 * PIN - self.kd*init*area) * timestep
-        return neighbor_PIN
-    
+    def calculate_neighbor_pin(self, init, timestep, area) -> float:
+        pin = self.calculate_pin(timestep, area)
+        neighbor_pin = (0.25 * pin - self.kd * init * area) * timestep
+        return neighbor_pin
+
     def calculate_neighbor_auxin(self, init, timestep, area) -> float:
-        AUX_LAX = self.calculate_AUX_LAX(timestep, area)
-        PIN = self.calculate_neighbor_PIN(init, timestep, area)
-        neighbor_auxin = (self.ks * 0.25 * AUX_LAX - self.kd * PIN * area) * timestep
+        aux_lax = self.calculate_aux_lax(timestep, area)
+        PIN = self.calculate_neighbor_pin(init, timestep, area)
+        neighbor_auxin = (self.ks * 0.25 * aux_lax - self.kd * PIN * area) * timestep
         return neighbor_auxin
 
     def find_neighbors(self, curr_cell):
-        neighbors = [curr_cell.neighborA, curr_cell.neighborB, curr_cell.neighborL, curr_cell.neighborM]
+        neighbors = [
+            curr_cell.neighborA,
+            curr_cell.neighborB,
+            curr_cell.neighborL,
+            curr_cell.neighborM,
+        ]
         return neighbors
 
     def update_current_cell(self, curr_cell, cell_dict, delta_aux) -> dict:
@@ -121,7 +135,7 @@ class BaseCirculateModule():
         else:
             cell_dict[curr_cell] += delta_aux
         return cell_dict
-    
+
     def update_neighbor_cell(self, cell_dict, neighbors, neighbors_aux) -> dict:
         for i in range(4):
             if neighbors[i] not in cell_dict:

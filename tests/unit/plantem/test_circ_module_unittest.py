@@ -19,8 +19,8 @@ class BaseCirculateModuleTests(unittest.TestCase):
 
     #             self.assertEqual(found_delta, expected_delta)
 
-    init_vals = {"auxin": 2, "ARR": 3, "AUX/LAX": 3, "PINA": 0.5, "PINB": 0.7,
-                 "PINL": 0.4, "PINM": 0.2, "k_ARR_ARR": 1, "k_auxin_AUXLAX": 1,
+    init_vals = {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
+                 "pinl": 0.4, "pinm": 0.2, "k_ARR_ARR": 1, "k_auxin_AUXLAX": 1,
                  "k_auxin_PIN": 1, "k_ARR_PIN": 1, "ks": 0.005, "kd": 0.0015}
 
     def test_calculate_auxin(self):
@@ -31,28 +31,28 @@ class BaseCirculateModuleTests(unittest.TestCase):
         found_auxin = circ_module.calculate_auxin(timestep, area)
         self.assertAlmostEqual(expected_auxin, found_auxin, places=5)
 
-    def test_calculate_ARR(self):
+    def test_calculate_arr(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
         timestep = 1
         area = 100
-        expected_ARR = -0.44875
-        found_ARR = circ_module.calculate_ARR(timestep, area)
-        self.assertAlmostEqual(expected_ARR, found_ARR, places=5)
+        expected_arr = -0.44875
+        found_arr = circ_module.calculate_arr(timestep, area)
+        self.assertAlmostEqual(expected_arr, found_arr, places=5)
     
-    def test_calculate_AUX_LAX(self):
+    def test_calculate_aux_lax(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
         timestep = 1
         area = 100
-        expected_AUX_LAX = -0.45209
-        found_AUX_LAX = circ_module.calculate_AUX_LAX(timestep, area)
-        self.assertAlmostEqual(expected_AUX_LAX, found_AUX_LAX, places=5)
+        expected_aux_lax = -0.45209
+        found_aux_lax = circ_module.calculate_aux_lax(timestep, area)
+        self.assertAlmostEqual(expected_aux_lax, found_aux_lax, places=5)
     
-    def test_calcualte_PIN(self):
+    def test_calcualte_pin(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
         timestep = 1
         area = 100
         expected_PIN = -0.0037954
-        found_PIN = circ_module.calculate_PIN(timestep, area)
+        found_PIN = circ_module.calculate_pin(timestep, area)
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
     def test_calculate_neighbor_PIN(self):
@@ -60,7 +60,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
         timestep = 1
         area = 100
         expected_neighbor_PIN = -0.075949
-        found_neighbor_PIN = circ_module.calculate_neighbor_PIN(0.5, timestep, area)
+        found_neighbor_PIN = circ_module.calculate_neighbor_pin(0.5, timestep, area)
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
 
     def test_calculate_neighbor_auxin(self):
