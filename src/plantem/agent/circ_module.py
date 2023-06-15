@@ -65,6 +65,13 @@ class BaseCirculateModule:
         self.pinb = self.calculate_neighbor_pin(self.init_pinb, self.timestep, self.area)
         self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, self.area)
         self.pinm = self.calculate_neighbor_pin(self.init_pinm, self.timestep, self.area)
+
+        memfraca = self.calculate_memfrac("a")
+        memfracb = self.calculate_memfrac("b")
+        memfracl = self.calculate_memfrac("l")
+        memfracm = self.calculate_memfrac("m")
+
+        # auxin import
         AuxinA = self.calculate_neighbor_auxin(self.init_pina, self.timestep, self.area)
         AuxinB = self.calculate_neighbor_auxin(self.init_pinb, self.timestep, self.area)
         AuxinL = self.calculate_neighbor_auxin(self.init_pinl, self.timestep, self.area)
@@ -113,6 +120,13 @@ class BaseCirculateModule:
         pin = self.calculate_pin(timestep, area)
         neighbor_pin = (0.25 * pin - self.kd * init * area) * timestep
         return neighbor_pin
+    
+    def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
+        cell_perimeter = self.cell.quad_perimeter.get_perimemter_len()
+        common_perimeter = get_len_perimeter_in_common(self.cell.quad_perimeter,
+                                                       neighbor.quad_perimemter, neighbor_direction)
+        memfrac = common_perimeter / cell_perimeter
+        return memfrac
 
     def calculate_neighbor_auxin(self, init, timestep, area) -> float:
         aux_lax = self.calculate_aux_lax(timestep, area)
