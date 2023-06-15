@@ -18,6 +18,7 @@ This repository is a template for Python projects that uses the GitHub Actions a
 Make sure you have Poetry installed.
 The other tools will be installed by Poetry.
 
+
 ## Getting started
 
 1. Clone the repo.
