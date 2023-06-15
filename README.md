@@ -1,6 +1,6 @@
 # Python project template repository
 
-[![Build Status](https://github.com/bagherilab/python_project_template/workflows/build/badge.svg)](https://github.com/bagherilab/python_project_template/actions?query=workflow%3Abuild)
+[![Build Status](https://github.com/Jannetty/PythonRootDevModel/workflows/build/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions?query=workflow%3Abuild)
 [![Codecov](https://img.shields.io/codecov/c/gh/bagherilab/python_project_template?token=HYF4KEB84L)](https://codecov.io/gh/bagherilab/python_project_template)
 [![Lint Status](https://github.com/bagherilab/python_project_template/workflows/lint/badge.svg)](https://github.com/bagherilab/python_project_template/actions?query=workflow%3Alint)
 [![Documentation](https://github.com/bagherilab/python_project_template/workflows/documentation/badge.svg)](https://bagherilab.github.io/python_project_template/)

@@ -18,7 +18,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'SANDBOX'
+project = 'PlantRootDevModel'
 copyright = 'YYYY, AUTHOR_NAME'
 author = 'AUTHOR_NAME'
 
