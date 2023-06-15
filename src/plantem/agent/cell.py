@@ -15,9 +15,7 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_aux):
         super().__init__()
-
         self.quad_perimeter = QuadPerimeter(corners)
-
         self.color = [0,200,5]
         circulator = BaseCirculateModule(self, init_aux)
         sim = simulation
@@ -37,16 +35,15 @@ class GrowingCell(arcade.Sprite):
     def get_l_neighbors(self):
         return self.l_neighbors
 
-
     def remove_neighbor(self, cell: 'GrowingCell') -> None:
-        if isinstance(cell, self.a_neighbor):
-            self.a_neighbor.remove(cell)
-        if isinstance(cell, self.b_neighbor):
-            self.b_neighbor.remove(cell)
-        if isinstance(cell, self.l_neighbor):
-            self.l_neighbor.remove(cell)
-        if isinstance(cell, self.m_neighbor):
-            self.m_neighbor.remove(cell)
+        if isinstance(cell, self.a_neighbors):
+            self.a_neighbors.remove(cell)
+        if isinstance(cell, self.b_neighbors):
+            self.b_neighbors.remove(cell)
+        if isinstance(cell, self.l_neighbors):
+            self.l_neighbors.remove(cell)
+        if isinstance(cell, self.m_neighbors):
+            self.m_neighbors.remove(cell)
 
     def get_area(self) -> float:
         return self.quad_perimeter.get_area()
@@ -56,13 +53,8 @@ class GrowingCell(arcade.Sprite):
         arcade.draw_polygon_outline(point_list=self.quad_perimeter.get_corners_for_disp(), color=[0,0,0])
 
     def grow(self) -> None:
-        pass
+        self.quad_perimeter.get_top_left().set_y(self.quad_perimeter.get_top_left().get_y() + .3)
+        self.quad_perimeter.get_top_right().set_y(self.quad_perimeter.get_top_right().get_y() + .3)
 
     def update(self) -> None:
-        new_bottom_left = self.quad_perimeter.get_bottom_left()
-        new_bottom_right = self.quad_perimeter.get_bottom_right()
-        old_top_left_xy = self.quad_perimeter.get_top_left().get_xy()
-        old_top_right_xy = self.quad_perimeter.get_top_right().get_xy()
-        new_top_left = Vertex(old_top_left_xy[0], old_top_left_xy[1]+.3)
-        new_top_right = Vertex(old_top_right_xy[0], old_top_right_xy[1]+.3)
-        self.quad_perimeter.set_corners([new_top_left,new_top_right, new_bottom_right, new_bottom_left])
+        self.grow()

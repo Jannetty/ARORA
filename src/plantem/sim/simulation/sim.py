@@ -69,8 +69,8 @@ class GrowingSim(arcade.Window):
 
 
 
-def main(timestep):
+def main(timestep, root_midpoint_x):
     """ Main function """
-    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep)
+    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
     simulation.setup()
     arcade.run()

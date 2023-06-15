@@ -16,3 +16,11 @@ class Vertex():
     
     def get_x(self) -> float:
         return self.x
+    
+    def set_x(self, newx:float) -> None:
+        self.x = newx
+        self.xy[0] = self.x
+
+    def set_y(self, newy:float) -> None:
+        self.y = newy
+        self.xy[1] = self.y

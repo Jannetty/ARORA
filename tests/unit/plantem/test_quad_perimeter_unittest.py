@@ -6,8 +6,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_get_apical(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         expected_apical = [v2, v3]
         found_apical = get_apical([v1,v2,v3,v4])
@@ -15,8 +15,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_get_basal(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         expected_basal = [v1, v4]
         found_basal = get_basal([v1,v2,v3,v4])
@@ -24,8 +24,8 @@ class TestQuadPerimeter(unittest.TestCase):
         
     def test_QuadPerimeter_get_left(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300) 
         v4 = Vertex(300,100)
         expected_left = [v1, v2]
         found_left = get_left([v1,v2,v3,v4])
@@ -33,8 +33,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_get_right(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         expected_right= [v3, v4]
         found_right = get_right([v1,v2,v3,v4])
@@ -42,8 +42,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_assign_corners(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
 
         this_qp = QuadPerimeter([v1, v2, v3, v4])
@@ -55,8 +55,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_get_corners_for_disp(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
 
         this_qp = QuadPerimeter([v1, v2, v3, v4])
@@ -66,24 +66,24 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_calc_midpointx_get_midpointx(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300) 
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         this_qp = QuadPerimeter([v1,v2, v3, v4])
         self.assertEqual(200, this_qp.get_midpointx())
 
     def test_QuadPerimeter_get_perimeter_len(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300) 
         v4 = Vertex(300,100)
         this_qp = QuadPerimeter([v1,v2, v3, v4])
         self.assertEqual(800, this_qp.get_perimeter_len())
 
     def test_get_len_perimeter_in_common_right_neighbor(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         qp_1 = QuadPerimeter([v1,v2, v3, v4])
         v5 = Vertex(500,100)
@@ -94,8 +94,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_left_neighbor(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         qp_1 = QuadPerimeter([v1,v2, v3, v4])
         v5 = Vertex(0,100)
@@ -106,8 +106,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         qp_1 = QuadPerimeter([v1,v2, v3, v4])
         v5 = Vertex(100,500)
@@ -118,8 +118,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
         v1 = Vertex(100, 100) 
-        v2 = Vertex(100, 300) # apical
-        v3 = Vertex(300,300) # apical
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300,300)
         v4 = Vertex(300,100)
         qp_1 = QuadPerimeter([v1,v2, v3, v4])
         v5 = Vertex(100,0)
