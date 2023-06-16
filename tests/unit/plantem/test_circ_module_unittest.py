@@ -4,6 +4,7 @@ from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module import BaseCirculateModule
 from src.plantem.agent.cell import GrowingCell
 
+
 class BaseCirculateModuleTests(unittest.TestCase):
     # def test_update(self):
     #     cell1 = GrowingCell(self, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], {})
