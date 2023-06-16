@@ -1,4 +1,4 @@
-from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter, get_len_perimeter_in_common
+from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 
 
 class BaseCirculateModule:
@@ -66,23 +66,22 @@ class BaseCirculateModule:
         self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, self.area)
         self.pinm = self.calculate_neighbor_pin(self.init_pinm, self.timestep, self.area)
 
-        memfraca = self.calculate_memfrac("a")
-        memfracb = self.calculate_memfrac("b")
-        memfracl = self.calculate_memfrac("l")
-        memfracm = self.calculate_memfrac("m")
-
-        # auxin import
-        AuxinA = self.calculate_neighbor_auxin(self.init_pina, self.timestep, self.area)
-        AuxinB = self.calculate_neighbor_auxin(self.init_pinb, self.timestep, self.area)
-        AuxinL = self.calculate_neighbor_auxin(self.init_pinl, self.timestep, self.area)
-        AuxinM = self.calculate_neighbor_auxin(self.init_pinm, self.timestep, self.area)
-        neighbors_aux = [AuxinA, AuxinB, AuxinL, AuxinM]
-
         # find neighbors
+        neighborsa = self.cell.neighbora
+        neighborsb = self.cell.neighborb
+        neighborsl = self.cell.neighborl
+        neighborsm = self.cell.neighborm
         neighbors = self.find_neighbors(curr_cell)
 
+        # auxin import
+        auxinA = self.calculate_neighbor_auxin(self.init_pina, neighborsa, "a", self.timestep, self.area)
+        auxinB = self.calculate_neighbor_auxin(self.init_pinb, neighborsb, "b", self.timestep, self.area)
+        auxinL = self.calculate_neighbor_auxin(self.init_pinl, neighborsl, "l", self.timestep, self.area)
+        auxinM = self.calculate_neighbor_auxin(self.init_pinm, neighborsm, "m", self.timestep, self.area)
+        neighbors_aux = [auxinA, auxinB, auxinL, auxinM]
+
         # update current cell
-        delta_aux = self.auxin + AuxinA + AuxinB + AuxinL + AuxinM
+        delta_aux = self.auxin + auxinA + auxinB + auxinL + auxinM
         cell_dict = self.update_current_cell(curr_cell, cell_dict, delta_aux)
 
         # update neighbor cells
@@ -120,7 +119,7 @@ class BaseCirculateModule:
         pin = self.calculate_pin(timestep, area)
         neighbor_pin = (0.25 * pin - self.kd * init * area) * timestep
         return neighbor_pin
-    
+
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
         cell_perimeter = self.cell.quad_perimeter.get_perimemter_len()
         common_perimeter = get_len_perimeter_in_common(self.cell.quad_perimeter,
@@ -128,15 +127,19 @@ class BaseCirculateModule:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def calculate_neighbor_auxin(self, init, timestep, area) -> float:
+    def calculate_neighbor_auxin(self, init_pin, neighbors, direction: str, timestep, area) -> float:
         aux_lax = self.calculate_aux_lax(timestep, area)
-        PIN = self.calculate_neighbor_pin(init, timestep, area)
-        neighbor_auxin = (self.ks * 0.25 * aux_lax - self.kd * PIN * area) * timestep
-        return neighbor_auxin
+        pin = self.calculate_neighbor_pin(init_pin, timestep, area)
+        total_aux = 0
+        for neighbor in neighbors:
+            memfrac = self.calculate_memfrac(neighbor, direction)
+            neighbor_aux = (self.ks * memfrac * aux_lax - self.kd * pin * area) * timestep
+            total_aux += neighbor_aux
+        return total_aux
 
     def find_neighbors(self, curr_cell):
         neighbors = [
-            curr_cell.neighborA,
+            curr_cell.neighbora,
             curr_cell.neighborB,
             curr_cell.neighborL,
             curr_cell.neighborM,

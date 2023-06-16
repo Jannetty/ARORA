@@ -2,6 +2,7 @@ import unittest
 
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module import BaseCirculateModule
+from src.plantem.agent.cell import GrowingCell
 
 class BaseCirculateModuleTests(unittest.TestCase):
     # def test_update(self):
@@ -53,13 +54,16 @@ class BaseCirculateModuleTests(unittest.TestCase):
         found_PIN = circ_module.calculate_pin(timestep, area)
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
-    def test_calculate_neighbor_PIN(self):
+    def test_calculate_neighbor_pin(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
         timestep = 1
         area = 100
         expected_neighbor_PIN = -0.075949
         found_neighbor_PIN = circ_module.calculate_neighbor_pin(0.5, timestep, area)
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
+    
+    def test_calculate_memfrac(self):
+        pass
 
     def test_calculate_neighbor_auxin(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
