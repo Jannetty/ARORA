@@ -1,5 +1,6 @@
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 
+
 class BaseCirculateModule:
     """
     Representation of auxin circulation
@@ -41,10 +42,10 @@ class BaseCirculateModule:
         self.init_pinm = init_vals.get("pinm")
         self.pinm = self.init_pinm
 
-        self.k_ARR_ARR = init_vals.get("k_ARR_ARR")
-        self.k_auxin_AUXLAX = init_vals.get("k_auxin_AUXLAX")
-        self.k_auxin_PIN = init_vals.get("k_auxin_PIN")
-        self.k_ARR_PIN = init_vals.get("k_ARR_PIN")
+        self.k_arr_arr = init_vals.get("k_arr_arr")
+        self.k_auxin_auxlax = init_vals.get("k_auxin_auxlax")
+        self.k_auxin_pin = init_vals.get("k_auxin_pin")
+        self.k_arr_pin = init_vals.get("k_arr_pin")
 
         self.ks = init_vals.get("ks")
         self.kd = init_vals.get("kd")
@@ -62,7 +63,8 @@ class BaseCirculateModule:
             An updated circulator
         """
         # calculates changes in self species and neighbor auxins
-        # adds changes to self and neighbors to circulator with key=cell instance value = change in auxin
+        # adds changes to self and neighbors to circulator with key=cell
+        # instance value = change in auxin
         # REMEMBER cells will be neighbors and selves multiple times
 
         curr_cell = self.cell
@@ -72,7 +74,6 @@ class BaseCirculateModule:
         self.auxin = self.calculate_auxin(self.timestep, self.area)
         self.arr = self.calculate_arr(self.timestep, self.area)
         self.aux_lax = self.calculate_aux_lax(self.timestep, self.area)
-        self.PIN = self.calculate_pin(self.timestep, self.area)
         self.pina = self.calculate_neighbor_pin(self.init_pina, self.timestep, self.area)
         self.pinb = self.calculate_neighbor_pin(self.init_pinb, self.timestep, self.area)
         self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, self.area)
@@ -113,7 +114,7 @@ class BaseCirculateModule:
         Calculate the ARR expression of current cell
         """
         arr = (
-            self.ks * 1 / (self.init_arr / self.k_ARR_ARR + 1) - self.kd * self.init_arr * area
+            self.ks * 1 / (self.init_arr / self.k_arr_arr + 1) - self.kd * self.init_arr * area
         ) * timestep
         return arr
 
@@ -123,7 +124,7 @@ class BaseCirculateModule:
         """
         auxin = self.calculate_auxin(timestep, area)
         aux_lax = (
-            self.ks * (auxin / (auxin + self.k_auxin_AUXLAX)) - self.kd * self.init_aux_lax * area
+            self.ks * (auxin / (auxin + self.k_auxin_auxlax)) - self.kd * self.init_aux_lax * area
         ) * timestep
         return aux_lax
 
@@ -134,7 +135,7 @@ class BaseCirculateModule:
         auxin = self.calculate_auxin(timestep, area)
         arr = self.calculate_arr(timestep, area)
         pin = (
-            self.ks * (1 / (arr / self.k_ARR_PIN + 1)) * (auxin / (auxin + self.k_auxin_PIN))
+            self.ks * (1 / (arr / self.k_arr_pin + 1)) * (auxin / (auxin + self.k_auxin_pin))
         ) * timestep
         return pin
 
@@ -156,7 +157,8 @@ class BaseCirculateModule:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def get_neighbor_auxin(self, init_pin: float, neighbors: list, direction: str, timestep: float, area: float) -> dict:
+    def get_neighbor_auxin(self, init_pin: float, neighbors: list, direction: str, timestep: float,
+                           area: float) -> dict:
         """
         Calculate the auxin expression of neighbor cells in a defined direction
         """
@@ -193,11 +195,10 @@ class BaseCirculateModule:
         """
         Update the change in auxin of neighbor cells in the circulator
         """
-        for i in range(len(neighbors_auxin)):
-            for neighbor in neighbors_auxin[i]:
+        for each_dirct in neighbors_auxin:
+            for neighbor in each_dirct:
                 if neighbor not in cell_dict:
-                    cell_dict[neighbor] = -neighbors_auxin[i][neighbor]
+                    cell_dict[neighbor] = -each_dirct[neighbor]
                 else:
-                    cell_dict[neighbor] += -neighbors_auxin[i][neighbor]
-            i += 1
+                    cell_dict[neighbor] += -each_dirct[neighbor]
         return cell_dict
