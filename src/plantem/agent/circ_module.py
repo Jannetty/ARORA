@@ -1,4 +1,5 @@
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
+from src.plantem.agent.cell import GrowingCell
 
 
 class BaseCirculateModule:
@@ -12,9 +13,10 @@ class BaseCirculateModule:
     pinm = None
     cell = None
 
-    def __init__(self, cell, init_vals):
-        self.cell = cell
+    def __init__(self, cell: GrowingCell, init_vals: dict):
         # initialize all values
+        self.cell = cell
+
         self.init_auxin = init_vals.get("auxin")
         self.auxin = self.init_auxin
 
@@ -89,24 +91,36 @@ class BaseCirculateModule:
         return cell_dict
 
     # Helper functions
-    def calculate_auxin(self, timestep, area) -> float:
+    def calculate_auxin(self, timestep: float, area: float) -> float:
+        """
+        Calcualte the auxin expression of current cell
+        """
         auxin = (self.ks - self.kd * self.init_auxin * area) * timestep
         return auxin
 
-    def calculate_arr(self, timestep, area) -> float:
+    def calculate_arr(self, timestep: float, area: float) -> float:
+        """
+        Calculate the ARR expression of current cell
+        """
         arr = (
             self.ks * 1 / (self.init_arr / self.k_ARR_ARR + 1) - self.kd * self.init_arr * area
         ) * timestep
         return arr
 
-    def calculate_aux_lax(self, timestep, area) -> float:
+    def calculate_aux_lax(self, timestep: float, area: float) -> float:
+        """
+        Calculate the AUX/LAX expression of current cell
+        """
         auxin = self.calculate_auxin(timestep, area)
         aux_lax = (
             self.ks * (auxin / (auxin + self.k_auxin_AUXLAX)) - self.kd * self.init_aux_lax * area
         ) * timestep
         return aux_lax
 
-    def calculate_pin(self, timestep, area) -> float:
+    def calculate_pin(self, timestep: float, area: float) -> float:
+        """
+        Calculate the PIN expression of current cell
+        """
         auxin = self.calculate_auxin(timestep, area)
         arr = self.calculate_arr(timestep, area)
         pin = (
@@ -114,7 +128,7 @@ class BaseCirculateModule:
         ) * timestep
         return pin
 
-    def calculate_neighbor_pin(self, init, timestep, area) -> float:
+    def calculate_neighbor_pin(self, init: float, timestep: float, area: float) -> float:
         pin = self.calculate_pin(timestep, area)
         neighbor_pin = (0.25 * pin - self.kd * init * area) * timestep
         return neighbor_pin
@@ -126,7 +140,7 @@ class BaseCirculateModule:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def get_neighbor_auxin(self, init_pin, neighbors, direction: str, timestep, area) -> dict:
+    def get_neighbor_auxin(self, init_pin: float, neighbors: list, direction: str, timestep, area) -> dict:
         aux_lax = self.calculate_aux_lax(timestep, area)
         pin = self.calculate_neighbor_pin(init_pin, timestep, area)
         neighbor_dict = {}
@@ -136,28 +150,22 @@ class BaseCirculateModule:
             neighbor_dict[neighbor] = neighbor_aux
         return neighbor_dict
 
-    def calculate_delta_auxin(self, neighbors_auxin) -> float:
+    def calculate_delta_auxin(self, neighbors_auxin: list) -> float:
         total_auxin = self.auxin
         for neighbors in neighbors_auxin:
             auxin = sum(neighbors.values())
             total_auxin += auxin
         return total_auxin
 
-    def update_current_cell(self, curr_cell, cell_dict, delta_aux) -> dict:
+    def update_current_cell(self, curr_cell, cell_dict, delta_aux: float) -> dict:
         if curr_cell not in cell_dict:
             cell_dict[curr_cell] = delta_aux
         else:
             cell_dict[curr_cell] += delta_aux
         return cell_dict
 
-    def update_neighbor_cell(self, cell_dict, neighbors_auxin) -> dict:
-        # for i in range(4):
-        #     if neighbors[i] not in cell_dict:
-        #         cell_dict[neighbors[i]] = -neighbors_aux[i]
-        #     else:
-        #         cell_dict[neighbors[i]] += -neighbors_aux[i]
-        # return cell_dict
-        for i in range(4):
+    def update_neighbor_cell(self, cell_dict: dict, neighbors_auxin: list) -> dict:
+        for i in range(len(neighbors_auxin)):
             for neighbor in neighbors_auxin[i]:
                 if neighbor not in cell_dict:
                     cell_dict[neighbor] = -neighbors_auxin[i][neighbor]

@@ -72,15 +72,6 @@ class BaseCirculateModuleTests(unittest.TestCase):
         expected_memfrac = 0.25
         self.assertEqual(expected_memfrac, found_memfrac)
 
-
-    # def test_calculate_neighbor_auxin(self):
-    #     circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
-    #     timestep = 1
-    #     area = 100
-    #     expected_neighbor_auxin = 0.01082723
-    #     found_neighbor_auxin = circ_module.calculate_neighbor_auxin(0.5, timestep, area)
-    #     self.assertAlmostEqual(expected_neighbor_auxin, found_neighbor_auxin, places=5)
-
     def test_get_neighbor_auxin(self):
         timestep = 1
         area = 100
@@ -92,11 +83,19 @@ class BaseCirculateModuleTests(unittest.TestCase):
         neighbor_list = [neighbora]
         expected_neighbor_auxin = circ_module.get_neighbor_auxin(0.5, neighbor_list, "a", timestep, area)
         found_neighbor_auxin = {neighbora: 866179/80000000}
-        self.assertEqual(expected_neighbor_auxin, found_neighbor_auxin)
-        
+        for neighbor in neighbor_list:
+            expected = expected_neighbor_auxin[neighbor]
+            found = found_neighbor_auxin[neighbor]
+            self.assertAlmostEqual(expected, found, places=5)
 
     def test_calcualte_delta_auxin(self):
-        pass
+        sim = None
+        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+        neighbora = GrowingCell(sim, [Vertex(100.0,300.0), Vertex(100.0,600.0), Vertex(300.0,600.0), Vertex(300.0,300.0)], self.init_vals)
+        neighbors_auxin = [{neighbora: 866179/80000000}]
+        expected_delta_auxin = 2 + 866179/80000000
+        found_delta_auxin = circ_module.calculate_delta_auxin(neighbors_auxin)
+        self.assertAlmostEqual(expected_delta_auxin, found_delta_auxin, places=5)
 
     def test_update_current_cell(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
@@ -109,19 +108,29 @@ class BaseCirculateModuleTests(unittest.TestCase):
         self.assertEqual(expected_dict, found_dict)
 
     def test_update_neighbor_cell(self):
-        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+        # circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
 
-        curr_cell = GrowingCell
+        # curr_cell = GrowingCell
+        # sim = None
+
+        # cellA = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
+        # cellB = GrowingCell(sim, [Vertex(101.0,101.0), Vertex(101.0,300.0), Vertex(300.0,300.0), Vertex(300.0,101.0)], self.init_vals)
+        # cellL = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,301.0), Vertex(301.0,301.0), Vertex(301.0,100.0)], self.init_vals)
+        # cellM = GrowingCell(sim, [Vertex(200.0,200.0), Vertex(200.0,300.0), Vertex(300.0,300.0), Vertex(300.0,200.0)], self.init_vals)
+        # neighbors = [cellA, cellB, cellL, cellM]
+        # neighbors_aux = [0.1, -0.4, 0.05, 0]
+        # cell_dict = {curr_cell: 0.5, cellA: 1}
+
+        # expected_dict = {curr_cell: 0.5, cellA: 0.9, cellB: 0.4, cellL: -0.05, cellM: 0}
+        # found_dict = circ_module.update_neighbor_cell(cell_dict, neighbors, neighbors_aux)
+        # self.assertEqual(expected_dict, found_dict)
         sim = None
-
-        cellA = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
-        cellB = GrowingCell(sim, [Vertex(101.0,101.0), Vertex(101.0,300.0), Vertex(300.0,300.0), Vertex(300.0,101.0)], self.init_vals)
-        cellL = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,301.0), Vertex(301.0,301.0), Vertex(301.0,100.0)], self.init_vals)
-        cellM = GrowingCell(sim, [Vertex(200.0,200.0), Vertex(200.0,300.0), Vertex(300.0,300.0), Vertex(300.0,200.0)], self.init_vals)
-        neighbors = [cellA, cellB, cellL, cellM]
-        neighbors_aux = [0.1, -0.4, 0.05, 0]
-        cell_dict = {curr_cell: 0.5, cellA: 1}
-
-        expected_dict = {curr_cell: 0.5, cellA: 0.9, cellB: 0.4, cellL: -0.05, cellM: 0}
-        found_dict = circ_module.update_neighbor_cell(cell_dict, neighbors, neighbors_aux)
+        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+        curr_cell = GrowingCell
+        neighbora = GrowingCell(sim, [Vertex(100.0,300.0), Vertex(100.0,600.0), Vertex(300.0,600.0), Vertex(300.0,300.0)], self.init_vals)
+        neighborm = GrowingCell(sim, [Vertex(300.0,100.0), Vertex(300.0,300.0), Vertex(600.0,300.0), Vertex(600.0,100.0)], self.init_vals)
+        neighbors_auxin = [{neighbora: 866179/80000000}, {neighborm: 866179/80000000}]
+        cell_dict = {curr_cell: 0.5, neighbora: 0.1}
+        expected_dict = {curr_cell: 0.5, neighbora: 0.1 - 866179/80000000, neighborm: -866179/80000000}
+        found_dict = circ_module.update_neighbor_cell(cell_dict, neighbors_auxin)
         self.assertEqual(expected_dict, found_dict)
