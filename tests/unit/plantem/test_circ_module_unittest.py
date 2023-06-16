@@ -28,13 +28,13 @@ class BaseCirculateModuleTests(unittest.TestCase):
         area = 100
         expected_auxin = -0.295
         found_auxin = circ_module.calculate_auxin(timestep, area)
-        self.assertAlmostEqual(expected_auxin, found_auxin, places=5)
+        self.assertEqual(expected_auxin, found_auxin)
 
     def test_calculate_arr(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
         timestep = 1
         area = 100
-        expected_arr = -0.44875
+        expected_arr = -359/800
         found_arr = circ_module.calculate_arr(timestep, area)
         self.assertAlmostEqual(expected_arr, found_arr, places=5)
     
@@ -63,15 +63,40 @@ class BaseCirculateModuleTests(unittest.TestCase):
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
     
     def test_calculate_memfrac(self):
-        pass
+        sim  = None
+        cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
+        circ_module = BaseCirculateModule(cell, self.init_vals)
+        # test apical nerighbor
+        neighbora = GrowingCell(sim, [Vertex(100.0,300.0), Vertex(100.0,600.0), Vertex(300.0,600.0), Vertex(300.0,300.0)], self.init_vals)
+        found_memfrac = circ_module.calculate_memfrac(neighbora, "a")
+        expected_memfrac = 0.25
+        self.assertEqual(expected_memfrac, found_memfrac)
 
-    def test_calculate_neighbor_auxin(self):
-        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+
+    # def test_calculate_neighbor_auxin(self):
+    #     circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+    #     timestep = 1
+    #     area = 100
+    #     expected_neighbor_auxin = 0.01082723
+    #     found_neighbor_auxin = circ_module.calculate_neighbor_auxin(0.5, timestep, area)
+    #     self.assertAlmostEqual(expected_neighbor_auxin, found_neighbor_auxin, places=5)
+
+    def test_get_neighbor_auxin(self):
         timestep = 1
         area = 100
-        expected_neighbor_auxin = 0.01082723
-        found_neighbor_auxin = circ_module.calculate_neighbor_auxin(0.5, timestep, area)
-        self.assertAlmostEqual(expected_neighbor_auxin, found_neighbor_auxin, places=5)
+        sim  = None
+        cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
+        circ_module = BaseCirculateModule(cell, self.init_vals)
+        # test apical neighbor
+        neighbora = GrowingCell(sim, [Vertex(100.0,300.0), Vertex(100.0,600.0), Vertex(300.0,600.0), Vertex(300.0,300.0)], self.init_vals)
+        neighbor_list = [neighbora]
+        expected_neighbor_auxin = circ_module.get_neighbor_auxin(0.5, neighbor_list, "a", timestep, area)
+        found_neighbor_auxin = {neighbora: 866179/80000000}
+        self.assertEqual(expected_neighbor_auxin, found_neighbor_auxin)
+        
+
+    def test_calcualte_delta_auxin(self):
+        pass
 
     def test_update_current_cell(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
