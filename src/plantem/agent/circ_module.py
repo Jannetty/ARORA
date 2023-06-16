@@ -71,21 +71,20 @@ class BaseCirculateModule:
         neighborsb = self.cell.neighborb
         neighborsl = self.cell.neighborl
         neighborsm = self.cell.neighborm
-        neighbors = self.find_neighbors(curr_cell)
 
         # auxin import
-        auxinA = self.calculate_neighbor_auxin(self.init_pina, neighborsa, "a", self.timestep, self.area)
-        auxinB = self.calculate_neighbor_auxin(self.init_pinb, neighborsb, "b", self.timestep, self.area)
-        auxinL = self.calculate_neighbor_auxin(self.init_pinl, neighborsl, "l", self.timestep, self.area)
-        auxinM = self.calculate_neighbor_auxin(self.init_pinm, neighborsm, "m", self.timestep, self.area)
-        neighbors_aux = [auxinA, auxinB, auxinL, auxinM]
+        auxina = self.get_neighbor_auxin(self.init_pina, neighborsa, "a", self.timestep, self.area)
+        auxinb = self.get_neighbor_auxin(self.init_pinb, neighborsb, "b", self.timestep, self.area)
+        auxinl = self.get_neighbor_auxin(self.init_pinl, neighborsl, "l", self.timestep, self.area)
+        auxinm = self.get_neighbor_auxin(self.init_pinm, neighborsm, "m", self.timestep, self.area)
+        neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
         # update current cell
-        delta_aux = self.auxin + auxinA + auxinB + auxinL + auxinM
-        cell_dict = self.update_current_cell(curr_cell, cell_dict, delta_aux)
+        delta_auxin = self.calculate_delta_auxin(neighbors_auxin)
+        cell_dict = self.update_current_cell(curr_cell, cell_dict, delta_auxin)
 
         # update neighbor cells
-        cell_dict = self.update_neighbor_cell(cell_dict, neighbors, neighbors_aux)
+        cell_dict = self.update_neighbor_cell(cell_dict, neighbors_auxin)
 
         return cell_dict
 
@@ -121,30 +120,28 @@ class BaseCirculateModule:
         return neighbor_pin
 
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
-        cell_perimeter = self.cell.quad_perimeter.get_perimemter_len()
+        cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
         common_perimeter = get_len_perimeter_in_common(self.cell.quad_perimeter,
-                                                       neighbor.quad_perimemter, neighbor_direction)
+                                                       neighbor.quad_perimeter, neighbor_direction)
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def calculate_neighbor_auxin(self, init_pin, neighbors, direction: str, timestep, area) -> float:
+    def get_neighbor_auxin(self, init_pin, neighbors, direction: str, timestep, area) -> dict:
         aux_lax = self.calculate_aux_lax(timestep, area)
         pin = self.calculate_neighbor_pin(init_pin, timestep, area)
-        total_aux = 0
+        neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_memfrac(neighbor, direction)
             neighbor_aux = (self.ks * memfrac * aux_lax - self.kd * pin * area) * timestep
-            total_aux += neighbor_aux
-        return total_aux
+            neighbor_dict[neighbor] = neighbor_aux
+        return neighbor_dict
 
-    def find_neighbors(self, curr_cell):
-        neighbors = [
-            curr_cell.neighbora,
-            curr_cell.neighborB,
-            curr_cell.neighborL,
-            curr_cell.neighborM,
-        ]
-        return neighbors
+    def calculate_delta_auxin(self, neighbors_auxin) -> float:
+        total_auxin = self.auxin
+        for neighbors in neighbors_auxin:
+            auxin = sum(neighbors.values())
+            total_auxin += auxin
+        return total_auxin
 
     def update_current_cell(self, curr_cell, cell_dict, delta_aux) -> dict:
         if curr_cell not in cell_dict:
@@ -153,10 +150,18 @@ class BaseCirculateModule:
             cell_dict[curr_cell] += delta_aux
         return cell_dict
 
-    def update_neighbor_cell(self, cell_dict, neighbors, neighbors_aux) -> dict:
+    def update_neighbor_cell(self, cell_dict, neighbors_auxin) -> dict:
+        # for i in range(4):
+        #     if neighbors[i] not in cell_dict:
+        #         cell_dict[neighbors[i]] = -neighbors_aux[i]
+        #     else:
+        #         cell_dict[neighbors[i]] += -neighbors_aux[i]
+        # return cell_dict
         for i in range(4):
-            if neighbors[i] not in cell_dict:
-                cell_dict[neighbors[i]] = -neighbors_aux[i]
-            else:
-                cell_dict[neighbors[i]] += -neighbors_aux[i]
+            for neighbor in neighbors_auxin[i]:
+                if neighbor not in cell_dict:
+                    cell_dict[neighbor] = -neighbors_auxin[i][neighbor]
+                else:
+                    cell_dict[neighbor] += -neighbors_auxin[i][neighbor]
+            i += 1
         return cell_dict
