@@ -1,6 +1,4 @@
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
-from src.plantem.agent.cell import GrowingCell
-
 
 class BaseCirculateModule:
     """
@@ -16,7 +14,7 @@ class BaseCirculateModule:
     pinm = None
     cell = None
 
-    def __init__(self, cell: GrowingCell, init_vals: dict):
+    def __init__(self, cell, init_vals: dict):
         """
         initialize all values
         """
@@ -148,7 +146,7 @@ class BaseCirculateModule:
         neighbor_pin = (0.25 * pin - self.kd * init * area) * timestep
         return neighbor_pin
 
-    def calculate_memfrac(self, neighbor: GrowingCell, neighbor_direction: str) -> float:
+    def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
         """
         Calculate the fraction of total cell membrane that is in a defined direction
         """
@@ -181,7 +179,7 @@ class BaseCirculateModule:
             total_auxin += auxin
         return total_auxin
 
-    def update_current_cell(self, curr_cell: GrowingCell, cell_dict: dict, delta_aux: float) -> dict:
+    def update_current_cell(self, curr_cell, cell_dict: dict, delta_aux: float) -> dict:
         """
         Update the change in auxin of current cell in the circulator
         """
