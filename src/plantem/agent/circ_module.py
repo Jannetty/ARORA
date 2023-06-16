@@ -3,6 +3,9 @@ from src.plantem.agent.cell import GrowingCell
 
 
 class BaseCirculateModule:
+    """
+    Representation of auxin circulation
+    """
 
     auxin = None
     arr = None
@@ -14,7 +17,9 @@ class BaseCirculateModule:
     cell = None
 
     def __init__(self, cell: GrowingCell, init_vals: dict):
-        # initialize all values
+        """
+        initialize all values
+        """
         self.cell = cell
 
         self.init_auxin = init_vals.get("auxin")
@@ -50,7 +55,14 @@ class BaseCirculateModule:
         self.area = 100
 
     def update(self):
-        pass
+        """
+        Update changes to the current and neighbor cells to circulator
+
+        Returns
+        -------
+        :
+            An updated circulator
+        """
         # calculates changes in self species and neighbor auxins
         # adds changes to self and neighbors to circulator with key=cell instance value = change in auxin
         # REMEMBER cells will be neighbors and selves multiple times
@@ -74,7 +86,7 @@ class BaseCirculateModule:
         neighborsl = self.cell.neighborl
         neighborsm = self.cell.neighborm
 
-        # auxin import
+        # change in auxin relative to current cell
         auxina = self.get_neighbor_auxin(self.init_pina, neighborsa, "a", self.timestep, self.area)
         auxinb = self.get_neighbor_auxin(self.init_pinb, neighborsb, "b", self.timestep, self.area)
         auxinl = self.get_neighbor_auxin(self.init_pinl, neighborsl, "l", self.timestep, self.area)
@@ -129,18 +141,27 @@ class BaseCirculateModule:
         return pin
 
     def calculate_neighbor_pin(self, init: float, timestep: float, area: float) -> float:
+        """
+        Calculate the PIN expression of neighbor cells
+        """
         pin = self.calculate_pin(timestep, area)
         neighbor_pin = (0.25 * pin - self.kd * init * area) * timestep
         return neighbor_pin
 
-    def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
+    def calculate_memfrac(self, neighbor: GrowingCell, neighbor_direction: str) -> float:
+        """
+        Calculate the fraction of total cell membrane that is in a defined direction
+        """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
         common_perimeter = get_len_perimeter_in_common(self.cell.quad_perimeter,
                                                        neighbor.quad_perimeter, neighbor_direction)
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def get_neighbor_auxin(self, init_pin: float, neighbors: list, direction: str, timestep, area) -> dict:
+    def get_neighbor_auxin(self, init_pin: float, neighbors: list, direction: str, timestep: float, area: float) -> dict:
+        """
+        Calculate the auxin expression of neighbor cells in a defined direction
+        """
         aux_lax = self.calculate_aux_lax(timestep, area)
         pin = self.calculate_neighbor_pin(init_pin, timestep, area)
         neighbor_dict = {}
@@ -151,13 +172,19 @@ class BaseCirculateModule:
         return neighbor_dict
 
     def calculate_delta_auxin(self, neighbors_auxin: list) -> float:
+        """
+        Calculate the total amound of change in auxin for current cell
+        """
         total_auxin = self.auxin
         for neighbors in neighbors_auxin:
             auxin = sum(neighbors.values())
             total_auxin += auxin
         return total_auxin
 
-    def update_current_cell(self, curr_cell, cell_dict, delta_aux: float) -> dict:
+    def update_current_cell(self, curr_cell: GrowingCell, cell_dict: dict, delta_aux: float) -> dict:
+        """
+        Update the change in auxin of current cell in the circulator
+        """
         if curr_cell not in cell_dict:
             cell_dict[curr_cell] = delta_aux
         else:
@@ -165,6 +192,9 @@ class BaseCirculateModule:
         return cell_dict
 
     def update_neighbor_cell(self, cell_dict: dict, neighbors_auxin: list) -> dict:
+        """
+        Update the change in auxin of neighbor cells in the circulator
+        """
         for i in range(len(neighbors_auxin)):
             for neighbor in neighbors_auxin[i]:
                 if neighbor not in cell_dict:
