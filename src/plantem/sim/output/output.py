@@ -1,7 +1,9 @@
+import csv
+from src.plantem.sim.simulation.sim import GrowingSim
 
 
 class Output():
-    def __init__(self, sim, filename):
+    def __init__(self, sim: GrowingSim, filename: str):
         self.sim = sim
         self.filename = filename
 
@@ -14,4 +16,39 @@ class Output():
                     # - Location (x,y of corners retrieved from vertex class)
                     # - all circ contents (PINs in relation to left right instead of lateral/medial)
                     # - number of cell divisions
+        output = []
+        cell_list = self.sim.cell_list
+        for cell in cell_list:
+            summary = {}
+            summary["cell"] = cell
+            summary["auxin"] = self.get_auxin(cell)
+            summary["location"] = self.get_location(cell)
+            summary = self.get_circ_contents(summary, cell)
+            summary["num_divisions"] = self.get_division_number(cell)
+            output.append(summary)
+
+        # generate spreadsheet
+        header = output[0].keys()
+        with open(self.filename, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=header)
+            writer.writeheader()
+            writer.writerows(output)
+
+    # Helper functions
+    def get_auxin(self, cell) -> float:
+        return cell.circulator.get_auxin()
+
+    def get_location(self, cell) -> list:
+        return cell.quad_perimeter.get_corners()
+
+    def get_circ_contents(self, summary: dict, cell) -> dict:
+        summary["ARR"] = cell.circulator.get_arr()
+        summary["AUX/LAX"] = cell.circulator.get_aux_lax()
+        summary["PIN_apical"] = cell.circulator.get_apical_pin()
+        summary["PIN_basal"] = cell.circulator.get_basal_pin()
+        summary["PIN_left"] = cell.circulator.get_left_pin()
+        summary["PIN_right"] = cell.circulator.get_right_pin()
+        return summary
+
+    def get_division_number(self, cell) -> float:
         pass
