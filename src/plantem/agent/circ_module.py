@@ -14,12 +14,18 @@ class BaseCirculateModule:
     pinl = None
     pinm = None
     cell = None
+    # medial = None
+    # lateral = None
 
     def __init__(self, cell, init_vals: dict):
         """
         initialize all values
         """
         self.cell = cell
+
+        # set medial to either "left" or "right" and lateral to the opposite 
+        # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
+        # to self.cell.sim.root_midpointx
 
         self.init_auxin = init_vals.get("auxin")
         self.auxin = self.init_auxin
@@ -202,3 +208,10 @@ class BaseCirculateModule:
                 else:
                     cell_dict[neighbor] += -each_dirct[neighbor]
         return cell_dict
+
+    def get_auxin(self) -> float:
+        return auxin
+    # write getters for all attributes including all pins AND left and right pin
+    def get_left_pin(self) -> float:
+        # write logic to determine whether to return pinm or pinl
+        pass
