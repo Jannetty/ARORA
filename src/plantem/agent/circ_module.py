@@ -14,8 +14,8 @@ class BaseCirculateModule:
     pinl = None
     pinm = None
     cell = None
-    medial = None
     lateral = None
+    medial = None
 
     def __init__(self, cell, init_vals: dict):
         """
@@ -235,6 +235,12 @@ class BaseCirculateModule:
 
     def get_basal_pin(self) -> float:
         return self.pinb
+    
+    def get_lateral_pin(self) -> float:
+        return self.pinl
+    
+    def get_medial_pin(self) -> float:
+        return self.pinm
 
     # write getters for all attributes including all pins AND left and right pin
     def get_left_pin(self) -> float:
