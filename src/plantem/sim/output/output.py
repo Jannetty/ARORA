@@ -6,8 +6,12 @@ class Output():
         self.filename = filename
 
     def output_cells(self) -> None:
-        # gets self.cell_list from sim
-        # gets contents of each cell including
-            # - Auxin concentration
-            # - Location (x,y of corners retrieved from vertex class)
-            # - all circ contents (PINA, PINB, PINL, PINM)
+        # generates spreadsheet under name filename with contents of all cells
+        # gets cell_list from sim
+            # - for cell in self.sim.cell_list:
+                # gets contents of each cell including
+                    # - Auxin concentration
+                    # - Location (x,y of corners retrieved from vertex class)
+                    # - all circ contents (PINs in relation to left right instead of lateral/medial)
+                    # - number of cell divisions
+        pass
