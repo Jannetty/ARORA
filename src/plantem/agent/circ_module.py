@@ -209,10 +209,23 @@ class BaseCirculateModule:
                     cell_dict[neighbor] += -each_dirct[neighbor]
         return cell_dict
 
+    # getter functions
     def get_auxin(self) -> float:
-        return auxin
-    
+        return self.auxin
+
+    def get_arr(self) -> float:
+        return self.arr
+
+    def get_aux_lax(self) -> float:
+        return self.aux_lax
+
+    def get_apical_pin(self) -> float:
+        return self.pina
+
+    def get_basal_pin(self) -> float:
+        return self.pinb
+
     # write getters for all attributes including all pins AND left and right pin
     def get_left_pin(self) -> float:
         # write logic to determine whether to return pinm or pinl
-        pass
+        

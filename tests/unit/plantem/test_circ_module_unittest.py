@@ -135,3 +135,11 @@ class BaseCirculateModuleTests(unittest.TestCase):
         expected_dict = {curr_cell: 0.5, neighbora: 0.1 - 866179/80000000, neighborm: -866179/80000000}
         found_dict = circ_module.update_neighbor_cell(cell_dict, neighbors_auxin)
         self.assertEqual(expected_dict, found_dict)
+
+    def test_get_auxin(self):
+        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+        found = circ_module.get_auxin()
+        expected = 2
+        self.assertEqual(expected, found)
+    
+    
