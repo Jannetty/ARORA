@@ -211,6 +211,7 @@ class BaseCirculateModule:
 
     def get_auxin(self) -> float:
         return auxin
+    
     # write getters for all attributes including all pins AND left and right pin
     def get_left_pin(self) -> float:
         # write logic to determine whether to return pinm or pinl
