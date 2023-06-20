@@ -1,8 +1,9 @@
 import arcade
 import src.plantem.agent.cell as cell
-from src.plantem.sim.circulator import circulator
+from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider import divider
 from src.plantem.loc.vertex.vertex import Vertex
+from src.plantem.sim.mover.vertex_mover import VertexMover
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -16,6 +17,7 @@ class GrowingSim(arcade.Window):
 
     timestep = None
     circulator = None
+    vertex_mover = None
     divider = None
     root_midpointx = None
     cell_list = None
@@ -34,11 +36,18 @@ class GrowingSim(arcade.Window):
 
     def get_tick(self) -> int:
         return self.tick
+    
+    def get_circulator(self) -> Circulator:
+        return self.circulator
+    
+    def get_vertex_mover(self) -> VertexMover:
+        return self.vertex_mover
 
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
         self.tick = 0
-        self.circulator = circulator.Circulator()
+        self.circulator = Circulator()
+        self.vertex_mover = VertexMover()
         self.divider = divider.Divider()
         self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
@@ -72,6 +81,7 @@ class GrowingSim(arcade.Window):
         self.tick += 1
         if self.tick % 1 == 0:
             self.cell_list.update()
+        self.vertex_mover.update()
 
 
 def main(timestep, root_midpoint_x):
