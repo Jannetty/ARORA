@@ -26,6 +26,7 @@ class VertexMover():
         self.propogate_deltas()
         self.execute_vertex_movement()
         self.cell_deltas.clear()
+        self.vertex_deltas.clear()
 
     def propogate_deltas(self) -> None:
         for cell in self.cell_deltas:
@@ -49,7 +50,6 @@ class VertexMover():
         for b_neighbor in cell.get_b_neighbors():
             self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta)
             self.recursively_propogate_deltas_to_b_neighbors(b_neighbor, delta)
-
 
     def execute_vertex_movement(self) -> None:
         for vertex in self.vertex_deltas:
