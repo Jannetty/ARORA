@@ -26,7 +26,7 @@ class BaseCirculateModule:
         # set medial to either "left" or "right" and lateral to the opposite 
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
         # to self.cell.sim.root_midpointx
-        self.medial, self.lateral = self.determine_left_right()
+        # self.medial, self.lateral = self.determine_left_right()
 
         self.init_auxin = init_vals.get("auxin")
         self.auxin = self.init_auxin
@@ -110,14 +110,15 @@ class BaseCirculateModule:
 
     # Helper functions
     def determine_left_right(self) -> tuple:
-        cell_mid = self.cell.QuadPerimeter.get_midpointx()
-        root_mid = self.cell.sim.root_midpointx()
-        if cell_mid < root_mid:
-            return ("right", "left")
-        elif cell_mid == root_mid:
-            return ("middle", "middle")
-        else:
-            return ("left", "right")
+        # cell_mid = self.cell.quad_perimeter.get_midpointx()
+        # root_mid = self.cell.sim.root_midpointx()
+        # if cell_mid < root_mid:
+        #     return ("right", "left")
+        # elif cell_mid == root_mid:
+        #     return ("middle", "middle")
+        # else:
+        #     return ("left", "right")
+        pass
 
     def calculate_auxin(self, timestep: float, area: float) -> float:
         """
