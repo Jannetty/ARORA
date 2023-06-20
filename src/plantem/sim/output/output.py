@@ -3,11 +3,17 @@ from src.plantem.sim.simulation.sim import GrowingSim
 
 
 class Output():
+    """
+    Summary of simulation output
+    """
     def __init__(self, sim: GrowingSim, filename: str):
         self.sim = sim
         self.filename = filename
 
     def output_cells(self) -> None:
+        """
+        Generate output spreadsheet for simulation
+        """
         # generates spreadsheet under name filename with contents of all cells
         # gets cell_list from sim
             # - for cell in self.sim.cell_list:
@@ -36,12 +42,21 @@ class Output():
 
     # Helper functions
     def get_auxin(self, cell) -> float:
+        """
+        Get auxion concentration for each cell
+        """
         return cell.circulator.get_auxin()
 
     def get_location(self, cell) -> list:
+        """
+        Get location (x, y corners) for each cell
+        """
         return cell.quad_perimeter.get_corners()
 
     def get_circ_contents(self, summary: dict, cell) -> dict:
+        """
+        Get circulation results for each cell
+        """
         summary["ARR"] = cell.circulator.get_arr()
         summary["AUX/LAX"] = cell.circulator.get_aux_lax()
         summary["PIN_apical"] = cell.circulator.get_apical_pin()
@@ -51,4 +66,7 @@ class Output():
         return summary
 
     def get_division_number(self, cell) -> float:
+        """
+        Get number of cell divisions
+        """
         pass
