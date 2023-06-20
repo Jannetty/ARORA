@@ -6,7 +6,7 @@ from src.plantem.loc.vertex.vertex import Vertex
 
 class GrowingCell(arcade.Sprite):
     quad_perimeter = None
-    circulator = None
+    circ_mod = None
     sim = None
     a_neighbors = None
     b_neighbors = None
@@ -17,7 +17,7 @@ class GrowingCell(arcade.Sprite):
         super().__init__()
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        circulator = BaseCirculateModule(self, init_aux)
+        self.circ_mod = BaseCirculateModule(self, init_aux)
         self.sim = simulation
         self.a_neighbors = []
         self.b_neighbors = []
@@ -108,6 +108,9 @@ class GrowingCell(arcade.Sprite):
 
     def get_area(self) -> float:
         return self.quad_perimeter.get_area()
+    
+    def get_quad_perimeter(self) -> QuadPerimeter:
+        return self.quad_perimeter
 
     def draw(self) -> None:
         arcade.draw_polygon_filled(
@@ -118,8 +121,10 @@ class GrowingCell(arcade.Sprite):
         )
 
     def grow(self) -> None:
-        self.quad_perimeter.get_bottom_left().set_y(self.quad_perimeter.get_bottom_left().get_y() - 0.3)
-        self.quad_perimeter.get_bottom_right().set_y(self.quad_perimeter.get_bottom_right().get_y() - 0.3)
+        self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
+
+    def calculate_delta(self) -> float:
+        return -.1
 
     def update(self) -> None:
         self.grow()
