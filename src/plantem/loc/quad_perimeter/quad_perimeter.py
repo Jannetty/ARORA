@@ -70,7 +70,7 @@ class QuadPerimeter:
         ]
 
     def set_corners(self, vertex_list: list) -> None:
-        self.perimeter_vs = vertex_list
+        self._perimeter_vs = vertex_list
         self.__assign_corners()
 
     def get_top_left(self) -> Vertex:
@@ -86,8 +86,8 @@ class QuadPerimeter:
         return self._bottom_right
 
     def get_area(self) -> float:
-        width = self.top_right.get_x() - self.top_left.get_x()
-        height = self.top_left.get_y() - self.bottom_left.get_y()
+        width = self._top_right.get_x() - self._top_left.get_x()
+        height = self._top_left.get_y() - self._bottom_left.get_y()
         return width * height
 
 
