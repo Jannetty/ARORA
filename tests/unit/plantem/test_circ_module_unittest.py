@@ -3,6 +3,11 @@ import unittest
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module import BaseCirculateModule
 from src.plantem.agent.cell import GrowingCell
+from src.plantem.sim.simulation.sim import GrowingSim
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Starting Template"
 
 
 class BaseCirculateModuleTests(unittest.TestCase):
@@ -24,7 +29,9 @@ class BaseCirculateModuleTests(unittest.TestCase):
                  "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
 
     def test_calculate_auxin(self):
-        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+        sim = None
+        cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
+        circ_module = BaseCirculateModule(cell, self.init_vals)
         timestep = 1
         area = 100
         expected_auxin = -0.295
@@ -47,7 +54,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
         found_aux_lax = circ_module.calculate_aux_lax(timestep, area)
         self.assertAlmostEqual(expected_aux_lax, found_aux_lax, places=5)
     
-    def test_calcualte_pin(self):
+    def test_calculate_pin(self):
         circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
         timestep = 1
         area = 100
@@ -56,7 +63,10 @@ class BaseCirculateModuleTests(unittest.TestCase):
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
     def test_calculate_neighbor_pin(self):
-        circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400)
+        cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
+        circ_module = BaseCirculateModule(cell, self.init_vals)
+        sim.setup()
         timestep = 1
         area = 100
         expected_neighbor_PIN = -0.075949
@@ -64,11 +74,12 @@ class BaseCirculateModuleTests(unittest.TestCase):
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
     
     def test_calculate_memfrac(self):
-        sim  = None
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400)
         cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
         circ_module = BaseCirculateModule(cell, self.init_vals)
         # test apical nerighbor
         neighbora = GrowingCell(sim, [Vertex(100.0,300.0), Vertex(100.0,600.0), Vertex(300.0,600.0), Vertex(300.0,300.0)], self.init_vals)
+        sim.setup()
         found_memfrac = circ_module.calculate_memfrac(neighbora, "a")
         expected_memfrac = 0.25
         self.assertEqual(expected_memfrac, found_memfrac)
@@ -76,7 +87,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
     def test_get_neighbor_auxin(self):
         timestep = 1
         area = 100
-        sim  = None
+        sim = None
         cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
         circ_module = BaseCirculateModule(cell, self.init_vals)
         # test apical neighbor

@@ -17,8 +17,11 @@ class GrowingCell(arcade.Sprite):
         super().__init__()
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        circulator = BaseCirculateModule(self, init_vals)
-        sim = simulation
+        self.circulator = BaseCirculateModule(self, init_vals)
+        self.sim = simulation
+
+    def get_quad_perimeter(self):
+        return self.quad_perimeter
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
         neighbor_location = self.find_new_neighbor_relative_location(cell)

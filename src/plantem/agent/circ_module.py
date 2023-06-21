@@ -1,4 +1,5 @@
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
+# from src.plantem.agent.cell import GrowingCell
 
 
 class BaseCirculateModule:
@@ -14,19 +15,14 @@ class BaseCirculateModule:
     pinl = None
     pinm = None
     cell = None
-    lateral = None
-    medial = None
+    left = None
+    right = None
 
     def __init__(self, cell, init_vals: dict):
         """
         initialize all values
         """
         self.cell = cell
-
-        # set medial to either "left" or "right" and lateral to the opposite 
-        # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
-        # to self.cell.sim.root_midpointx
-        # self.medial, self.lateral = self.determine_left_right()
 
         self.init_auxin = init_vals.get("auxin")
         self.auxin = self.init_auxin
@@ -56,6 +52,13 @@ class BaseCirculateModule:
 
         self.ks = init_vals.get("ks")
         self.kd = init_vals.get("kd")
+
+        self.cell_mid = 0
+        
+        # set medial to either "left" or "right" and lateral to the opposite 
+        # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
+        # to self.cell.sim.root_midpointx
+        self.left, self.right = self.determine_left_right()
 
         self.timestep = 1
         self.area = 100
@@ -87,10 +90,10 @@ class BaseCirculateModule:
         self.pinm = self.calculate_neighbor_pin(self.init_pinm, self.timestep, self.area)
 
         # find neighbors
-        neighborsa = self.cell.neighbora
-        neighborsb = self.cell.neighborb
-        neighborsl = self.cell.neighborl
-        neighborsm = self.cell.neighborm
+        neighborsa = self.cell.get_a_neighbors()
+        neighborsb = self.cell.get_b_neighbors()
+        neighborsl = self.cell.get_l_neighbors()
+        neighborsm = self.cell.get_m_neighbors()
 
         # change in auxin relative to current cell
         auxina = self.get_neighbor_auxin(self.init_pina, neighborsa, "a", self.timestep, self.area)
@@ -110,15 +113,14 @@ class BaseCirculateModule:
 
     # Helper functions
     def determine_left_right(self) -> tuple:
-        # cell_mid = self.cell.quad_perimeter.get_midpointx()
-        # root_mid = self.cell.sim.root_midpointx()
-        # if cell_mid < root_mid:
-        #     return ("right", "left")
-        # elif cell_mid == root_mid:
-        #     return ("middle", "middle")
-        # else:
-        #     return ("left", "right")
-        pass
+        cell_mid = self.cell_mid
+        root_mid = self.cell.sim.root_midpointx()
+        if cell_mid < root_mid:
+            return ("lateral", "medial")
+        elif cell_mid == root_mid:
+            return ("lateral", "lateral")
+        else:
+            return ("medial", "lateral")
 
     def calculate_auxin(self, timestep: float, area: float) -> float:
         """
@@ -246,13 +248,13 @@ class BaseCirculateModule:
     # write getters for all attributes including all pins AND left and right pin
     def get_left_pin(self) -> float:
         # write logic to determine whether to return pinm or pinl
-        if self.medial == "left":
+        if self.left == "medial":
             return self.pinm
         else:
             return self.pinl
 
     def get_right_pin(self) -> float:
-        if self.medial == "right":
+        if self.left == "medial":
             return self.pinm
         else:
             return self.pinl
