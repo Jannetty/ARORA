@@ -58,7 +58,7 @@ class BaseCirculateModule:
         # set medial to either "left" or "right" and lateral to the opposite 
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
         # to self.cell.sim.root_midpointx
-        self.left, self.right = self.determine_left_right()
+        # self.left, self.right = self.determine_left_right()
 
         self.timestep = 1
         self.area = 100
