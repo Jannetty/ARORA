@@ -111,8 +111,11 @@ class BaseCirculateModule:
 
     # Helper functions
     def determine_left_right(self) -> tuple:
-        cell_mid = self.cell.quad_perimeter.get_midpointx()
-        root_mid = self.cell.sim.root_midpointx()
+        cell = self.cell
+        qp = cell.get_quad_perimeter()
+        cell_mid = qp.get_midpointx()
+        sim = cell.get_sim()
+        root_mid = sim.get_root_midpointx()
         if cell_mid < root_mid:
             return ("lateral", "medial")
         elif cell_mid == root_mid:

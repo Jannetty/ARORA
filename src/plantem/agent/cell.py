@@ -15,9 +15,9 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals):
         super().__init__()
+        self.sim = simulation
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        self.sim = simulation
         self.circulator = BaseCirculateModule(self, init_vals)
 
     def get_quad_perimeter(self):
@@ -40,6 +40,9 @@ class GrowingCell(arcade.Sprite):
 
     def get_l_neighbors(self):
         return self.l_neighbors
+    
+    def get_sim(self):
+        return self.sim
 
     def remove_neighbor(self, cell: "GrowingCell") -> None:
         if isinstance(cell, self.a_neighbors):

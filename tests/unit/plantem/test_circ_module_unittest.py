@@ -154,7 +154,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
         # self.assertEqual(expected_dict, found_dict)
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400)
         curr_cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModule(curr_cell, self.init_vals)
         neighbora = GrowingCell(sim, [Vertex(100.0,300.0), Vertex(100.0,600.0), Vertex(300.0,600.0), Vertex(300.0,300.0)], self.init_vals)
         neighborm = GrowingCell(sim, [Vertex(300.0,100.0), Vertex(300.0,300.0), Vertex(600.0,300.0), Vertex(600.0,100.0)], self.init_vals)
         sim.setup()
