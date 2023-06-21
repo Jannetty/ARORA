@@ -34,6 +34,9 @@ class GrowingSim(arcade.Window):
 
     def get_tick(self) -> int:
         return self.tick
+    
+    def get_root_midpointx(self):
+        return self.root_midpointx
 
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
@@ -42,6 +45,9 @@ class GrowingSim(arcade.Window):
         self.divider = divider.Divider()
         self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+        init_vals = {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
+                 "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
+                 "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
         this_cell = cell.GrowingCell(
             self,
             [
@@ -50,9 +56,7 @@ class GrowingSim(arcade.Window):
                 Vertex(300.0, 300.0),
                 Vertex(300.0, 100.0),
             ],
-            {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
-             "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
-             "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015},
+            init_vals
         )
         self.cell_list.append(this_cell)
 
