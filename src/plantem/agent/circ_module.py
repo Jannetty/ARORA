@@ -53,12 +53,10 @@ class BaseCirculateModule:
         self.ks = init_vals.get("ks")
         self.kd = init_vals.get("kd")
 
-        self.cell_mid = 0
-        
         # set medial to either "left" or "right" and lateral to the opposite 
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
         # to self.cell.sim.root_midpointx
-        # self.left, self.right = self.determine_left_right()
+        self.left, self.right = self.determine_left_right()
 
         self.timestep = 1
         self.area = 100
@@ -113,7 +111,7 @@ class BaseCirculateModule:
 
     # Helper functions
     def determine_left_right(self) -> tuple:
-        cell_mid = self.cell_mid
+        cell_mid = self.cell.quad_perimeter.get_midpointx()
         root_mid = self.cell.sim.root_midpointx()
         if cell_mid < root_mid:
             return ("lateral", "medial")

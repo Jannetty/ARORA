@@ -17,8 +17,8 @@ class GrowingCell(arcade.Sprite):
         super().__init__()
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        self.circulator = BaseCirculateModule(self, init_vals)
         self.sim = simulation
+        self.circulator = BaseCirculateModule(self, init_vals)
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
