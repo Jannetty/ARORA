@@ -30,7 +30,8 @@ class VertexMover():
         self.vertex_deltas.clear()
 
     def get_top_row(self) -> list:
-        
+        # THIS DOES NOT DO WHAT THE FUNCTION SAYS IT DOES
+        return [cell for cell in self.cell_deltas]
 
     def propogate_deltas(self, top_row : list) -> None:
         for cell in top_row:
