@@ -15,6 +15,10 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals):
         super().__init__()
+        self.a_neighbors = []
+        self.b_neighbors = []
+        self.l_neighbors = []
+        self.m_neighbors = []
         self.sim = simulation
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
