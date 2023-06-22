@@ -27,6 +27,17 @@ class BaseCirculateModuleTests(unittest.TestCase):
     init_vals = {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
                  "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
                  "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
+    
+    def test_determine_left_right(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400)
+        cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
+        circ_module = BaseCirculateModule(cell, self.init_vals)
+        sim.setup()
+        found_left, found_right = circ_module.determine_left_right()
+        expected_left = "lateral"
+        expected_right = "medial"
+        self.assertEqual(expected_left, found_left)
+        self.assertEqual(expected_right, found_right)
 
     def test_calculate_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400)

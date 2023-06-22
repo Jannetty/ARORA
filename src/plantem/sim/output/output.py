@@ -51,7 +51,7 @@ class Output():
         """
         Get location (x, y corners) for each cell
         """
-        return cell.quad_perimeter.get_corners_xy()
+        return cell.quad_perimeter.get_corners_for_disp()
 
     def get_circ_contents(self, summary: dict, cell) -> dict:
         """

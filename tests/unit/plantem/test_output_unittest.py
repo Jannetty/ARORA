@@ -13,7 +13,7 @@ init_vals = {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
              "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
 sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400)
 cell = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], init_vals)
-# sim.setup()
+sim.setup()
 CELL_LIST = [cell]
 
 
@@ -27,10 +27,9 @@ class OutputTests(unittest.TestCase):
 
     def test_get_location(self):
         output = Output(sim, "ouput.csv")
-        expected = [[100, 100], [100, 300], [300, 300], [300, 100]]
-        expected1 = cell.quad_perimeter.get_corners_xy()
+        expected = [[300.0, 100.0], [100.0, 100.0], [100.0, 300.0], [300.0, 300.0]]
         found = output.get_location(cell)
-        self.assertEqual(expected, expected1)
+        self.assertEqual(expected, found)
 
     def test_get_circ_contents(self):
         output = Output(sim, "ouput.csv")
