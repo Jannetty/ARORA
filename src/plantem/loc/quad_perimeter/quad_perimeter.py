@@ -60,6 +60,7 @@ class QuadPerimeter:
         corners = []
         for vertex in self._perimeter_vs:
             corners.append(vertex.get_xy())
+        return corners
 
     def get_corners_for_disp(self) -> list:
         return [
