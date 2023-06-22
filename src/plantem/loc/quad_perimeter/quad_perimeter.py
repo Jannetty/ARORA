@@ -56,11 +56,11 @@ class QuadPerimeter:
         bottom_right = [v for v in bottom_row if v in right_col]
         self._bottom_right = bottom_right[0]
 
-    def get_corners_xy(self) -> list:
-        corners = []
-        for vertex in self._perimeter_vs:
-            corners.append(vertex.get_xy())
-        return corners
+    # def get_corners_xy(self) -> list:
+    #     corners = []
+    #     for vertex in self._perimeter_vs:
+    #         corners.append(vertex.get_xy())
+    #     return corners
 
     def get_corners_for_disp(self) -> list:
         return [
