@@ -255,7 +255,7 @@ class BaseCirculateModule:
             return self.pinl
 
     def get_right_pin(self) -> float:
-        if self.left == "medial":
+        if self.right == "medial":
             return self.pinm
         else:
             return self.pinl
