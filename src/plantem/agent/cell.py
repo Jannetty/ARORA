@@ -72,7 +72,7 @@ class GrowingCell(arcade.Sprite):
         elif self.quad_perimeter.get_midpointx() == sim_midpointx:
             # cell is over midpoint
             return "l"
-
+        
 
     def get_a_neighbors(self):
         return self.a_neighbors
