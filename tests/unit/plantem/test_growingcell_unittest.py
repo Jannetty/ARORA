@@ -9,6 +9,9 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
 class TestGrowingCell(unittest.TestCase):
+    init_vals = {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
+                 "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
+                 "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
     def test_get_area(self):
         timestep = 1
         root_midpoint_x = 400
@@ -17,7 +20,7 @@ class TestGrowingCell(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], 0)
+        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
         self.assertEqual(40000, cell1.get_area())
 
     def test_add_neighbor(self):
@@ -28,19 +31,19 @@ class TestGrowingCell(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], 0)
+        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], 0)
+        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals)
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], 0)
+        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals)
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], 0)
+        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals)
         v11 = Vertex(500, 100)
         v12 = Vertex(500, 300)
-        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], 0)
+        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], self.init_vals)
         cell1.add_neighbor(a_neighbor)
         cell1.add_neighbor(l_neighbor)
         cell1.add_neighbor(b_neighbor)
@@ -60,19 +63,19 @@ class TestGrowingCell(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], 0)
+        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], 0)
+        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals)
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], 0)
+        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals)
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], 0)
+        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals)
         v11 = Vertex(500, 100)
         v12 = Vertex(500, 300)
-        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], 0)
+        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], self.init_vals)
         cell1.add_neighbor(a_neighbor)
         cell1.add_neighbor(l_neighbor)
         cell1.add_neighbor(b_neighbor)
