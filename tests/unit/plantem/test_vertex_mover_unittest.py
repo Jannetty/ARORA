@@ -9,11 +9,14 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
+
 class TestVertexMover(unittest.TestCase):
     def test_add_cell_delta_val(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -26,7 +29,9 @@ class TestVertexMover(unittest.TestCase):
     def test_add_cell_b_vertices_to_vertex_deltas(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -40,7 +45,9 @@ class TestVertexMover(unittest.TestCase):
     def test_propogate_deltas(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -75,11 +82,13 @@ class TestVertexMover(unittest.TestCase):
         self.assertEqual(1.5, simulation.get_vertex_mover().get_vertex_delta_val(v4))
         self.assertEqual(1.5, simulation.get_vertex_mover().get_vertex_delta_val(v9))
         self.assertEqual(1.5, simulation.get_vertex_mover().get_vertex_delta_val(v10))
-    
+
     def test_execute_vertex_movement(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -108,7 +117,9 @@ class TestVertexMover(unittest.TestCase):
     def test_update(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)

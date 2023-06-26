@@ -21,12 +21,15 @@ class GrowingSim(arcade.Window):
     divider = None
     root_midpointx = None
     cell_list = None
+    vis = None
 
-    def __init__(self, width, height, title, timestep, root_midpoint_x):
-        super().__init__(width, height, title)
-        self.timestep = timestep
-        arcade.set_background_color(color=[250, 250, 250])
+    def __init__(self, width, height, title, timestep, root_midpoint_x, vis:bool):
+        if vis:
+            super().__init__(width, height, title)
+            arcade.set_background_color(color=[250, 250, 250])
         self.root_midpointx = root_midpoint_x
+        self.timestep = timestep
+        self.vis = vis
 
     def get_root_midpointx(self):
         return self.root_midpointx
@@ -36,10 +39,10 @@ class GrowingSim(arcade.Window):
 
     def get_tick(self) -> int:
         return self.tick
-    
+
     def get_circulator(self) -> Circulator:
         return self.circulator
-    
+
     def get_vertex_mover(self) -> VertexMover:
         return self.vertex_mover
 
@@ -49,11 +52,24 @@ class GrowingSim(arcade.Window):
         self.circulator = Circulator()
         self.vertex_mover = VertexMover()
         self.divider = divider.Divider()
-        self.camera_sprites = arcade.Camera(self.width, self.height)
+        if self.vis:
+            self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
-        init_vals = {"auxin": 2, "arr": 3, "aux_lax": 3, "pina": 0.5, "pinb": 0.7,
-                 "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
-                 "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
+        init_vals = {
+            "auxin": 2,
+            "arr": 3,
+            "aux_lax": 3,
+            "pina": 0.5,
+            "pinb": 0.7,
+            "pinl": 0.4,
+            "pinm": 0.2,
+            "k_arr_arr": 1,
+            "k_auxin_auxlax": 1,
+            "k_auxin_pin": 1,
+            "k_arr_pin": 1,
+            "ks": 0.005,
+            "kd": 0.0015,
+        }
         this_cell = cell.GrowingCell(
             self,
             [
@@ -62,7 +78,7 @@ class GrowingSim(arcade.Window):
                 Vertex(300.0, 300.0),
                 Vertex(300.0, 100.0),
             ],
-            init_vals
+            init_vals,
         )
         self.cell_list.append(this_cell)
 
@@ -70,10 +86,11 @@ class GrowingSim(arcade.Window):
         """
         Render the screen.
         """
-        self.clear()
-        # Call draw() on all your sprite lists below
-        for cell in self.cell_list:
-            cell.draw()
+        if self.vis:
+            self.clear()
+            # Call draw() on all your sprite lists below
+            for cell in self.cell_list:
+                cell.draw()
 
     def on_update(self, delta_time):
         """
@@ -87,8 +104,8 @@ class GrowingSim(arcade.Window):
         self.vertex_mover.update()
 
 
-def main(timestep, root_midpoint_x):
+def main(timestep, root_midpoint_x, vis):
     """Main function"""
-    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis)
     simulation.setup()
     arcade.run()

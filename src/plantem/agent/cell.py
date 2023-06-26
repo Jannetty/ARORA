@@ -48,13 +48,13 @@ class GrowingCell(arcade.Sprite):
             return self.find_apical_or_basal(cell)
         else:
             return self.find_lateral_or_medial(cell)
-    
+
     def find_apical_or_basal(self, cell: "GrowingCell") -> str:
         if self.quad_perimeter.get_top_left().get_y() < cell.quad_perimeter.get_top_left().get_y():
             return "a"
         else:
             return "b"
-        
+
     def find_lateral_or_medial(self, cell: "GrowingCell") -> str:
         sim_midpointx = self.sim.get_root_midpointx()
         if self.quad_perimeter.get_midpointx() < sim_midpointx:
@@ -73,7 +73,6 @@ class GrowingCell(arcade.Sprite):
             # cell is over midpoint
             return "l"
 
-
     def get_a_neighbors(self):
         return self.a_neighbors
 
@@ -85,7 +84,7 @@ class GrowingCell(arcade.Sprite):
 
     def get_l_neighbors(self):
         return self.l_neighbors
-    
+
     def get_sim(self):
         return self.sim
 
@@ -114,7 +113,7 @@ class GrowingCell(arcade.Sprite):
 
     def get_area(self) -> float:
         return self.quad_perimeter.get_area()
-    
+
     def get_quad_perimeter(self) -> QuadPerimeter:
         return self.quad_perimeter
 
@@ -130,7 +129,7 @@ class GrowingCell(arcade.Sprite):
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def calculate_delta(self) -> float:
-        return -.1
+        return -0.1
 
     def update(self) -> None:
         self.grow()

@@ -147,10 +147,10 @@ class TestQuadPerimeter(unittest.TestCase):
         self.assertEqual(v4, qp_1.get_bottom_right())
 
     def test_qp_set_corners(self):
-        v01 = Vertex(1,1)
-        v02 = Vertex(1,3)
-        v03 = Vertex(3,3)
-        v04 = Vertex(3,1)
+        v01 = Vertex(1, 1)
+        v02 = Vertex(1, 3)
+        v03 = Vertex(3, 3)
+        v04 = Vertex(3, 1)
         qp1 = QuadPerimeter([v01, v02, v03, v04])
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
