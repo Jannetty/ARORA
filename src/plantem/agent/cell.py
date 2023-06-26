@@ -1,5 +1,5 @@
 import arcade
-from src.plantem.agent.circ_module import BaseCirculateModule
+from src.plantem.agent.circ_module_disc import BaseCirculateModule
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
 

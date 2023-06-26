@@ -1,7 +1,7 @@
 import unittest
 
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.circ_module import BaseCirculateModule
+from src.plantem.agent.circ_module_disc import BaseCirculateModule
 from src.plantem.agent.cell import GrowingCell
 from src.plantem.sim.simulation.sim import GrowingSim
 
