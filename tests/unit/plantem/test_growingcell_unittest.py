@@ -11,8 +11,7 @@ SCREEN_TITLE = "Starting Template"
 
 
 class TestGrowingCell(unittest.TestCase):
-
-    init_vals = {
+        init_vals = {
             "auxin": 2,
             "arr": 3,
             "aux_lax": 3,
@@ -27,7 +26,7 @@ class TestGrowingCell(unittest.TestCase):
             "ks": 0.005,
             "kd": 0.0015,
         }
-
+    
     def test_get_area(self):
         timestep = 1
         root_midpoint_x = 400

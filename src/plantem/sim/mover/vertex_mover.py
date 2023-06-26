@@ -5,7 +5,7 @@ from src.plantem.loc.vertex.vertex import Vertex
 
 class VertexMover:
     def __init__(self) -> None:
-        # dictionary, key is cell, value is amount bottom vertices should move downward
+        # dictionary, key is cell, value is amount bottom vertices should move
         self.cell_deltas = {}
         # dictionary, key is vertex, value is amount vertex should move total
         self.vertex_deltas = {}
@@ -24,14 +24,31 @@ class VertexMover:
 
     def update(self) -> None:
         top_row = self.get_top_row()
-        self.propogate_deltas(top_row)
+        sorted_top_row = self.sort_top_row(top_row)
+        self.propogate_deltas(sorted_top_row)
         self.execute_vertex_movement()
         self.cell_deltas.clear()
         self.vertex_deltas.clear()
 
-    def get_top_row(self) -> list:
-        # THIS DOES NOT DO WHAT THE FUNCTION SAYS IT DOES
-        return [cell for cell in self.cell_deltas]
+    def get_top_row(self) -> list: # NEED TO TEST
+        top_ys = []
+        for cell in self.cell_deltas:
+            top_y = cell.get_quad_perimeter().get_top_left().get_y()
+            top_ys.append(top_y)
+        max_top_y = max(top_ys)
+        top_row = []
+        for cell in self.cell_deltas:
+            top_y = cell.get_quad_perimeter().get_top_left().get_y()
+            if top_y == max_top_y:
+                top_row.append(cell)
+        return top_row
+    
+    def sort_top_row(self, top_row : list) -> list: # NEED TO TEST
+        left_xs = []
+        for cell in top_row:
+            left_xs.append(cell.get_quad_perimeter().get_top_left().get_x())
+        return [cell for _, cell in sorted(zip(left_xs, top_row))]
+
 
     def propogate_deltas(self, top_row: list) -> None:
         for cell in top_row:
@@ -53,7 +70,10 @@ class VertexMover:
 
     def recursively_propogate_deltas_to_b_neighbors(self, cell: GrowingCell, delta: float) -> None:
         for b_neighbor in cell.get_b_neighbors():
-            neighbor_delta = self.cell_deltas[b_neighbor]
+            if b_neighbor in self.cell_deltas:
+                neighbor_delta = self.cell_deltas[b_neighbor]
+            else:
+                neighbor_delta = 0
             self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta + neighbor_delta)
             self.recursively_propogate_deltas_to_b_neighbors(b_neighbor, delta + neighbor_delta)
 
