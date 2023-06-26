@@ -3,7 +3,7 @@ from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_c
 # from src.plantem.agent.cell import GrowingCell
 
 
-class BaseCirculateModule:
+class BaseCirculateModuleDisc:
     """
     Representation of auxin circulation
     """
