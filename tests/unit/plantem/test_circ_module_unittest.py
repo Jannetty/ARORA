@@ -1,7 +1,7 @@
 import unittest
 
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.circ_module_disc import BaseCirculateModule
+from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.agent.cell import GrowingCell
 from src.plantem.sim.simulation.sim import GrowingSim
 
@@ -52,7 +52,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         found_left, found_right = circ_module.determine_left_right()
         expected_left = "lateral"
@@ -72,7 +72,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
         area = 100
@@ -92,7 +92,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
         area = 100
@@ -112,7 +112,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
         area = 100
@@ -132,7 +132,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
         area = 100
@@ -152,7 +152,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
         area = 100
@@ -172,7 +172,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         # test apical nerighbor
         neighbora = GrowingCell(
             sim,
@@ -203,7 +203,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         # test apical neighbor
         neighbora = GrowingCell(
             sim,
@@ -238,7 +238,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         neighbora = GrowingCell(
             sim,
             [
@@ -267,7 +267,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(curr_cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(curr_cell, self.init_vals)
         sim.setup()
 
         cell_dict = {}
@@ -305,7 +305,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(curr_cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(curr_cell, self.init_vals)
         neighbora = GrowingCell(
             sim,
             [
@@ -349,7 +349,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             ],
             self.init_vals,
         )
-        circ_module = BaseCirculateModule(cell, self.init_vals)
+        circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         found = circ_module.get_auxin()
         expected = 2
