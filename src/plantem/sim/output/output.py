@@ -2,10 +2,11 @@ import csv
 from src.plantem.sim.simulation.sim import GrowingSim
 
 
-class Output():
+class Output:
     """
     Summary of simulation output
     """
+
     def __init__(self, sim: GrowingSim, filename: str):
         self.sim = sim
         self.filename = filename
@@ -16,12 +17,12 @@ class Output():
         """
         # generates spreadsheet under name filename with contents of all cells
         # gets cell_list from sim
-            # - for cell in self.sim.cell_list:
-                # gets contents of each cell including
-                    # - Auxin concentration
-                    # - Location (x,y of corners retrieved from vertex class)
-                    # - all circ contents (PINs in relation to left right instead of lateral/medial)
-                    # - number of cell divisions
+        # - for cell in self.sim.cell_list:
+        # gets contents of each cell including
+        # - Auxin concentration
+        # - Location (x,y of corners retrieved from vertex class)
+        # - all circ contents (PINs in relation to left right instead of lateral/medial)
+        # - number of cell divisions
         output = []
         cell_list = self.sim.cell_list
         for cell in cell_list:
@@ -35,7 +36,7 @@ class Output():
 
         # generate spreadsheet
         header = output[0].keys()
-        with open(self.filename, 'w', newline='') as file:
+        with open(self.filename, "w", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=header)
             writer.writeheader()
             writer.writerows(output)

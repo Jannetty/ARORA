@@ -1,4 +1,5 @@
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
+
 # from src.plantem.agent.cell import GrowingCell
 
 
@@ -53,8 +54,8 @@ class BaseCirculateModule:
         self.ks = init_vals.get("ks")
         self.kd = init_vals.get("kd")
 
-        # set medial to either "left" or "right" and lateral to the opposite 
-        # based on where self.cell.QuadPerimeter.get_midpointx() is in relation 
+        # set medial to either "left" or "right" and lateral to the opposite
+        # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
         self.left, self.right = self.determine_left_right()
 
@@ -173,13 +174,15 @@ class BaseCirculateModule:
         Calculate the fraction of total cell membrane that is in a defined direction
         """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
-        common_perimeter = get_len_perimeter_in_common(self.cell.quad_perimeter,
-                                                       neighbor.quad_perimeter, neighbor_direction)
+        common_perimeter = get_len_perimeter_in_common(
+            self.cell.quad_perimeter, neighbor.quad_perimeter, neighbor_direction
+        )
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def get_neighbor_auxin(self, init_pin: float, neighbors: list, direction: str, timestep: float,
-                           area: float) -> dict:
+    def get_neighbor_auxin(
+        self, init_pin: float, neighbors: list, direction: str, timestep: float, area: float
+    ) -> dict:
         """
         Calculate the auxin expression of neighbor cells in a defined direction
         """
@@ -239,10 +242,10 @@ class BaseCirculateModule:
 
     def get_basal_pin(self) -> float:
         return self.pinb
-    
+
     def get_lateral_pin(self) -> float:
         return self.pinl
-    
+
     def get_medial_pin(self) -> float:
         return self.pinm
 
