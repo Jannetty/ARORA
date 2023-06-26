@@ -11,20 +11,20 @@ SCREEN_TITLE = "Starting Template"
 
 
 class TestGrowingCell(unittest.TestCase):
-        init_vals = {
-            "auxin": 2,
-            "arr": 3,
-            "aux_lax": 3,
-            "pina": 0.5,
-            "pinb": 0.7,
-            "pinl": 0.4,
-            "pinm": 0.2,
-            "k_arr_arr": 1,
-            "k_auxin_auxlax": 1,
-            "k_auxin_pin": 1,
-            "k_arr_pin": 1,
-            "ks": 0.005,
-            "kd": 0.0015,
+    init_vals = {
+        "auxin": 2,
+        "arr": 3,
+        "aux_lax": 3,
+        "pina": 0.5,
+        "pinb": 0.7,
+        "pinl": 0.4,
+        "pinm": 0.2,
+        "k_arr_arr": 1,
+        "k_auxin_auxlax": 1,
+        "k_auxin_pin": 1,
+        "k_arr_pin": 1,
+        "ks": 0.005,
+        "kd": 0.0015,
         }
     
     def test_get_area(self):

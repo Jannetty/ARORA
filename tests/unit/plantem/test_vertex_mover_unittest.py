@@ -113,7 +113,7 @@ class TestVertexMover(unittest.TestCase):
     def test_get_top_row(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -151,7 +151,7 @@ class TestVertexMover(unittest.TestCase):
     def test_update(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -254,7 +254,7 @@ class TestVertexMover(unittest.TestCase):
     def test_update_threecol(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x)
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
