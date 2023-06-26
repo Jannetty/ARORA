@@ -130,7 +130,7 @@ class GrowingCell(arcade.Sprite):
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def calculate_delta(self) -> float:
-        return -.1
+        return -.5
 
     def update(self) -> None:
         self.grow()

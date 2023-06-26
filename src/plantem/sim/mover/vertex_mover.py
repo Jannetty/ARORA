@@ -5,7 +5,7 @@ from src.plantem.loc.vertex.vertex import Vertex
 class VertexMover():
 
     def __init__(self) -> None:
-        # dictionary, key is cell, value is amount bottom vertices should move downward
+        # dictionary, key is cell, value is amount bottom vertices should move
         self.cell_deltas = {}
         # dictionary, key is vertex, value is amount vertex should move total
         self.vertex_deltas = {}
