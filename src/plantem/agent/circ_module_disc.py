@@ -10,7 +10,7 @@ class BaseCirculateModuleDisc:
 
     auxin = None
     arr = None
-    aux_lax = None
+    al = None
     pina = None
     pinb = None
     pinl = None
@@ -31,8 +31,8 @@ class BaseCirculateModuleDisc:
         self.init_arr = init_vals.get("arr")
         self.arr = self.init_arr
 
-        self.init_aux_lax = init_vals.get("aux_lax")
-        self.aux_lax = self.init_aux_lax
+        self.init_al = init_vals.get("al")
+        self.al = self.init_al
 
         self.init_pina = init_vals.get("pina")
         self.pina = self.init_pina
@@ -82,7 +82,7 @@ class BaseCirculateModuleDisc:
         # base calculations
         self.auxin = self.calculate_auxin(self.timestep, self.area)
         self.arr = self.calculate_arr(self.timestep, self.area)
-        self.aux_lax = self.calculate_aux_lax(self.timestep, self.area)
+        self.al = self.calculate_aux_lax(self.timestep, self.area)
         self.pina = self.calculate_neighbor_pin(self.init_pina, self.timestep, self.area)
         self.pinb = self.calculate_neighbor_pin(self.init_pinb, self.timestep, self.area)
         self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, self.area)
@@ -146,7 +146,8 @@ class BaseCirculateModuleDisc:
         """
         auxin = self.calculate_auxin(timestep, area)
         aux_lax = (
-            self.ks * (auxin / (auxin + self.k_auxin_auxlax)) - self.kd * self.init_aux_lax * area
+            self.ks * (auxin / (auxin + self.k_auxin_auxlax)) - self.kd *
+            self.init_al * area
         ) * timestep
         return aux_lax
 
@@ -235,7 +236,7 @@ class BaseCirculateModuleDisc:
         return self.arr
 
     def get_aux_lax(self) -> float:
-        return self.aux_lax
+        return self.al
 
     def get_apical_pin(self) -> float:
         return self.pina
