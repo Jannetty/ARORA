@@ -14,7 +14,7 @@ class TestGrowingCell(unittest.TestCase):
     init_vals = {
         "auxin": 2,
         "arr": 3,
-        "aux_lax": 3,
+        "al": 3,
         "pina": 0.5,
         "pinb": 0.7,
         "pinl": 0.4,
