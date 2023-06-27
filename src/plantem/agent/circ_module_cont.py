@@ -116,6 +116,7 @@ class BaseCirculateModuleCont:
         self.pinm = soln[:, 7]
 
     def update_auxin(self) -> dict:
+        self.cell.sim.get_circulator.add_delta()
         curr_cell = self.cell
         cell_dict = curr_cell.sim.circulator.delta_auxins
 
