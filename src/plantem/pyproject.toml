@@ -6,7 +6,7 @@ authors = ["Jannetty <jannetty@uw.edu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.9"
 arcade = "^2.6.17"
 
 
