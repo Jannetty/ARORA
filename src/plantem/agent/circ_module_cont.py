@@ -60,27 +60,11 @@ class BaseCirculateModuleCont:
         # to self.cell.sim.root_midpointx
         self.left, self.right = self.determine_left_right()
 
-    def determine_left_right(self) -> tuple:
-        cell = self.cell
-        qp = cell.get_quad_perimeter()
-        cell_mid = qp.get_midpointx()
-        sim = cell.get_sim()
-        root_mid = sim.get_root_midpointx()
-        if cell_mid < root_mid:
-            return ("lateral", "medial")
-        elif cell_mid == root_mid:
-            return ("lateral", "lateral")
-        else:
-            return ("medial", "lateral")
-
     def f(self, y, t) -> list:
         area = self.cell.quad_perimeter.get_area()
 
         # find neighbors
-        neighborsa = self.cell.get_a_neighbors()
-        neighborsb = self.cell.get_b_neighbors()
-        neighborsl = self.cell.get_l_neighbors()
-        neighborsm = self.cell.get_m_neighbors()
+        neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
         # setup species
         auxini = y[0]
@@ -102,25 +86,73 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri, area)
         # neighbor pin
-        f4 = self.calculate_neighbor_pin(auxini, arri, pini, pinai, area)
-        f5 = self.calculate_neighbor_pin(auxini, arri, pini, pinbi, area)
-        f6 = self.calculate_neighbor_pin(auxini, arri, pini, pinli, area)
-        f7 = self.calculate_neighbor_pin(auxini, arri, pini, pinmi, area)
+        f4 = self.calculate_neighbor_pin(pini, pinai, area)
+        f5 = self.calculate_neighbor_pin(pini, pinbi, area)
+        f6 = self.calculate_neighbor_pin(pini, pinli, area)
+        f7 = self.calculate_neighbor_pin(pini, pinmi, area)
         # neighbor auxin
-        f8 = self.calcualte_neighbor_auxin(ali, pinai, neighborsa, "a", area)
-        f9 = self.calcualte_neighbor_auxin(ali, pinbi, neighborsb, "b", area)
-        f10 = self.calcualte_neighbor_auxin(ali, pinli, neighborsl, "l", area)
-        f11 = self.calcualte_neighbor_auxin(ali, pinmi, neighborsm, "m", area)
+        f8 = sum(self.get_neighbor_auxin(ali, pinai, neighborsa, "a", area).values())
+        f9 = sum(self.get_neighbor_auxin(ali, pinbi, neighborsb, "b", area).values())
+        f10 = sum(self.get_neighbor_auxin(ali, pinli, neighborsl, "l", area).values())
+        f11 = sum(self.get_neighbor_auxin(ali, pinmi, neighborsm, "m", area).values())
 
         return [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11]
 
     def solve_equations(self):
-        y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
+        y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb,
+              self.pinl, self.pinm]
         t = np.array[0, 1]
         soln = odeint(self.f, y0, t)
         return soln
 
+    def update_circ_contents(self) -> None:
+        soln = self.solve_equations()
+        self.arr = soln[:, 1]
+        self.al = soln[:, 2]
+        self.pin = soln[:, 3]
+        self.pina = soln[:, 4]
+        self.pinb = soln[:, 5]
+        self.pinl = soln[:, 6]
+        self.pinm = soln[:, 7]
+
+    def update_auxin(self) -> dict:
+        curr_cell = self.cell
+        cell_dict = curr_cell.sim.circulator.delta_auxins
+
+        neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
+        area = self.cell.quad_perimeter.get_area()
+
+        auxina = self.get_neighbor_auxin(self.pina, self.pin, neighborsa, "a", area)
+        auxinb = self.get_neighbor_auxin(self.pina, self.pin, neighborsb, "b", area)
+        auxinl = self.get_neighbor_auxin(self.pina, self.pin, neighborsl, "l", area)
+        auxinm = self.get_neighbor_auxin(self.pina, self.pin, neighborsm, "m", area)
+        neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
+
+        syn_deg_auxin = self.solve_equations()[:, 0]
+        delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
+
+        # update current cell
+        cell_dict = self.update_current_cell(curr_cell, cell_dict, delta_auxin)
+
+        # update neighbor cell
+        cell_dict = self.update_neighbor_cell(cell_dict, neighbors_auxin)
+
+        return cell_dict
+
     # Helper functions
+    def determine_left_right(self) -> tuple:
+        cell = self.cell
+        qp = cell.get_quad_perimeter()
+        cell_mid = qp.get_midpointx()
+        sim = cell.get_sim()
+        root_mid = sim.get_root_midpointx()
+        if cell_mid < root_mid:
+            return ("lateral", "medial")
+        elif cell_mid == root_mid:
+            return ("lateral", "lateral")
+        else:
+            return ("medial", "lateral")
+
     def calculate_auxin(self, auxini: float, area: float) -> float:
         """
         Calcualte the auxin expression of current cell
@@ -142,7 +174,7 @@ class BaseCirculateModuleCont:
         al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali * area
         return al
 
-    def calculate_pin(self, auxini: float, arri: float, area: float) -> float:
+    def calculate_pin(self, auxini: float, arri: float) -> float:
         """
         Calculate the PIN expression of current cell
         """
@@ -167,8 +199,8 @@ class BaseCirculateModuleCont:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def calcualte_neighbor_auxin(
-        self, ali: float, pindi: float, neighbors: list, direction: str, area: float
+    def get_neighbor_auxin(
+        self, ali: float, pini: float, neighbors: list, direction: str, area: float
     ) -> dict:
         """
         Calculate the auxin expression of neighbor cells in a defined direction
@@ -176,6 +208,81 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_memfrac(neighbor, direction)
-            neighbor_aux = self.ks * memfrac * ali - self.kd * pindi * area
+            neighbor_aux = self.ks * memfrac * ali - self.kd * pini * area
             neighbor_dict[neighbor] = neighbor_aux
-        return sum(neighbor_dict.values())
+        return neighbor_dict
+
+    def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
+        """
+        Calculate the total amound of change in auxin for current cell
+        """
+        total_auxin = syn_deg_auxin
+        for neighbors in neighbors_auxin:
+            auxin = sum(neighbors.values())
+            total_auxin += auxin
+        return total_auxin
+
+    def get_neighbors(self) -> tuple:
+        neighborsa = self.cell.get_a_neighbors()
+        neighborsb = self.cell.get_b_neighbors()
+        neighborsl = self.cell.get_l_neighbors()
+        neighborsm = self.cell.get_m_neighbors()
+        return neighborsa, neighborsb, neighborsl, neighborsm
+
+    def update_current_cell(self, curr_cell, cell_dict: dict, delta_aux: float) -> dict:
+        """
+        Update the change in auxin of current cell in the circulator
+        """
+        if curr_cell not in cell_dict:
+            cell_dict[curr_cell] = delta_aux
+        else:
+            cell_dict[curr_cell] += delta_aux
+        return cell_dict
+
+    def update_neighbor_cell(self, cell_dict: dict, neighbors_auxin: list) -> dict:
+        """
+        Update the change in auxin of neighbor cells in the circulator
+        """
+        for each_dirct in neighbors_auxin:
+            for neighbor in each_dirct:
+                if neighbor not in cell_dict:
+                    cell_dict[neighbor] = -each_dirct[neighbor]
+                else:
+                    cell_dict[neighbor] += -each_dirct[neighbor]
+        return cell_dict
+
+    # getter functions
+    def get_auxin(self) -> float:
+        return self.auxin
+
+    def get_arr(self) -> float:
+        return self.arr
+
+    def get_aux_lax(self) -> float:
+        return self.al
+
+    def get_apical_pin(self) -> float:
+        return self.pina
+
+    def get_basal_pin(self) -> float:
+        return self.pinb
+
+    def get_lateral_pin(self) -> float:
+        return self.pinl
+
+    def get_medial_pin(self) -> float:
+        return self.pinm
+
+    # write getters for all attributes including all pins AND left and right pin
+    def get_left_pin(self) -> float:
+        # write logic to determine whether to return pinm or pinl
+        if self.left == "medial":
+            return self.pinm
+        else:
+            return self.pinl
+
+    def get_right_pin(self) -> float:
+        if self.right == "medial":
+            return self.pinm
+        else:
+            return self.pinl
