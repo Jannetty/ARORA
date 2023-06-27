@@ -302,3 +302,18 @@ class TestVertexMover(unittest.TestCase):
         self.assertAlmostEqual(1 + 3, v9.get_y())
         self.assertAlmostEqual(1 + 3, v10.get_y())
         self.assertAlmostEqual(1 + 3, v13.get_y())
+
+    def test_check_if_divide(self):
+        timestep = 1
+        root_midpoint_x = 400
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
+        simulation.setup()
+        v2.set_y(500)
+        v3.set_y(500)
+        simulation.get_vertex_mover().check_if_divide([cell1])
+        self.assertEqual([cell1], simulation.get_divider().get_cells_to_divide())
