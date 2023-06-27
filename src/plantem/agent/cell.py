@@ -85,6 +85,9 @@ class GrowingCell(arcade.Sprite):
 
     def get_l_neighbors(self):
         return self.l_neighbors
+    
+    def get_all_neighbors(self):
+        return self.get_a_neighbors + self.get_b_neighbors + self.get_m_neighbors + self.get_l_neighbors
 
     def get_sim(self):
         return self.sim

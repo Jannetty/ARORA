@@ -16,7 +16,9 @@ class Divider:
         for cell in self.cells_to_divide:
             new_vs = self.get_new_vs(cell)
             # check if those vertices exist by iterating through all vs in all neighbor cells' qps
-            # if not, make new vertices
+            left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
+            right_v = self.check_neighbors_for_v_existence(cell, new_vs[1])
+
             # make new cells using those vertices
             # divide and assign all circ_components
             # add two new cells to sim.cell_list
@@ -33,3 +35,12 @@ class Divider:
         new_left = Vertex(topleft.get_x(), (topleft.get_y()+bottomleft.get_y())/2)
         new_right = Vertex(topright.get_x(), (topright.get_y()+bottomright.get_y())/2)
         return [new_left, new_right]
+    
+    def check_neighbors_for_v_existence(self, cell, v):
+        # returns neighbor v is one exists with same x,y, otherwise returns input v
+        for neighbor in cell.get_all_neighbors():
+            qp = neighbor.get_quad_perimeter()
+            for nv in qp.get_vs():
+                if v.get_xy() == nv.get_xy():
+                    return nv 
+        return v
