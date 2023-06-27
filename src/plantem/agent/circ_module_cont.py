@@ -116,7 +116,7 @@ class BaseCirculateModuleCont:
 
     def solve_equations(self):
         y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
-        t = np.linespace(0, 5, 1000)
+        t = np.array[0, 1]
         soln = odeint(self.f, y0, t)
         return soln
 
