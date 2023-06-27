@@ -27,3 +27,6 @@ class TestVertexMover(unittest.TestCase):
         new_vs = simulation.get_divider().get_new_vs(cell1)
         self.assertEqual([100,200], new_vs[0].get_xy())
         self.assertEqual([300,200], new_vs[1].get_xy())
+
+    def test_check_neighbors_for_v_existence(self):
+        pass
