@@ -55,13 +55,15 @@ class BaseCirculateModuleCont:
         self.ks = init_vals.get("ks")
         self.kd = init_vals.get("kd")
 
+        self.arr_hist = init_vals.get("arr_hist")
+
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
         self.left, self.right = self.determine_left_right()
 
     def f(self, y, t) -> list:
-        area = self.cell.quad_perimeter.get_area()
+        area = self.cell.get_quad_perimeter().get_area()
 
         # find neighbors
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
@@ -105,40 +107,10 @@ class BaseCirculateModuleCont:
         soln = odeint(self.f, y0, t)
         return soln
 
-    def update_circ_contents(self) -> None:
-        soln = self.solve_equations()
-        self.arr = soln[:, 1]
-        self.al = soln[:, 2]
-        self.pin = soln[:, 3]
-        self.pina = soln[:, 4]
-        self.pinb = soln[:, 5]
-        self.pinl = soln[:, 6]
-        self.pinm = soln[:, 7]
-
-    def update_auxin(self) -> dict:
-        self.cell.sim.get_circulator.add_delta()
-        curr_cell = self.cell
-        cell_dict = curr_cell.sim.circulator.delta_auxins
-
-        neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
-        area = self.cell.quad_perimeter.get_area()
-
-        auxina = self.get_neighbor_auxin(self.pina, self.pin, neighborsa, "a", area)
-        auxinb = self.get_neighbor_auxin(self.pina, self.pin, neighborsb, "b", area)
-        auxinl = self.get_neighbor_auxin(self.pina, self.pin, neighborsl, "l", area)
-        auxinm = self.get_neighbor_auxin(self.pina, self.pin, neighborsm, "m", area)
-        neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
-
-        syn_deg_auxin = self.solve_equations()[:, 0]
-        delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
-
-        # update current cell
-        cell_dict = self.update_current_cell(curr_cell, cell_dict, delta_auxin)
-
-        # update neighbor cell
-        cell_dict = self.update_neighbor_cell(cell_dict, neighbors_auxin)
-
-        return cell_dict
+    def update(self) -> None:
+        self.update_circ_contents()
+        self.update_auxin()
+        self.update_arr_hist()
 
     # Helper functions
     def determine_left_right(self) -> tuple:
@@ -165,7 +137,7 @@ class BaseCirculateModuleCont:
         """
         Calculate the ARR expression of current cell
         """
-        arr = self.ks * 1 / (arri / self.k_arr_arr + 1) - self.kd * arri * area
+        arr = self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1) - self.kd * arri * area
         return arr
 
     def calculate_al(self, auxini: float, ali: float, area: float) -> float:
@@ -230,27 +202,55 @@ class BaseCirculateModuleCont:
         neighborsm = self.cell.get_m_neighbors()
         return neighborsa, neighborsb, neighborsl, neighborsm
 
-    def update_current_cell(self, curr_cell, cell_dict: dict, delta_aux: float) -> dict:
-        """
-        Update the change in auxin of current cell in the circulator
-        """
-        if curr_cell not in cell_dict:
-            cell_dict[curr_cell] = delta_aux
-        else:
-            cell_dict[curr_cell] += delta_aux
-        return cell_dict
+    def update_circ_contents(self) -> None:
+        soln = self.solve_equations()
+        self.arr = soln[:, 1]
+        self.al = soln[:, 2]
+        self.pin = soln[:, 3]
+        self.pina = soln[:, 4]
+        self.pinb = soln[:, 5]
+        self.pinl = soln[:, 6]
+        self.pinm = soln[:, 7]
 
-    def update_neighbor_cell(self, cell_dict: dict, neighbors_auxin: list) -> dict:
+    def update_neighbor_auxin(self, sim_circ: dict, neighbors_auxin: list) -> None:
         """
         Update the change in auxin of neighbor cells in the circulator
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                if neighbor not in cell_dict:
-                    cell_dict[neighbor] = -each_dirct[neighbor]
-                else:
-                    cell_dict[neighbor] += -each_dirct[neighbor]
-        return cell_dict
+                sim_circ.add_delta(neighbor, -each_dirct[neighbor])
+
+    def update_auxin(self) -> None:
+        curr_cell = self.cell
+        sim_circ = curr_cell.get_sim().get_circulator()
+
+        neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
+        area = self.cell.quad_perimeter.get_area()
+
+        auxina = self.get_neighbor_auxin(self.pina, self.pin, neighborsa, "a", area)
+        auxinb = self.get_neighbor_auxin(self.pina, self.pin, neighborsb, "b", area)
+        auxinl = self.get_neighbor_auxin(self.pina, self.pin, neighborsl, "l", area)
+        auxinm = self.get_neighbor_auxin(self.pina, self.pin, neighborsm, "m", area)
+        neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
+
+        syn_deg_auxin = self.solve_equations()[:, 0]
+        delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
+
+        # update current cell
+        sim_circ.add_delta(curr_cell, delta_auxin)
+
+        # update neighbor cell
+        self.update_neighbor_auxin(sim_circ, neighbors_auxin)
+
+    def update_arr_hist(self) -> None:
+        """
+        Update the ARR history list
+        """
+        for i, elem in enumerate(self.arr_hist):
+            if i != 0:
+                self.arr_hist[i-1] = elem
+            if i == len(self.arr_hist):
+                self.arr_hist[i] = self.arr
 
     # getter functions
     def get_auxin(self) -> float:
