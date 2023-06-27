@@ -63,6 +63,9 @@ class BaseCirculateModuleCont:
         self.left, self.right = self.determine_left_right()
 
     def f(self, y, t) -> list:
+        """
+        Setup the model functions
+        """
         area = self.cell.get_quad_perimeter().get_area()
 
         # find neighbors
@@ -101,6 +104,9 @@ class BaseCirculateModuleCont:
         return [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11]
 
     def solve_equations(self):
+        """
+        Solve the differential euqations
+        """
         y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb,
               self.pinl, self.pinm]
         t = np.array[0, 1]
@@ -108,6 +114,9 @@ class BaseCirculateModuleCont:
         return soln
 
     def update(self) -> None:
+        """
+        Update the circulation contents to the circulator
+        """
         self.update_circ_contents()
         self.update_auxin()
         self.update_arr_hist()
