@@ -30,6 +30,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
+        self.setup()
 
     def get_root_midpointx(self):
         return self.root_midpointx

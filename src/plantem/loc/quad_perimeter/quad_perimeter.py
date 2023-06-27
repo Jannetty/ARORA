@@ -81,6 +81,9 @@ class QuadPerimeter:
 
     def get_bottom_right(self) -> Vertex:
         return self._bottom_right
+    
+    def get_vs(self) -> list:
+        return [self.get_top_left, self.get_top_right, self.get_bottom_right, self.get_bottom_left]
 
     def get_area(self) -> float:
         width = self._top_right.get_x() - self._top_left.get_x()
