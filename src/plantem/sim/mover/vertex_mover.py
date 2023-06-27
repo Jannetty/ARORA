@@ -4,11 +4,12 @@ from src.plantem.loc.vertex.vertex import Vertex
 
 
 class VertexMover:
-    def __init__(self) -> None:
+    def __init__(self, sim) -> None:
         # dictionary, key is cell, value is amount bottom vertices should move
         self.cell_deltas = {}
         # dictionary, key is vertex, value is amount vertex should move total
         self.vertex_deltas = {}
+        self.sim = sim
 
     def add_cell_delta_val(self, cell: GrowingCell, deltaX: float) -> None:
         if cell in self.cell_deltas:
@@ -27,6 +28,7 @@ class VertexMover:
         sorted_top_row = self.sort_top_row(top_row)
         self.propogate_deltas(sorted_top_row)
         self.execute_vertex_movement()
+        self.check_if_divide(self.cell_deltas.keys())
         self.cell_deltas.clear()
         self.vertex_deltas.clear()
 
@@ -80,3 +82,8 @@ class VertexMover:
     def execute_vertex_movement(self) -> None:
         for vertex in self.vertex_deltas:
             vertex.set_y(vertex.get_y() + self.vertex_deltas[vertex])
+
+    def check_if_divide(self, cells) -> None:
+        for cell in cells:
+            if cell.get_quad_perimeter().get_area() >= (2 * cell.get_quad_perimeter().get_init_area()):
+                self.sim.get_divider().add_cell(cell)
