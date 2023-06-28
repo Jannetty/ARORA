@@ -42,7 +42,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             self.init_vals,
         )
         circ_module_cont = BaseCirculateModuleCont(cell, self.init_vals)
-        sim.
+        sim.setup()
         area = cell.quad_perimeter.get_area()
         expected_auxin = -119.995
         found_auxin = circ_module_cont.calculate_auxin(2, area)
