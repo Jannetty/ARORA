@@ -59,7 +59,7 @@ class Output:
         Get circulation results for each cell
         """
         summary["ARR"] = cell.get_circ_mod().get_arr()
-        summary["AUX/LAX"] = cell.get_circ_mod().get_aux_lax()
+        summary["AUX/LAX"] = cell.get_circ_mod().get_al()
         summary["PIN_apical"] = cell.get_circ_mod().get_apical_pin()
         summary["PIN_basal"] = cell.get_circ_mod().get_basal_pin()
         summary["PIN_left"] = cell.get_circ_mod().get_left_pin()
