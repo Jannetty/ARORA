@@ -4,6 +4,9 @@ import numpy as np
 
 
 class BaseCirculateModuleCont:
+    """
+    Continuous circulation module to calculate and update circulation contents
+    """
 
     auxin = None
     arr = None
@@ -174,7 +177,7 @@ class BaseCirculateModuleCont:
         return memfrac
 
     def get_neighbor_auxin(
-        self, ali: float, pini: float, neighbors: list, direction: str, area: float
+        self, ali: float, pindi: float, neighbors: list, direction: str, area: float
     ) -> dict:
         """
         Calculate the auxin expression of neighbor cells in a defined direction
@@ -182,7 +185,7 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_memfrac(neighbor, direction)
-            neighbor_aux = self.ks * memfrac * ali - self.kd * pini * (1/area)
+            neighbor_aux = self.ks * memfrac * ali - self.kd * pindi * (1/area)
             neighbor_dict[neighbor] = neighbor_aux
         return neighbor_dict
 
@@ -196,19 +199,7 @@ class BaseCirculateModuleCont:
             total_auxin += auxin
         return total_auxin
 
-    def get_neighbors(self) -> tuple:
-        neighborsa = self.cell.get_a_neighbors()
-        neighborsb = self.cell.get_b_neighbors()
-        neighborsl = self.cell.get_l_neighbors()
-        neighborsm = self.cell.get_m_neighbors()
-        return neighborsa, neighborsb, neighborsl, neighborsm
-
     def get_solution(self):
-        print(f"pin = {self.pin}")
-        print(f"pina = {self.pina}")
-        print(f"pinb = {self.pinb}")
-        print(f"pinl = {self.pinl}")
-        print(f"pinm = {self.pinm}")
         soln = self.solve_equations()
         return soln
 
@@ -243,6 +234,13 @@ class BaseCirculateModuleCont:
             for neighbor in each_dirct:
                 sim_circ.add_delta(neighbor, -each_dirct[neighbor])
 
+    def get_neighbors(self) -> tuple:
+        neighborsa = self.cell.get_a_neighbors()
+        neighborsb = self.cell.get_b_neighbors()
+        neighborsl = self.cell.get_l_neighbors()
+        neighborsm = self.cell.get_m_neighbors()
+        return neighborsa, neighborsb, neighborsl, neighborsm
+
     def update_auxin(self, soln) -> None:
         curr_cell = self.cell
         sim_circ = curr_cell.get_sim().get_circulator()
@@ -250,17 +248,18 @@ class BaseCirculateModuleCont:
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()
 
-        auxina = self.get_neighbor_auxin(self.pina, self.pin, neighborsa, "a", area)
-        auxinb = self.get_neighbor_auxin(self.pina, self.pin, neighborsb, "b", area)
-        auxinl = self.get_neighbor_auxin(self.pina, self.pin, neighborsl, "l", area)
-        auxinm = self.get_neighbor_auxin(self.pina, self.pin, neighborsm, "m", area)
+        auxina = self.get_neighbor_auxin(self.al, self.pina, neighborsa, "a", area)
+        auxinb = self.get_neighbor_auxin(self.al, self.pinb, neighborsb, "b", area)
+        auxinl = self.get_neighbor_auxin(self.al, self.pinl, neighborsl, "l", area)
+        auxinm = self.get_neighbor_auxin(self.al, self.pinm, neighborsm, "m", area)
         neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
-        syn_deg_auxin = soln[1, 0]
+        syn_deg_auxin = soln[1, 0] - self.auxin
         delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
 
         # update current cell
         sim_circ.add_delta(curr_cell, delta_auxin)
+        # print(sim_circ.delta_auxins)
 
         # update neighbor cell
         self.update_neighbor_auxin(sim_circ, neighbors_auxin)
@@ -272,8 +271,11 @@ class BaseCirculateModuleCont:
     def get_arr(self) -> float:
         return self.arr
 
-    def get_aux_lax(self) -> float:
+    def get_al(self) -> float:
         return self.al
+    
+    def get_pin(self)-> float:
+        return self.pin
 
     def get_apical_pin(self) -> float:
         return self.pina
