@@ -46,7 +46,7 @@ class Output:
         """
         Get auxion concentration for each cell
         """
-        return cell.circulator.get_auxin()
+        return cell.get_circ_mod().get_auxin()
 
     def get_location(self, cell) -> list:
         """
@@ -58,12 +58,12 @@ class Output:
         """
         Get circulation results for each cell
         """
-        summary["ARR"] = cell.circulator.get_arr()
-        summary["AUX/LAX"] = cell.circulator.get_aux_lax()
-        summary["PIN_apical"] = cell.circulator.get_apical_pin()
-        summary["PIN_basal"] = cell.circulator.get_basal_pin()
-        summary["PIN_left"] = cell.circulator.get_left_pin()
-        summary["PIN_right"] = cell.circulator.get_right_pin()
+        summary["ARR"] = cell.get_circ_mod().get_arr()
+        summary["AUX/LAX"] = cell.get_circ_mod().get_al()
+        summary["PIN_apical"] = cell.get_circ_mod().get_apical_pin()
+        summary["PIN_basal"] = cell.get_circ_mod().get_basal_pin()
+        summary["PIN_left"] = cell.get_circ_mod().get_left_pin()
+        summary["PIN_right"] = cell.get_circ_mod().get_right_pin()
         return summary
 
     def get_division_number(self, cell) -> float:

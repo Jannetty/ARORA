@@ -1,5 +1,6 @@
 import arcade
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
+from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
 
@@ -22,7 +23,7 @@ class GrowingCell(arcade.Sprite):
         self.sim = simulation
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        self.circulator = BaseCirculateModuleCont(self, init_vals)
+        self.circ_mod = BaseCirculateModuleCont(self, init_vals)
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
@@ -91,6 +92,9 @@ class GrowingCell(arcade.Sprite):
 
     def get_sim(self):
         return self.sim
+
+    def get_circ_mod(self):
+        return self.circ_mod
 
     def remove_neighbor(self, cell: "GrowingCell") -> None:
         if cell in self.a_neighbors:
