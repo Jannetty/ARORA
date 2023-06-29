@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
 
-class BaseCirculateModuleTests(unittest.TestCase):
+class BaseCirculateModuleDiscTests(unittest.TestCase):
     # def test_update(self):
     #     cell1 = GrowingCell(self, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], {})
 
@@ -28,6 +28,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
         "auxin": 2,
         "arr": 3,
         "al": 3,
+        "pin": 1,
         "pina": 0.5,
         "pinb": 0.7,
         "pinl": 0.4,
@@ -38,6 +39,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
         "k_arr_pin": 1,
         "ks": 0.005,
         "kd": 0.0015,
+        "arr_hist": [0.1, 0.2, 0.3]
     }
 
     def test_determine_left_right(self):
@@ -75,8 +77,8 @@ class BaseCirculateModuleTests(unittest.TestCase):
         circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
-        area = 100
-        expected_auxin = -0.295
+        area = cell.quad_perimeter.get_area()
+        expected_auxin = 0.004999925
         found_auxin = circ_module.calculate_auxin(timestep, area)
         self.assertEqual(expected_auxin, found_auxin)
 
@@ -95,8 +97,8 @@ class BaseCirculateModuleTests(unittest.TestCase):
         circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
-        area = 100
-        expected_arr = -359 / 800
+        area = cell.quad_perimeter.get_area()
+        expected_arr = 0.004545342045
         found_arr = circ_module.calculate_arr(timestep, area)
         self.assertAlmostEqual(expected_arr, found_arr, places=5)
 
@@ -115,8 +117,8 @@ class BaseCirculateModuleTests(unittest.TestCase):
         circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
-        area = 100
-        expected_aux_lax = -0.45209
+        area = cell.quad_perimeter.get_area()
+        expected_aux_lax = 0.003333220833
         found_aux_lax = circ_module.calculate_aux_lax(timestep, area)
         self.assertAlmostEqual(expected_aux_lax, found_aux_lax, places=5)
 
@@ -135,8 +137,8 @@ class BaseCirculateModuleTests(unittest.TestCase):
         circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
-        area = 100
-        expected_PIN = -0.0037954
+        area = cell.quad_perimeter.get_area()
+        expected_PIN = 8.33333333 * 0.0001
         found_PIN = circ_module.calculate_pin(timestep, area)
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
@@ -155,8 +157,9 @@ class BaseCirculateModuleTests(unittest.TestCase):
         circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
         sim.setup()
         timestep = 1
-        area = 100
-        expected_neighbor_PIN = -0.075949
+        area = cell.quad_perimeter.get_area()
+        # test apical
+        expected_neighbor_PIN = 0.2499999813
         found_neighbor_PIN = circ_module.calculate_neighbor_pin(0.5, timestep, area)
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
 
@@ -191,7 +194,6 @@ class BaseCirculateModuleTests(unittest.TestCase):
 
     def test_get_neighbor_auxin(self):
         timestep = 1
-        area = 100
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -204,6 +206,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
             self.init_vals,
         )
         circ_module = BaseCirculateModuleDisc(cell, self.init_vals)
+        area = cell.quad_perimeter.get_area()
         # test apical neighbor
         neighbora = GrowingCell(
             sim,
@@ -220,7 +223,7 @@ class BaseCirculateModuleTests(unittest.TestCase):
         expected_neighbor_auxin = circ_module.get_neighbor_auxin(
             0.5, neighbor_list, "a", timestep, area
         )
-        found_neighbor_auxin = {neighbora: 866179 / 80000000}
+        found_neighbor_auxin = {neighbora: 0.00374998125}
         for neighbor in neighbor_list:
             expected = expected_neighbor_auxin[neighbor]
             found = found_neighbor_auxin[neighbor]
@@ -250,8 +253,8 @@ class BaseCirculateModuleTests(unittest.TestCase):
             self.init_vals,
         )
         sim.setup()
-        neighbors_auxin = [{neighbora: 866179 / 80000000}]
-        expected_delta_auxin = 2 + 866179 / 80000000
+        neighbors_auxin = [{neighbora: 0.00374998125}]
+        expected_delta_auxin = 2 + 0.00374998125
         found_delta_auxin = circ_module.calculate_delta_auxin(neighbors_auxin)
         self.assertAlmostEqual(expected_delta_auxin, found_delta_auxin, places=5)
 
@@ -278,22 +281,6 @@ class BaseCirculateModuleTests(unittest.TestCase):
         self.assertEqual(expected_dict, found_dict)
 
     def test_update_neighbor_cell(self):
-        # circ_module = BaseCirculateModule(GrowingCell, self.init_vals)
-
-        # curr_cell = GrowingCell
-        # sim = None
-
-        # cellA = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,300.0), Vertex(300.0,300.0), Vertex(300.0,100.0)], self.init_vals)
-        # cellB = GrowingCell(sim, [Vertex(101.0,101.0), Vertex(101.0,300.0), Vertex(300.0,300.0), Vertex(300.0,101.0)], self.init_vals)
-        # cellL = GrowingCell(sim, [Vertex(100.0,100.0), Vertex(100.0,301.0), Vertex(301.0,301.0), Vertex(301.0,100.0)], self.init_vals)
-        # cellM = GrowingCell(sim, [Vertex(200.0,200.0), Vertex(200.0,300.0), Vertex(300.0,300.0), Vertex(300.0,200.0)], self.init_vals)
-        # neighbors = [cellA, cellB, cellL, cellM]
-        # neighbors_aux = [0.1, -0.4, 0.05, 0]
-        # cell_dict = {curr_cell: 0.5, cellA: 1}
-
-        # expected_dict = {curr_cell: 0.5, cellA: 0.9, cellB: 0.4, cellL: -0.05, cellM: 0}
-        # found_dict = circ_module.update_neighbor_cell(cell_dict, neighbors, neighbors_aux)
-        # self.assertEqual(expected_dict, found_dict)
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         curr_cell = GrowingCell(
             sim,
@@ -354,3 +341,22 @@ class BaseCirculateModuleTests(unittest.TestCase):
         found = circ_module.get_auxin()
         expected = 2
         self.assertEqual(expected, found)
+
+    def test_update_arr_hist(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        cell = GrowingCell(
+            sim,
+            [
+                Vertex(100.0, 100.0),
+                Vertex(100.0, 300.0),
+                Vertex(300.0, 300.0),
+                Vertex(300.0, 100.0),
+            ],
+            self.init_vals,
+        )
+        circ_module_disc = BaseCirculateModuleDisc(cell, self.init_vals)
+        sim.setup()
+        expected_arr_hist = [0.2, 0.3, 3]
+        circ_module_disc.update_arr_hist()
+        found_arr_hist = circ_module_disc.arr_hist
+        self.assertEqual(expected_arr_hist, found_arr_hist)
