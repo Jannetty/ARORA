@@ -1,4 +1,5 @@
 from src.plantem.loc.vertex.vertex import Vertex
+from src.plantem.sim.circulator.circulator import 
 
 class Divider:
     cells_to_divide = []
@@ -19,8 +20,10 @@ class Divider:
             left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
             right_v = self.check_neighbors_for_v_existence(cell, new_vs[1])
 
+            # divide circ components
+            new_top_circ = None
             # make new cells using those vertices
-            # divide and assign all circ_components
+            
             # add two new cells to sim.cell_list
             self.sim.get_cell_list().remove(cell)
 
