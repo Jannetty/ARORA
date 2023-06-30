@@ -5,8 +5,8 @@ from src.plantem.sim.divider.divider import Divider
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.sim.mover.vertex_mover import VertexMover
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Starting Template"
 
 
@@ -81,17 +81,19 @@ class GrowingSim(arcade.Window):
             self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
 
-        v1 = Vertex(10.0, 300.0)
-        v2 = Vertex(10.0, 400.0)
-        v3 = Vertex(30.0, 300.0)
-        v4 = Vertex(30.0, 400.0)
+        y_offset = 500
+
+        v1 = Vertex(10.0, 300.0 + y_offset)
+        v2 = Vertex(10.0, 330.0 + y_offset)
+        v3 = Vertex(30.0, 300.0 + y_offset)
+        v4 = Vertex(30.0, 330.0 + y_offset)
         cell1 = cell.GrowingCell(
             self,
             [v1, v2, v3, v4],
             self.make_init_vals()
         )
-        v5 = Vertex(10, 500)
-        v6 = Vertex(30, 500)
+        v5 = Vertex(10, 360 + y_offset)
+        v6 = Vertex(30, 360 + y_offset)
         cell2 = cell.GrowingCell(
             self,
             [v2, v4, v5, v6],
