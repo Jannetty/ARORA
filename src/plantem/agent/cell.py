@@ -6,6 +6,7 @@ from src.plantem.loc.vertex.vertex import Vertex
 
 
 class GrowingCell(arcade.Sprite):
+    id = None
     quad_perimeter = None
     circ_mod = None
     sim = None
@@ -14,19 +15,24 @@ class GrowingCell(arcade.Sprite):
     l_neighbors = None
     m_neighbors = None
 
-    def __init__(self, simulation, corners: list, init_vals):
+    def __init__(self, simulation, corners: list, init_vals: dict, id: int):
+        self.id = id
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []
         self.l_neighbors = []
         self.m_neighbors = []
         self.sim = simulation
+        simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
         self.circ_mod = BaseCirculateModuleCont(self, init_vals)
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
+    
+    def get_id():
+        return self.id
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
         if self.check_if_neighbor(cell) == False:
@@ -152,7 +158,8 @@ class NonGrowingCell(arcade.Sprite):
     l_neighbors = None
     m_neighbors = None
 
-    def __init__(self, simulation, corners: list, init_vals):
+    def __init__(self, simulation, corners: list, init_vals, id : int):
+        self.id = id
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []

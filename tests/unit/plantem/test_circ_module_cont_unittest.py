@@ -35,6 +35,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module = cell.get_circ_mod()
         sim.setup()
@@ -55,6 +56,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         area = cell.quad_perimeter.get_area()
@@ -73,6 +75,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -92,6 +95,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -111,6 +115,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -129,6 +134,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -149,6 +155,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighbora = GrowingCell(
             sim,
@@ -159,6 +166,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -178,6 +186,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         # test apical neighbor
@@ -190,6 +199,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         area = cell.quad_perimeter.get_area()
@@ -214,6 +224,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         neighbora = GrowingCell(
@@ -225,6 +236,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         neighbors_auxin = [{neighbora: 0.004999925}]
@@ -244,6 +256,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -268,6 +281,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -287,6 +301,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -321,6 +336,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
@@ -332,6 +348,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighborm = GrowingCell(
             sim,
@@ -342,6 +359,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(600.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         neighbors_auxin = [{neighbora: 0.00374998125}, {neighborm: 0.0037499925}]
@@ -362,6 +380,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
@@ -373,6 +392,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighborm = GrowingCell(
             sim,
@@ -383,6 +403,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(600.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         curr_cell.add_neighbor(neighbora)
         curr_cell.add_neighbor(neighborm)
@@ -402,6 +423,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
@@ -413,6 +435,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighborm = GrowingCell(
             sim,
@@ -423,6 +446,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(600.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         curr_cell.add_neighbor(neighbora)
         curr_cell.add_neighbor(neighborm)
@@ -451,6 +475,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -469,6 +494,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -487,6 +513,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -505,6 +532,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -523,6 +551,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -541,6 +570,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -559,6 +589,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
