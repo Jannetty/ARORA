@@ -7,6 +7,7 @@ class Divider:
 
     def __init__(self, sim):
         self.sim = sim
+        self.cells_to_divide = []
 
     def add_cell(self, cell) -> None:
         self.cells_to_divide.append(cell)
@@ -26,8 +27,8 @@ class Divider:
                             cell.get_quad_perimeter().get_top_right(),\
                             right_v, left_v, ]
             new_lower_vs = [left_v, right_v, \
-                            cell.get_quad_perimeter().get_top_right(),\
-                            cell.get_quad_perimeter().get_top_left()]
+                            cell.get_quad_perimeter().get_bottom_right(),\
+                            cell.get_quad_perimeter().get_bottom_left()]
             
             # make new cells using those vertices
             new_top_cell = GrowingCell(self.sim, new_upper_vs, cell.get_circ_mod().get_state())
@@ -41,7 +42,7 @@ class Divider:
             self.sim.get_cell_list().append(new_bottom_cell)
 
             self.sim.get_cell_list().remove(cell)
-            self.cells_to_divide.remove(cell)
+        self.cells_to_divide = []
     
 
     def get_new_vs(self, cell) -> list:
@@ -63,6 +64,8 @@ class Divider:
         return v
     
     def update_neighbor_lists(self, new_top_cell, new_bottom_cell, cell):
+        new_top_cell.add_neighbor(new_bottom_cell)
+        new_bottom_cell.add_neighbor(new_top_cell)
         for an in cell.get_a_neighbors():
             self.swap_neighbors(new_top_cell, an, cell)
         for bn in cell.get_b_neighbors():

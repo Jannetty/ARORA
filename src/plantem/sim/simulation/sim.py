@@ -52,16 +52,8 @@ class GrowingSim(arcade.Window):
     
     def get_cell_list(self) -> arcade.SpriteList:
         return self.cell_list
-
-    def setup(self):
-        """Set up the Simulation. Call to re-start the Simulation."""
-        self.tick = 0
-        self.circulator = Circulator(self)
-        self.vertex_mover = VertexMover(self)
-        self.divider = Divider(self)
-        if self.vis:
-            self.camera_sprites = arcade.Camera(self.width, self.height)
-        self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+    
+    def make_init_vals(self) -> dict :
         init_vals = {
             "auxin": 2,
             "arr": 3,
@@ -77,17 +69,38 @@ class GrowingSim(arcade.Window):
             "ks": 0.005,
             "kd": 0.0015,
         }
-        this_cell = cell.GrowingCell(
+        return init_vals
+
+    def setup(self):
+        """Set up the Simulation. Call to re-start the Simulation."""
+        self.tick = 0
+        self.circulator = Circulator(self)
+        self.vertex_mover = VertexMover(self)
+        self.divider = Divider(self)
+        if self.vis:
+            self.camera_sprites = arcade.Camera(self.width, self.height)
+        self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+
+        v1 = Vertex(10.0, 300.0)
+        v2 = Vertex(10.0, 400.0)
+        v3 = Vertex(30.0, 300.0)
+        v4 = Vertex(30.0, 400.0)
+        cell1 = cell.GrowingCell(
             self,
-            [
-                Vertex(10.0, 300.0),
-                Vertex(10.0, 400.0),
-                Vertex(30.0, 300.0),
-                Vertex(30.0, 400.0),
-            ],
-            init_vals,
+            [v1, v2, v3, v4],
+            self.make_init_vals()
         )
-        self.cell_list.append(this_cell)
+        v5 = Vertex(10, 500)
+        v6 = Vertex(30, 500)
+        cell2 = cell.GrowingCell(
+            self,
+            [v2, v4, v5, v6],
+            self.make_init_vals()
+        )
+        cell1.add_neighbor(cell2)
+        cell2.add_neighbor(cell1)
+        self.cell_list.append(cell1)
+        self.cell_list.append(cell2)
 
     def on_draw(self):
         """
