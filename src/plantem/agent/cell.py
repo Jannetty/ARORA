@@ -31,7 +31,7 @@ class GrowingCell(arcade.Sprite):
     def get_quad_perimeter(self):
         return self.quad_perimeter
     
-    def get_id():
+    def get_id(self):
         return self.id
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
