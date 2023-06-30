@@ -9,11 +9,13 @@ class QuadPerimeter:
     _bottom_left = None
     _bottom_right = None
     _midpointx = None
+    _init_area = None
 
     def __init__(self, vertex_list: list):
         self._perimeter_vs = vertex_list
         self.__assign_corners()
         self.__calc_midpointx()
+        self._init_area = self.get_area()
 
     def __calc_midpointx(self):
         sumx = sum([corner.get_x() for corner in self._perimeter_vs])
@@ -79,12 +81,17 @@ class QuadPerimeter:
 
     def get_bottom_right(self) -> Vertex:
         return self._bottom_right
+    
+    def get_vs(self) -> list:
+        return [self.get_top_left(), self.get_top_right(), self.get_bottom_right(), self.get_bottom_left()]
 
     def get_area(self) -> float:
         width = self._top_right.get_x() - self._top_left.get_x()
         height = self._top_left.get_y() - self._bottom_left.get_y()
         return width * height
 
+    def get_init_area(self) -> float:
+        return self._init_area
 
 def get_len_perimeter_in_common(cellqp, neighborqp, neighbor_direction: str) -> float:
     len = 0
