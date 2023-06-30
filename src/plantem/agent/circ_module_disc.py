@@ -66,14 +66,9 @@ class BaseCirculateModuleDisc:
         self.left, self.right = self.determine_left_right()
         self.timestep = 1
 
-    def update(self):
+    def update(self) -> None:
         """
         Update changes to the current and neighbor cells to circulator
-
-        Returns
-        -------
-        :
-            An updated circulator
         """
         # calculates changes in self species and neighbor auxins
         # adds changes to self and neighbors to circulator with key=cell
@@ -81,42 +76,37 @@ class BaseCirculateModuleDisc:
         # REMEMBER cells will be neighbors and selves multiple times
 
         curr_cell = self.cell
-        cell_dict = curr_cell.sim.circulator.delta_auxins
+        sim_circ = curr_cell.get_sim().get_circulator()
         area = curr_cell.quad_perimeter.get_area()
 
         # base calculations
-        self.auxin = self.calculate_auxin(self.timestep, self.area)
-        self.arr = self.calculate_arr(self.timestep, self.area)
-        self.al = self.calculate_aux_lax(self.timestep, self.area)
+        syn_deg_auxin = self.calculate_auxin(self.timestep, area)
+        self.arr = self.calculate_arr(self.timestep, area)
+        self.al = self.calculate_aux_lax(self.timestep, area)
         self.pina = self.calculate_neighbor_pin(self.init_pina, self.timestep, area)
         self.pinb = self.calculate_neighbor_pin(self.init_pinb, self.timestep, area)
         self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, area)
         self.pinm = self.calculate_neighbor_pin(self.init_pinm, self.timestep, area)
 
         # find neighbors
-        neighborsa = self.cell.get_a_neighbors()
-        neighborsb = self.cell.get_b_neighbors()
-        neighborsl = self.cell.get_l_neighbors()
-        neighborsm = self.cell.get_m_neighbors()
+        neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
         # change in auxin relative to current cell
-        auxina = self.get_neighbor_auxin(self.init_pina, neighborsa, "a", self.timestep, area)
-        auxinb = self.get_neighbor_auxin(self.init_pinb, neighborsb, "b", self.timestep, area)
-        auxinl = self.get_neighbor_auxin(self.init_pinl, neighborsl, "l", self.timestep, area)
-        auxinm = self.get_neighbor_auxin(self.init_pinm, neighborsm, "m", self.timestep, area)
+        auxina = self.get_neighbor_auxin(self.pina, neighborsa, "a", self.timestep, area)
+        auxinb = self.get_neighbor_auxin(self.pinb, neighborsb, "b", self.timestep, area)
+        auxinl = self.get_neighbor_auxin(self.pinl, neighborsl, "l", self.timestep, area)
+        auxinm = self.get_neighbor_auxin(self.pinm, neighborsm, "m", self.timestep, area)
         neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
         # update current cell
-        delta_auxin = self.calculate_delta_auxin(neighbors_auxin)
-        cell_dict = self.update_current_cell(curr_cell, cell_dict, delta_auxin)
+        delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
+        sim_circ.add_delta(curr_cell, delta_auxin)
 
         # update neighbor cells
-        cell_dict = self.update_neighbor_cell(cell_dict, neighbors_auxin)
+        self.update_neighbor_auxin(sim_circ, neighbors_auxin)
 
         # update arr_hist
         self.update_arr_hist()
-
-        return cell_dict
 
     # Helper functions
     def determine_left_right(self) -> tuple:
@@ -153,7 +143,7 @@ class BaseCirculateModuleDisc:
         Calculate the AUX/LAX expression of current cell
         """
         aux_lax = (
-            self.ks * (self.auxin / (self.auxin + self.k_auxin_auxlax)) - self.kd *
+            self.ks * (self.init_auxin / (self.init_auxin + self.k_auxin_auxlax)) - self.kd *
             self.init_al * (1/area)
         ) * timestep
         return aux_lax
@@ -163,7 +153,7 @@ class BaseCirculateModuleDisc:
         Calculate the PIN expression of current cell
         """
         pin = (
-            self.ks * (1 / (self.arr / self.k_arr_pin + 1)) * (self.auxin / (self.auxin + self.k_auxin_pin))
+            self.ks * (1 / (self.init_arr / self.k_arr_pin + 1)) * (self.init_auxin / (self.init_auxin + self.k_auxin_pin))
         ) * timestep
         return pin
 
@@ -171,7 +161,7 @@ class BaseCirculateModuleDisc:
         """
         Calculate the PIN expression of neighbor cells
         """
-        neighbor_pin = (0.25 * self.pin - self.kd * init * (1/area)) * timestep
+        neighbor_pin = (0.25 * self.init_pin - self.kd * init * (1/area)) * timestep
         return neighbor_pin
 
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
@@ -194,42 +184,35 @@ class BaseCirculateModuleDisc:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_memfrac(neighbor, direction)
-            neighbor_aux = (self.ks * memfrac * self.al - self.kd * init_pin * (1/area)) * timestep
+            neighbor_aux = (self.ks * memfrac * self.init_al - self.kd * init_pin * (1/area)) * timestep
             neighbor_dict[neighbor] = neighbor_aux
         return neighbor_dict
 
-    def calculate_delta_auxin(self, neighbors_auxin: list) -> float:
+    def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
         """
         Calculate the total amound of change in auxin for current cell
         """
-        total_auxin = self.auxin
+        total_auxin = syn_deg_auxin
         for neighbors in neighbors_auxin:
             auxin = sum(neighbors.values())
             total_auxin += auxin
         return total_auxin
 
-    def update_current_cell(self, curr_cell, cell_dict: dict, delta_aux: float) -> dict:
-        """
-        Update the change in auxin of current cell in the circulator
-        """
-        if curr_cell not in cell_dict:
-            cell_dict[curr_cell] = delta_aux
-        else:
-            cell_dict[curr_cell] += delta_aux
-        return cell_dict
+    def get_neighbors(self) -> tuple:
+        neighborsa = self.cell.get_a_neighbors()
+        neighborsb = self.cell.get_b_neighbors()
+        neighborsl = self.cell.get_l_neighbors()
+        neighborsm = self.cell.get_m_neighbors()
+        return neighborsa, neighborsb, neighborsl, neighborsm
 
-    def update_neighbor_cell(self, cell_dict: dict, neighbors_auxin: list) -> dict:
+    def update_neighbor_auxin(self, sim_circ, neighbors_auxin: list) -> None:
         """
         Update the change in auxin of neighbor cells in the circulator
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                if neighbor not in cell_dict:
-                    cell_dict[neighbor] = -each_dirct[neighbor]
-                else:
-                    cell_dict[neighbor] += -each_dirct[neighbor]
-        return cell_dict
-    
+                sim_circ.add_delta(neighbor, -each_dirct[neighbor])
+
     def update_arr_hist(self) -> None:
         """
         Update the ARR history list
@@ -247,8 +230,11 @@ class BaseCirculateModuleDisc:
     def get_arr(self) -> float:
         return self.arr
 
-    def get_aux_lax(self) -> float:
+    def get_al(self) -> float:
         return self.al
+
+    def get_pin(self) -> float:
+        return self.pin
 
     def get_apical_pin(self) -> float:
         return self.pina
@@ -275,3 +261,13 @@ class BaseCirculateModuleDisc:
             return self.pinm
         else:
             return self.pinl
+
+    def get_state(self) -> dict:
+        state = {"auxin": self.auxin, "arr": self.arr, "al": self.al, "pin": self.pin,
+                 "pina": self.pina, "pinb": self.pinb, "pinl": self.pinl,
+                 "pinm": self.pinm, "k_arr_arr": self.k_arr_arr,
+                 "k_auxin_auxlax": self.k_auxin_auxlax,
+                 "k_auxin_pin": self.k_auxin_pin,
+                 "k_arr_pin": self.k_arr_pin,
+                 "ks": self.ks, "kd": self.kd, "arr_hist": self.arr_hist}
+        return state
