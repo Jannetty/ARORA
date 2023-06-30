@@ -80,10 +80,10 @@ class GrowingSim(arcade.Window):
         this_cell = cell.GrowingCell(
             self,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 300.0),
+                Vertex(10.0, 400.0),
+                Vertex(30.0, 300.0),
+                Vertex(30.0, 400.0),
             ],
             init_vals,
         )

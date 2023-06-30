@@ -7,7 +7,7 @@ from src.plantem.loc.vertex.vertex import Vertex
 
 class GrowingCell(arcade.Sprite):
     quad_perimeter = None
-    circulator = None
+    circ_mod = None
     sim = None
     a_neighbors = None
     b_neighbors = None
@@ -88,7 +88,7 @@ class GrowingCell(arcade.Sprite):
         return self.l_neighbors
     
     def get_all_neighbors(self):
-        return self.get_a_neighbors + self.get_b_neighbors + self.get_m_neighbors + self.get_l_neighbors
+        return self.get_a_neighbors() + self.get_b_neighbors() + self.get_m_neighbors() + self.get_l_neighbors()
 
     def get_sim(self):
         return self.sim
@@ -106,7 +106,8 @@ class GrowingCell(arcade.Sprite):
         elif cell in self.m_neighbors:
             self.m_neighbors.remove(cell)
         else:
-            raise ValueError("Non neighbor cell being removed from neighbor list")
+            pass
+            #raise ValueError("Non neighbor cell being removed from neighbor list")
 
     def check_if_neighbor(self, cell: "GrowingCell") -> bool:
         if cell in self.a_neighbors:
@@ -137,14 +138,14 @@ class GrowingCell(arcade.Sprite):
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def calculate_delta(self) -> float:
-        return -0.1
+        return -0.5
 
     def update(self) -> None:
         self.grow()
 
 class NonGrowingCell(arcade.Sprite):
     quad_perimeter = None
-    circulator = None
+    circ_mod = None
     sim = None
     a_neighbors = None
     b_neighbors = None
@@ -225,7 +226,7 @@ class NonGrowingCell(arcade.Sprite):
         return self.l_neighbors
     
     def get_all_neighbors(self):
-        return self.get_a_neighbors + self.get_b_neighbors + self.get_m_neighbors + self.get_l_neighbors
+        return self.get_a_neighbors() + self.get_b_neighbors() + self.get_m_neighbors() + self.get_l_neighbors()
 
     def get_sim(self):
         return self.sim
