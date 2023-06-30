@@ -31,8 +31,8 @@ class Divider:
                             cell.get_quad_perimeter().get_bottom_left()]
             
             # make new cells using those vertices
-            new_top_cell = GrowingCell(self.sim, new_upper_vs, cell.get_circ_mod().get_state(), 0)
-            new_bottom_cell = GrowingCell(self.sim, new_lower_vs, cell.get_circ_mod().get_state(), 1)
+            new_top_cell = GrowingCell(self.sim, new_upper_vs, cell.get_circ_mod().get_state(), self.sim.get_next_cell_id())
+            new_bottom_cell = GrowingCell(self.sim, new_lower_vs, cell.get_circ_mod().get_state(), self.sim.get_next_cell_id())
             
             # update neighbor lists
             self.update_neighbor_lists(new_top_cell, new_bottom_cell, cell)

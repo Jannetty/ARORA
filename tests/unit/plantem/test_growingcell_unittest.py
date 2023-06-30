@@ -46,6 +46,7 @@ class TestGrowingCell(unittest.TestCase):
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
+        init_id = simulation.get_next_cell_id()
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -71,6 +72,11 @@ class TestGrowingCell(unittest.TestCase):
         self.assertEqual(cell1.get_b_neighbors(), [b_neighbor])
         self.assertEqual(cell1.get_l_neighbors(), [l_neighbor])
         self.assertEqual(cell1.get_m_neighbors(), [m_neighbor])
+        self.assertEqual(cell1.get_id(), init_id)
+        self.assertEqual(a_neighbor.get_id(), init_id + 1)
+        self.assertEqual(l_neighbor.get_id(), init_id + 2)
+        self.assertEqual(b_neighbor.get_id(), init_id + 3)
+        self.assertEqual(m_neighbor.get_id(), init_id + 4)
         with self.assertRaises(ValueError):
             cell1.add_neighbor(a_neighbor)
 
