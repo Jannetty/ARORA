@@ -27,7 +27,8 @@ sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
 cell = GrowingCell(
     sim,
     [Vertex(100.0, 100.0), Vertex(100.0, 300.0), Vertex(300.0, 300.0), Vertex(300.0, 100.0)],
-    init_vals
+    init_vals,
+    sim.get_next_cell_id()
 )
 sim.setup()
 CELL_LIST = [cell]

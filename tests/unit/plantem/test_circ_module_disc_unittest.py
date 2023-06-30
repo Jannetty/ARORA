@@ -26,6 +26,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -46,6 +47,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -66,6 +68,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -86,6 +89,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -106,6 +110,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -126,6 +131,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -147,6 +153,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         # test apical nerighbor
@@ -159,6 +166,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         found_memfrac = circ_module_disc.calculate_memfrac(neighbora, "a")
@@ -176,6 +184,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
@@ -187,6 +196,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighborm = GrowingCell(
             sim,
@@ -197,6 +207,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(600.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         curr_cell.add_neighbor(neighbora)
         curr_cell.add_neighbor(neighborm)
@@ -217,6 +228,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         area = cell.quad_perimeter.get_area()
@@ -230,6 +242,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         neighbor_list = [neighbora]
@@ -253,6 +266,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         neighbora = GrowingCell(
@@ -264,6 +278,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         neighbors_auxin = [{neighbora: 0.00374998125}]
@@ -282,6 +297,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(curr_cell, make_init_vals())
         neighbora = GrowingCell(
@@ -293,6 +309,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighborm = GrowingCell(
             sim,
@@ -303,6 +320,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(600.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         sim.setup()
         neighbors_auxin = [{neighbora: 0.00374998125}, {neighborm: 0.0037499925}]
@@ -323,6 +341,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -342,6 +361,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(curr_cell, make_init_vals())
         neighbora = GrowingCell(
@@ -353,6 +373,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 300.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         neighborm = GrowingCell(
             sim,
@@ -363,6 +384,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(600.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         curr_cell.add_neighbor(neighbora)
         curr_cell.add_neighbor(neighborm)
@@ -390,6 +412,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -408,6 +431,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -426,6 +450,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -444,6 +469,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_cont = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -462,6 +488,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()
@@ -480,6 +507,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
                 Vertex(300.0, 100.0),
             ],
             make_init_vals(),
+            sim.get_next_cell_id()
         )
         circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
         sim.setup()

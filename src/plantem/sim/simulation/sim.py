@@ -22,6 +22,7 @@ class GrowingSim(arcade.Window):
     root_midpointx = None
     cell_list = None
     vis = None
+    next_cell_id = None
 
     def __init__(self, width, height, title, timestep, root_midpoint_x, vis:bool):
         if vis:
@@ -52,6 +53,12 @@ class GrowingSim(arcade.Window):
     
     def get_cell_list(self) -> arcade.SpriteList:
         return self.cell_list
+
+    def get_next_cell_id(self):
+        return self.next_cell_id
+    
+    def increment_next_cell_id(self):
+        self.next_cell_id += 1
     
     def make_init_vals(self) -> dict :
         init_vals = {
@@ -74,6 +81,7 @@ class GrowingSim(arcade.Window):
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
         self.tick = 0
+        self.next_cell_id = 0
         self.circulator = Circulator(self)
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
@@ -90,14 +98,16 @@ class GrowingSim(arcade.Window):
         cell1 = cell.GrowingCell(
             self,
             [v1, v2, v3, v4],
-            self.make_init_vals()
+            self.make_init_vals(),
+            self.next_cell_id
         )
         v5 = Vertex(10, 360 + y_offset)
         v6 = Vertex(30, 360 + y_offset)
         cell2 = cell.GrowingCell(
             self,
             [v2, v4, v5, v6],
-            self.make_init_vals()
+            self.make_init_vals(),
+            self.next_cell_id
         )
         cell1.add_neighbor(cell2)
         cell2.add_neighbor(cell1)
