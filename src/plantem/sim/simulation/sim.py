@@ -1,12 +1,12 @@
 import arcade
 import src.plantem.agent.cell as cell
 from src.plantem.sim.circulator.circulator import Circulator
-from src.plantem.sim.divider import divider
+from src.plantem.sim.divider.divider import Divider
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.sim.mover.vertex_mover import VertexMover
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Starting Template"
 
 
@@ -30,6 +30,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
+        self.setup()
 
     def get_root_midpointx(self):
         return self.root_midpointx
@@ -42,19 +43,17 @@ class GrowingSim(arcade.Window):
 
     def get_circulator(self) -> Circulator:
         return self.circulator
+    
+    def get_divider(self) -> Divider:
+        return self.divider
 
     def get_vertex_mover(self) -> VertexMover:
         return self.vertex_mover
-
-    def setup(self):
-        """Set up the Simulation. Call to re-start the Simulation."""
-        self.tick = 0
-        self.circulator = Circulator()
-        self.vertex_mover = VertexMover()
-        self.divider = divider.Divider()
-        if self.vis:
-            self.camera_sprites = arcade.Camera(self.width, self.height)
-        self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+    
+    def get_cell_list(self) -> arcade.SpriteList:
+        return self.cell_list
+    
+    def make_init_vals(self) -> dict :
         init_vals = {
             "auxin": 2,
             "arr": 3,
@@ -70,17 +69,40 @@ class GrowingSim(arcade.Window):
             "ks": 0.005,
             "kd": 0.0015,
         }
-        this_cell = cell.GrowingCell(
+        return init_vals
+
+    def setup(self):
+        """Set up the Simulation. Call to re-start the Simulation."""
+        self.tick = 0
+        self.circulator = Circulator(self)
+        self.vertex_mover = VertexMover(self)
+        self.divider = Divider(self)
+        if self.vis:
+            self.camera_sprites = arcade.Camera(self.width, self.height)
+        self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+
+        y_offset = 500
+
+        v1 = Vertex(10.0, 300.0 + y_offset)
+        v2 = Vertex(10.0, 330.0 + y_offset)
+        v3 = Vertex(30.0, 300.0 + y_offset)
+        v4 = Vertex(30.0, 330.0 + y_offset)
+        cell1 = cell.GrowingCell(
             self,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
-            init_vals,
+            [v1, v2, v3, v4],
+            self.make_init_vals()
         )
-        self.cell_list.append(this_cell)
+        v5 = Vertex(10, 360 + y_offset)
+        v6 = Vertex(30, 360 + y_offset)
+        cell2 = cell.GrowingCell(
+            self,
+            [v2, v4, v5, v6],
+            self.make_init_vals()
+        )
+        cell1.add_neighbor(cell2)
+        cell2.add_neighbor(cell1)
+        self.cell_list.append(cell1)
+        self.cell_list.append(cell2)
 
     def on_draw(self):
         """
@@ -102,6 +124,8 @@ class GrowingSim(arcade.Window):
         if self.tick % 1 == 0:
             self.cell_list.update()
         self.vertex_mover.update()
+        self.circulator.update()
+        self.divider.update()
 
 
 def main(timestep, root_midpoint_x, vis):
