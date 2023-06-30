@@ -24,7 +24,6 @@ class VertexMover:
         return self.vertex_deltas[vertex]
 
     def update(self) -> None:
-        print("Mover updating!")
         top_row = self.get_top_row()
         sorted_top_row = self.sort_top_row(top_row)
         self.propogate_deltas(sorted_top_row)
@@ -33,7 +32,7 @@ class VertexMover:
         self.cell_deltas.clear()
         self.vertex_deltas.clear()
 
-    def get_top_row(self) -> list: # NEED TO TEST
+    def get_top_row(self) -> list:
         top_ys = []
         for cell in self.cell_deltas:
             top_y = cell.get_quad_perimeter().get_top_left().get_y()
@@ -46,7 +45,7 @@ class VertexMover:
                 top_row.append(cell)
         return top_row
     
-    def sort_top_row(self, top_row : list) -> list: # NEED TO TEST
+    def sort_top_row(self, top_row : list) -> list:
         left_xs = []
         for cell in top_row:
             left_xs.append(cell.get_quad_perimeter().get_top_left().get_x())
