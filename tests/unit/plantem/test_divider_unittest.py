@@ -29,4 +29,190 @@ class TestVertexMover(unittest.TestCase):
         self.assertEqual([300,200], new_vs[1].get_xy())
 
     def test_check_neighbors_for_v_existence(self):
-        pass
+        timestep = 1
+        root_midpoint_x = 400
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
+        v5 = Vertex (100, 200)
+        thisv = simulation.get_divider().check_neighbors_for_v_existence(cell1, v5)
+        self.assertEqual(v5, thisv)
+        v6 = Vertex(300, 200)
+        cell2 = GrowingCell(simulation, [v5, v6, v4, v1], self.init_vals)
+        cell1.add_neighbor(cell2)
+        cell2.add_neighbor(cell1)
+        v7 = Vertex(1000, 1000)
+        thisv2 = simulation.get_divider().check_neighbors_for_v_existence(cell1, Vertex(300, 200))
+        thisv3 = simulation.get_divider().check_neighbors_for_v_existence(cell1, v7)
+        self.assertEqual(v6, thisv2)
+        self.assertEqual(v7, thisv3)
+
+    def test_swap_neighbors(self):
+        timestep = 1
+        root_midpoint_x = 400
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
+        v5 = Vertex(100, 400)
+        v6 = Vertex(300, 400)
+        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals)
+        v7 = Vertex(1, 100)
+        v8 = Vertex(1, 300)
+        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals)
+        cell1.add_neighbor(a_neighbor)
+        a_neighbor.add_neighbor(cell1)
+        simulation.get_divider().swap_neighbors(l_neighbor, a_neighbor, cell1)
+        self.assertEqual(1, len(a_neighbor.get_all_neighbors()))
+        self.assertEqual(1, len(l_neighbor.get_all_neighbors()))
+        self.assertEqual(l_neighbor, a_neighbor.get_all_neighbors()[0])
+        self.assertEqual(a_neighbor, l_neighbor.get_all_neighbors()[0])
+
+    def test_set_one_side_neighbors(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        cell = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
+        v5 = Vertex(100, 200)
+        v6 = Vertex(300, 200)
+        new_top_cell = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals)
+        new_bottom_cell = GrowingCell(simulation, [v1, v4, v5, v6], self.init_vals)
+        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
+        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
+        self.assertEqual([], cell.get_all_neighbors())
+        self.assertEqual([], new_top_cell.get_all_neighbors())
+        self.assertEqual([], new_bottom_cell.get_all_neighbors())
+
+        v7 = Vertex(1, 100)
+        v8 = Vertex(1, 300)
+        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals)
+        cell.add_neighbor(l_neighbor)
+        l_neighbor.add_neighbor(cell)
+        self.assertEqual([], new_top_cell.get_l_neighbors())
+        self.assertEqual([], new_bottom_cell.get_l_neighbors())
+        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
+        self.assertEqual([l_neighbor], cell.get_l_neighbors())
+        self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())
+        self.assertEqual([l_neighbor], new_bottom_cell.get_l_neighbors())
+
+        v9 = Vertex(600, 100)
+        v10 = Vertex(600, 200)
+        v11 = Vertex(600, 300)
+        m_top_neighbor = GrowingCell(simulation, [v3, v11, v6, v10], self.init_vals)
+        m_lower_neighbor = GrowingCell(simulation, [v9, v10, v6, v4], self.init_vals)
+        cell.add_neighbor(m_top_neighbor)
+        m_top_neighbor.add_neighbor(cell)
+        cell.add_neighbor(m_lower_neighbor)
+        m_lower_neighbor.add_neighbor(cell)
+        self.assertEqual([], new_top_cell.get_m_neighbors())
+        self.assertEqual([], new_bottom_cell.get_m_neighbors())
+        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
+        self.assertEqual([m_top_neighbor, m_lower_neighbor], cell.get_m_neighbors())
+        self.assertEqual([m_top_neighbor], new_top_cell.get_m_neighbors())
+        self.assertEqual([m_lower_neighbor], new_bottom_cell.get_m_neighbors())
+        self.assertEqual([new_top_cell], m_top_neighbor.get_l_neighbors())
+        self.assertEqual([new_bottom_cell], m_lower_neighbor.get_l_neighbors())
+
+    def test_update_neighbor_lists(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 200)
+        v6 = Vertex(300, 200)
+        v7 = Vertex(1, 100)
+        v8 = Vertex(1, 300)
+        v9 = Vertex(600, 100)
+        v10 = Vertex(600, 200)
+        v11 = Vertex(600, 300)
+        cell = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
+        m_top_neighbor = GrowingCell(simulation, [v3, v11, v6, v10], self.init_vals)
+        m_lower_neighbor = GrowingCell(simulation, [v9, v10, v6, v4], self.init_vals)
+        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals)
+
+        cell.add_neighbor(l_neighbor)
+        l_neighbor.add_neighbor(cell)
+        cell.add_neighbor(m_top_neighbor)
+        m_top_neighbor.add_neighbor(cell)
+        cell.add_neighbor(m_lower_neighbor)
+        m_lower_neighbor.add_neighbor(cell)
+
+        new_top_cell = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals)
+        new_bottom_cell = GrowingCell(simulation, [v1, v4, v5, v6], self.init_vals)
+        simulation.get_divider().update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
+        self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())
+        self.assertEqual([l_neighbor], new_bottom_cell.get_l_neighbors())
+        self.assertEqual([new_top_cell, new_bottom_cell], l_neighbor.get_m_neighbors())
+        self.assertEqual([m_top_neighbor], new_top_cell.get_m_neighbors())
+        self.assertEqual([m_lower_neighbor], new_bottom_cell.get_m_neighbors())
+        self.assertEqual([new_top_cell], m_top_neighbor.get_l_neighbors())
+        self.assertEqual([new_bottom_cell], m_lower_neighbor.get_l_neighbors())
+
+    def test_update(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 200)
+        v6 = Vertex(300, 200)
+        v7 = Vertex(1, 100)
+        v8 = Vertex(1, 300)
+        v9 = Vertex(600, 100)
+        v10 = Vertex(600, 200)
+        v11 = Vertex(600, 300)
+        cell = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals)
+        m_top_neighbor = GrowingCell(simulation, [v3, v11, v6, v10], self.init_vals)
+        m_lower_neighbor = GrowingCell(simulation, [v9, v10, v6, v4], self.init_vals)
+        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals)
+
+        cell.add_neighbor(l_neighbor)
+        l_neighbor.add_neighbor(cell)
+        cell.add_neighbor(m_top_neighbor)
+        m_top_neighbor.add_neighbor(cell)
+        cell.add_neighbor(m_lower_neighbor)
+        m_lower_neighbor.add_neighbor(cell)
+
+        simulation.get_cell_list().append(cell)
+
+        simulation.get_divider().add_cell(cell)
+
+        self.assertEqual(1, len(m_top_neighbor.get_l_neighbors()))
+        self.assertEqual(1, len(m_lower_neighbor.get_l_neighbors()))
+        self.assertEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
+
+        simulation.get_divider().update()
+
+        self.assertEqual(1, len(m_top_neighbor.get_l_neighbors()))
+        self.assertEqual(1, len(m_lower_neighbor.get_l_neighbors()))
+        self.assertNotEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
+        self.assertEqual(m_top_neighbor.get_l_neighbors()[0].get_quad_perimeter().get_bottom_left().get_xy(), [100,200])
+        
+        
+        
+
+

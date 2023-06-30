@@ -24,6 +24,7 @@ class VertexMover:
         return self.vertex_deltas[vertex]
 
     def update(self) -> None:
+        print("Mover updating!")
         top_row = self.get_top_row()
         sorted_top_row = self.sort_top_row(top_row)
         self.propogate_deltas(sorted_top_row)

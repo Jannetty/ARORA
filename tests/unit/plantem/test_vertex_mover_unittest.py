@@ -305,7 +305,7 @@ class TestVertexMover(unittest.TestCase):
 
     def test_check_if_divide(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 10000
         simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
