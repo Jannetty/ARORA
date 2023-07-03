@@ -1,0 +1,119 @@
+import unittest
+
+from src.plantem.sim.input.input import Input
+from src.plantem.sim.simulation.sim import GrowingSim
+from src.plantem.agent.cell import GrowingCell
+from src.plantem.loc.vertex.vertex import Vertex
+
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Starting Template"
+
+
+class InputTests(unittest.TestCase):
+    """
+    Tests Input Class
+    """
+
+    def test_get_vertex(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        expected_vertex_list = {
+            "0": [10, 300], "1": [10, 330], "2": [30, 300], "3": [30, 330],
+            "4": [10, 360], "5": [30, 360]
+        }
+        found_vertex_input = input.get_vertex()
+        for each in found_vertex_input:
+            found_vertex_list = found_vertex_input[each].get_xy()
+            self.assertEqual(expected_vertex_list[each], found_vertex_list)  
+
+    def test_get_init_vals(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        expected = {'cell0': {'aux': 2, 'arr': 3, 'al': 3, 'pin': 1, 'pina': 0.5,
+                              'pinb': 0.7, 'pinl': 0.4, 'pinm': 0.2, 'k1': 1, 'k2': 1,
+                              'k3': 1, 'k4': 1, 'k_s': 0.005, 'k_d': 0.0015,
+                              'arr_hist': '[0.1, 0.2, 0.3]'},
+                    'cell1': {'aux': 2, 'arr': 3, 'al': 3, 'pin': 1, 'pina': 0.5,
+                              'pinb': 0.7, 'pinl': 0.4, 'pinm': 0.2, 'k1': 1, 'k2': 1,
+                              'k3': 1, 'k4': 1, 'k_s': 0.005, 'k_d': 0.0015,
+                              'arr_hist': '[0.2, 0.3, 0.4]'}}
+        found = input.get_init_vals()
+        for cell in expected:
+            for val in expected[cell]:
+                self.assertEqual(expected[cell][val], found[cell][val])
+
+    def test_get_vertex_assignment(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        expected = {'cell0': ['0', '1', '2', '3'], 'cell1': ['1', '3', '4', '5']}
+        found = input.get_vertex_assignment()
+        for cell in expected:
+            for i in range(len(expected[cell])):
+                self.assertEqual(expected[cell][i], found[cell][i])
+
+    def test_get_neighbors_assignment(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        expected = {'cell0': ["cell1"], 'cell1': ['cell0']}
+        found = input.get_neighbors_assignment()
+        for cell in expected:
+            for i in range(len(expected[cell])):
+                self.assertEqual(expected[cell][i], found[cell][i])
+
+    def test_group_vertices(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        found_vertices = input.get_vertex()
+        found_vertex_assignment = input.get_vertex_assignment()
+        expected_vertex_cell0 = [[10, 300], [10, 330], [30, 300], [30, 330]]
+        expected_vertex_cell1 = [[10, 330], [30, 330], [10, 360], [30, 360]]
+        found = input.group_vertices(found_vertices, found_vertex_assignment)
+        # test cell0
+        for i in range(len(expected_vertex_cell0)):
+            self.assertEqual(expected_vertex_cell0[i], found["cell0"][i].get_xy())
+        # test cell1
+        for i in range(len(expected_vertex_cell1)):
+            self.assertEqual(expected_vertex_cell1[i], found["cell1"][i].get_xy())
+
+    # def test_create_cells(self):
+    #     sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+    #     input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+    #                   "tests/unit/plantem/test_csv/vertex.csv", sim)
+    #     v0 = Vertex(10, 300)
+    #     v1 = Vertex(10, 330)
+    #     v2 = Vertex(30, 300)
+    #     v3 = Vertex(30, 330)
+    #     v4 = Vertex(10, 360)
+    #     v5 = Vertex(30, 360)
+    #     expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
+    #     expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
+    #     found_cell0 = input.create_cells()["cell0"]
+    #     found_cell1 = input.create_cells()["cell1"]
+    #     self.assertEqual(expected_cell0.get_id(), found_cell0.get_id())
+
+
+def make_init_vals():
+    init_vals = {
+        "auxin": 2,
+        "arr": 3,
+        "al": 3,
+        "pin": 1,
+        "pina": 0.5,
+        "pinb": 0.7,
+        "pinl": 0.4,
+        "pinm": 0.2,
+        "k_arr_arr": 1,
+        "k_auxin_auxlax": 1,
+        "k_auxin_pin": 1,
+        "k_arr_pin": 1,
+        "ks": 0.005,
+        "kd": 0.0015,
+        "arr_hist": [0.1, 0.2, 0.3]
+    }
+    return init_vals
