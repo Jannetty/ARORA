@@ -81,21 +81,21 @@ class InputTests(unittest.TestCase):
         for i in range(len(expected_vertex_cell1)):
             self.assertEqual(expected_vertex_cell1[i], found["cell1"][i].get_xy())
 
-    # def test_create_cells(self):
-    #     sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-    #     input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-    #                   "tests/unit/plantem/test_csv/vertex.csv", sim)
-    #     v0 = Vertex(10, 300)
-    #     v1 = Vertex(10, 330)
-    #     v2 = Vertex(30, 300)
-    #     v3 = Vertex(30, 330)
-    #     v4 = Vertex(10, 360)
-    #     v5 = Vertex(30, 360)
-    #     expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
-    #     expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
-    #     found_cell0 = input.create_cells()["cell0"]
-    #     found_cell1 = input.create_cells()["cell1"]
-    #     self.assertEqual(expected_cell0.get_id(), found_cell0.get_id())
+    def test_create_cells(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
+                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        v0 = Vertex(10, 300)
+        v1 = Vertex(10, 330)
+        v2 = Vertex(30, 300)
+        v3 = Vertex(30, 330)
+        v4 = Vertex(10, 360)
+        v5 = Vertex(30, 360)
+        expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
+        expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
+        found_cell0 = input.create_cells()["cell0"]
+        found_cell1 = input.create_cells()["cell1"]
+        self.assertEqual(expected_cell0.get_id(), found_cell0.get_id())
 
 
 def make_init_vals():
