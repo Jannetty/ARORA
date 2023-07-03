@@ -20,10 +20,10 @@ class Input:
 
         # add new cells to the cell_list
         for cell in new_cells:
-            cell_list.append(cell)
+            cell_list.append(new_cells[cell])
 
         # update neighbors
-        self.update_neighbors(cell_neigbors)
+        self.update_neighbors(cell_neigbors, new_cells)
 
     # Helper functions
     def get_vertex(self) -> dict:
@@ -87,19 +87,18 @@ class Input:
             new_cells[cell] = GrowingCell(self.sim, vertex_grouping[cell], init_vals[cell], self.sim.get_next_cell_id())
         return new_cells
 
-    def get_neighbors(self, new_cells: GrowingCell) -> dict:
+    def get_neighbors(self, new_cells: dict) -> dict:
         neighbors_assignment = self.get_neighbors_assignment()
         neighbors = dict()
-        for cell in new_cells:
-            if cell not in neighbors:
-                if cell in neighbors_assignment:
-                    neighbors[cell] = [new_cells[cell]]
-            else:
-                if cell in neighbors_assignment:
-                    neighbors[cell].append(new_cells[cell])
+        for cell in neighbors_assignment:
+            for index in range(len(neighbors_assignment[cell])):
+                if cell not in neighbors:
+                    neighbors[cell] = [new_cells[neighbors_assignment[cell][index]]]
+                else:
+                    neighbors[cell].append(new_cells[neighbors_assignment[cell][index]])
         return neighbors
 
-    def update_neighbors(self, neighbors: dict) -> None:
+    def update_neighbors(self, neighbors: dict, new_cells: dict) -> None:
         for cell in neighbors:
             for neighbor in neighbors[cell]:
-                cell.add_neighbor(neighbor)
+                new_cells[cell].add_neighbor(neighbor)
