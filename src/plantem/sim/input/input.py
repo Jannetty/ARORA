@@ -14,6 +14,9 @@ class Input:
         self.sim = sim
 
     def input(self) -> None:
+        """
+        Add new cells to the cell_list and update their neighbors
+        """
         cell_list = self.sim.get_cell_list()
         new_cells = self.create_cells()
         cell_neigbors = self.get_neighbors(new_cells)
@@ -28,7 +31,7 @@ class Input:
     # Helper functions
     def get_vertex(self) -> dict:
         """
-        Returns vertices dictionary with index as key and Vertex object as value
+        Returns vertices dictionary with index and Vertex object as value
         """
         vertex_dict = dict()
         for index, row in self.vertex_input.iterrows():
@@ -41,12 +44,20 @@ class Input:
         return vertex_dict
 
     def get_init_vals(self) -> dict:
+        """
+        Returns inital values dictionary with cell index as key and its
+        init_vals set as value
+        """
         init_vals_dict = dict()
         for index, row in self.init_vals_input.iloc[:, :15].iterrows():
             init_vals_dict["cell{0}".format(index)] = row.to_dict()
         return init_vals_dict
 
     def get_vertex_assignment(self) -> dict:
+        """
+        Returns vertex assignment dictionary with cell index as key and its
+        vertex assignment list as value
+        """
         vertex_assign = dict()
         for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
             row = row.to_string()[12:].split(", ")
@@ -54,6 +65,10 @@ class Input:
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
+        """
+        Returns neighbors dictionary with cell index as key and its neighbors
+        list as value
+        """
         neighbors = dict()
         for index, row in self.init_vals_input.iloc[:, 16:].iterrows():
             row = row.to_string()[13:].split(", ")
@@ -62,8 +77,8 @@ class Input:
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
         """
-        Returns grouping dictionary with cellname? as key and its 4 vertices
-        list as value
+        Returns grouping dictionary with cell index as key and its 4 vertices
+        list (with Vertex object) as value
         """
         grouping = dict()
         for cell in vertex_assignment:
@@ -75,6 +90,10 @@ class Input:
         return grouping
 
     def create_cells(self) -> dict:
+        """
+        Returns newly made cells dictionary with cell index as key and its
+        corresponding GrowingCell object as value
+        """
         vertices = self.get_vertex()
         vertex_assignment = self.get_vertex_assignment()
 
@@ -84,10 +103,16 @@ class Input:
         # generate new cells
         new_cells = dict()
         for cell in vertex_grouping:
-            new_cells[cell] = GrowingCell(self.sim, vertex_grouping[cell], init_vals[cell], self.sim.get_next_cell_id())
+            new_cells[cell] = GrowingCell(self.sim, vertex_grouping[cell],
+                                          init_vals[cell],
+                                          self.sim.get_next_cell_id())
         return new_cells
 
     def get_neighbors(self, new_cells: dict) -> dict:
+        """
+        Returns neighbors dictionary with cell index as key and its
+        correspodning neighbors list (with GrowingCell objects) as value
+        """
         neighbors_assignment = self.get_neighbors_assignment()
         neighbors = dict()
         for cell in neighbors_assignment:
@@ -99,6 +124,9 @@ class Input:
         return neighbors
 
     def update_neighbors(self, neighbors: dict, new_cells: dict) -> None:
+        """
+        For each cell, add its corresponding neighbors
+        """
         for cell in neighbors:
             for neighbor in neighbors[cell]:
                 new_cells[cell].add_neighbor(neighbor)
