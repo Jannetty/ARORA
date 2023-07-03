@@ -60,7 +60,7 @@ class Input:
             neighbors["cell{0}".format(index)] = row
         return neighbors
 
-    def group_vertices(self, vertices: dict, vertex_assignment: dict) -> list:
+    def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
         """
         Returns grouping dictionary with cellname? as key and its 4 vertices
         list as value
@@ -84,7 +84,7 @@ class Input:
         # generate new cells
         new_cells = dict()
         for cell in vertex_grouping:
-            new_cells[cell] = GrowingCell(self.sim, vertex_grouping[cell], init_vals[cell], self.sim.next_cell_id())
+            new_cells[cell] = GrowingCell(self.sim, vertex_grouping[cell], init_vals[cell], self.sim.get_next_cell_id())
         return new_cells
 
     def get_neighbors(self, new_cells: GrowingCell) -> dict:
