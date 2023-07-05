@@ -50,7 +50,7 @@ class Input:
         """
         init_vals_dict = dict()
         for index, row in self.init_vals_input.iloc[:, :15].iterrows():
-            init_vals_dict["cell{0}".format(index)] = row.to_dict()
+            init_vals_dict["c{0}".format(index)] = row.to_dict()
         return init_vals_dict
 
     def get_vertex_assignment(self) -> dict:
@@ -61,7 +61,7 @@ class Input:
         vertex_assign = dict()
         for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
             row = row.to_string()[12:].split(", ")
-            vertex_assign["cell{0}".format(index)] = row
+            vertex_assign["c{0}".format(index)] = row
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
@@ -72,7 +72,7 @@ class Input:
         neighbors = dict()
         for index, row in self.init_vals_input.iloc[:, 16:].iterrows():
             row = row.to_string()[13:].split(", ")
-            neighbors["cell{0}".format(index)] = row
+            neighbors["c{0}".format(index)] = row
         return neighbors
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
