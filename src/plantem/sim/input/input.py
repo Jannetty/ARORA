@@ -22,8 +22,8 @@ class Input:
         cell_neigbors = self.get_neighbors(new_cells)
 
         # add new cells to the cell_list
-        for cell in new_cells:
-            cell_list.append(new_cells[cell])
+        for cell in new_cells.values():
+            cell_list.append(cell)
 
         # update neighbors
         self.update_neighbors(cell_neigbors, new_cells)
@@ -33,24 +33,25 @@ class Input:
         """
         Returns vertices dictionary with index and Vertex object as value
         """
-        vertex_dict = dict()
+        vertex_dict = {}
         for index, row in self.vertex_input.iterrows():
-            vertex_dict["{0}".format(index)] = row.to_dict()
+            vertex_dict[f"{index}"] = row.to_dict()
         # update the vertex_dict to store vertcies in Vertex format
-        for each in vertex_dict:
-            x = vertex_dict[each]["x"]
-            y = vertex_dict[each]["y"]
-            vertex_dict[each] = Vertex(x, y)
-        return vertex_dict
+        new_vertex_dict = {}
+        for v_num, vertex in vertex_dict.items():
+            x = vertex["x"]
+            y = vertex["y"]
+            new_vertex_dict[v_num] = Vertex(x, y)
+        return new_vertex_dict
 
     def get_init_vals(self) -> dict:
         """
         Returns inital values dictionary with cell index as key and its
         init_vals set as value
         """
-        init_vals_dict = dict()
+        init_vals_dict = {}
         for index, row in self.init_vals_input.iloc[:, :15].iterrows():
-            init_vals_dict["c{0}".format(index)] = row.to_dict()
+            init_vals_dict[f"c{index}"] = row.to_dict()
         return init_vals_dict
 
     def get_vertex_assignment(self) -> dict:
@@ -58,10 +59,10 @@ class Input:
         Returns vertex assignment dictionary with cell index as key and its
         vertex assignment list as value
         """
-        vertex_assign = dict()
+        vertex_assign = {}
         for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
             row = row.to_string()[12:].replace(" ", "").split(",")
-            vertex_assign["c{0}".format(index)] = row
+            vertex_assign[f"c{index}"] = row
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
@@ -69,10 +70,10 @@ class Input:
         Returns neighbors dictionary with cell index as key and its neighbors
         list as value
         """
-        neighbors = dict()
+        neighbors = {}
         for index, row in self.init_vals_input.iloc[:, 16:].iterrows():
             row = row.to_string()[13:].replace(" ", "").split(",")
-            neighbors["c{0}".format(index)] = row
+            neighbors[f"c{index}"] = row
         return neighbors
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
@@ -80,7 +81,7 @@ class Input:
         Returns grouping dictionary with cell index as key and its 4 vertices
         list (with Vertex object) as value
         """
-        grouping = dict()
+        grouping = {}
         for cell in vertex_assignment:
             vertex_list = []
             for vertex in vertex_assignment[cell]:
@@ -101,10 +102,10 @@ class Input:
         init_vals = self.get_init_vals()
 
         # generate new cells
-        new_cells = dict()
-        for cell in vertex_grouping:
-            new_cells[cell] = GrowingCell(
-                self.sim, vertex_grouping[cell], init_vals[cell], self.sim.get_next_cell_id()
+        new_cells = {}
+        for cell_num, vertices in vertex_grouping.items():
+            new_cells[cell_num] = GrowingCell(
+                self.sim, vertices, init_vals[cell_num], self.sim.get_next_cell_id()
             )
         return new_cells
 
@@ -114,13 +115,13 @@ class Input:
         correspodning neighbors list (with GrowingCell objects) as value
         """
         neighbors_assignment = self.get_neighbors_assignment()
-        neighbors = dict()
-        for cell in neighbors_assignment:
-            for index in range(len(neighbors_assignment[cell])):
-                if cell not in neighbors:
-                    neighbors[cell] = [new_cells[neighbors_assignment[cell][index]]]
+        neighbors = {}
+        for cell_num, neighb in neighbors_assignment.items():
+            for each in neighb:
+                if cell_num not in neighbors:
+                    neighbors[cell_num] = [new_cells[each]]
                 else:
-                    neighbors[cell].append(new_cells[neighbors_assignment[cell][index]])
+                    neighbors[cell_num].append(new_cells[each])
         return neighbors
 
     def update_neighbors(self, neighbors: dict, new_cells: dict) -> None:
