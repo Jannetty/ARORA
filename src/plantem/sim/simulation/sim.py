@@ -24,6 +24,7 @@ class GrowingSim(arcade.Window):
     cell_list = None
     vis = None
     next_cell_id = None
+    root_tip_y = 0
 
     def __init__(self, width, height, title, timestep, root_midpoint_x, vis: bool):
         if vis:
@@ -32,7 +33,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        self.input = Input("src/plantem/sim/input/default_init_vals.csv", "src/plantem/sim/input/default_vs.csv", self)
+        #self.input = Input("src/plantem/sim/input/default_init_vals.csv", "src/plantem/sim/input/default_vs.csv", self)
         self.setup()
 
     def get_root_midpointx(self):
@@ -58,27 +59,12 @@ class GrowingSim(arcade.Window):
 
     def get_next_cell_id(self):
         return self.next_cell_id
+    
+    def get_root_tip_y(self):
+        return self.root_tip_y
 
     def increment_next_cell_id(self):
         self.next_cell_id += 1
-
-    def make_init_vals(self) -> dict:
-        init_vals = {
-            "auxin": 2,
-            "arr": 3,
-            "al": 3,
-            "pina": 0.5,
-            "pinb": 0.7,
-            "pinl": 0.4,
-            "pinm": 0.2,
-            "k_arr_arr": 1,
-            "k_auxin_auxlax": 1,
-            "k_auxin_pin": 1,
-            "k_arr_pin": 1,
-            "ks": 0.005,
-            "kd": 0.0015,
-        }
-        return init_vals
 
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
@@ -90,7 +76,23 @@ class GrowingSim(arcade.Window):
         if self.vis:
             self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
-        self.input.input()
+        #self.input.input()
+        self.root_tip_y = self.get_root_tip_y()
+        self.set_dev_zones()
+
+    def set_dev_zones(self):
+        for cell in self.cell_list:
+            cell.calculate_dev_zone(cell.get_distance_from_tip())
+
+    def get_root_tip_y(self):
+        ys = []
+        if len(self.cell_list) == 0:
+            return 0
+        for cell in self.cell_list:
+            y = cell.get_quad_perimeter().get_bottom_left().get_y()
+            ys.append(y)
+        print(ys)
+        return min(ys)
         
 
     def on_draw(self):
@@ -112,9 +114,10 @@ class GrowingSim(arcade.Window):
         self.tick += 1
         if self.tick % 1 == 0:
             self.cell_list.update()
-        self.vertex_mover.update()
-        self.circulator.update()
-        self.divider.update()
+            self.vertex_mover.update()
+            self.circulator.update()
+            self.divider.update()
+            self.root_tip_y = self.get_root_tip_y()
 
 
 def main(timestep, root_midpoint_x, vis):
