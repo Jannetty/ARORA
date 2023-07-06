@@ -50,13 +50,13 @@ class BaseCirculateModuleCont:
         self.init_pinm = init_vals.get("pinm")
         self.pinm = self.init_pinm
 
-        self.k_arr_arr = init_vals.get("k_arr_arr")
-        self.k_auxin_auxlax = init_vals.get("k_auxin_auxlax")
-        self.k_auxin_pin = init_vals.get("k_auxin_pin")
-        self.k_arr_pin = init_vals.get("k_arr_pin")
+        self.k_arr_arr = init_vals.get("k1")
+        self.k_auxin_auxlax = init_vals.get("k2")
+        self.k_auxin_pin = init_vals.get("k3")
+        self.k_arr_pin = init_vals.get("k4")
 
-        self.ks = init_vals.get("ks")
-        self.kd = init_vals.get("kd")
+        self.ks = init_vals.get("k_s")
+        self.kd = init_vals.get("k_d")
 
         self.arr_hist = init_vals.get("arr_hist")
 
@@ -114,6 +114,7 @@ class BaseCirculateModuleCont:
         soln = self.get_solution()
         self.update_circ_contents(soln)
         self.update_auxin(soln)
+        print(f"auxin = {self.auxin}")
 
     # Helper functions
     def determine_left_right(self) -> tuple:

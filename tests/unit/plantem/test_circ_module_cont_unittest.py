@@ -629,12 +629,12 @@ def make_init_vals():
         "pinb": 0.7,
         "pinl": 0.4,
         "pinm": 0.2,
-        "k_arr_arr": 1,
-        "k_auxin_auxlax": 1,
-        "k_auxin_pin": 1,
-        "k_arr_pin": 1,
-        "ks": 0.005,
-        "kd": 0.0015,
+        "k1": 1,
+        "k2": 1,
+        "k3": 1,
+        "k4": 1,
+        "k_s": 0.005,
+        "k_d": 0.0015,
         "arr_hist": [0.1, 0.2, 0.3],
     }
     return init_vals

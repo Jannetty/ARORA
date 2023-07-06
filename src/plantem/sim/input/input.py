@@ -1,4 +1,5 @@
 import pandas
+import csv
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.cell import GrowingCell
 
@@ -10,7 +11,7 @@ class Input:
 
     def __init__(self, init_vals_file: str, vertex_file: str, sim):
         self.init_vals_input = pandas.read_csv(init_vals_file)
-        self.vertex_input = pandas.read_csv(vertex_file)
+        self.vertex_input = pandas.read_csv(vertex_file)    
         self.sim = sim
 
     def input(self) -> None:
@@ -52,7 +53,20 @@ class Input:
         init_vals_dict = {}
         for index, row in self.init_vals_input.iloc[:, :15].iterrows():
             init_vals_dict[f"c{index}"] = row.to_dict()
+        self.set_arr_hist(init_vals_dict)
         return init_vals_dict
+
+    def set_arr_hist(self, init_vals_dict: dict) -> None:
+        """
+        Update the arr_hist; change it from string list
+        """
+        for cell, dict in init_vals_dict.items():
+            hist = dict["arr_hist"]
+            hist_list = hist.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            new = []
+            for val in hist_list:
+                new.append(float(val))
+            init_vals_dict[cell]["arr_hist"] = new
 
     def get_vertex_assignment(self) -> dict:
         """
