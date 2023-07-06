@@ -18,6 +18,9 @@ class Divider:
 
     def update(self) -> None:
         for cell in self.cells_to_divide:
+            if (cell.get_dev_zone() != 'meristematic'):
+                print(f"Cell is in the {cell.get_dev_zone()} zone, not dividing")
+                continue
             new_vs = self.get_new_vs(cell)
             # check if those vertices exist by iterating through all vs in all neighbor cells' qps
             left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])

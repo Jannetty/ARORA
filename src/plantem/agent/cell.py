@@ -4,6 +4,29 @@ from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
 
+# Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
+MERISTEMATIC_GROWTH_RATE = -.0179
+
+# Growth rate cells in transition zone in um per um per hour from Van den Berg et al. 2018 
+TRANSITION_GROWTH_RATE = -.0179
+
+# Growth rate cells in elongation zone in um per um per hour from Van den Berg et al. 2018 
+ELONGATION_GROWTH_RATE = -.00112
+
+# Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018 
+DIFFERENTIATION_GROWTH_RATE = -.00112
+
+# um distance from tip at which cells pass from meristeamtic to transition zone from Van den Berg et al. 2018 
+MERISTEMATIC_MAX_DIST_FROM_TIP = 160
+
+# um distance from tip at which cells pass from transition to elongation zone from Van den Berg et al. 2018 
+TRANSITION_MAX_DIST_FROM_TIP = 340
+
+# um distance from tip at which cells pass from elongation to differentiation zone from Van den Berg et al. 2018 
+ELONGATION_MAX_DIST_FROM_TIP = 460
+
+# um distance from tip at which cells leave differentiation zone from Van den Berg et al. 2018 
+DIFFERENTIATION_MAX_DIST_FROM_TIP = 960
 
 class GrowingCell(arcade.Sprite):
     id = None
@@ -14,6 +37,7 @@ class GrowingCell(arcade.Sprite):
     b_neighbors = None
     l_neighbors = None
     m_neighbors = None
+    dev_zone = None
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
@@ -33,6 +57,9 @@ class GrowingCell(arcade.Sprite):
 
     def get_id(self):
         return self.id
+    
+    def get_dev_zone(self):
+        return self.dev_zone
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
         if self.check_if_neighbor(cell) == False:
@@ -147,11 +174,42 @@ class GrowingCell(arcade.Sprite):
     def grow(self) -> None:
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
+    def get_distance_from_tip(self) -> float:
+        root_tip_y = self.sim.get_root_tip_y()
+        self_y = self.quad_perimeter.get_bottom_left().get_y()
+        return self_y - root_tip_y
+    
+    def calculate_dev_zone(self, dist_to_root_tip) -> None:
+        if (dist_to_root_tip < MERISTEMATIC_MAX_DIST_FROM_TIP) :
+            self.dev_zone = "meristematic"
+        elif (dist_to_root_tip < TRANSITION_MAX_DIST_FROM_TIP) :
+            self.dev_zone = "transition"
+        elif (dist_to_root_tip < ELONGATION_MAX_DIST_FROM_TIP) :
+            self.dev_zone = "elongation"
+        elif (dist_to_root_tip < DIFFERENTIATION_MAX_DIST_FROM_TIP) :
+            self.dev_zone = "differentiation"
+
+    def get_growth_rate(self) -> float:
+        if self.get_quad_perimeter().get_height() >= 100:
+            growthRate = 0
+        if (self.dev_zone == "meristematic"):
+            growthRate = MERISTEMATIC_GROWTH_RATE
+        elif (self.dev_zone == "transition"):
+            growthRate = TRANSITION_GROWTH_RATE
+        elif (self.dev_zone == "elongation"):
+            growthRate = ELONGATION_GROWTH_RATE
+        elif (self.dev_zone == "differentiation"):
+            growthRate = DIFFERENTIATION_GROWTH_RATE
+        return growthRate
+
     def calculate_delta(self) -> float:
-        return -0.5
+        dist_to_root_tip = self.get_distance_from_tip()
+        self.calculate_dev_zone(dist_to_root_tip)
+        return self.get_growth_rate()
 
     def update(self) -> None:
         self.grow()
+        #self.circ_mod.update()
 
 
 class NonGrowingCell(arcade.Sprite):

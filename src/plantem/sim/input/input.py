@@ -53,6 +53,18 @@ class Input:
         for index, row in self.init_vals_input.iloc[:, :15].iterrows():
             init_vals_dict["c{0}".format(index)] = row.to_dict()
         return init_vals_dict
+        #return self.set_arr_hist(init_vals_dict)
+    
+    #def set_arr_hist(self, init_vals_dict):
+    #    init_vals_dict_cpy = init_vals_dict.copy()
+    #    for cell in init_vals_dict:
+    #        for hist in init_vals_dict[cell].get("arr_hist"):
+    #            print("here")
+    #            print(init_vals_dict[cell].get("arr_hist"))
+    #            init_vals_dict_cpy[cell]["arr_hist"] = hist.replace(" ", "").replace("[", "").replace("]", "").split(",")
+    #            #print(hist.replace(" ", "").replace("[", "").replace("]", "").split(","))
+    #            #print(init_vals_dict_cpy[cell]["arr_hist"])
+    #    return init_vals_dict
 
     def get_vertex_assignment(self) -> dict:
         """
@@ -61,7 +73,7 @@ class Input:
         """
         vertex_assign = dict()
         for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
-            row = row.to_string()[12:].replace(" ", "").split(",")
+            row = row.to_string()[12:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             vertex_assign["c{0}".format(index)] = row
         return vertex_assign
 
@@ -72,7 +84,7 @@ class Input:
         """
         neighbors = dict()
         for index, row in self.init_vals_input.iloc[:, 16:].iterrows():
-            row = row.to_string()[13:].replace(" ", "").split(",")
+            row = row.to_string()[13:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             neighbors["c{0}".format(index)] = row
         return neighbors
 

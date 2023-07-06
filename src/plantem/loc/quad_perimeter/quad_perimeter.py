@@ -97,6 +97,9 @@ class QuadPerimeter:
 
     def get_init_area(self) -> float:
         return self._init_area
+    
+    def get_height(self) -> float:
+        return self._top_left.get_y() - self._bottom_left.get_y()
 
 
 def get_len_perimeter_in_common(cellqp, neighborqp, neighbor_direction: str) -> float:
