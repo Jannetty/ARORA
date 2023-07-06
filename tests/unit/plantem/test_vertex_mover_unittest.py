@@ -11,10 +11,22 @@ SCREEN_TITLE = "Starting Template"
 
 
 class TestVertexMover(unittest.TestCase):
-    init_vals = {"auxin": 2, "arr": 3, "al": 3, "pina": 0.5, "pinb": 0.7,
-                 "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
-                 "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
-    
+    init_vals = {
+        "auxin": 2,
+        "arr": 3,
+        "al": 3,
+        "pina": 0.5,
+        "pinb": 0.7,
+        "pinl": 0.4,
+        "pinm": 0.2,
+        "k_arr_arr": 1,
+        "k_auxin_auxlax": 1,
+        "k_auxin_pin": 1,
+        "k_arr_pin": 1,
+        "ks": 0.005,
+        "kd": 0.0015,
+    }
+
     def test_add_cell_delta_val(self):
         timestep = 1
         root_midpoint_x = 400
@@ -25,7 +37,9 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
         simulation.get_vertex_mover().add_cell_delta_val(cell1, 1.5)
         self.assertEqual(1.5, simulation.get_vertex_mover().get_cell_delta_val(cell1))
@@ -40,7 +54,9 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
         simulation.get_vertex_mover().add_cell_b_vertices_to_vertex_deltas(cell1, 1.5)
         self.assertEqual(1.5, simulation.get_vertex_mover().get_vertex_delta_val(v1))
@@ -56,13 +72,19 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        a_neighbor = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
         cell1.add_neighbor(a_neighbor)
         cell1.add_neighbor(b_neighbor)
@@ -89,13 +111,19 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        a_neighbor = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
         cell1.add_neighbor(a_neighbor)
         cell1.add_neighbor(b_neighbor)
@@ -113,24 +141,36 @@ class TestVertexMover(unittest.TestCase):
     def test_get_top_row(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        a_neighbor = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v11 = Vertex(500, 100)
         v12 = Vertex(500, 300)
-        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id())
+        m_neighbor = GrowingCell(
+            simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id()
+        )
         cell1.add_neighbor(a_neighbor)
         a_neighbor.add_neighbor(cell1)
         cell1.add_neighbor(l_neighbor)
@@ -147,28 +187,39 @@ class TestVertexMover(unittest.TestCase):
         simulation.get_vertex_mover().add_cell_delta_val(cell1, 1.5)
         self.assertEqual([a_neighbor], simulation.get_vertex_mover().get_top_row())
 
-
     def test_update(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        a_neighbor = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v11 = Vertex(500, 100)
         v12 = Vertex(500, 300)
-        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id())
+        m_neighbor = GrowingCell(
+            simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id()
+        )
         cell1.add_neighbor(a_neighbor)
         a_neighbor.add_neighbor(cell1)
         cell1.add_neighbor(l_neighbor)
@@ -195,16 +246,24 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v11 = Vertex(500, 100)
         v12 = Vertex(500, 300)
-        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id())
+        m_neighbor = GrowingCell(
+            simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id()
+        )
         cell1.add_neighbor(l_neighbor)
         l_neighbor.add_neighbor(cell1)
         cell1.add_neighbor(b_neighbor)
@@ -216,9 +275,10 @@ class TestVertexMover(unittest.TestCase):
         simulation.get_vertex_mover().add_cell_delta_val(m_neighbor, 1.5)
         simulation.get_vertex_mover().add_cell_delta_val(l_neighbor, 1.5)
         simulation.get_vertex_mover().add_cell_delta_val(cell1, 1.5)
-        self.assertEqual([l_neighbor, cell1, m_neighbor], simulation.get_vertex_mover().sort_top_row([cell1, m_neighbor, l_neighbor]))
-
-
+        self.assertEqual(
+            [l_neighbor, cell1, m_neighbor],
+            simulation.get_vertex_mover().sort_top_row([cell1, m_neighbor, l_neighbor]),
+        )
 
     def test_update_onecol(self):
         timestep = 1
@@ -230,13 +290,19 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        a_neighbor = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
         cell1.add_neighbor(a_neighbor)
         cell1.add_neighbor(b_neighbor)
@@ -254,25 +320,39 @@ class TestVertexMover(unittest.TestCase):
     def test_update_threecol(self):
         timestep = 1
         root_midpoint_x = 400
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v9 = Vertex(100, 1)
         v10 = Vertex(300, 1)
-        b_neighbor = GrowingCell(simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id())
+        b_neighbor = GrowingCell(
+            simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
         v11 = Vertex(500, 100)
         v12 = Vertex(500, 300)
-        m_neighbor = GrowingCell(simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id())
+        m_neighbor = GrowingCell(
+            simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id()
+        )
         v13 = Vertex(500, 1)
-        mb_neighbor = GrowingCell(simulation, [v4, v11, v10, v13], self.init_vals, simulation.get_next_cell_id())
-        v14 = Vertex(1,1)
-        lb_neighbor = GrowingCell(simulation, [v14, v7, v1, v9], self.init_vals, simulation.get_next_cell_id())
+        mb_neighbor = GrowingCell(
+            simulation, [v4, v11, v10, v13], self.init_vals, simulation.get_next_cell_id()
+        )
+        v14 = Vertex(1, 1)
+        lb_neighbor = GrowingCell(
+            simulation, [v14, v7, v1, v9], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
 
         cell1.add_neighbor(l_neighbor)
@@ -306,12 +386,16 @@ class TestVertexMover(unittest.TestCase):
     def test_check_if_divide(self):
         timestep = 1
         root_midpoint_x = 10000
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.setup()
         v2.set_y(500)
         v3.set_y(500)
