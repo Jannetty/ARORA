@@ -126,7 +126,7 @@ class BaseCirculateModuleDisc:
         """
         Calcualte the auxin expression of current cell
         """
-        auxin = (self.ks - self.kd * self.init_auxin * (1/area)) * timestep
+        auxin = (self.ks - self.kd * self.init_auxin * (1 / area)) * timestep
         return auxin
 
     def calculate_arr(self, timestep: float, area: float) -> float:
@@ -134,7 +134,8 @@ class BaseCirculateModuleDisc:
         Calculate the ARR expression of current cell
         """
         arr = (
-            self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1) - self.kd * self.init_arr * (1/area)
+            self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1)
+            - self.kd * self.init_arr * (1 / area)
         ) * timestep
         return arr
 
@@ -143,8 +144,8 @@ class BaseCirculateModuleDisc:
         Calculate the AUX/LAX expression of current cell
         """
         aux_lax = (
-            self.ks * (self.init_auxin / (self.init_auxin + self.k_auxin_auxlax)) - self.kd *
-            self.init_al * (1/area)
+            self.ks * (self.init_auxin / (self.init_auxin + self.k_auxin_auxlax))
+            - self.kd * self.init_al * (1 / area)
         ) * timestep
         return aux_lax
 
@@ -153,7 +154,9 @@ class BaseCirculateModuleDisc:
         Calculate the PIN expression of current cell
         """
         pin = (
-            self.ks * (1 / (self.init_arr / self.k_arr_pin + 1)) * (self.init_auxin / (self.init_auxin + self.k_auxin_pin))
+            self.ks
+            * (1 / (self.init_arr / self.k_arr_pin + 1))
+            * (self.init_auxin / (self.init_auxin + self.k_auxin_pin))
         ) * timestep
         return pin
 
@@ -161,7 +164,7 @@ class BaseCirculateModuleDisc:
         """
         Calculate the PIN expression of neighbor cells
         """
-        neighbor_pin = (0.25 * self.init_pin - self.kd * init * (1/area)) * timestep
+        neighbor_pin = (0.25 * self.init_pin - self.kd * init * (1 / area)) * timestep
         return neighbor_pin
 
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
@@ -184,7 +187,9 @@ class BaseCirculateModuleDisc:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_memfrac(neighbor, direction)
-            neighbor_aux = (self.ks * memfrac * self.init_al - self.kd * init_pin * (1/area)) * timestep
+            neighbor_aux = (
+                self.ks * memfrac * self.init_al - self.kd * init_pin * (1 / area)
+            ) * timestep
             neighbor_dict[neighbor] = neighbor_aux
         return neighbor_dict
 
@@ -219,7 +224,7 @@ class BaseCirculateModuleDisc:
         """
         for i, elem in enumerate(self.arr_hist):
             if i != 0:
-                self.arr_hist[i-1] = elem
+                self.arr_hist[i - 1] = elem
             if i == (len(self.arr_hist) - 1):
                 self.arr_hist[i] = self.arr
 
@@ -263,11 +268,21 @@ class BaseCirculateModuleDisc:
             return self.pinl
 
     def get_state(self) -> dict:
-        state = {"auxin": self.auxin, "arr": self.arr, "al": self.al, "pin": self.pin,
-                 "pina": self.pina, "pinb": self.pinb, "pinl": self.pinl,
-                 "pinm": self.pinm, "k_arr_arr": self.k_arr_arr,
-                 "k_auxin_auxlax": self.k_auxin_auxlax,
-                 "k_auxin_pin": self.k_auxin_pin,
-                 "k_arr_pin": self.k_arr_pin,
-                 "ks": self.ks, "kd": self.kd, "arr_hist": self.arr_hist}
+        state = {
+            "auxin": self.auxin,
+            "arr": self.arr,
+            "al": self.al,
+            "pin": self.pin,
+            "pina": self.pina,
+            "pinb": self.pinb,
+            "pinl": self.pinl,
+            "pinm": self.pinm,
+            "k_arr_arr": self.k_arr_arr,
+            "k_auxin_auxlax": self.k_auxin_auxlax,
+            "k_auxin_pin": self.k_auxin_pin,
+            "k_arr_pin": self.k_arr_pin,
+            "ks": self.ks,
+            "kd": self.kd,
+            "arr_hist": self.arr_hist,
+        }
         return state

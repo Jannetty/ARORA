@@ -8,11 +8,24 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
+
 class TestVertexMover(unittest.TestCase):
-    init_vals = {"auxin": 2, "arr": 3, "al": 3, "pina": 0.5, "pinb": 0.7,
-                "pinl": 0.4, "pinm": 0.2, "k_arr_arr": 1, "k_auxin_auxlax": 1,
-                "k_auxin_pin": 1, "k_arr_pin": 1, "ks": 0.005, "kd": 0.0015}
-    
+    init_vals = {
+        "auxin": 2,
+        "arr": 3,
+        "al": 3,
+        "pina": 0.5,
+        "pinb": 0.7,
+        "pinl": 0.4,
+        "pinm": 0.2,
+        "k_arr_arr": 1,
+        "k_auxin_auxlax": 1,
+        "k_auxin_pin": 1,
+        "k_arr_pin": 1,
+        "ks": 0.005,
+        "kd": 0.0015,
+    }
+
     def test_get_new_vs(self):
         timestep = 1
         root_midpoint_x = 400
@@ -23,10 +36,12 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         new_vs = simulation.get_divider().get_new_vs(cell1)
-        self.assertEqual([100,200], new_vs[0].get_xy())
-        self.assertEqual([300,200], new_vs[1].get_xy())
+        self.assertEqual([100, 200], new_vs[0].get_xy())
+        self.assertEqual([300, 200], new_vs[1].get_xy())
 
     def test_check_neighbors_for_v_existence(self):
         timestep = 1
@@ -38,12 +53,16 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals,simulation.get_next_cell_id())
-        v5 = Vertex (100, 200)
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
+        v5 = Vertex(100, 200)
         thisv = simulation.get_divider().check_neighbors_for_v_existence(cell1, v5)
         self.assertEqual(v5, thisv)
         v6 = Vertex(300, 200)
-        cell2 = GrowingCell(simulation, [v5, v6, v4, v1], self.init_vals,simulation.get_next_cell_id())
+        cell2 = GrowingCell(
+            simulation, [v5, v6, v4, v1], self.init_vals, simulation.get_next_cell_id()
+        )
         cell1.add_neighbor(cell2)
         cell2.add_neighbor(cell1)
         v7 = Vertex(1000, 1000)
@@ -62,13 +81,19 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell1 = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell1 = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 400)
         v6 = Vertex(300, 400)
-        a_neighbor = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        a_neighbor = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
         cell1.add_neighbor(a_neighbor)
         a_neighbor.add_neighbor(cell1)
         simulation.get_divider().swap_neighbors(l_neighbor, a_neighbor, cell1)
@@ -87,25 +112,39 @@ class TestVertexMover(unittest.TestCase):
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        cell = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        cell = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         v5 = Vertex(100, 200)
         v6 = Vertex(300, 200)
-        new_top_cell = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
-        new_bottom_cell = GrowingCell(simulation, [v1, v4, v5, v6], self.init_vals, simulation.get_next_cell_id())
-        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
-        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
+        new_top_cell = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
+        new_bottom_cell = GrowingCell(
+            simulation, [v1, v4, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
+        simulation.get_divider().set_one_side_neighbors(
+            new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
+        )
+        simulation.get_divider().set_one_side_neighbors(
+            new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell
+        )
         self.assertEqual([], cell.get_all_neighbors())
         self.assertEqual([], new_top_cell.get_all_neighbors())
         self.assertEqual([], new_bottom_cell.get_all_neighbors())
 
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
         cell.add_neighbor(l_neighbor)
         l_neighbor.add_neighbor(cell)
         self.assertEqual([], new_top_cell.get_l_neighbors())
         self.assertEqual([], new_bottom_cell.get_l_neighbors())
-        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
+        simulation.get_divider().set_one_side_neighbors(
+            new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
+        )
         self.assertEqual([l_neighbor], cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_bottom_cell.get_l_neighbors())
@@ -113,15 +152,21 @@ class TestVertexMover(unittest.TestCase):
         v9 = Vertex(600, 100)
         v10 = Vertex(600, 200)
         v11 = Vertex(600, 300)
-        m_top_neighbor = GrowingCell(simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id())
-        m_lower_neighbor = GrowingCell(simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id())
+        m_top_neighbor = GrowingCell(
+            simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
+        )
+        m_lower_neighbor = GrowingCell(
+            simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id()
+        )
         cell.add_neighbor(m_top_neighbor)
         m_top_neighbor.add_neighbor(cell)
         cell.add_neighbor(m_lower_neighbor)
         m_lower_neighbor.add_neighbor(cell)
         self.assertEqual([], new_top_cell.get_m_neighbors())
         self.assertEqual([], new_bottom_cell.get_m_neighbors())
-        simulation.get_divider().set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
+        simulation.get_divider().set_one_side_neighbors(
+            new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell
+        )
         self.assertEqual([m_top_neighbor, m_lower_neighbor], cell.get_m_neighbors())
         self.assertEqual([m_top_neighbor], new_top_cell.get_m_neighbors())
         self.assertEqual([m_lower_neighbor], new_bottom_cell.get_m_neighbors())
@@ -145,10 +190,18 @@ class TestVertexMover(unittest.TestCase):
         v9 = Vertex(600, 100)
         v10 = Vertex(600, 200)
         v11 = Vertex(600, 300)
-        cell = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
-        m_top_neighbor = GrowingCell(simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id())
-        m_lower_neighbor = GrowingCell(simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id())
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        cell = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
+        m_top_neighbor = GrowingCell(
+            simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
+        )
+        m_lower_neighbor = GrowingCell(
+            simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id()
+        )
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
 
         cell.add_neighbor(l_neighbor)
         l_neighbor.add_neighbor(cell)
@@ -157,8 +210,12 @@ class TestVertexMover(unittest.TestCase):
         cell.add_neighbor(m_lower_neighbor)
         m_lower_neighbor.add_neighbor(cell)
 
-        new_top_cell = GrowingCell(simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id())
-        new_bottom_cell = GrowingCell(simulation, [v1, v4, v5, v6], self.init_vals, simulation.get_next_cell_id())
+        new_top_cell = GrowingCell(
+            simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
+        new_bottom_cell = GrowingCell(
+            simulation, [v1, v4, v5, v6], self.init_vals, simulation.get_next_cell_id()
+        )
         simulation.get_divider().update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
         self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_bottom_cell.get_l_neighbors())
@@ -185,10 +242,18 @@ class TestVertexMover(unittest.TestCase):
         v9 = Vertex(600, 100)
         v10 = Vertex(600, 200)
         v11 = Vertex(600, 300)
-        cell = GrowingCell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
-        m_top_neighbor = GrowingCell(simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id())
-        m_lower_neighbor = GrowingCell(simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id())
-        l_neighbor = GrowingCell(simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id())
+        cell = GrowingCell(
+            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
+        )
+        m_top_neighbor = GrowingCell(
+            simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
+        )
+        m_lower_neighbor = GrowingCell(
+            simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id()
+        )
+        l_neighbor = GrowingCell(
+            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        )
 
         cell.add_neighbor(l_neighbor)
         l_neighbor.add_neighbor(cell)
@@ -210,9 +275,7 @@ class TestVertexMover(unittest.TestCase):
         self.assertEqual(1, len(m_top_neighbor.get_l_neighbors()))
         self.assertEqual(1, len(m_lower_neighbor.get_l_neighbors()))
         self.assertNotEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
-        self.assertEqual(m_top_neighbor.get_l_neighbors()[0].get_quad_perimeter().get_bottom_left().get_xy(), [100,200])
-
-        
-        
-
-
+        self.assertEqual(
+            m_top_neighbor.get_l_neighbors()[0].get_quad_perimeter().get_bottom_left().get_xy(),
+            [100, 200],
+        )

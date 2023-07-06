@@ -28,7 +28,7 @@ cell = GrowingCell(
     sim,
     [Vertex(100.0, 100.0), Vertex(100.0, 300.0), Vertex(300.0, 300.0), Vertex(300.0, 100.0)],
     init_vals,
-    sim.get_next_cell_id()
+    sim.get_next_cell_id(),
 )
 sim.setup()
 CELL_LIST = [cell]

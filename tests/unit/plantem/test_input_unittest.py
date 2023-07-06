@@ -17,29 +17,67 @@ class InputTests(unittest.TestCase):
 
     def test_get_vertex(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
         expected_vertex_list = {
-            "0": [10, 300], "1": [10, 330], "2": [30, 300], "3": [30, 330],
-            "4": [10, 360], "5": [30, 360]
+            "0": [10, 300],
+            "1": [10, 330],
+            "2": [30, 300],
+            "3": [30, 330],
+            "4": [10, 360],
+            "5": [30, 360],
         }
         found_vertex_input = input.get_vertex()
         for each in found_vertex_input:
             found_vertex_list = found_vertex_input[each].get_xy()
-            self.assertEqual(expected_vertex_list[each], found_vertex_list)  
+            self.assertEqual(expected_vertex_list[each], found_vertex_list)
 
     def test_get_init_vals(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
-        expected = {'c0': {'auxin': 2, 'arr': 3, 'al': 3, 'pin': 1, 'pina': 0.5,
-                              'pinb': 0.7, 'pinl': 0.4, 'pinm': 0.2, 'k1': 1, 'k2': 1,
-                              'k3': 1, 'k4': 1, 'k_s': 0.005, 'k_d': 0.0015,
-                              'arr_hist': '[0.1, 0.2, 0.3]'},
-                    'c1': {'auxin': 2, 'arr': 3, 'al': 3, 'pin': 1, 'pina': 0.5,
-                              'pinb': 0.7, 'pinl': 0.4, 'pinm': 0.2, 'k1': 1, 'k2': 1,
-                              'k3': 1, 'k4': 1, 'k_s': 0.005, 'k_d': 0.0015,
-                              'arr_hist': '[0.2, 0.3, 0.4]'}}
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
+        expected = {
+            "c0": {
+                "auxin": 2,
+                "arr": 3,
+                "al": 3,
+                "pin": 1,
+                "pina": 0.5,
+                "pinb": 0.7,
+                "pinl": 0.4,
+                "pinm": 0.2,
+                "k1": 1,
+                "k2": 1,
+                "k3": 1,
+                "k4": 1,
+                "k_s": 0.005,
+                "k_d": 0.0015,
+                "arr_hist": "[0.1, 0.2, 0.3]",
+            },
+            "c1": {
+                "auxin": 2,
+                "arr": 3,
+                "al": 3,
+                "pin": 1,
+                "pina": 0.5,
+                "pinb": 0.7,
+                "pinl": 0.4,
+                "pinm": 0.2,
+                "k1": 1,
+                "k2": 1,
+                "k3": 1,
+                "k4": 1,
+                "k_s": 0.005,
+                "k_d": 0.0015,
+                "arr_hist": "[0.2, 0.3, 0.4]",
+            },
+        }
         found = input.get_init_vals()
         for cell in expected:
             for val in expected[cell]:
@@ -47,9 +85,12 @@ class InputTests(unittest.TestCase):
 
     def test_get_vertex_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
-        expected = {'c0': ['0', '1', '2', '3'], 'c1': ['1', '3', '4', '5']}
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
+        expected = {"c0": ["0", "1", "2", "3"], "c1": ["1", "3", "4", "5"]}
         found = input.get_vertex_assignment()
         for cell in expected:
             for i in range(len(expected[cell])):
@@ -57,9 +98,12 @@ class InputTests(unittest.TestCase):
 
     def test_get_neighbors_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
-        expected = {'c0': ["c1"], 'c1': ['c0']}
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
+        expected = {"c0": ["c1"], "c1": ["c0"]}
         found = input.get_neighbors_assignment()
         for cell in expected:
             for i in range(len(expected[cell])):
@@ -67,8 +111,11 @@ class InputTests(unittest.TestCase):
 
     def test_group_vertices(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
         found_vertices = input.get_vertex()
         found_vertex_assignment = input.get_vertex_assignment()
         expected_vertex_cell0 = [[10, 300], [10, 330], [30, 300], [30, 330]]
@@ -83,8 +130,11 @@ class InputTests(unittest.TestCase):
 
     def test_create_cells(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
         v0 = Vertex(10, 300)
         v1 = Vertex(10, 330)
         v2 = Vertex(30, 300)
@@ -97,18 +147,31 @@ class InputTests(unittest.TestCase):
         found_cell0 = cell_dict["c0"]
         # test cell0
         self.assertEqual(expected_cell0.get_id(), found_cell0.get_id())
-        self.assertEqual(expected_cell0.get_quad_perimeter().get_area(), found_cell0.get_quad_perimeter().get_area())
-        self.assertEqual(expected_cell0.get_circ_mod().get_auxin(), found_cell0.get_circ_mod().get_auxin())
-        self.assertEqual(expected_cell0.get_circ_mod().get_left_pin(), found_cell0.get_circ_mod().get_left_pin())
+        self.assertEqual(
+            expected_cell0.get_quad_perimeter().get_area(),
+            found_cell0.get_quad_perimeter().get_area(),
+        )
+        self.assertEqual(
+            expected_cell0.get_circ_mod().get_auxin(), found_cell0.get_circ_mod().get_auxin()
+        )
+        self.assertEqual(
+            expected_cell0.get_circ_mod().get_left_pin(), found_cell0.get_circ_mod().get_left_pin()
+        )
         # test cell1
         found_cell1 = cell_dict["c1"]
         self.assertEqual(expected_cell1.get_id(), found_cell1.get_id())
-        self.assertEqual(expected_cell1.get_quad_perimeter().get_area(), found_cell1.get_quad_perimeter().get_area())
+        self.assertEqual(
+            expected_cell1.get_quad_perimeter().get_area(),
+            found_cell1.get_quad_perimeter().get_area(),
+        )
 
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
         v0 = Vertex(10, 300)
         v1 = Vertex(10, 330)
         v2 = Vertex(30, 300)
@@ -125,15 +188,22 @@ class InputTests(unittest.TestCase):
         expected_cell1_neighbors = [expected_cell0]
         # check cell0
         for cell in range(len(expected_cell0_neighbors)):
-            self.assertEqual(expected_cell0_neighbors[cell].get_id(), found_cell0_neighbors[cell].get_id())
+            self.assertEqual(
+                expected_cell0_neighbors[cell].get_id(), found_cell0_neighbors[cell].get_id()
+            )
         # check cell1
         for cell in range(len(expected_cell1_neighbors)):
-            self.assertEqual(expected_cell1_neighbors[cell].get_id(), found_cell1_neighbors[cell].get_id())
+            self.assertEqual(
+                expected_cell1_neighbors[cell].get_id(), found_cell1_neighbors[cell].get_id()
+            )
 
     def test_update_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
         v0 = Vertex(10, 300)
         v1 = Vertex(10, 330)
         v2 = Vertex(30, 300)
@@ -161,8 +231,11 @@ class InputTests(unittest.TestCase):
     def test_input(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        input = Input("tests/unit/plantem/test_csv/init_vals.csv",
-                      "tests/unit/plantem/test_csv/vertex.csv", sim)
+        input = Input(
+            "tests/unit/plantem/test_csv/init_vals.csv",
+            "tests/unit/plantem/test_csv/vertex.csv",
+            sim,
+        )
         v0 = Vertex(10, 300)
         v1 = Vertex(10, 330)
         v2 = Vertex(30, 300)
@@ -178,10 +251,14 @@ class InputTests(unittest.TestCase):
         expected_cell_list.append(expected_cell1)
         for i in range(len(expected_cell_list)):
             self.assertEqual(expected_cell_list[i].get_id(), found_cell_list[i].get_id())
-            self.assertEqual(expected_cell_list[i].get_quad_perimeter().get_area(),
-                             found_cell_list[i].get_quad_perimeter().get_area())
-            self.assertEqual(expected_cell_list[i].get_circ_mod().get_auxin(),
-                             found_cell_list[i].get_circ_mod().get_auxin())
+            self.assertEqual(
+                expected_cell_list[i].get_quad_perimeter().get_area(),
+                found_cell_list[i].get_quad_perimeter().get_area(),
+            )
+            self.assertEqual(
+                expected_cell_list[i].get_circ_mod().get_auxin(),
+                found_cell_list[i].get_circ_mod().get_auxin(),
+            )
 
 
 def make_init_vals():
@@ -200,6 +277,6 @@ def make_init_vals():
         "k_arr_pin": 1,
         "ks": 0.005,
         "kd": 0.0015,
-        "arr_hist": [0.1, 0.2, 0.3]
+        "arr_hist": [0.1, 0.2, 0.3],
     }
     return init_vals

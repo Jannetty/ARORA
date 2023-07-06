@@ -102,8 +102,7 @@ class BaseCirculateModuleCont:
         """
         Solve the differential euqations
         """
-        y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb,
-              self.pinl, self.pinm]
+        y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
         t = np.array([0, 1])
         soln = odeint(self.f, y0, t)
         return soln
@@ -134,21 +133,21 @@ class BaseCirculateModuleCont:
         """
         Calcualte the auxin expression of current cell
         """
-        auxin = self.ks - self.kd * auxini * (1/area)
+        auxin = self.ks - self.kd * auxini * (1 / area)
         return auxin
 
     def calculate_arr(self, arri: float, area: float) -> float:
         """
         Calculate the ARR expression of current cell
         """
-        arr = self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1) - self.kd * arri * (1/area)
+        arr = self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1) - self.kd * arri * (1 / area)
         return arr
 
     def calculate_al(self, auxini: float, ali: float, area: float) -> float:
         """
         Calculate the AUX/LAX expression of current cell
         """
-        al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali * (1/area)
+        al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali * (1 / area)
         return al
 
     def calculate_pin(self, auxini: float, arri: float) -> float:
@@ -162,7 +161,7 @@ class BaseCirculateModuleCont:
         """
         Calculate the PIN expression of neighbor cells
         """
-        neighbor_pin = 0.25 * pini - self.kd * pindi * (1/area)
+        neighbor_pin = 0.25 * pini - self.kd * pindi * (1 / area)
         return neighbor_pin
 
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
@@ -185,7 +184,7 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_memfrac(neighbor, direction)
-            neighbor_aux = self.ks * memfrac * ali - self.kd * pindi * (1/area)
+            neighbor_aux = self.ks * memfrac * ali - self.kd * pindi * (1 / area)
             neighbor_dict[neighbor] = neighbor_aux
         return neighbor_dict
 
@@ -209,7 +208,7 @@ class BaseCirculateModuleCont:
         """
         for i, elem in enumerate(self.arr_hist):
             if i != 0:
-                self.arr_hist[i-1] = elem
+                self.arr_hist[i - 1] = elem
             if i == (len(self.arr_hist) - 1):
                 self.arr_hist[i] = self.arr
 
@@ -273,8 +272,8 @@ class BaseCirculateModuleCont:
 
     def get_al(self) -> float:
         return self.al
-    
-    def get_pin(self)-> float:
+
+    def get_pin(self) -> float:
         return self.pin
 
     def get_apical_pin(self) -> float:
@@ -304,21 +303,41 @@ class BaseCirculateModuleCont:
             return self.pinl
 
     def get_state(self) -> dict:
-        state = {"auxin": self.auxin, "arr": self.arr, "al": self.al, "pin": self.pin,
-                 "pina": self.pina, "pinb": self.pinb, "pinl": self.pinl,
-                 "pinm": self.pinm, "k_arr_arr": self.k_arr_arr,
-                 "k_auxin_auxlax": self.k_auxin_auxlax,
-                 "k_auxin_pin": self.k_auxin_pin,
-                 "k_arr_pin": self.k_arr_pin,
-                 "ks": self.ks, "kd": self.kd, "arr_hist": self.arr_hist}
+        state = {
+            "auxin": self.auxin,
+            "arr": self.arr,
+            "al": self.al,
+            "pin": self.pin,
+            "pina": self.pina,
+            "pinb": self.pinb,
+            "pinl": self.pinl,
+            "pinm": self.pinm,
+            "k_arr_arr": self.k_arr_arr,
+            "k_auxin_auxlax": self.k_auxin_auxlax,
+            "k_auxin_pin": self.k_auxin_pin,
+            "k_arr_pin": self.k_arr_pin,
+            "ks": self.ks,
+            "kd": self.kd,
+            "arr_hist": self.arr_hist,
+        }
         return state
 
     def get_state_half(self) -> dict:
-        state_half = {"auxin": self.auxin/2, "arr": self.arr/2, "al": self.al/2, "pin": self.pin/2,
-                      "pina": self.pina/2, "pinb": self.pinb/2, "pinl": self.pinl/2,
-                      "pinm": self.pinm/2, "k_arr_arr": self.k_arr_arr,
-                      "k_auxin_auxlax": self.k_auxin_auxlax,
-                      "k_auxin_pin": self.k_auxin_pin,
-                      "k_arr_pin": self.k_arr_pin,
-                      "ks": self.ks, "kd": self.kd, "arr_hist": self.arr_hist}
+        state_half = {
+            "auxin": self.auxin / 2,
+            "arr": self.arr / 2,
+            "al": self.al / 2,
+            "pin": self.pin / 2,
+            "pina": self.pina / 2,
+            "pinb": self.pinb / 2,
+            "pinl": self.pinl / 2,
+            "pinm": self.pinm / 2,
+            "k_arr_arr": self.k_arr_arr,
+            "k_auxin_auxlax": self.k_auxin_auxlax,
+            "k_auxin_pin": self.k_auxin_pin,
+            "k_arr_pin": self.k_arr_pin,
+            "ks": self.ks,
+            "kd": self.kd,
+            "arr_hist": self.arr_hist,
+        }
         return state_half
