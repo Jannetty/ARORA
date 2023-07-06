@@ -41,6 +41,7 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
+        print(f"making cell {self.id}")
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []
@@ -60,6 +61,9 @@ class GrowingCell(arcade.Sprite):
     
     def get_dev_zone(self):
         return self.dev_zone
+    
+    def set_dev_zone(self, zone):
+        self.dev_zone = zone
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
         if self.check_if_neighbor(cell) == False:
@@ -172,6 +176,7 @@ class GrowingCell(arcade.Sprite):
         )
 
     def grow(self) -> None:
+        print(f"Adding cell {self.id} growth delta to vertex mover:  {self.calculate_delta()}")
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def get_distance_from_tip(self) -> float:
