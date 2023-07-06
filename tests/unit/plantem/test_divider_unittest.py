@@ -276,8 +276,6 @@ class TestVertexMover(unittest.TestCase):
         self.assertEqual(1, len(m_top_neighbor.get_l_neighbors()))
         self.assertEqual(1, len(m_lower_neighbor.get_l_neighbors()))
         self.assertNotEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
-        print(m_top_neighbor.get_l_neighbors()[0].get_id())
-        print(m_top_neighbor.get_l_neighbors()[0].get_id())
         self.assertEqual(
             m_top_neighbor.get_l_neighbors()[0].get_quad_perimeter().get_bottom_left().get_xy(),
             [100, 200],

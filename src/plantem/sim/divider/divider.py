@@ -54,6 +54,7 @@ class Divider:
             # add two new cells to sim.cell_list
             self.sim.get_cell_list().append(new_top_cell)
             self.sim.get_cell_list().append(new_bottom_cell)
+            print(f"New cells {new_top_cell.get_id()} and {new_bottom_cell.get_id()} just made!")
 
             self.sim.get_cell_list().remove(cell)
         self.cells_to_divide = []

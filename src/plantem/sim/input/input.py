@@ -77,7 +77,6 @@ class Input:
         for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
             row = row.to_string()[12:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             vertex_assign[f"c{index}"] = row
-            print(f"row {row}")
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
