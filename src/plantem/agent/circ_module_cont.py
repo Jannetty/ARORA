@@ -259,7 +259,6 @@ class BaseCirculateModuleCont:
 
         # update current cell
         sim_circ.add_delta(curr_cell, delta_auxin)
-        # print(sim_circ.delta_auxins)
 
         # update neighbor cell
         self.update_neighbor_auxin(sim_circ, neighbors_auxin)

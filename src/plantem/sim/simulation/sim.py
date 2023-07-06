@@ -91,7 +91,6 @@ class GrowingSim(arcade.Window):
         for cell in self.cell_list:
             y = cell.get_quad_perimeter().get_bottom_left().get_y()
             ys.append(y)
-        print(ys)
         return min(ys)
         
 

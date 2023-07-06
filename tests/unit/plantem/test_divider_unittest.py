@@ -18,12 +18,12 @@ class TestVertexMover(unittest.TestCase):
         "pinb": 0.7,
         "pinl": 0.4,
         "pinm": 0.2,
-        "k_arr_arr": 1,
-        "k_auxin_auxlax": 1,
-        "k_auxin_pin": 1,
-        "k_arr_pin": 1,
-        "ks": 0.005,
-        "kd": 0.0015,
+        "k1": 1,
+        "k2": 1,
+        "k3": 1,
+        "k4": 1,
+        "k_s": 0.005,
+        "k_d": 0.0015,
     }
 
     def test_get_new_vs(self):
@@ -270,11 +270,14 @@ class TestVertexMover(unittest.TestCase):
         self.assertEqual(1, len(m_lower_neighbor.get_l_neighbors()))
         self.assertEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
 
+        cell.set_dev_zone("meristematic")
         simulation.get_divider().update()
 
         self.assertEqual(1, len(m_top_neighbor.get_l_neighbors()))
         self.assertEqual(1, len(m_lower_neighbor.get_l_neighbors()))
         self.assertNotEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
+        print(m_top_neighbor.get_l_neighbors()[0].get_id())
+        print(m_top_neighbor.get_l_neighbors()[0].get_id())
         self.assertEqual(
             m_top_neighbor.get_l_neighbors()[0].get_quad_perimeter().get_bottom_left().get_xy(),
             [100, 200],
