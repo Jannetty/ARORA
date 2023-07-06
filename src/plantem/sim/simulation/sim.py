@@ -33,7 +33,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        #self.input = Input("src/plantem/sim/input/default_init_vals.csv", "src/plantem/sim/input/default_vs.csv", self)
+        self.input = Input("src/plantem/sim/input/default_init_vals.csv", "src/plantem/sim/input/default_vs.csv", self)
         self.setup()
 
     def get_root_midpointx(self):
@@ -76,7 +76,7 @@ class GrowingSim(arcade.Window):
         if self.vis:
             self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
-        #self.input.input()
+        self.input.input()
         self.root_tip_y = self.get_root_tip_y()
         self.set_dev_zones()
 
