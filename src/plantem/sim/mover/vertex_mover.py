@@ -44,13 +44,12 @@ class VertexMover:
             if top_y == max_top_y:
                 top_row.append(cell)
         return top_row
-    
-    def sort_top_row(self, top_row : list) -> list:
+
+    def sort_top_row(self, top_row: list) -> list:
         left_xs = []
         for cell in top_row:
             left_xs.append(cell.get_quad_perimeter().get_top_left().get_x())
         return [cell for _, cell in sorted(zip(left_xs, top_row))]
-
 
     def propogate_deltas(self, top_row: list) -> None:
         for cell in top_row:
@@ -85,5 +84,7 @@ class VertexMover:
 
     def check_if_divide(self, cells) -> None:
         for cell in cells:
-            if cell.get_quad_perimeter().get_area() >= (2 * cell.get_quad_perimeter().get_init_area()):
+            if cell.get_quad_perimeter().get_area() >= (
+                2 * cell.get_quad_perimeter().get_init_area()
+            ):
                 self.sim.get_divider().add_cell(cell)

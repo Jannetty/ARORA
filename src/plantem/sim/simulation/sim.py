@@ -24,7 +24,7 @@ class GrowingSim(arcade.Window):
     vis = None
     next_cell_id = None
 
-    def __init__(self, width, height, title, timestep, root_midpoint_x, vis:bool):
+    def __init__(self, width, height, title, timestep, root_midpoint_x, vis: bool):
         if vis:
             super().__init__(width, height, title)
             arcade.set_background_color(color=[250, 250, 250])
@@ -44,23 +44,23 @@ class GrowingSim(arcade.Window):
 
     def get_circulator(self) -> Circulator:
         return self.circulator
-    
+
     def get_divider(self) -> Divider:
         return self.divider
 
     def get_vertex_mover(self) -> VertexMover:
         return self.vertex_mover
-    
+
     def get_cell_list(self) -> arcade.SpriteList:
         return self.cell_list
 
     def get_next_cell_id(self):
         return self.next_cell_id
-    
+
     def increment_next_cell_id(self):
         self.next_cell_id += 1
-    
-    def make_init_vals(self) -> dict :
+
+    def make_init_vals(self) -> dict:
         init_vals = {
             "auxin": 2,
             "arr": 3,
@@ -95,20 +95,10 @@ class GrowingSim(arcade.Window):
         v2 = Vertex(10.0, 330.0 + y_offset)
         v3 = Vertex(30.0, 300.0 + y_offset)
         v4 = Vertex(30.0, 330.0 + y_offset)
-        cell1 = cell.GrowingCell(
-            self,
-            [v1, v2, v3, v4],
-            self.make_init_vals(),
-            self.next_cell_id
-        )
+        cell1 = cell.GrowingCell(self, [v1, v2, v3, v4], self.make_init_vals(), self.next_cell_id)
         v5 = Vertex(10, 360 + y_offset)
         v6 = Vertex(30, 360 + y_offset)
-        cell2 = cell.GrowingCell(
-            self,
-            [v2, v4, v5, v6],
-            self.make_init_vals(),
-            self.next_cell_id
-        )
+        cell2 = cell.GrowingCell(self, [v2, v4, v5, v6], self.make_init_vals(), self.next_cell_id)
         cell1.add_neighbor(cell2)
         cell2.add_neighbor(cell1)
         self.cell_list.append(cell1)
@@ -140,6 +130,8 @@ class GrowingSim(arcade.Window):
 
 def main(timestep, root_midpoint_x, vis):
     """Main function"""
-    simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis)
+    simulation = GrowingSim(
+        SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis
+    )
     simulation.setup()
     arcade.run()
