@@ -1,4 +1,5 @@
 import pandas
+import csv
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.cell import GrowingCell
 
@@ -10,7 +11,7 @@ class Input:
 
     def __init__(self, init_vals_file: str, vertex_file: str, sim):
         self.init_vals_input = pandas.read_csv(init_vals_file)
-        self.vertex_input = pandas.read_csv(vertex_file)
+        self.vertex_input = pandas.read_csv(vertex_file)    
         self.sim = sim
 
     def input(self) -> None:
