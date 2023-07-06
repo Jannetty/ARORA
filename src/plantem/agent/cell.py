@@ -30,7 +30,7 @@ class GrowingCell(arcade.Sprite):
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
-    
+
     def get_id(self):
         return self.id
 
@@ -79,7 +79,6 @@ class GrowingCell(arcade.Sprite):
         elif self.quad_perimeter.get_midpointx() == sim_midpointx:
             # cell is over midpoint
             return "l"
-        
 
     def get_a_neighbors(self):
         return self.a_neighbors
@@ -92,9 +91,14 @@ class GrowingCell(arcade.Sprite):
 
     def get_l_neighbors(self):
         return self.l_neighbors
-    
+
     def get_all_neighbors(self):
-        return self.get_a_neighbors() + self.get_b_neighbors() + self.get_m_neighbors() + self.get_l_neighbors()
+        return (
+            self.get_a_neighbors()
+            + self.get_b_neighbors()
+            + self.get_m_neighbors()
+            + self.get_l_neighbors()
+        )
 
     def get_sim(self):
         return self.sim
@@ -113,7 +117,7 @@ class GrowingCell(arcade.Sprite):
             self.m_neighbors.remove(cell)
         else:
             pass
-            #raise ValueError("Non neighbor cell being removed from neighbor list")
+            # raise ValueError("Non neighbor cell being removed from neighbor list")
 
     def check_if_neighbor(self, cell: "GrowingCell") -> bool:
         if cell in self.a_neighbors:
@@ -149,6 +153,7 @@ class GrowingCell(arcade.Sprite):
     def update(self) -> None:
         self.grow()
 
+
 class NonGrowingCell(arcade.Sprite):
     quad_perimeter = None
     circ_mod = None
@@ -158,7 +163,7 @@ class NonGrowingCell(arcade.Sprite):
     l_neighbors = None
     m_neighbors = None
 
-    def __init__(self, simulation, corners: list, init_vals, id : int):
+    def __init__(self, simulation, corners: list, init_vals, id: int):
         self.id = id
         super().__init__()
         self.a_neighbors = []
@@ -218,7 +223,6 @@ class NonGrowingCell(arcade.Sprite):
         elif self.quad_perimeter.get_midpointx() == sim_midpointx:
             # cell is over midpoint
             return "l"
-        
 
     def get_a_neighbors(self):
         return self.a_neighbors
@@ -231,9 +235,14 @@ class NonGrowingCell(arcade.Sprite):
 
     def get_l_neighbors(self):
         return self.l_neighbors
-    
+
     def get_all_neighbors(self):
-        return self.get_a_neighbors() + self.get_b_neighbors() + self.get_m_neighbors() + self.get_l_neighbors()
+        return (
+            self.get_a_neighbors()
+            + self.get_b_neighbors()
+            + self.get_m_neighbors()
+            + self.get_l_neighbors()
+        )
 
     def get_sim(self):
         return self.sim

@@ -103,9 +103,9 @@ class Input:
         # generate new cells
         new_cells = dict()
         for cell in vertex_grouping:
-            new_cells[cell] = GrowingCell(self.sim, vertex_grouping[cell],
-                                          init_vals[cell],
-                                          self.sim.get_next_cell_id())
+            new_cells[cell] = GrowingCell(
+                self.sim, vertex_grouping[cell], init_vals[cell], self.sim.get_next_cell_id()
+            )
         return new_cells
 
     def get_neighbors(self, new_cells: dict) -> dict:
