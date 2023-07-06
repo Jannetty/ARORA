@@ -60,7 +60,7 @@ class Input:
         """
         vertex_assign = dict()
         for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
-            row = row.to_string()[12:].split(", ")
+            row = row.to_string()[12:].replace(" ", "").split(",")
             vertex_assign["c{0}".format(index)] = row
         return vertex_assign
 
@@ -71,7 +71,7 @@ class Input:
         """
         neighbors = dict()
         for index, row in self.init_vals_input.iloc[:, 16:].iterrows():
-            row = row.to_string()[13:].split(", ")
+            row = row.to_string()[13:].replace(" ", "").split(",")
             neighbors["c{0}".format(index)] = row
         return neighbors
 
