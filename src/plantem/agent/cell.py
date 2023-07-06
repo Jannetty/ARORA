@@ -212,7 +212,7 @@ class GrowingCell(arcade.Sprite):
 
     def update(self) -> None:
         self.grow()
-        #self.circ_mod.update()
+        self.circ_mod.update()
 
 
 class NonGrowingCell(arcade.Sprite):

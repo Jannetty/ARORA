@@ -134,6 +134,7 @@ class BaseCirculateModuleCont:
         """
         Calcualte the auxin expression of current cell
         """
+        print(f"cell {self.cell.get_id()} calculating auxin")
         auxin = self.ks - self.kd * auxini * (1 / area)
         return auxin
 
@@ -312,32 +313,12 @@ class BaseCirculateModuleCont:
             "pinb": self.pinb,
             "pinl": self.pinl,
             "pinm": self.pinm,
-            "k_arr_arr": self.k_arr_arr,
-            "k_auxin_auxlax": self.k_auxin_auxlax,
-            "k_auxin_pin": self.k_auxin_pin,
-            "k_arr_pin": self.k_arr_pin,
-            "ks": self.ks,
-            "kd": self.kd,
+            "k1": self.k_arr_arr,
+            "k2": self.k_auxin_auxlax,
+            "k3": self.k_auxin_pin,
+            "k4": self.k_arr_pin,
+            "k_s": self.ks,
+            "k_d": self.kd,
             "arr_hist": self.arr_hist,
         }
         return state
-
-    def get_state_half(self) -> dict:
-        state_half = {
-            "auxin": self.auxin / 2,
-            "arr": self.arr / 2,
-            "al": self.al / 2,
-            "pin": self.pin / 2,
-            "pina": self.pina / 2,
-            "pinb": self.pinb / 2,
-            "pinl": self.pinl / 2,
-            "pinm": self.pinm / 2,
-            "k_arr_arr": self.k_arr_arr,
-            "k_auxin_auxlax": self.k_auxin_auxlax,
-            "k_auxin_pin": self.k_auxin_pin,
-            "k_arr_pin": self.k_arr_pin,
-            "ks": self.ks,
-            "kd": self.kd,
-            "arr_hist": self.arr_hist,
-        }
-        return state_half

@@ -45,9 +45,6 @@ class QuadPerimeter:
         return dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
 
     def __assign_corners(self) -> None:
-        for v in self._perimeter_vs:
-            print(f"vertex at loc {v.get_xy()}")
-
         top_row = get_apical(self._perimeter_vs)
         bottom_row = [v for v in self._perimeter_vs if v not in top_row]
         left_col = get_left(self._perimeter_vs)
