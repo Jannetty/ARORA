@@ -108,5 +108,5 @@ class Divider:
 
     def swap_neighbors(self, new_cell, old_n, old_cell):
         new_cell.add_neighbor(old_n)
-        old_n.remove_neighbor(old_cell)
         old_n.add_neighbor(new_cell)
+        old_n.remove_neighbor(old_cell)

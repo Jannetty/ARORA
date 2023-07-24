@@ -60,6 +60,9 @@ class GrowingCell(arcade.Sprite):
     
     def get_dev_zone(self):
         return self.dev_zone
+    
+    def set_dev_zone(self, zone):
+        self.dev_zone = zone
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
         if self.check_if_neighbor(cell) == False:
@@ -209,7 +212,7 @@ class GrowingCell(arcade.Sprite):
 
     def update(self) -> None:
         self.grow()
-        #self.circ_mod.update()
+        self.circ_mod.update()
 
 
 class NonGrowingCell(arcade.Sprite):
