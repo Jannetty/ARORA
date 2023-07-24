@@ -154,7 +154,7 @@ class BaseCirculateModuleCont:
         """
         Calculate the PIN expression of current cell
         """
-        pin = self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin))
+        pin = self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin)) - self.kd * self.pin
         return pin
 
     def calculate_neighbor_pin(self, pini: float, pindi: float, area: float) -> float:

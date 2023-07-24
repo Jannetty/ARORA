@@ -119,7 +119,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        expected_pin = 8.33333333 * 0.0001
+        expected_pin = 8.33333333 * 0.0001 - 0.0015 * 1
         found_pin = circ_module_cont.calculate_pin(2, 3)
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
@@ -664,7 +664,7 @@ def f(y, t) -> list:
     # al
     f2 = KS * (auxini / (auxini + K2)) - KD * ali * (1 / area)
     # pin
-    f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4))
+    f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4)) - KD * pini
     # neighbor pin
     f4 = 0.25 * pini - KD * pinai * (1 / area)
     f5 = 0.25 * pini - KD * pinbi * (1 / area)
