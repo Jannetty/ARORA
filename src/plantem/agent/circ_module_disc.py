@@ -83,10 +83,10 @@ class BaseCirculateModuleDisc:
         syn_deg_auxin = self.calculate_auxin(self.timestep, area)
         self.arr = self.calculate_arr(self.timestep, area)
         self.al = self.calculate_aux_lax(self.timestep, area)
-        self.pina = self.calculate_neighbor_pin(self.init_pina, self.timestep, area)
-        self.pinb = self.calculate_neighbor_pin(self.init_pinb, self.timestep, area)
-        self.pinl = self.calculate_neighbor_pin(self.init_pinl, self.timestep, area)
-        self.pinm = self.calculate_neighbor_pin(self.init_pinm, self.timestep, area)
+        self.pina = self.calculate_membrane_pin(self.init_pina, self.timestep, area)
+        self.pinb = self.calculate_membrane_pin(self.init_pinb, self.timestep, area)
+        self.pinl = self.calculate_membrane_pin(self.init_pinl, self.timestep, area)
+        self.pinm = self.calculate_membrane_pin(self.init_pinm, self.timestep, area)
 
         # find neighbors
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
@@ -160,12 +160,12 @@ class BaseCirculateModuleDisc:
         ) * timestep
         return pin
 
-    def calculate_neighbor_pin(self, init: float, timestep: float, area: float) -> float:
+    def calculate_membrane_pin(self, init: float, timestep: float, area: float) -> float:
         """
-        Calculate the PIN expression of neighbor cells
+        Calculate the PIN expression on one cell membrane
         """
-        neighbor_pin = (0.25 * self.init_pin - self.kd * init * (1 / area)) * timestep
-        return neighbor_pin
+        membrane_pin = (0.25 * self.init_pin - self.kd * init * (1 / area)) * timestep
+        return membrane_pin
 
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
         """
@@ -178,6 +178,7 @@ class BaseCirculateModuleDisc:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
+    # TODO: Change this to get neighbor's auxin instead of calculating neighbor's auxin
     def get_neighbor_auxin(
         self, init_pin: float, neighbors: list, direction: str, timestep: float, area: float
     ) -> dict:

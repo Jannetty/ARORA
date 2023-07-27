@@ -123,7 +123,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         found_pin = circ_module_cont.calculate_pin(2, 3)
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
-    def test_calculate_neighbor_pin(self):
+    def test_calculate_membrane_pin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -141,10 +141,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
         expected_pin = 0.2499999813
-        found_pin = circ_module_cont.calculate_neighbor_pin(1, 0.5, area)
+        found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, 'a')
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
-    def test_calculate_memfrac(self):
+    def test_calculate_neighbor_memfrac(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -172,10 +172,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim.setup()
         # test apical neighbor
         expected_f = 0.25
-        found_f = circ_module_cont.calculate_memfrac(neighbora, "a")
+        found_f = circ_module_cont.calculate_neighbor_memfrac(neighbora, "a")
         self.assertAlmostEqual(expected_f, found_f, places=5)
 
-    def test_get_neighbor_auxin(self):
+    def test_get_neighbor_auxin_exchange(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -204,7 +204,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim.setup()
         area = cell.quad_perimeter.get_area()
         neighbor_list = [neighbora]
-        expected_neighbor_auxin = circ_module_cont.get_neighbor_auxin(
+        expected_neighbor_auxin = circ_module_cont.get_neighbor_auxin_exchange(
             3, 1, neighbor_list, "a", area
         )
         found_neighbor_auxin = {neighbora: 0.00374998125}
@@ -616,6 +616,25 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim.setup()
         found = circ_module_cont.get_right_pin()
         expected = 0.2
+        self.assertEqual(expected, found)
+
+    def test_get_self_memfrac(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        cell = GrowingCell(
+            sim,
+            [
+                Vertex(100.0, 100.0),
+                Vertex(100.0, 300.0),
+                Vertex(300.0, 300.0),
+                Vertex(300.0, 100.0),
+            ],
+            make_init_vals(),
+            sim.get_next_cell_id(),
+        )
+        circ_module_cont = cell.get_circ_mod()
+        sim.setup()
+        found = circ_module_cont.calculate_self_memfrac("a")
+        expected = cell.quad_perimeter.get_apical_memlen / cell.quad_perimeter.get_perimeter_len()
         self.assertEqual(expected, found)
 
 
