@@ -213,6 +213,8 @@ class GrowingCell(arcade.Sprite):
     def update(self) -> None:
         self.grow()
         self.circ_mod.update()
+        
+        # print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")
 
 
 class NonGrowingCell(arcade.Sprite):

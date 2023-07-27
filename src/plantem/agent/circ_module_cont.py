@@ -320,3 +320,7 @@ class BaseCirculateModuleCont:
             "arr_hist": self.arr_hist,
         }
         return state
+    
+    # setter function
+    def set_auxin(self, new_aux: float) -> None:
+        self.auxin = new_aux
