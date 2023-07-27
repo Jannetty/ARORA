@@ -120,7 +120,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         found_PIN = circ_module_disc.calculate_pin(timestep, area)
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
-    def test_calculate_neighbor_pin(self):
+    def test_calculate_membrane_pin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -139,7 +139,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         area = cell.quad_perimeter.get_area()
         # test apical
         expected_neighbor_PIN = 0.2499999813
-        found_neighbor_PIN = circ_module_disc.calculate_neighbor_pin(0.5, timestep, area)
+        found_neighbor_PIN = circ_module_disc.calculate_membrane_pin(0.5, timestep, area)
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
 
     def test_calculate_memfrac(self):
