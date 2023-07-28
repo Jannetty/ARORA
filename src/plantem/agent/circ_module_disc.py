@@ -50,13 +50,13 @@ class BaseCirculateModuleDisc:
         self.init_pinm = init_vals.get("pinm")
         self.pinm = self.init_pinm
 
-        self.k_arr_arr = init_vals.get("k_arr_arr")
-        self.k_auxin_auxlax = init_vals.get("k_auxin_auxlax")
-        self.k_auxin_pin = init_vals.get("k_auxin_pin")
-        self.k_arr_pin = init_vals.get("k_arr_pin")
+        self.k_arr_arr = init_vals.get("k1")
+        self.k_auxin_auxlax = init_vals.get("k2")
+        self.k_auxin_pin = init_vals.get("k3")
+        self.k_arr_pin = init_vals.get("k4")
 
-        self.ks = init_vals.get("ks")
-        self.kd = init_vals.get("kd")
+        self.ks = init_vals.get("k_s")
+        self.kd = init_vals.get("k_d")
 
         self.arr_hist = init_vals.get("arr_hist")
 
@@ -83,19 +83,19 @@ class BaseCirculateModuleDisc:
         syn_deg_auxin = self.calculate_auxin(self.timestep, area)
         self.arr = self.calculate_arr(self.timestep, area)
         self.al = self.calculate_aux_lax(self.timestep, area)
-        self.pina = self.calculate_membrane_pin(self.init_pina, self.timestep, area)
-        self.pinb = self.calculate_membrane_pin(self.init_pinb, self.timestep, area)
-        self.pinl = self.calculate_membrane_pin(self.init_pinl, self.timestep, area)
-        self.pinm = self.calculate_membrane_pin(self.init_pinm, self.timestep, area)
+        self.pina = self.calculate_membrane_pin(self.pina, self.timestep, area)
+        self.pinb = self.calculate_membrane_pin(self.pinb, self.timestep, area)
+        self.pinl = self.calculate_membrane_pin(self.pinl, self.timestep, area)
+        self.pinm = self.calculate_membrane_pin(self.pinm, self.timestep, area)
 
         # find neighbors
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
         # change in auxin relative to current cell
-        auxina = self.get_neighbor_auxin(self.pina, neighborsa, "a", self.timestep, area)
-        auxinb = self.get_neighbor_auxin(self.pinb, neighborsb, "b", self.timestep, area)
-        auxinl = self.get_neighbor_auxin(self.pinl, neighborsl, "l", self.timestep, area)
-        auxinm = self.get_neighbor_auxin(self.pinm, neighborsm, "m", self.timestep, area)
+        auxina = self.get_neighbor_auxin_exchange(self.pina, neighborsa, "a", self.timestep, area)
+        auxinb = self.get_neighbor_auxin_exchange(self.pinb, neighborsb, "b", self.timestep, area)
+        auxinl = self.get_neighbor_auxin_exchange(self.pinl, neighborsl, "l", self.timestep, area)
+        auxinm = self.get_neighbor_auxin_exchange(self.pinm, neighborsm, "m", self.timestep, area)
         neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
         # update current cell
@@ -126,7 +126,7 @@ class BaseCirculateModuleDisc:
         """
         Calcualte the auxin expression of current cell
         """
-        auxin = (self.ks - self.kd * self.init_auxin * (1 / area)) * timestep
+        auxin = (self.ks - self.kd * self.auxin * (1 / area)) * timestep
         return auxin
 
     def calculate_arr(self, timestep: float, area: float) -> float:
@@ -154,10 +154,10 @@ class BaseCirculateModuleDisc:
         Calculate the PIN expression of current cell
         """
         pin = (
-            self.ks
+            (self.ks
             * (1 / (self.init_arr / self.k_arr_pin + 1))
             * (self.init_auxin / (self.init_auxin + self.k_auxin_pin))
-        ) * timestep
+        ) - self.kd * self.pin)* timestep
         return pin
 
     def calculate_membrane_pin(self, init: float, timestep: float, area: float) -> float:
@@ -167,7 +167,7 @@ class BaseCirculateModuleDisc:
         membrane_pin = (0.25 * self.init_pin - self.kd * init * (1 / area)) * timestep
         return membrane_pin
 
-    def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
+    def calculate_neighbor_memfrac(self, neighbor, neighbor_direction: str) -> float:
         """
         Calculate the fraction of total cell membrane that is in a defined direction
         """
@@ -179,17 +179,21 @@ class BaseCirculateModuleDisc:
         return memfrac
 
     # TODO: Change this to get neighbor's auxin instead of calculating neighbor's auxin
-    def get_neighbor_auxin(
-        self, init_pin: float, neighbors: list, direction: str, timestep: float, area: float
+    def get_neighbor_auxin_exchange(
+        self, pin_dir: float, neighbors: list, direction: str, timestep: float, area: float
     ) -> dict:
         """
         Calculate the auxin expression of neighbor cells in a defined direction
         """
         neighbor_dict = {}
         for neighbor in neighbors:
-            memfrac = self.calculate_memfrac(neighbor, direction)
+            memfrac = self.calculate_neighbor_memfrac(neighbor, direction)
+            # TODO: Make k_al and k_pin  parameters from input
+            k_al = 1
+            k_pin = 1
+            neighbor_aux = neighbor.get_circ_mod().get_auxin()
             neighbor_aux = (
-                self.ks * memfrac * self.init_al - self.kd * init_pin * (1 / area)
+                neighbor_aux * memfrac * self.al * k_al - self.auxin * pin_dir * (1 / area) * k_pin
             ) * timestep
             neighbor_dict[neighbor] = neighbor_aux
         return neighbor_dict
@@ -278,12 +282,12 @@ class BaseCirculateModuleDisc:
             "pinb": self.pinb,
             "pinl": self.pinl,
             "pinm": self.pinm,
-            "k_arr_arr": self.k_arr_arr,
-            "k_auxin_auxlax": self.k_auxin_auxlax,
-            "k_auxin_pin": self.k_auxin_pin,
-            "k_arr_pin": self.k_arr_pin,
-            "ks": self.ks,
-            "kd": self.kd,
+            "k1": self.k_arr_arr,
+            "k2": self.k_auxin_auxlax,
+            "k3": self.k_auxin_pin,
+            "k4": self.k_arr_pin,
+            "k_s": self.ks,
+            "k_d": self.kd,
             "arr_hist": self.arr_hist,
         }
         return state

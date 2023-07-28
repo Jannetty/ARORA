@@ -142,7 +142,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         found_neighbor_PIN = circ_module_disc.calculate_membrane_pin(0.5, timestep, area)
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
 
-    def test_calculate_memfrac(self):
+    def test_calculate_neighbor_memfrac(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -169,7 +169,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             sim.get_next_cell_id(),
         )
         sim.setup()
-        found_memfrac = circ_module_disc.calculate_memfrac(neighbora, "a")
+        found_memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora, "a")
         expected_memfrac = 0.25
         self.assertEqual(expected_memfrac, found_memfrac)
 
