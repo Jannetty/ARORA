@@ -127,6 +127,7 @@ class GrowingSim(arcade.Window):
         """
         self.tick += 1
         if self.tick % 1 == 0:
+            print(f"tick {self.tick}")
             self.cell_list.update()
             self.vertex_mover.update()
             self.circulator.update()

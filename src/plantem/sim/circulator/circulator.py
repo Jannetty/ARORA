@@ -18,8 +18,10 @@ class Circulator:
 
     def update(self) -> None:
         for cell in self.delta_auxins:
+            print(f"cell {cell.get_id()} aux before = {cell.get_circ_mod().get_auxin()}")
             old_aux = cell.get_circ_mod().get_auxin()
             new_aux = old_aux + self.delta_auxins[cell]
             cell.get_circ_mod().set_auxin(new_aux)
+            print(f"cell {cell.get_id()} aux after = {cell.get_circ_mod().get_auxin()}")
         self.delta_auxins = dict()
 
