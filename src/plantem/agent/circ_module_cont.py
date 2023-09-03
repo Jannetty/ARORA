@@ -106,6 +106,10 @@ class BaseCirculateModuleCont:
         t = np.array([0, 1])
         soln = odeint(self.f, y0, t)
         return soln
+    
+    def get_solution(self):
+        soln = self.solve_equations()
+        return soln
 
     def update(self) -> None:
         """
@@ -211,8 +215,8 @@ class BaseCirculateModuleCont:
             k_al = 1
             k_pin = 1
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            neighbor_aux = neighbor_aux * memfrac * ali * k_al - self.auxin * pindi * (1 / area) * k_pin
-            neighbor_dict[neighbor] = neighbor_aux
+            neighbor_aux_exchange = neighbor_aux * memfrac * ali * k_al - self.auxin * pindi * (1 / area) * k_pin
+            neighbor_dict[neighbor] = neighbor_aux_exchange
         return neighbor_dict
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
@@ -224,10 +228,6 @@ class BaseCirculateModuleCont:
             auxin = sum(neighbors.values())
             total_auxin += auxin
         return total_auxin
-
-    def get_solution(self):
-        soln = self.solve_equations()
-        return soln
 
     def update_arr_hist(self) -> None:
         """

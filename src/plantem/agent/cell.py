@@ -50,7 +50,7 @@ class GrowingCell(arcade.Sprite):
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        self.circ_mod = BaseCirculateModuleDisc(self, init_vals)
+        self.circ_mod = BaseCirculateModuleCont(self, init_vals)
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
