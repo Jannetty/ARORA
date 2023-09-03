@@ -536,5 +536,7 @@ def make_init_vals():
         "ks": 0.005,
         "kd": 0.0015,
         "arr_hist": [0.1, 0.2, 0.3],
+        "growing": True,
+        "circ_mod": 'disc'
     }
     return init_vals
