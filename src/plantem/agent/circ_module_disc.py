@@ -178,7 +178,7 @@ class BaseCirculateModuleDisc:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    # TODO: Change this to get neighbor's auxin instead of calculating neighbor's auxin
+    # TODO: Change this to make k_al and k_pin dynamic
     def get_neighbor_auxin_exchange(
         self, pin_dir: float, neighbors: list, direction: str, timestep: float, area: float
     ) -> dict:
