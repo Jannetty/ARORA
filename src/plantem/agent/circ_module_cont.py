@@ -54,6 +54,8 @@ class BaseCirculateModuleCont:
         self.k_auxin_auxlax = init_vals.get("k2")
         self.k_auxin_pin = init_vals.get("k3")
         self.k_arr_pin = init_vals.get("k4")
+        self.k_al = init_vals.get("k5")
+        self.k_pin = init_vals.get("k6")
 
         self.ks = init_vals.get("k_s")
         self.kd = init_vals.get("k_d")
@@ -211,11 +213,8 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor, direction)
-            # TODO: Make k_al and k_pin  parameters from input
-            k_al = 1
-            k_pin = 1
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            neighbor_aux_exchange = neighbor_aux * memfrac * ali * k_al - self.auxin * pindi * (1 / area) * k_pin
+            neighbor_aux_exchange = neighbor_aux * memfrac * ali * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
             neighbor_dict[neighbor] = neighbor_aux_exchange
         return neighbor_dict
 
@@ -342,12 +341,15 @@ class BaseCirculateModuleCont:
             "k2": self.k_auxin_auxlax,
             "k3": self.k_auxin_pin,
             "k4": self.k_arr_pin,
+            "k5": self.k_al,
+            "k6": self.k_pin,
             "k_s": self.ks,
             "k_d": self.kd,
             "arr_hist": self.arr_hist,
         }
         return state
     
+
     # setter function
     def set_auxin(self, new_aux: float) -> None:
         self.auxin = new_aux

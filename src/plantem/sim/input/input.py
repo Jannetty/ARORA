@@ -45,13 +45,14 @@ class Input:
             new_vertex_dict[v_num] = Vertex(x, y)
         return new_vertex_dict
 
+    # TODO: make iloc so it isn't using raw number
     def get_init_vals(self) -> dict:
         """
         Returns inital values dictionary with cell index as key and its
         init_vals set as value
         """
         init_vals_dict = {}
-        for index, row in self.init_vals_input.iloc[:, :17].iterrows():
+        for index, row in self.init_vals_input.iloc[:, :19].iterrows():
             init_vals_dict[f"c{index}"] = row.to_dict()
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
@@ -75,7 +76,7 @@ class Input:
         vertex assignment list as value
         """
         vertex_assign = {}
-        for index, row in self.init_vals_input.iloc[:, 17:18].iterrows():
+        for index, row in self.init_vals_input.iloc[:, 19:20].iterrows():
             row = row.to_string()[12:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             vertex_assign[f"c{index}"] = row
         return vertex_assign
@@ -87,7 +88,7 @@ class Input:
         list as value
         """
         neighbors = {}
-        for index, row in self.init_vals_input.iloc[:, 18:].iterrows():
+        for index, row in self.init_vals_input.iloc[:, 20:].iterrows():
             row = row.to_string()[13:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             neighbors[f"c{index}"] = row
         return neighbors
