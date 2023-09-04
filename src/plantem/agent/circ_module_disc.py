@@ -54,6 +54,8 @@ class BaseCirculateModuleDisc:
         self.k_auxin_auxlax = init_vals.get("k2")
         self.k_auxin_pin = init_vals.get("k3")
         self.k_arr_pin = init_vals.get("k4")
+        self.k_al = init_vals.get("k5")
+        self.k_pin = init_vals.get("k6")
 
         self.ks = init_vals.get("k_s")
         self.kd = init_vals.get("k_d")
