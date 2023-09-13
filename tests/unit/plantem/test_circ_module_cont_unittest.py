@@ -141,7 +141,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
         expected_pin = 0.2499999813
-        found_pin = circ_module_cont.calculate_neighbor_pin(1, 0.5, area)
+        found_pin = circ_module_cont.calculate_neighbor_pin(1, 0.5, 1, area)
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
     def test_calculate_memfrac(self):
@@ -268,7 +268,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pina,
             circ_module_cont.pinb,
             circ_module_cont.pinl,
-            circ_module_cont.pinm,
+            circ_module_cont.pinm
         ]
         t = np.array([0, 1])
         expected_soln = odeint(f, y0, t)
@@ -471,7 +471,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pina,
             circ_module_cont.pinb,
             circ_module_cont.pinl,
-            circ_module_cont.pinm,
+            circ_module_cont.pinm
         ]
         t = np.array([0, 1])
         soln = odeint(f, y0, t)
@@ -629,13 +629,20 @@ def make_init_vals():
         "pinb": 0.7,
         "pinl": 0.4,
         "pinm": 0.2,
+        "w_pina": 1,
+        "w_pinb": 1,
+        "w_pinl": 1,
+        "w_pinm": 1,
         "k1": 1,
         "k2": 1,
         "k3": 1,
         "k4": 1,
         "k_s": 0.005,
         "k_d": 0.0015,
+        "k_al": 1,
+        "k_pin": 1,
         "arr_hist": [0.1, 0.2, 0.3],
+        "growing": 0
     }
     return init_vals
 
@@ -645,6 +652,10 @@ def f(y, t) -> list:
     Setup the model functions
     """
     area = 40000
+    w_pina = 1
+    w_pinb = 1
+    w_pinl = 1
+    w_pinm = 1
 
     # setup species
     auxini = y[0]
@@ -666,9 +677,9 @@ def f(y, t) -> list:
     # pin
     f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4)) - KD * pini
     # neighbor pin
-    f4 = 0.25 * pini - KD * pinai * (1 / area)
-    f5 = 0.25 * pini - KD * pinbi * (1 / area)
-    f6 = 0.25 * pini - KD * pinli * (1 / area)
-    f7 = 0.25 * pini - KD * pinmi * (1 / area)
+    f4 = 0.25 * pini - w_pina * KD * pinai * (1 / area)
+    f5 = 0.25 * pini - w_pinb * KD * pinbi * (1 / area)
+    f6 = 0.25 * pini - w_pinl * KD * pinli * (1 / area)
+    f7 = 0.25 * pini - w_pinm * KD * pinmi * (1 / area)
 
     return [f0, f1, f2, f3, f4, f5, f6, f7]
