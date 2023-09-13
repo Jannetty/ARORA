@@ -45,13 +45,19 @@ class Input:
             new_vertex_dict[v_num] = Vertex(x, y)
         return new_vertex_dict
 
+    # TODO: make iloc so it isn't using raw number
+    # Done
     def get_init_vals(self) -> dict:
         """
         Returns inital values dictionary with cell index as key and its
         init_vals set as value
         """
         init_vals_dict = {}
-        for index, row in self.init_vals_input.iloc[:, :15].iterrows():
+        init_vals_names = ["auxin", "arr", "al", "pin", "pina", "pinb", "pinl",
+                           "pinm", "w_pina", "w_pinb", "w_pinl", "w_pinm",
+                           "k1", "k2", "k3", "k4", "k_s", "k_d", "k_al",
+                           "k_pin", "arr_hist", "growing"]
+        for index, row in self.init_vals_input[init_vals_names].iterrows():
             init_vals_dict[f"c{index}"] = row.to_dict()
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
@@ -68,24 +74,28 @@ class Input:
                 new.append(float(val))
             init_vals_dict[cell]["arr_hist"] = new
 
+    # TODO: Please make this dynamic so it pulls out the vertex row by something other than its raw col number in the csv
+    # Done
     def get_vertex_assignment(self) -> dict:
         """
         Returns vertex assignment dictionary with cell index as key and its
         vertex assignment list as value
         """
         vertex_assign = {}
-        for index, row in self.init_vals_input.iloc[:, 15:16].iterrows():
+        for index, row in self.init_vals_input[["vertices"]].iterrows():
             row = row.to_string()[12:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             vertex_assign[f"c{index}"] = row
         return vertex_assign
 
+    #TODO: similarly here please put something other than iloc in here
+    # Done
     def get_neighbors_assignment(self) -> dict:
         """
         Returns neighbors dictionary with cell index as key and its neighbors
         list as value
         """
         neighbors = {}
-        for index, row in self.init_vals_input.iloc[:, 16:].iterrows():
+        for index, row in self.init_vals_input[["neighbors"]].iterrows():
             row = row.to_string()[13:].replace(" ", "").replace("[", "").replace("]", "").split(",")
             neighbors[f"c{index}"] = row
         return neighbors

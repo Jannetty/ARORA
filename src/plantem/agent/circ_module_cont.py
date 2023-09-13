@@ -50,6 +50,14 @@ class BaseCirculateModuleCont:
         self.init_pinm = init_vals.get("pinm")
         self.pinm = self.init_pinm
 
+        # weight
+        self.w_pina = init_vals.get("w_pina")
+        self.w_pinb = init_vals.get("w_pinb")
+        self.w_pinl = init_vals.get("w_pinl")
+        self.w_pinm = init_vals.get("w_pinm")
+
+        self.growing = init_vals.get("growing")
+
         self.k_arr_arr = init_vals.get("k1")
         self.k_auxin_auxlax = init_vals.get("k2")
         self.k_auxin_pin = init_vals.get("k3")
@@ -91,10 +99,10 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_neighbor_pin(pini, pinai, area)
-        f5 = self.calculate_neighbor_pin(pini, pinbi, area)
-        f6 = self.calculate_neighbor_pin(pini, pinli, area)
-        f7 = self.calculate_neighbor_pin(pini, pinmi, area)
+        f4 = self.calculate_neighbor_pin(pini, pinai, self.w_pina, area)
+        f5 = self.calculate_neighbor_pin(pini, pinbi, self.w_pinb, area)
+        f6 = self.calculate_neighbor_pin(pini, pinli, self.w_pinl, area)
+        f7 = self.calculate_neighbor_pin(pini, pinmi, self.w_pinm, area)
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
@@ -157,11 +165,11 @@ class BaseCirculateModuleCont:
         pin = self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin)) - self.kd * self.pin
         return pin
 
-    def calculate_neighbor_pin(self, pini: float, pindi: float, area: float) -> float:
+    def calculate_neighbor_pin(self, pini: float, pindi: float, w_pini: float, area: float) -> float:
         """
         Calculate the PIN expression of neighbor cells
         """
-        neighbor_pin = 0.25 * pini - self.kd * pindi * (1 / area)
+        neighbor_pin = 0.25 * pini - w_pini * self.kd * pindi * (1 / area)
         return neighbor_pin
 
     def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
