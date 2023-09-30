@@ -132,6 +132,7 @@ class GrowingSim(arcade.Window):
         if self.tick % 1 == 0:
             print(f"tick {self.tick}")
             self.cell_list.update()
+            print("Cells Updated")
             self.vertex_mover.update()
             self.circulator.update()
             self.divider.update()
