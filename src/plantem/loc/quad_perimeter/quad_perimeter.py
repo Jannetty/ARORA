@@ -47,16 +47,10 @@ class QuadPerimeter:
     def __assign_corners(self) -> None:
         top_row = get_apical(self._perimeter_vs)
         bottom_row = [v for v in self._perimeter_vs if v not in top_row]
-        left_col = get_left(self._perimeter_vs)
-        right_col = [v for v in self._perimeter_vs if v not in left_col]
-        top_left = [v for v in top_row if v in left_col]
-        self._top_left = top_left[0]
-        top_right = [v for v in top_row if v in right_col]
-        self._top_right = top_right[0]
-        bottom_left = [v for v in bottom_row if v in left_col]
-        self._bottom_left = bottom_left[0]
-        bottom_right = [v for v in bottom_row if v in right_col]
-        self._bottom_right = bottom_right[0]
+        self._top_left = get_left(top_row)
+        self._top_right = get_right(top_row)
+        self._bottom_left = get_left(bottom_row)
+        self._bottom_right = get_right(bottom_row)
 
     def get_corners_for_disp(self) -> list:
         return [
@@ -140,11 +134,21 @@ def get_overlap(membrane1, membrane2):
 
 
 def get_apical(vertex_list: list) -> list:
-    yvals = []
-    for v in vertex_list:
-        yvals.append(v.get_y())
-    maxy = max(yvals)
-    apical_vs = [v for v in vertex_list if v.get_y() == maxy]
+    vs = vertex_list
+    maxy = 0
+    apical_v = None
+    apical_vs = []
+    for v in vs:
+        if v.get_y() > maxy:
+            maxy = v.get_y()
+            apical_v = v
+    apical_vs.append(apical_v)
+    maxy = 0
+    for v in vs:
+        if v.get_y() > maxy and v not in apical_vs:
+            maxy = v.get_y()
+            apical_v = v
+    apical_vs.append(apical_v)
     return apical_vs
 
 
@@ -153,15 +157,21 @@ def get_basal(vertex_list: list) -> list:
     return [v for v in vertex_list if v not in apical]
 
 
-def get_left(vertex_list: list) -> list:
-    xvals = []
-    for v in vertex_list:
-        xvals.append(v.get_x())
-    minx = min(xvals)
-    left_vs = [v for v in vertex_list if v.get_x() == minx]
-    return left_vs
+def get_left(vertex_list: list) -> Vertex:
+    vs = vertex_list
+    minx = float('inf')
+    left_v = None
+    for v in vs:
+        if v.get_x() < minx:
+            minx = v.get_x()
+            left_v = v
+    return left_v
 
 
-def get_right(vertex_list: list) -> list:
+def get_right(vertex_list: list) -> Vertex:
     left = get_left(vertex_list)
-    return [v for v in vertex_list if v not in left]
+    right = None
+    for v in vertex_list:
+        if v is not left:
+            right = v
+    return right

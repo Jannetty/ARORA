@@ -68,6 +68,12 @@ class GrowingCell(arcade.Sprite):
     def set_dev_zone(self, zone):
         self.dev_zone = zone
 
+    def set_growing(self, growing:bool) -> None:
+        self.growing = growing
+
+    def get_growing(self) -> bool:
+        return self.growing
+
     def add_neighbor(self, cell: "GrowingCell") -> None:
         if self.check_if_neighbor(cell) == False:
             neighbor_location = self.find_new_neighbor_relative_location(cell)
@@ -179,6 +185,7 @@ class GrowingCell(arcade.Sprite):
         )
 
     def grow(self) -> None:
+        print(f"cell {self.id} adding delta {self.calculate_delta()} to vertex_mover")
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def get_distance_from_tip(self) -> float:
@@ -215,8 +222,9 @@ class GrowingCell(arcade.Sprite):
         return self.get_growth_rate()
 
     def update(self) -> None:
+        print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
-        self.circ_mod.update()
+        # self.circ_mod.update() TODO: Turn this back on after growth is checked
         #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
         #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")
