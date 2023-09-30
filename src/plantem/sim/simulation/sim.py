@@ -129,15 +129,13 @@ class GrowingSim(arcade.Window):
         need it.
         """
         self.tick += 1
-        """ TODO: turn back on
         if self.tick % 1 == 0:
             print(f"tick {self.tick}")
             self.cell_list.update()
             self.vertex_mover.update()
             self.circulator.update()
             self.divider.update()
-            self.root_tip_y = self.get_root_tip_y()
-        """ 
+            self.root_tip_y = self.get_root_tip_y() 
 
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_df=None):

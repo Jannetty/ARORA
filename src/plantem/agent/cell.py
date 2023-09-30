@@ -217,7 +217,7 @@ class GrowingCell(arcade.Sprite):
     def update(self) -> None:
         if self.growing:
             pass
-            #self.grow() TODO: turn this back on after initial geometry is checked
+            self.grow()
         # self.circ_mod.update() TODO: Turn this back on after growth is checked
         #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
         #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")
