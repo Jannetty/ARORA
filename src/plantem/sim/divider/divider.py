@@ -45,10 +45,11 @@ class Divider:
             new_top_cell = GrowingCell(
                 self.sim, new_upper_vs, cell.get_circ_mod().get_state(), self.sim.get_next_cell_id()
             )
+            new_top_cell.set_growing(cell.get_growing())
             new_bottom_cell = GrowingCell(
                 self.sim, new_lower_vs, cell.get_circ_mod().get_state(), self.sim.get_next_cell_id()
             )
-
+            new_bottom_cell.set_growing(cell.get_growing())
             # update neighbor lists
             self.update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
 
