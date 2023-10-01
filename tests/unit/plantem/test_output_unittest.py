@@ -22,6 +22,8 @@ init_vals = {
     "k_arr_pin": 1,
     "ks": 0.005,
     "kd": 0.0015,
+    "growing": True,
+    "circ_mod": 'disc'
 }
 sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
 cell = GrowingCell(

@@ -25,15 +25,23 @@ class GrowingSim(arcade.Window):
     vis = None
     next_cell_id = None
     root_tip_y = 0
+    cell_val_file = None
+    v_file = None
+    input_from_file = False
 
-    def __init__(self, width, height, title, timestep, root_midpoint_x, vis: bool):
+    def __init__(self, width, height, title, timestep, root_midpoint_x, vis: bool, cell_val_file=None, v_file=None, gparam_df=None):
         if vis:
             super().__init__(width, height, title)
             arcade.set_background_color(color=[250, 250, 250])
+        if cell_val_file != None and v_file != None:
+            self.input = Input(cell_val_file, v_file, self)
+            self.input_from_file = True
+        if gparam_df != None:
+            pass
+            #Zimo calls code to change paramter values stored in input data frame to match values in gparam_file
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        # self.input = Input("src/plantem/sim/input/default_init_vals.csv", "src/plantem/sim/input/default_vs.csv", self)
         self.setup()
 
     def get_root_midpointx(self):
@@ -66,6 +74,15 @@ class GrowingSim(arcade.Window):
     def increment_next_cell_id(self):
         self.next_cell_id += 1
 
+    def add_to_cell_list(self, cell) -> None:
+        self.cell_list.append(cell)
+    
+    def remove_from_cell_list(self, cell) -> None:
+        if cell not in self.cell_list:
+            raise ValueError("Cell not in cell_list being removed from cell_list")
+        else:
+            self.cell_list.remove(cell)
+
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
         self.tick = 0
@@ -76,7 +93,8 @@ class GrowingSim(arcade.Window):
         if self.vis:
             self.camera_sprites = arcade.Camera(self.width, self.height)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
-        # self.input.input()
+        if self.input_from_file:
+            self.input.input()
         self.root_tip_y = self.get_root_tip_y()
         self.set_dev_zones()
 
@@ -112,17 +130,19 @@ class GrowingSim(arcade.Window):
         """
         self.tick += 1
         if self.tick % 1 == 0:
+            print(f"tick {self.tick}")
             self.cell_list.update()
+            print("Cells Updated")
             self.vertex_mover.update()
             self.circulator.update()
             self.divider.update()
-            self.root_tip_y = self.get_root_tip_y()
+            self.root_tip_y = self.get_root_tip_y() 
 
 
-def main(timestep, root_midpoint_x, vis):
+def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_df=None):
     """Main function"""
     simulation = GrowingSim(
-        SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis
+        SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_df
     )
     simulation.setup()
     arcade.run()

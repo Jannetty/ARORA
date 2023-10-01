@@ -31,21 +31,17 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_QuadPerimeter_get_left(self):
         v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        expected_left = [v1, v2]
-        found_left = get_left([v1, v2, v3, v4])
-        self.assertCountEqual(expected_left, found_left)
+        expected_left = v1
+        found_left = get_left([v1, v3])
+        self.assertEqual(expected_left, found_left)
 
     def test_QuadPerimeter_get_right(self):
         v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        expected_right = [v3, v4]
-        found_right = get_right([v1, v2, v3, v4])
-        self.assertCountEqual(expected_right, found_right)
+        expected_right = v3
+        found_right = get_right([v1, v3])
+        self.assertEqual(expected_right, found_right)
 
     def test_QuadPerimeter_assign_corners(self):
         v1 = Vertex(100, 100)

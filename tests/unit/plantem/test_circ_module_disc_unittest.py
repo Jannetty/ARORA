@@ -49,7 +49,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
+        circ_module_disc = cell.get_circ_mod()
         sim.setup()
         timestep = 1
         area = cell.quad_perimeter.get_area()
@@ -112,15 +112,19 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
+        circ_module_disc = cell.get_circ_mod()
         sim.setup()
         timestep = 1
         area = cell.quad_perimeter.get_area()
-        expected_PIN = 8.33333333 * 0.0001
+        init_vals = make_init_vals()
+        expected_PIN = ((init_vals['k_s']
+            * (1 / (init_vals['arr'] / init_vals['k4'] + 1))
+            * (init_vals['auxin'] / (init_vals['auxin'] + init_vals['k3']))
+        ) - init_vals['k_d'] * init_vals['pin'])* timestep
         found_PIN = circ_module_disc.calculate_pin(timestep, area)
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
-    def test_calculate_neighbor_pin(self):
+    def test_calculate_membrane_pin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -139,10 +143,10 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         area = cell.quad_perimeter.get_area()
         # test apical
         expected_neighbor_PIN = 0.2499999813
-        found_neighbor_PIN = circ_module_disc.calculate_neighbor_pin(0.5, timestep, area)
+        found_neighbor_PIN = circ_module_disc.calculate_membrane_pin(0.5, timestep, area)
         self.assertAlmostEqual(expected_neighbor_PIN, found_neighbor_PIN, places=5)
 
-    def test_calculate_memfrac(self):
+    def test_calculate_neighbor_memfrac(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
             sim,
@@ -169,7 +173,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             sim.get_next_cell_id(),
         )
         sim.setup()
-        found_memfrac = circ_module_disc.calculate_memfrac(neighbora, "a")
+        found_memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora, "a")
         expected_memfrac = 0.25
         self.assertEqual(expected_memfrac, found_memfrac)
 
@@ -230,7 +234,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        circ_module_disc = BaseCirculateModuleDisc(cell, make_init_vals())
+        circ_module_disc = cell.get_circ_mod()
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
         neighbora = GrowingCell(
@@ -246,10 +250,21 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         )
         sim.setup()
         neighbor_list = [neighbora]
-        expected_neighbor_auxin = circ_module_disc.get_neighbor_auxin(
-            0.5, neighbor_list, "a", timestep, area
+        pin_dir = .5
+        found_neighbor_auxin = circ_module_disc.get_neighbor_auxin_exchange(
+            pin_dir, neighbor_list, "a", timestep, area
         )
-        found_neighbor_auxin = {neighbora: 0.00374998125}
+
+        memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora, 'a')
+        # TODO: Make k_al and k_pin  parameters from input
+        k_al = 1
+        k_pin = 1
+        neighbor_aux = neighbora.get_circ_mod().get_auxin()
+        neighbor_aux = (
+            neighbor_aux * memfrac * circ_module_disc.al * k_al - circ_module_disc.auxin * pin_dir * (1 / area) * k_pin
+        ) * timestep
+
+        expected_neighbor_auxin = {neighbora: neighbor_aux}
         for neighbor in neighbor_list:
             expected = expected_neighbor_auxin[neighbor]
             found = found_neighbor_auxin[neighbor]
@@ -363,7 +378,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        circ_module_disc = BaseCirculateModuleDisc(curr_cell, make_init_vals())
+        circ_module_disc = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
             sim,
             [
@@ -392,10 +407,20 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         circ_module_disc.update()
         # test circulator
         found_circulator = curr_cell.get_sim().get_circulator().delta_auxins
+
+        timestep = 1
+        area = curr_cell.quad_perimeter.get_area()
+        pina = circ_module_disc.calculate_membrane_pin(circ_module_disc.pina, timestep, area)
+        pinm = circ_module_disc.calculate_membrane_pin(circ_module_disc.pinm, timestep, area)
+        syn_deg_auxin = circ_module_disc.calculate_auxin(timestep, area)
+
+        auxina = circ_module_disc.get_neighbor_auxin_exchange(pina, [neighbora], "a", timestep, area)
+        auxinm = circ_module_disc.get_neighbor_auxin_exchange(pinm, [neighborm], "m", timestep, area)
+
         expected_circulator = {
-            curr_cell: 0.004999925 + 0.00374998125 + 0.0037499925,
-            neighbora: -0.00374998125,
-            neighborm: -0.0037499925,
+            curr_cell: syn_deg_auxin + auxina[neighbora] + auxinm[neighborm],
+            neighbora: -auxina[neighbora],
+            neighborm: -auxinm[neighborm],
         }
         for key in expected_circulator:
             self.assertAlmostEqual(expected_circulator[key], found_circulator[key], places=5)
@@ -529,12 +554,14 @@ def make_init_vals():
         "pinb": 0.7,
         "pinl": 0.4,
         "pinm": 0.2,
-        "k_arr_arr": 1,
-        "k_auxin_auxlax": 1,
-        "k_auxin_pin": 1,
-        "k_arr_pin": 1,
-        "ks": 0.005,
-        "kd": 0.0015,
+        "k1": 1,
+        "k2": 1,
+        "k3": 1,
+        "k4": 1,
+        "k_s": 0.005,
+        "k_d": 0.0015,
         "arr_hist": [0.1, 0.2, 0.3],
+        "growing": True,
+        "circ_mod": 'disc'
     }
     return init_vals

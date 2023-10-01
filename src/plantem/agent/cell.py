@@ -1,6 +1,6 @@
 import arcade
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
-from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
+from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
 
@@ -50,7 +50,11 @@ class GrowingCell(arcade.Sprite):
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
-        self.circ_mod = BaseCirculateModuleCont(self, init_vals)
+        if init_vals.get('circ_mod') == 'disc':
+            self.circ_mod = BaseCirculateModuleDisc(self, init_vals)
+        else:
+            self.circ_mod = BaseCirculateModuleCont(self, init_vals)
+        self.growing = init_vals.get('growing')
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
@@ -63,6 +67,12 @@ class GrowingCell(arcade.Sprite):
     
     def set_dev_zone(self, zone):
         self.dev_zone = zone
+
+    def set_growing(self, growing:bool) -> None:
+        self.growing = growing
+
+    def get_growing(self) -> bool:
+        return self.growing
 
     def add_neighbor(self, cell: "GrowingCell") -> None:
         if self.check_if_neighbor(cell) == False:
@@ -175,6 +185,7 @@ class GrowingCell(arcade.Sprite):
         )
 
     def grow(self) -> None:
+        print(f"cell {self.id} adding delta {self.calculate_delta()} to vertex_mover")
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def get_distance_from_tip(self) -> float:
@@ -211,145 +222,9 @@ class GrowingCell(arcade.Sprite):
         return self.get_growth_rate()
 
     def update(self) -> None:
-        self.grow()
-        self.circ_mod.update()
-
-
-class NonGrowingCell(arcade.Sprite):
-    quad_perimeter = None
-    circ_mod = None
-    sim = None
-    a_neighbors = None
-    b_neighbors = None
-    l_neighbors = None
-    m_neighbors = None
-
-    def __init__(self, simulation, corners: list, init_vals, id: int):
-        self.id = id
-        super().__init__()
-        self.a_neighbors = []
-        self.b_neighbors = []
-        self.l_neighbors = []
-        self.m_neighbors = []
-        self.sim = simulation
-        self.quad_perimeter = QuadPerimeter(corners)
-        self.color = [0, 200, 5]
-        self.circ_mod = BaseCirculateModuleCont(self, init_vals)
-
-    def get_quad_perimeter(self):
-        return self.quad_perimeter
-
-    def add_neighbor(self, cell: "GrowingCell") -> None:
-        if self.check_if_neighbor(cell) == False:
-            neighbor_location = self.find_new_neighbor_relative_location(cell)
-            if neighbor_location == "a":
-                self.a_neighbors.append(cell)
-            elif neighbor_location == "b":
-                self.b_neighbors.append(cell)
-            elif neighbor_location == "l":
-                self.l_neighbors.append(cell)
-            elif neighbor_location == "m":
-                self.m_neighbors.append(cell)
-            else:
-                raise ValueError("Neighbor direction incorrectly found")
-        else:
-            raise ValueError("Neighbor being added twice")
-
-    def find_new_neighbor_relative_location(self, cell: "GrowingCell") -> str:
-        if self.quad_perimeter.get_midpointx() == cell.quad_perimeter.get_midpointx():
-            return self.find_apical_or_basal(cell)
-        else:
-            return self.find_lateral_or_medial(cell)
-
-    def find_apical_or_basal(self, cell: "GrowingCell") -> str:
-        if self.quad_perimeter.get_top_left().get_y() < cell.quad_perimeter.get_top_left().get_y():
-            return "a"
-        else:
-            return "b"
-
-    def find_lateral_or_medial(self, cell: "GrowingCell") -> str:
-        sim_midpointx = self.sim.get_root_midpointx()
-        if self.quad_perimeter.get_midpointx() < sim_midpointx:
-            # cell is left of midpoint
-            if self.quad_perimeter.get_midpointx() < cell.quad_perimeter.get_midpointx():
-                return "m"
-            else:
-                return "l"
-        elif self.quad_perimeter.get_midpointx() > sim_midpointx:
-            # cell is right of midpoint
-            if self.quad_perimeter.get_midpointx() < cell.quad_perimeter.get_midpointx():
-                return "l"
-            else:
-                return "m"
-        elif self.quad_perimeter.get_midpointx() == sim_midpointx:
-            # cell is over midpoint
-            return "l"
-
-    def get_a_neighbors(self):
-        return self.a_neighbors
-
-    def get_b_neighbors(self):
-        return self.b_neighbors
-
-    def get_m_neighbors(self):
-        return self.m_neighbors
-
-    def get_l_neighbors(self):
-        return self.l_neighbors
-
-    def get_all_neighbors(self):
-        return (
-            self.get_a_neighbors()
-            + self.get_b_neighbors()
-            + self.get_m_neighbors()
-            + self.get_l_neighbors()
-        )
-
-    def get_sim(self):
-        return self.sim
-
-    def get_circ_mod(self):
-        return self.circ_mod
-
-    def remove_neighbor(self, cell: "GrowingCell") -> None:
-        if cell in self.a_neighbors:
-            self.a_neighbors.remove(cell)
-        elif cell in self.b_neighbors:
-            self.b_neighbors.remove(cell)
-        elif cell in self.l_neighbors:
-            self.l_neighbors.remove(cell)
-        elif cell in self.m_neighbors:
-            self.m_neighbors.remove(cell)
-        else:
-            raise ValueError("Non neighbor cell being removed from neighbor list")
-
-    def check_if_neighbor(self, cell: "GrowingCell") -> bool:
-        if cell in self.a_neighbors:
-            return True
-        if cell in self.b_neighbors:
-            return True
-        if cell in self.l_neighbors:
-            return True
-        if cell in self.m_neighbors:
-            return True
-        return False
-
-    def get_area(self) -> float:
-        return self.quad_perimeter.get_area()
-
-    def get_quad_perimeter(self) -> QuadPerimeter:
-        return self.quad_perimeter
-
-    def draw(self) -> None:
-        arcade.draw_polygon_filled(
-            point_list=self.quad_perimeter.get_corners_for_disp(), color=self.color
-        )
-        arcade.draw_polygon_outline(
-            point_list=self.quad_perimeter.get_corners_for_disp(), color=[0, 0, 0]
-        )
-
-    def circulate(self) -> None:
-        self.circ_mod.update()
-
-    def update(self) -> None:
-        self.circulate()
+        print(f"updating cell {self.id}")
+        if self.growing:
+            self.grow()
+        # self.circ_mod.update() TODO: Turn this back on after growth is checked
+        #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
+        #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")

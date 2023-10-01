@@ -62,6 +62,8 @@ class BaseCirculateModuleCont:
         self.k_auxin_auxlax = init_vals.get("k2")
         self.k_auxin_pin = init_vals.get("k3")
         self.k_arr_pin = init_vals.get("k4")
+        self.k_al = init_vals.get("k5")
+        self.k_pin = init_vals.get("k6")
 
         self.ks = init_vals.get("k_s")
         self.kd = init_vals.get("k_d")
@@ -99,10 +101,10 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_neighbor_pin(pini, pinai, self.w_pina, area)
-        f5 = self.calculate_neighbor_pin(pini, pinbi, self.w_pinb, area)
-        f6 = self.calculate_neighbor_pin(pini, pinli, self.w_pinl, area)
-        f7 = self.calculate_neighbor_pin(pini, pinmi, self.w_pinm, area)
+        f4 = self.calculate_membrane_pin(pini, pinai, area, 'a')
+        f5 = self.calculate_membrane_pin(pini, pinbi, area, 'b')
+        f6 = self.calculate_membrane_pin(pini, pinli, area, 'l')
+        f7 = self.calculate_membrane_pin(pini, pinmi, area, 'm')
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
@@ -113,6 +115,10 @@ class BaseCirculateModuleCont:
         y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
         t = np.array([0, 1])
         soln = odeint(self.f, y0, t)
+        return soln
+    
+    def get_solution(self):
+        soln = self.solve_equations()
         return soln
 
     def update(self) -> None:
@@ -139,7 +145,7 @@ class BaseCirculateModuleCont:
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
         """
-        Calcualte the auxin expression of current cell
+        Calculate the auxin expression of current cell
         """
         auxin = self.ks - self.kd * auxini * (1 / area)
         return auxin
@@ -165,16 +171,39 @@ class BaseCirculateModuleCont:
         pin = self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin)) - self.kd * self.pin
         return pin
 
-    def calculate_neighbor_pin(self, pini: float, pindi: float, w_pini: float, area: float) -> float:
+    def calculate_membrane_pin(self, pini: float, pindi: float, area: float, direction: int) -> float:
         """
         Calculate the PIN expression of neighbor cells
         """
-        neighbor_pin = 0.25 * pini - w_pini * self.kd * pindi * (1 / area)
-        return neighbor_pin
-
-    def calculate_memfrac(self, neighbor, neighbor_direction: str) -> float:
+        # TODO: Make get_weight a function, class of calculators that can take different values
+        # TODO: have weight as parameter that is fed in
+        weight = 1
+        membrane_pin = self.calculate_self_memfrac(direction) * pini - self.kd * pindi * (1 / area) * weight
+        return membrane_pin
+    
+    def calculate_self_memfrac(self, direction) -> float:
         """
-        Calculate the fraction of total cell membrane that is in a defined direction
+        Calculate fraction of total membrane one direction's membrane represents
+        """
+        cell_perimeter = self.cell.get_quad_perimeter().get_perimeter_len()
+        if direction == "a":
+            return self.cell.get_quad_perimeter().get_apical_memlen()/cell_perimeter
+        elif direction == "b":
+            return self.cell.get_quad_perimeter().get_basal_memlen()/cell_perimeter
+        elif direction == "l":
+            if self.left == "lateral":
+                return self.cell.get_quad_perimeter().get_left_memlen()/cell_perimeter
+            else:
+                return self.cell.get_quad_perimeter().get_right_memlen()/cell_perimeter
+        elif direction == "m":
+                if self.left == "medial":
+                    return self.cell.get_quad_perimeter().get_left_memlen()/cell_perimeter
+                else:
+                    return self.cell.get_quad_perimeter().get_right_memlen()/cell_perimeter
+
+    def calculate_neighbor_memfrac(self, neighbor, neighbor_direction: str) -> float:
+        """
+        Calculate the fraction of total cell membrane that is in a defined direction and shared with a specified neighbor
         """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
         common_perimeter = get_len_perimeter_in_common(
@@ -183,17 +212,18 @@ class BaseCirculateModuleCont:
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
-    def get_neighbor_auxin(
+    def get_neighbor_auxin_exchange(
         self, ali: float, pindi: float, neighbors: list, direction: str, area: float
     ) -> dict:
         """
-        Calculate the auxin expression of neighbor cells in a defined direction
+        Calculate the amount of auxin that will be transcported across each membrane
         """
         neighbor_dict = {}
         for neighbor in neighbors:
-            memfrac = self.calculate_memfrac(neighbor, direction)
-            neighbor_aux = self.ks * memfrac * ali - self.kd * pindi * (1 / area)
-            neighbor_dict[neighbor] = neighbor_aux
+            memfrac = self.calculate_neighbor_memfrac(neighbor, direction)
+            neighbor_aux = neighbor.get_circ_mod().get_auxin()
+            neighbor_aux_exchange = neighbor_aux * memfrac * ali * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
+            neighbor_dict[neighbor] = neighbor_aux_exchange
         return neighbor_dict
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
@@ -205,10 +235,6 @@ class BaseCirculateModuleCont:
             auxin = sum(neighbors.values())
             total_auxin += auxin
         return total_auxin
-
-    def get_solution(self):
-        soln = self.solve_equations()
-        return soln
 
     def update_arr_hist(self) -> None:
         """
@@ -255,10 +281,10 @@ class BaseCirculateModuleCont:
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()
 
-        auxina = self.get_neighbor_auxin(self.al, self.pina, neighborsa, "a", area)
-        auxinb = self.get_neighbor_auxin(self.al, self.pinb, neighborsb, "b", area)
-        auxinl = self.get_neighbor_auxin(self.al, self.pinl, neighborsl, "l", area)
-        auxinm = self.get_neighbor_auxin(self.al, self.pinm, neighborsm, "m", area)
+        auxina = self.get_neighbor_auxin_exchange(self.al, self.pina, neighborsa, "a", area)
+        auxinb = self.get_neighbor_auxin_exchange(self.al, self.pinb, neighborsb, "b", area)
+        auxinl = self.get_neighbor_auxin_exchange(self.al, self.pinl, neighborsl, "l", area)
+        auxinm = self.get_neighbor_auxin_exchange(self.al, self.pinm, neighborsm, "m", area)
         neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
         syn_deg_auxin = soln[1, 0] - self.auxin
@@ -323,8 +349,15 @@ class BaseCirculateModuleCont:
             "k2": self.k_auxin_auxlax,
             "k3": self.k_auxin_pin,
             "k4": self.k_arr_pin,
+            "k5": self.k_al,
+            "k6": self.k_pin,
             "k_s": self.ks,
             "k_d": self.kd,
             "arr_hist": self.arr_hist,
         }
         return state
+    
+
+    # setter function
+    def set_auxin(self, new_aux: float) -> None:
+        self.auxin = new_aux
