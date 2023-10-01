@@ -24,6 +24,8 @@ class TestVertexMover(unittest.TestCase):
         "k4": 1,
         "k_s": 0.005,
         "k_d": 0.0015,
+        "growing": True,
+        "circ_mod": 'cont'
     }
 
     def test_get_new_vs(self):

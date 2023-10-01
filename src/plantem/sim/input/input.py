@@ -11,7 +11,7 @@ class Input:
 
     def __init__(self, init_vals_file: str, vertex_file: str, sim):
         self.init_vals_input = pandas.read_csv(init_vals_file)
-        self.vertex_input = pandas.read_csv(vertex_file)    
+        self.vertex_input = pandas.read_csv(vertex_file)
         self.sim = sim
 
     def input(self) -> None:
@@ -53,12 +53,18 @@ class Input:
         init_vals set as value
         """
         init_vals_dict = {}
-        init_vals_names = ["auxin", "arr", "al", "pin", "pina", "pinb", "pinl",
-                           "pinm", "w_pina", "w_pinb", "w_pinl", "w_pinm",
-                           "k1", "k2", "k3", "k4", "k_s", "k_d", "k_al",
-                           "k_pin", "arr_hist", "growing"]
+        init_vals_names = ["auxin", "arr", "al", "pin", "pina", "pinb",
+                           "pinl", "pinm", "k1", "k2", "k3", "k4", "k5",
+                           "k6", "k_s", "k_d", "arr_hist", "growing",
+                           "circ_mod", "vertices", "neighbors"]
         for index, row in self.init_vals_input[init_vals_names].iterrows():
-            init_vals_dict[f"c{index}"] = row.to_dict()
+            cell_num = f"c{index}"
+            init_vals_dict[cell_num] = row.to_dict()
+            for val in init_vals_dict[cell_num]:
+                if val in ["arr_hist", "vertices"]:
+                    init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                if val == "neighbors":
+                    init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val].replace(" ", "").replace("[", "").replace("]", "").split(",")
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
 
@@ -68,11 +74,11 @@ class Input:
         """
         for cell, dict in init_vals_dict.items():
             hist = dict["arr_hist"]
-            hist_list = hist.replace(" ", "").replace("[", "").replace("]", "").split(",")
-            new = []
-            for val in hist_list:
-                new.append(float(val))
-            init_vals_dict[cell]["arr_hist"] = new
+            # hist_list = hist.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            # new = []
+            # for val in hist_list:
+            #     new.append(float(val))
+            init_vals_dict[cell]["arr_hist"] = hist
 
     # TODO: Please make this dynamic so it pulls out the vertex row by something other than its raw col number in the csv
     # Done

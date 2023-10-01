@@ -4,6 +4,8 @@ from src.plantem.sim.input.input import Input
 from src.plantem.sim.simulation.sim import GrowingSim
 from src.plantem.agent.cell import GrowingCell
 from src.plantem.loc.vertex.vertex import Vertex
+from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
+from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -52,20 +54,19 @@ class InputTests(unittest.TestCase):
                 "pinb": 0.7,
                 "pinl": 0.4,
                 "pinm": 0.2,
-                "w_pina": 1,
-                "w_pinb": 1,
-                "w_pinl": 1,
-                "w_pinm": 1,
                 "k1": 1,
                 "k2": 1,
                 "k3": 1,
                 "k4": 1,
+                "k5" : 1,
+                "k6" : 1,
                 "k_s": 0.005,
                 "k_d": 0.0015,
-                "k_al": 1,
-                "k_pin": 1,
                 "arr_hist": [0.1, 0.2, 0.3],
-                "growing": 0
+                "growing": False,
+                "circ_mod": "cont",
+                "vertices": [0, 1, 2, 3],
+                "neighbors": ["c1"]
             },
             "c1": {
                 "auxin": 2,
@@ -76,20 +77,19 @@ class InputTests(unittest.TestCase):
                 "pinb": 0.7,
                 "pinl": 0.4,
                 "pinm": 0.2,
-                "w_pina": 1,
-                "w_pinb": 1,
-                "w_pinl": 1,
-                "w_pinm": 1,
                 "k1": 1,
                 "k2": 1,
                 "k3": 1,
                 "k4": 1,
+                "k5" : 1,
+                "k6" : 1,
                 "k_s": 0.005,
                 "k_d": 0.0015,
-                "k_al": 1,
-                "k_pin": 1,
                 "arr_hist": [0.2, 0.3, 0.4],
-                "growing": 0
+                "growing": False,
+                "circ_mod": "cont",
+                "vertices": [1, 3, 4, 5],
+                "neighbors": ["c0"]
             },
         }
         found = input.get_init_vals()
@@ -114,20 +114,19 @@ class InputTests(unittest.TestCase):
                 "pinb": 0.7,
                 "pinl": 0.4,
                 "pinm": 0.2,
-                "w_pina": 1,
-                "w_pinb": 1,
-                "w_pinl": 1,
-                "w_pinm": 1,
                 "k1": 1,
                 "k2": 1,
                 "k3": 1,
                 "k4": 1,
+                "k5" : 1,
+                "k6" : 1,
                 "k_s": 0.005,
                 "k_d": 0.0015,
-                "k_al": 1,
-                "k_pin": 1,
-                "arr_hist": "[0.1, 0.2, 0.3]",
-                "growing": 0
+                "arr_hist": [0.1, 0.2, 0.3],
+                "growing": False,
+                "circ_mod": "cont",
+                "vertices": [0, 1, 2, 3],
+                "neighbors": ["c1"]
             },
             "c1": {
                 "auxin": 2,
@@ -138,20 +137,19 @@ class InputTests(unittest.TestCase):
                 "pinb": 0.7,
                 "pinl": 0.4,
                 "pinm": 0.2,
-                "w_pina": 1,
-                "w_pinb": 1,
-                "w_pinl": 1,
-                "w_pinm": 1,
                 "k1": 1,
                 "k2": 1,
                 "k3": 1,
                 "k4": 1,
+                "k5" : 1,
+                "k6" : 1,
                 "k_s": 0.005,
                 "k_d": 0.0015,
-                "k_al": 1,
-                "k_pin": 1,
-                "arr_hist": "[0.2, 0.3, 0.4]",
-                "growing": 0
+                "arr_hist": [0.2, 0.3, 0.4],
+                "growing": False,
+                "circ_mod": "cont",
+                "vertices": [1, 3, 4, 5],
+                "neighbors": ["c0"]
             },
         }
         expected = {
@@ -164,20 +162,19 @@ class InputTests(unittest.TestCase):
                 "pinb": 0.7,
                 "pinl": 0.4,
                 "pinm": 0.2,
-                "w_pina": 1,
-                "w_pinb": 1,
-                "w_pinl": 1,
-                "w_pinm": 1,
                 "k1": 1,
                 "k2": 1,
                 "k3": 1,
                 "k4": 1,
+                "k5" : 1,
+                "k6" : 1,
                 "k_s": 0.005,
                 "k_d": 0.0015,
-                "k_al": 1,
-                "k_pin": 1,
                 "arr_hist": [0.1, 0.2, 0.3],
-                "growing": 0
+                "growing": False,
+                "circ_mod": "cont",
+                "vertices": [0, 1, 2, 3],
+                "neighbors": ["c1"]
             },
             "c1": {
                 "auxin": 2,
@@ -188,20 +185,19 @@ class InputTests(unittest.TestCase):
                 "pinb": 0.7,
                 "pinl": 0.4,
                 "pinm": 0.2,
-                "w_pina": 1,
-                "w_pinb": 1,
-                "w_pinl": 1,
-                "w_pinm": 1,
                 "k1": 1,
                 "k2": 1,
                 "k3": 1,
                 "k4": 1,
+                "k5" : 1,
+                "k6" : 1,
                 "k_s": 0.005,
                 "k_d": 0.0015,
-                "k_al": 1,
-                "k_pin": 1,
                 "arr_hist": [0.2, 0.3, 0.4],
-                "growing": 0
+                "growing": False,
+                "circ_mod": "cont",
+                "vertices": [1, 3, 4, 5],
+                "neighbors": ["c0"]
             },
         }
         input.set_arr_hist(dict)
@@ -270,7 +266,10 @@ class InputTests(unittest.TestCase):
         v5 = Vertex(30, 360)
         cell_dict = input.create_cells()
         expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
-        expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
+        cell1_expected_init_vals = make_init_vals()
+        cell1_expected_init_vals['growing'] = False
+        cell1_expected_init_vals['circ_mod'] = 'cont'
+        expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], cell1_expected_init_vals, 1)
         found_cell0 = cell_dict["c0"]
         # test cell0
         self.assertEqual(expected_cell0.get_id(), found_cell0.get_id())
@@ -291,6 +290,14 @@ class InputTests(unittest.TestCase):
             expected_cell1.get_quad_perimeter().get_area(),
             found_cell1.get_quad_perimeter().get_area(),
         )
+
+        # check that cell0 is nongrowing and has continuous circulator
+        self.assertEqual(found_cell0.growing, False)
+        self.assertTrue(isinstance(found_cell0.get_circ_mod(), BaseCirculateModuleCont))
+
+        # check that cell1 is nongrowing and has discrete circulator
+        self.assertEqual(found_cell1.growing, False)
+        self.assertTrue(isinstance(found_cell1.get_circ_mod(), BaseCirculateModuleCont))
 
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
@@ -406,11 +413,14 @@ def make_init_vals():
         "k2": 1,
         "k3": 1,
         "k4": 1,
+        "k5" : 1,
+        "k6" : 1,
         "k_s": 0.005,
         "k_d": 0.0015,
         "k_al": 1,
         "k_pin": 1,
         "arr_hist": [0.1, 0.2, 0.3],
-        "growing": 0
+        "growing": False,
+        "circ_mod": 'cont'
     }
     return init_vals
