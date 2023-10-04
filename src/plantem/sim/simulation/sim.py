@@ -139,7 +139,7 @@ class GrowingSim(arcade.Window):
             self.root_tip_y = self.get_root_tip_y() 
 
 
-def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_df=None):
+def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_df=None, impose_mem_pin_weights=None):
     """Main function"""
     simulation = GrowingSim(
         SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_df
