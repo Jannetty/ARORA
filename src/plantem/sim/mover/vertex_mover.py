@@ -55,7 +55,7 @@ class VertexMover:
         for cell in top_row:
             this_delta = self.cell_deltas[cell]
             self.add_cell_b_vertices_to_vertex_deltas(cell, this_delta)
-            self.recursively_propogate_deltas_to_b_neighbors(cell, this_delta)
+            self.propogate_deltas_to_b_neighbors(cell, this_delta)
 
     def add_cell_b_vertices_to_vertex_deltas(self, cell: GrowingCell, delta: float) -> None:
         bottom_left_v = cell.get_quad_perimeter().get_bottom_left()
@@ -69,14 +69,18 @@ class VertexMover:
         else:
             self.vertex_deltas[bottom_right_v] = delta
 
-    def recursively_propogate_deltas_to_b_neighbors(self, cell: GrowingCell, delta: float) -> None:
-        for b_neighbor in cell.get_b_neighbors():
-            if b_neighbor in self.cell_deltas:
-                neighbor_delta = self.cell_deltas[b_neighbor]
-            else:
-                neighbor_delta = 0
-            self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta + neighbor_delta)
-            self.recursively_propogate_deltas_to_b_neighbors(b_neighbor, delta + neighbor_delta)
+    def propogate_deltas_to_b_neighbors(self, cell: GrowingCell, delta: float) -> None:
+        stack = [(cell, delta)]
+
+        while stack:
+            cell, delta = stack.pop()
+            for b_neighbor in cell.get_b_neighbors():
+                if b_neighbor in self.cell_deltas:
+                    neighbor_delta = self.cell_deltas[b_neighbor]
+                else:
+                    neighbor_delta = 0
+                self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta + neighbor_delta)
+                stack.append((b_neighbor, delta + neighbor_delta))
 
     def execute_vertex_movement(self) -> None:
         for vertex in self.vertex_deltas:
