@@ -21,8 +21,21 @@ class QuadPerimeter:
         sumx = sum([corner.get_x() for corner in self._perimeter_vs])
         self._midpointx = sumx / len(self._perimeter_vs)
 
+    def __calc_midpointy(self):
+        sumy = sum([corner.get_y() for corner in self._perimeter_vs])
+        return sumy / len(self._perimeter_vs)
+    
+    def get_max_y(self):
+        return max([corner.get_y() for corner in self._perimeter_vs])
+    
+    def get_min_y(self):
+        return min([corner.get_y() for corner in self._perimeter_vs])
+
     def get_midpointx(self) -> float:
         return self._midpointx
+    
+    def get_midpointy(self) -> float:
+        return self.__calc_midpointy()
 
     def get_perimeter_len(self) -> float:
         return (
