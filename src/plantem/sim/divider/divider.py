@@ -18,7 +18,7 @@ class Divider:
 
     def update(self) -> None:
         for cell in self.cells_to_divide:
-            print(f"Cell f{cell.get_id()} dividing!")
+            print(f"Cell {cell.get_id()} dividing!")
             if (cell.get_dev_zone() != 'meristematic'):
                 print(f"Cell is in the {cell.get_dev_zone()} zone, not dividing")
                 continue
