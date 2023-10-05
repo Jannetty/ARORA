@@ -185,6 +185,14 @@ class GrowingCell(arcade.Sprite):
             return "m"
         elif self.get_id() == 25 and neighbor.get_id() == 18:
             return "l"
+        elif self.get_id() == 60 and neighbor.get_id() == 76:
+            return "m"
+        elif self.get_id() == 76 and neighbor.get_id() == 60:
+            return "l"
+        elif self.get_id() == 75 and neighbor.get_id() == 89:
+            return "m"
+        elif self.get_id() == 89 and neighbor.get_id() == 75:
+            return "l"
 
     def get_a_neighbors(self):
         return self.a_neighbors
