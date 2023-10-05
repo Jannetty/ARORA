@@ -86,6 +86,9 @@ class GrowingCell(arcade.Sprite):
                 self.l_neighbors.append(neighbor)
             elif neighbor_location == "m":
                 self.m_neighbors.append(neighbor)
+            elif neighbor_location == None:
+                print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
+                pass
             else:
                 raise ValueError("Non-neighbor added as neighbor")
         else:
@@ -96,12 +99,15 @@ class GrowingCell(arcade.Sprite):
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         # if neighbor shares two vertices with self, check which ones
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
+            print(f"neighbor {neighbor.id} shares two vertices with self {self.id}")
             return self.get_neighbor_direction_when_neighbor_shares_two_vs(neighbor)
         # if neighbor shares only one vertex with self, check which one
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
+            print(f"neighbor {neighbor.id} shares one vertex with self {self.id}")
             return self.get_neighbor_direction_when_neighbor_shares_one_v(neighbor)
         # if neighbor shares no vertices with self, check for very specific edge cases in root tip
         if len(set(self_vs).intersection(set(neighbor_vs))) == 0:
+            print(f"neighbor {neighbor.id} shares no vertices with self {self.id}")
             return self.get_neighbor_direction_when_neighbor_shares_no_vs(neighbor)
 
     def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
@@ -175,8 +181,11 @@ class GrowingCell(arcade.Sprite):
         # if either of self's top vs are either neighbor's bottom vs, neighbor is above
         elif (len(set(self_top_vs).intersection(set(neighbor_bottom_vs))) == 1) :
             return "a"
+        return None
 
     def get_neighbor_direction_when_neighbor_shares_no_vs(self, neighbor: "GrowingCell") -> str:
+        # This catches explicit edge cases in root tip and root cap cell initialization
+        #TODO: Consider manually assigning neighbors for all nongrowing cells
         if self.get_id() == 17 and neighbor.get_id() == 20:
             return "l"
         elif self.get_id() == 20 and neighbor.get_id() == 17:
@@ -193,6 +202,23 @@ class GrowingCell(arcade.Sprite):
             return "m"
         elif self.get_id() == 89 and neighbor.get_id() == 75:
             return "l"
+        
+        # This catches assignment of neighbor of root cap cell after division
+        if self.get_id() == 60 or self.get_id() == 75:
+            neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
+            print(f"neighbor_midpointy = {neighbor_midpointy}, self_max_y = {self.get_quad_perimeter().get_max_y()}, self_min_y = {self.get_quad_perimeter().get_min_y()}")
+            if neighbor_midpointy < self.get_quad_perimeter().get_max_y() and neighbor_midpointy > self.get_quad_perimeter().get_min_y():
+                return "m"
+            else:
+                return None
+        if neighbor.get_id() == 60 or neighbor.get_id() == 75:
+            self_midpointy = self.get_quad_perimeter().get_midpointy()
+            print(f"self_midpointy = {self_midpointy}, neighbor_max_y = {neighbor.get_quad_perimeter().get_max_y()}, neighbor_min_y = {neighbor.get_quad_perimeter().get_min_y()}")
+            if self_midpointy < neighbor.get_quad_perimeter().get_max_y() and self_midpointy > neighbor.get_quad_perimeter().get_min_y():
+                return "m"
+            else:
+                return None
+        
 
     def get_a_neighbors(self):
         return self.a_neighbors
@@ -251,11 +277,12 @@ class GrowingCell(arcade.Sprite):
         return self.quad_perimeter
 
     def draw(self) -> None:
+        point_list = self.quad_perimeter.get_corners_for_disp()
         arcade.draw_polygon_filled(
-            point_list=self.quad_perimeter.get_corners_for_disp(), color=self.color
+            point_list=point_list, color=self.color
         )
         arcade.draw_polygon_outline(
-            point_list=self.quad_perimeter.get_corners_for_disp(), color=[0, 0, 0]
+            point_list=point_list, color=[0, 0, 0]
         )
 
     def grow(self) -> None:

@@ -28,7 +28,6 @@ class VertexMover:
         sorted_top_row = self.sort_top_row(top_row)
         self.propogate_deltas(sorted_top_row)
         max_delta = self.get_max_delta()
-        print(f"max_delta: {max_delta}")
         self.execute_vertex_movement(max_delta)
         self.check_if_divide(self.cell_deltas.keys())
         self.cell_deltas.clear()
@@ -37,7 +36,6 @@ class VertexMover:
     def get_max_delta(self) -> float:
         max_delta = None
         max_abs_delta = None
-        print(self.vertex_deltas)
         for delta in self.vertex_deltas.values():
             absolute_delta = abs(delta)
             if max_abs_delta is None or absolute_delta > max_abs_delta:
@@ -102,14 +100,10 @@ class VertexMover:
         moved_vs = list(self.vertex_deltas.keys())
         for cell in self.sim.get_cell_list():
             if not cell.get_growing():
-                print(f"cell {cell.get_id()} vertices being considered")
-                print(f"cell {cell.get_id()} vertices len: {len(cell.get_quad_perimeter().get_vs())}")
                 vertices = cell.get_quad_perimeter().get_vs()
                 for vertex in vertices:
                     if vertex not in moved_vs:
-                        print(f"vertex {vertex.get_xy()} being moved")
                         vertex.set_y(vertex.get_y() + max_delta)
-                        print(f"vertex {vertex.get_xy()} moved")
                         moved_vs.append(vertex)
         
 
