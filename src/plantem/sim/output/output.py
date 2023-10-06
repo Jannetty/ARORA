@@ -24,7 +24,7 @@ class Output:
         # - all circ contents (PINs in relation to left right instead of lateral/medial)
         # - number of cell divisions
         output = []
-        cell_list = self.sim.cell_list
+        cell_list = list(self.sim.get_cell_list())
         for cell in cell_list:
             summary = {}
             summary["cell"] = cell
@@ -64,6 +64,7 @@ class Output:
         summary["PIN_basal"] = cell.get_circ_mod().get_basal_pin()
         summary["PIN_left"] = cell.get_circ_mod().get_left_pin()
         summary["PIN_right"] = cell.get_circ_mod().get_right_pin()
+        summary['arr_hist'] = cell.get_circ_mod().get_arr_hist()
         return summary
 
     def get_division_number(self, cell) -> float:
