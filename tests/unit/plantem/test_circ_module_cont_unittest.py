@@ -693,6 +693,9 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         expected = cell.get_quad_perimeter().get_apical_memlen() / cell.quad_perimeter.get_perimeter_len()
         self.assertEqual(expected, found)
 
+    def test_get_arr_hist(self):
+        pass
+
 
 def make_init_vals():
     init_vals = {

@@ -65,6 +65,8 @@ class Input:
                     init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
                 if val == "neighbors":
                     init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val].replace(" ", "").replace("[", "").replace("]", "").split(",")
+            # update arr_hist
+            init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(init_vals_dict[cell_num]["arr_hist"])
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
 

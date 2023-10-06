@@ -50,12 +50,6 @@ class BaseCirculateModuleCont:
         self.init_pinm = init_vals.get("pinm")
         self.pinm = self.init_pinm
 
-        # weight
-        self.w_pina = init_vals.get("w_pina")
-        self.w_pinb = init_vals.get("w_pinb")
-        self.w_pinl = init_vals.get("w_pinl")
-        self.w_pinm = init_vals.get("w_pinm")
-
         self.growing = init_vals.get("growing")
 
         self.k_arr_arr = init_vals.get("k1")
@@ -116,7 +110,7 @@ class BaseCirculateModuleCont:
         t = np.array([0, 1])
         soln = odeint(self.f, y0, t)
         return soln
-    
+
     def get_solution(self):
         soln = self.solve_equations()
         return soln
@@ -228,7 +222,7 @@ class BaseCirculateModuleCont:
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
         """
-        Calculate the total amound of change in auxin for current cell
+        Calculate the total amount of change in auxin for current cell
         """
         total_auxin = syn_deg_auxin
         for neighbors in neighbors_auxin:
@@ -334,6 +328,9 @@ class BaseCirculateModuleCont:
             return self.pinm
         else:
             return self.pinl
+        
+    def get_arr_hist(self) -> list:
+        return self.arr_hist
 
     def get_state(self) -> dict:
         state = {
