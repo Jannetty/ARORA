@@ -44,6 +44,15 @@ class Input:
             y = vertex["y"]
             new_vertex_dict[v_num] = Vertex(x, y)
         return new_vertex_dict
+    
+    def replace_default_to_gparam(self, gparam_file: str) -> None:
+        """
+        update the default_init_val dataframe to fit in the value from 
+        """
+        gparam_df = pandas.read_csv(gparam_file)
+        for index, row in self.init_vals_input.iterrows():
+            for param in row.index:
+                row[param] = gparam_df[param].iloc[index]
 
     # TODO: make iloc so it isn't using raw number
     # Done
