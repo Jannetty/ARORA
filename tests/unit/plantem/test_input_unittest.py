@@ -1,4 +1,5 @@
 import unittest
+import pandas
 
 from src.plantem.sim.input.input import Input
 from src.plantem.sim.simulation.sim import GrowingSim
@@ -390,6 +391,18 @@ class InputTests(unittest.TestCase):
                 expected_cell_list[i].get_circ_mod().get_auxin(),
                 found_cell_list[i].get_circ_mod().get_auxin(),
             )
+
+
+    def test_replace_default_to_gparam(self):
+        gparam_file = "src/plantem/sim/input/default_input_gparam.csv"
+        full_gparam_df = pandas.read_csv(gparam_file)
+        for index, row in full_gparam_df.iterrows():
+            this_sim_gparam_series = row
+            this_sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False, cell_val_file="tests/unit/plantem/test_csv/init_vals.csv",
+            v_file="tests/unit/plantem/test_csv/vertex.csv", gparam_series=this_sim_gparam_series)
+            # check to make sure that cells have gparams instead of cell_val_file params
+
+
 
 
 def make_init_vals():
