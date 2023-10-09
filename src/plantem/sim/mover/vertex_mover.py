@@ -27,10 +27,21 @@ class VertexMover:
         top_row = self.get_top_row()
         sorted_top_row = self.sort_top_row(top_row)
         self.propogate_deltas(sorted_top_row)
-        self.execute_vertex_movement()
+        max_delta = self.get_max_delta()
+        self.execute_vertex_movement(max_delta)
         self.check_if_divide(self.cell_deltas.keys())
         self.cell_deltas.clear()
         self.vertex_deltas.clear()
+
+    def get_max_delta(self) -> float:
+        max_delta = None
+        max_abs_delta = None
+        for delta in self.vertex_deltas.values():
+            absolute_delta = abs(delta)
+            if max_abs_delta is None or absolute_delta > max_abs_delta:
+                max_abs_delta = absolute_delta
+                max_delta = delta
+        return max_delta
 
     def get_top_row(self) -> list:
         top_ys = []
@@ -55,7 +66,7 @@ class VertexMover:
         for cell in top_row:
             this_delta = self.cell_deltas[cell]
             self.add_cell_b_vertices_to_vertex_deltas(cell, this_delta)
-            self.recursively_propogate_deltas_to_b_neighbors(cell, this_delta)
+            self.propogate_deltas_to_b_neighbors(cell, this_delta)
 
     def add_cell_b_vertices_to_vertex_deltas(self, cell: GrowingCell, delta: float) -> None:
         bottom_left_v = cell.get_quad_perimeter().get_bottom_left()
@@ -69,18 +80,32 @@ class VertexMover:
         else:
             self.vertex_deltas[bottom_right_v] = delta
 
-    def recursively_propogate_deltas_to_b_neighbors(self, cell: GrowingCell, delta: float) -> None:
-        for b_neighbor in cell.get_b_neighbors():
-            if b_neighbor in self.cell_deltas:
-                neighbor_delta = self.cell_deltas[b_neighbor]
-            else:
-                neighbor_delta = 0
-            self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta + neighbor_delta)
-            self.recursively_propogate_deltas_to_b_neighbors(b_neighbor, delta + neighbor_delta)
+    def propogate_deltas_to_b_neighbors(self, cell: GrowingCell, delta: float) -> None:
+        stack = [(cell, delta)]
+        while stack:
+            cell, delta = stack.pop()
+            for b_neighbor in cell.get_b_neighbors():
+                if b_neighbor.get_growing():
+                    if b_neighbor in self.cell_deltas:
+                        neighbor_delta = self.cell_deltas[b_neighbor]
+                    else:
+                        neighbor_delta = 0
+                    self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta + neighbor_delta)
+                    stack.append((b_neighbor, delta + neighbor_delta))
 
-    def execute_vertex_movement(self) -> None:
+    def execute_vertex_movement(self, max_delta: int) -> None:
         for vertex in self.vertex_deltas:
             vertex.set_y(vertex.get_y() + self.vertex_deltas[vertex])
+        # iterate through all nongrowing cells, move all basal vertices not yet moved
+        moved_vs = list(self.vertex_deltas.keys())
+        for cell in self.sim.get_cell_list():
+            if not cell.get_growing():
+                vertices = cell.get_quad_perimeter().get_vs()
+                for vertex in vertices:
+                    if vertex not in moved_vs:
+                        vertex.set_y(vertex.get_y() + max_delta)
+                        moved_vs.append(vertex)
+        
 
     def check_if_divide(self, cells) -> None:
         for cell in cells:

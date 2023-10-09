@@ -132,8 +132,8 @@ class GrowingSim(arcade.Window):
         need it.
         """
         self.tick += 1
+        print(f"tick {self.tick}")
         if self.tick % 1 == 0:
-            print(f"tick {self.tick}")
             self.cell_list.update()
             print("Cells Updated")
             self.vertex_mover.update()
@@ -148,4 +148,5 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
         SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_series
     )
     simulation.setup()
+    print("Running Simulation")
     arcade.run()

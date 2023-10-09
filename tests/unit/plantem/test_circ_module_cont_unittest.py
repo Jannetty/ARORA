@@ -183,14 +183,15 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     def test_get_neighbor_auxin_exchange(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100,100)
+        v2 = Vertex(100,300)
+        v3 = Vertex(300,300)
+        v4 = Vertex(300,100)
+        v5 = Vertex(100,600)
+        v6 = Vertex(300,600)
         cell = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
+            [ v1,v2,v3,v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -198,12 +199,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         # test apical neighbor
         neighbora = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
-            ],
+            [v2,v5,v6,v3],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -395,37 +391,30 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100,100)
+        v2 = Vertex(100,300)
+        v3 = Vertex(300,300)
+        v4 = Vertex(300,100)
+        v5 = Vertex(100,600)
+        v6 = Vertex(300,600)
+        v7 = Vertex(600,300)
+        v8 = Vertex(600,100)
         curr_cell = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         circ_module_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
-            ],
+            [v2, v3, v5, v6],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         neighborm = GrowingCell(
             sim,
-            [
-                Vertex(300.0, 100.0),
-                Vertex(300.0, 300.0),
-                Vertex(600.0, 300.0),
-                Vertex(600.0, 100.0),
-            ],
+            [v4, v3, v7, v8],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -439,37 +428,30 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     # TODO: Rewrite this test this thing is brutal
     def test_update_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100,100)
+        v2 = Vertex(100,300)
+        v3 = Vertex(300,300)
+        v4 = Vertex(300,100)
+        v5 = Vertex(100,600)
+        v6 = Vertex(300,600)
+        v7 = Vertex(600,300)
+        v8 = Vertex(600,100)
         curr_cell = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
+            [v1,v2,v3,v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         circ_module_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
-            ],
+            [v2,v3,v5,v6],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         neighborm = GrowingCell(
             sim,
-            [
-                Vertex(300.0, 100.0),
-                Vertex(300.0, 300.0),
-                Vertex(600.0, 300.0),
-                Vertex(600.0, 100.0),
-            ],
+            [v3,v4,v7,v8],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -493,37 +475,30 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
         # Make new cells with same properties to check calculations individually
         sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100,100)
+        v2 = Vertex(100,300)
+        v3 = Vertex(300,300)
+        v4 = Vertex(300,100)
+        v5 = Vertex(100,600)
+        v6 = Vertex(300,600)
+        v7 = Vertex(600,300)
+        v8 = Vertex(600,100)
         curr_cell2 = GrowingCell(
             sim2,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
+            [v1,v2,v3,v4],
             make_init_vals(),
             sim2.get_next_cell_id(),
         )
         circ_module_cont2 = curr_cell2.get_circ_mod()
         neighbora2 = GrowingCell(
             sim2,
-            [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
-            ],
+            [v2,v3,v5,v6],
             make_init_vals(),
             sim2.get_next_cell_id(),
         )
         neighborm2 = GrowingCell(
             sim2,
-            [
-                Vertex(300.0, 100.0),
-                Vertex(300.0, 300.0),
-                Vertex(600.0, 300.0),
-                Vertex(600.0, 100.0),
-            ],
+            [v3,v4,v7,v8],
             make_init_vals(),
             sim2.get_next_cell_id(),
         )

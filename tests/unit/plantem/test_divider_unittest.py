@@ -91,18 +91,18 @@ class TestVertexMover(unittest.TestCase):
         a_neighbor = GrowingCell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
-        v7 = Vertex(1, 100)
-        v8 = Vertex(1, 300)
-        l_neighbor = GrowingCell(
-            simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
+        v7 = Vertex(100, 150)
+        v8 = Vertex(300, 150)
+        new_neighbor = GrowingCell(
+            simulation, [v7, v8, v2, v3], self.init_vals, simulation.get_next_cell_id()
         )
         cell1.add_neighbor(a_neighbor)
         a_neighbor.add_neighbor(cell1)
-        simulation.get_divider().swap_neighbors(l_neighbor, a_neighbor, cell1)
+        simulation.get_divider().swap_neighbors(new_neighbor, a_neighbor, cell1)
         self.assertEqual(1, len(a_neighbor.get_all_neighbors()))
-        self.assertEqual(1, len(l_neighbor.get_all_neighbors()))
-        self.assertEqual(l_neighbor, a_neighbor.get_all_neighbors()[0])
-        self.assertEqual(a_neighbor, l_neighbor.get_all_neighbors()[0])
+        self.assertEqual(1, len(new_neighbor.get_all_neighbors()))
+        self.assertEqual(new_neighbor, a_neighbor.get_all_neighbors()[0])
+        self.assertEqual(a_neighbor, new_neighbor.get_all_neighbors()[0])
 
     def test_set_one_side_neighbors(self):
         timestep = 1
@@ -134,7 +134,7 @@ class TestVertexMover(unittest.TestCase):
         self.assertEqual([], cell.get_all_neighbors())
         self.assertEqual([], new_top_cell.get_all_neighbors())
         self.assertEqual([], new_bottom_cell.get_all_neighbors())
-
+        
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
         l_neighbor = GrowingCell(

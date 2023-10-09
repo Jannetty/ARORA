@@ -45,7 +45,7 @@ class TestGrowingCell(unittest.TestCase):
 
     def test_add_neighbor(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 600
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )

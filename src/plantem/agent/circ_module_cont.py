@@ -19,6 +19,10 @@ class BaseCirculateModuleCont:
     cell = None
     left = None
     right = None
+    weighta = None
+    weightb = None
+    weightl = None
+    weightm = None
 
     def __init__(self, cell, init_vals: dict):
         """
@@ -122,6 +126,7 @@ class BaseCirculateModuleCont:
         soln = self.get_solution()
         self.update_circ_contents(soln)
         self.update_auxin(soln)
+        # self.update_membrane_pin()
 
     # Helper functions
     def determine_left_right(self) -> tuple:
