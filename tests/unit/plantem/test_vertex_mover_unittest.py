@@ -132,7 +132,7 @@ class TestVertexMover(unittest.TestCase):
         a_neighbor.add_neighbor(cell1)
         simulation.get_vertex_mover().add_cell_delta_val(a_neighbor, 1.5)
         simulation.get_vertex_mover().propogate_deltas([a_neighbor])
-        simulation.get_vertex_mover().execute_vertex_movement()
+        simulation.get_vertex_mover().execute_vertex_movement(min(simulation.get_vertex_mover().vertex_deltas.values()))
         self.assertAlmostEqual(100 + 1.5, v1.get_y())
         self.assertAlmostEqual(300 + 1.5, v2.get_y())
         self.assertAlmostEqual(300 + 1.5, v3.get_y())
