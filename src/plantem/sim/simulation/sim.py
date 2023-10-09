@@ -1,4 +1,5 @@
 import arcade
+import pandas
 import src.plantem.agent.cell as cell
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
@@ -36,7 +37,7 @@ class GrowingSim(arcade.Window):
         if cell_val_file != None and v_file != None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
-        if gparam_series != None:
+        if type(gparam_series) == pandas.core.series.Series:
             #Zimo calls code to change paramter values stored in input data frame to match values in gparam_file
             self.input = Input(cell_val_file, v_file, self)
             self.input.replace_default_to_gparam(gparam_series)
