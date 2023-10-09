@@ -29,18 +29,17 @@ class GrowingSim(arcade.Window):
     v_file = None
     input_from_file = False
 
-    def __init__(self, width, height, title, timestep, root_midpoint_x, vis: bool, cell_val_file=None, v_file=None, gparam_file=None):
+    def __init__(self, width, height, title, timestep, root_midpoint_x, vis: bool, cell_val_file=None, v_file=None, gparam_series=None):
         if vis:
             super().__init__(width, height, title)
             arcade.set_background_color(color=[250, 250, 250])
         if cell_val_file != None and v_file != None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
-        if gparam_file != None:
-            pass
+        if gparam_series != None:
             #Zimo calls code to change paramter values stored in input data frame to match values in gparam_file
             self.input = Input(cell_val_file, v_file, self)
-            self.input.replace_default_to_gparam(gparam_file)
+            self.input.replace_default_to_gparam(gparam_series)
             self.input_from_file = True
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
@@ -142,10 +141,10 @@ class GrowingSim(arcade.Window):
             self.root_tip_y = self.get_root_tip_y() 
 
 
-def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_file=None):
+def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
     """Main function"""
     simulation = GrowingSim(
-        SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_file
+        SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_series
     )
     simulation.setup()
     arcade.run()
