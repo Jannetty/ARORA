@@ -49,10 +49,8 @@ class Input:
         """
         update the default_init_val dataframe to fit in the value from 
         """
-        gparam_df = pandas.read_csv(gparam_series)
-        for index, row in self.init_vals_input.iterrows():
-            for param in row.index:
-                row[param] = gparam_df[param].iloc[index]
+        # for col in gparam_series:
+        #   row[param] = gparam_df[param].iloc[index]
 
     # TODO: make iloc so it isn't using raw number
     # Done
