@@ -45,12 +45,19 @@ class Input:
             new_vertex_dict[v_num] = Vertex(x, y)
         return new_vertex_dict
     
-    def replace_default_to_gparam(self, gparam_series: str) -> None:
+    def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
         """
         update the default_init_val dataframe to fit in the value from 
         """
         # for col in gparam_series:
         #   row[param] = gparam_df[param].iloc[index]
+        for index_df, row in self.init_vals_input.iterrows():
+            for index_s, value in gparam_series.iteritems():
+                if index_s != "tau":
+                    self.init_vals_input.at[index_df, index_s] = value
+                else:
+                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * value
+        print(self.init_vals_input)
 
     # TODO: make iloc so it isn't using raw number
     # Done

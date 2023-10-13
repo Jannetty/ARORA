@@ -401,6 +401,20 @@ class InputTests(unittest.TestCase):
             this_sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False, cell_val_file="tests/unit/plantem/test_csv/init_vals.csv",
             v_file="tests/unit/plantem/test_csv/vertex.csv", gparam_series=this_sim_gparam_series)
             # check to make sure that cells have gparams instead of cell_val_file params
+            this_input = Input(
+                "tests/unit/plantem/test_csv/init_vals.csv",
+                "tests/unit/plantem/test_csv/vertex.csv",
+                this_sim
+            )
+            this_input.replace_default_to_gparam(this_sim_gparam_series)
+            print("start")
+            print(this_input.init_vals_input)
+            for _, row_df in this_input.init_vals_input.iterrows():
+                for index_s, value in this_sim_gparam_series.iteritems():
+                    if index_s != "tau":
+                        self.assertEqual(row_df[index_s], value)
+                    else:
+                        self.assertEqual(len(row_df["arr_hist"]), value)
 
 
 
