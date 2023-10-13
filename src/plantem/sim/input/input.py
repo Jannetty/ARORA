@@ -49,15 +49,12 @@ class Input:
         """
         update the default_init_val dataframe to fit in the value from 
         """
-        # for col in gparam_series:
-        #   row[param] = gparam_df[param].iloc[index]
         for index_df, row in self.init_vals_input.iterrows():
-            for index_s, value in gparam_series.iteritems():
+            for index_s, value in gparam_series.items():
                 if index_s != "tau":
                     self.init_vals_input.at[index_df, index_s] = value
                 else:
                     self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * value
-        print(self.init_vals_input)
 
     # TODO: make iloc so it isn't using raw number
     # Done
