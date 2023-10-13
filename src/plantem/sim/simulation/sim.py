@@ -40,7 +40,7 @@ class GrowingSim(arcade.Window):
         if type(gparam_series) == pandas.core.series.Series:
             #Zimo calls code to change paramter values stored in input data frame to match values in gparam_file
             self.input = Input(cell_val_file, v_file, self)
-            self.input.replace_default_to_gparam(gparam_series)
+            # self.input.replace_default_to_gparam(gparam_series)
             self.input_from_file = True
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
