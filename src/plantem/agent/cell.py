@@ -48,6 +48,7 @@ class GrowingCell(arcade.Sprite):
         self.m_neighbors = []
         self.sim = simulation
         simulation.increment_next_cell_id()
+        # Quad perimeter must be made before circ mod
         self.quad_perimeter = QuadPerimeter(corners)
         self.color = [0, 200, 5]
         if init_vals.get('circ_mod') == 'disc':
