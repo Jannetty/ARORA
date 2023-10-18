@@ -41,6 +41,7 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
+        print(f"making cell {id}")
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []
@@ -321,11 +322,18 @@ class GrowingCell(arcade.Sprite):
         dist_to_root_tip = self.get_distance_from_tip()
         self.calculate_dev_zone(dist_to_root_tip)
         return self.get_growth_rate()
+    
+    def calculate_pin_weights(self) -> dict:
+        pin_weights = {}
+        for direction in ["a", "b", "l", "m"]:
+            pin_weights[direction] = 1 #TODO: make this calculate pin weights
+        return pin_weights
 
     def update(self) -> None:
         print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
-        # self.circ_mod.update() TODO: Turn this back on after growth is checked
+            # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized
+            # self.circ_mod.update(pin_weights) TODO: Turn on again when geometry finalized
         #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
         #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")

@@ -19,10 +19,10 @@ class BaseCirculateModuleCont:
     cell = None
     left = None
     right = None
-    weighta = None
-    weightb = None
-    weightl = None
-    weightm = None
+    weighta = 0
+    weightb = 0
+    weightl = 0
+    weightm = 0
 
     def __init__(self, cell, init_vals: dict):
         """
@@ -119,10 +119,14 @@ class BaseCirculateModuleCont:
         soln = self.solve_equations()
         return soln
 
-    def update(self) -> None:
+    def update(self, pin_weights: dict) -> None:
         """
         Update the circulation contents to the circulator
         """
+        self.weighta = pin_weights.get("a")
+        self.weightb = pin_weights.get("b")
+        self.weightl = pin_weights.get("l")
+        self.weightm = pin_weights.get("m")
         soln = self.get_solution()
         self.update_circ_contents(soln)
         self.update_auxin(soln)
@@ -170,13 +174,20 @@ class BaseCirculateModuleCont:
         pin = self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin)) - self.kd * self.pin
         return pin
 
-    def calculate_membrane_pin(self, pini: float, pindi: float, area: float, direction: int) -> float:
+    def calculate_membrane_pin(self, pini: float, pindi: float, area: float, direction: str) -> float:
         """
         Calculate the PIN expression of neighbor cells
         """
         # TODO: Make get_weight a function, class of calculators that can take different values
         # TODO: have weight as parameter that is fed in
-        weight = 1
+        if direction == "a":
+            weight = self.weighta
+        if direction == "b":
+            weight = self.weightb
+        if direction == "l":
+            weight = self.weightl
+        if direction == "m":
+            weight = self.weightm
         membrane_pin = self.calculate_self_memfrac(direction) * pini - self.kd * pindi * (1 / area) * weight
         return membrane_pin
     
