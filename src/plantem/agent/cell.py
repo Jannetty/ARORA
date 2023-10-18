@@ -41,7 +41,7 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
-        print(f"making cell {id}")
+        #print(f"making cell {id}")
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []
@@ -100,6 +100,11 @@ class GrowingCell(arcade.Sprite):
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         # if neighbor shares two vertices with self, check which ones
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
+            # if self.get_id() == 225:
+            #     print(f"cell {self.id} and cell {neighbor.id} share two vertices")
+            #     print(f"{self.get_quad_perimeter().get_bottom_left()}, {self.get_quad_perimeter().get_bottom_right()}")
+            #     print(f"{self.get_quad_perimeter().get_top_left()}, {self.get_quad_perimeter().get_top_right()}")
+            #     print(set(self_vs).intersection(set(neighbor_vs)))
             return self.get_neighbor_direction_when_neighbor_shares_two_vs(neighbor)
         # if neighbor shares only one vertex with self, check which one
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
@@ -109,69 +114,54 @@ class GrowingCell(arcade.Sprite):
             return self.get_neighbor_direction_when_neighbor_shares_no_vs(neighbor)
 
     def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
-        self_top_left = self.quad_perimeter.get_top_left()
-        self_bottom_left = self.quad_perimeter.get_bottom_left()
-        self_top_right = self.quad_perimeter.get_top_right()
-        self_bottom_right = self.quad_perimeter.get_bottom_right()
-        neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         # standard case, check which vertices neighbor shares with self
         # if neighbor shares top left and bottom left, neighbor is lateral if sim midpoint to the right, medial otherwise
-        if (self_top_left in neighbor_vs) and (self_bottom_left in neighbor_vs):
-            if self_top_left.get_x() < self.sim.get_root_midpointx():
+        if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()):
+            if self.quad_perimeter.get_top_left().get_x() < self.sim.get_root_midpointx():
                 return "l"
             else:
                 return "m"
         # if neighbor shares top right and bottom right, neighbor is medial if sim midpoint to the right, lateral otherwise
-        elif (self_top_right in neighbor_vs) and (self_bottom_right in neighbor_vs):
-            if self_top_right.get_x() < self.sim.get_root_midpointx():
+        elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()):
+            if self.quad_perimeter.get_top_right().get_x() < self.sim.get_root_midpointx():
                 return "m"
             else:
                 return "l"
-        # if neighbor shares top left and top right, neighbor is above
-        elif (self_top_left in neighbor_vs) and (self_top_right in neighbor_vs):
+        elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()):
             return "a"
-        # if neighbor shares bottom left and bottom right, neighbor is below
-        elif (self_bottom_left in neighbor_vs) and (self_bottom_right in neighbor_vs):
+        elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()):
             return "b"   
 
     def get_neighbor_direction_when_neighbor_shares_one_v(self, neighbor: "GrowingCell") -> str:
-        self_top_left = self.quad_perimeter.get_top_left()
-        self_bottom_left = self.quad_perimeter.get_bottom_left()
-        self_top_right = self.quad_perimeter.get_top_right()
-        self_bottom_right = self.quad_perimeter.get_bottom_right()
-        neighbor_top_left = neighbor.get_quad_perimeter().get_top_left()
-        neighbor_bottom_left = neighbor.get_quad_perimeter().get_bottom_left()
-        neighbor_top_right = neighbor.get_quad_perimeter().get_top_right()
-        neighbor_bottom_right = neighbor.get_quad_perimeter().get_bottom_right()
         # if self's top right is neighbor's top left, neighbor is medial if sim midpoint to the right, lateral otherwise
-        if self_top_right.get_xy() == neighbor_top_left.get_xy():
-            if self_top_right.get_x() < self.sim.get_root_midpointx():
+        if self.quad_perimeter.get_top_right().get_xy() == neighbor.get_quad_perimeter().get_top_left().get_xy():
+            if self.quad_perimeter.get_top_right().get_x() < self.sim.get_root_midpointx():
                 return "m"
             else:
                 return "l"
         # if self's bottom right is neighbor's bottom left, neighbor is medial if sim midpoint to the right, lateral otherwise
-        elif self_bottom_right.get_xy() == neighbor_bottom_left.get_xy():
-            if self_bottom_right.get_x() < self.sim.get_root_midpointx():
+        elif self.quad_perimeter.get_bottom_right().get_xy() == neighbor.get_quad_perimeter().get_bottom_left().get_xy():
+            if self.quad_perimeter.get_bottom_right().get_x() < self.sim.get_root_midpointx():
                 return "m"
             else:
                 return "l"
         # if self's top left is neighbor's top right, neighbor is lateral if sim midpoint to the right, medial otherwise
-        elif self_top_left.get_xy() == neighbor_top_right.get_xy():
-            if self_top_left.get_x() < self.sim.get_root_midpointx():
+        elif self.quad_perimeter.get_top_left().get_xy() == neighbor.get_quad_perimeter().get_top_right().get_xy():
+            if self.quad_perimeter.get_top_left().get_x() < self.sim.get_root_midpointx():
                 return "l"
             else:
                 return "m"
         # if self's bottom left is neighbor's bottom right, neighbor is lateral if sim midpoint to the right, medial otherwise
-        elif self_bottom_left.get_xy() == neighbor_bottom_right.get_xy():
-            if self_bottom_left.get_x() < self.sim.get_root_midpointx():
+        elif self.quad_perimeter.get_bottom_left().get_xy() == neighbor.get_quad_perimeter().get_bottom_right().get_xy():
+            if self.quad_perimeter.get_bottom_left().get_x() < self.sim.get_root_midpointx():
                 return "l"
             else:
                 return "m"
 
-        self_top_vs = [self_top_left, self_top_right]
-        self_bottom_vs = [self_bottom_left, self_bottom_right]
-        neighbor_top_vs = [neighbor_top_left, neighbor_top_right]
-        neighbor_bottom_vs = [neighbor_bottom_left, neighbor_bottom_right]
+        self_top_vs = [self.quad_perimeter.get_top_left(), self.quad_perimeter.get_top_right()]
+        self_bottom_vs = [self.quad_perimeter.get_bottom_left(), self.quad_perimeter.get_bottom_right()]
+        neighbor_top_vs = [neighbor.get_quad_perimeter().get_top_left(), neighbor.get_quad_perimeter().get_top_right()]
+        neighbor_bottom_vs = [neighbor.get_quad_perimeter().get_bottom_left(), neighbor.get_quad_perimeter().get_bottom_right()]
 
         # if either of self's bottom vs are either neighbor's top vs, neighbor is below
         if (len(set(self_bottom_vs).intersection(set(neighbor_top_vs))) == 1) :
@@ -182,7 +172,7 @@ class GrowingCell(arcade.Sprite):
         return None
 
     def get_neighbor_direction_when_neighbor_shares_no_vs(self, neighbor: "GrowingCell") -> str:
-        # This catches explicit edge cases in root tip and root cap cell initialization
+        # This catches explicit edge cases in root tip initialization
         #TODO: Consider manually assigning neighbors for all nongrowing cells
         if self.get_id() == 17 and neighbor.get_id() == 20:
             return "l"
@@ -192,28 +182,19 @@ class GrowingCell(arcade.Sprite):
             return "m"
         elif self.get_id() == 25 and neighbor.get_id() == 18:
             return "l"
-        elif self.get_id() == 60 and neighbor.get_id() == 76:
-            return "m"
-        elif self.get_id() == 76 and neighbor.get_id() == 60:
-            return "l"
-        elif self.get_id() == 75 and neighbor.get_id() == 89:
-            return "m"
-        elif self.get_id() == 89 and neighbor.get_id() == 75:
-            return "l"
         
-        # This catches assignment of neighbor of root cap cell after division
-        if self.get_id() == 60 or self.get_id() == 75:
+        # This catches assignment of neighbor of root cap cells
+        rootcap_cellIDs = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
+        if self.get_id() in rootcap_cellIDs:
             neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
-            print(f"neighbor_midpointy = {neighbor_midpointy}, self_max_y = {self.get_quad_perimeter().get_max_y()}, self_min_y = {self.get_quad_perimeter().get_min_y()}")
             if neighbor_midpointy < self.get_quad_perimeter().get_max_y() and neighbor_midpointy > self.get_quad_perimeter().get_min_y():
                 return "m"
             else:
                 return None
-        if neighbor.get_id() == 60 or neighbor.get_id() == 75:
+        if neighbor.get_id() in rootcap_cellIDs:
             self_midpointy = self.get_quad_perimeter().get_midpointy()
-            print(f"self_midpointy = {self_midpointy}, neighbor_max_y = {neighbor.get_quad_perimeter().get_max_y()}, neighbor_min_y = {neighbor.get_quad_perimeter().get_min_y()}")
             if self_midpointy < neighbor.get_quad_perimeter().get_max_y() and self_midpointy > neighbor.get_quad_perimeter().get_min_y():
-                return "m"
+                return "l"
             else:
                 return None
         

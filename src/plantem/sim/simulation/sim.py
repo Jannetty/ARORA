@@ -144,6 +144,6 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
     simulation = GrowingSim(
         SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_series
     )
-    simulation.setup()
+    #simulation.setup()
     print("Running Simulation")
     arcade.run()
