@@ -160,7 +160,10 @@ class Input:
         neighbors_assignment = self.get_neighbors_assignment()
         neighbors = {}
         for cell_num, neighb in neighbors_assignment.items():
+            print(f"cell_num: {cell_num}")
+            print(f"neighb: {neighb}")
             for each in neighb:
+                print(f"each: {each}")
                 if cell_num not in neighbors:
                     neighbors[cell_num] = [new_cells[each]]
                 else:
