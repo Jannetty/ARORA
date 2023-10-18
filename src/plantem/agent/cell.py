@@ -77,7 +77,6 @@ class GrowingCell(arcade.Sprite):
         return self.growing
 
     def add_neighbor(self, neighbor: "GrowingCell") -> None:
-        print(f"cell {self.id} adding cell {neighbor.id} as neighbor")
         if self.check_if_neighbor(neighbor) == False:
             neighbor_location = self.find_new_neighbor_relative_location(neighbor)
             if neighbor_location == "a":
@@ -101,15 +100,12 @@ class GrowingCell(arcade.Sprite):
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         # if neighbor shares two vertices with self, check which ones
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
-            print(f"neighbor {neighbor.id} shares two vertices with self {self.id}")
             return self.get_neighbor_direction_when_neighbor_shares_two_vs(neighbor)
         # if neighbor shares only one vertex with self, check which one
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
-            print(f"neighbor {neighbor.id} shares one vertex with self {self.id}")
             return self.get_neighbor_direction_when_neighbor_shares_one_v(neighbor)
         # if neighbor shares no vertices with self, check for very specific edge cases in root tip
         if len(set(self_vs).intersection(set(neighbor_vs))) == 0:
-            print(f"neighbor {neighbor.id} shares no vertices with self {self.id}")
             return self.get_neighbor_direction_when_neighbor_shares_no_vs(neighbor)
 
     def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
@@ -288,7 +284,7 @@ class GrowingCell(arcade.Sprite):
         )
 
     def grow(self) -> None:
-        print(f"cell {self.id} adding delta {self.calculate_delta()} to vertex_mover")
+        #print(f"cell {self.id} adding delta {self.calculate_delta()} to vertex_mover")
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def get_distance_from_tip(self) -> float:
@@ -331,7 +327,7 @@ class GrowingCell(arcade.Sprite):
         return pin_weights
 
     def update(self) -> None:
-        print(f"updating cell {self.id}")
+        #print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
             # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized

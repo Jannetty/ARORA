@@ -116,11 +116,7 @@ class Input:
         neighbors = {}
         for index, row in self.init_vals_input[["neighbors"]].iterrows():
             for elem in row:
-                print(f"elem: {elem}")
-                print (type(elem))
                 row = elem.replace(" ", "").replace("[", "").replace("]", "").split(",")
-            if index == 296:
-                print(f"row2: {row}")
             neighbors[f"c{index}"] = row
         return neighbors
 

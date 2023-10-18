@@ -38,7 +38,6 @@ class GrowingSim(arcade.Window):
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
         if type(gparam_series) == pandas.core.series.Series:
-            #Zimo calls code to change paramter values stored in input data frame to match values in gparam_file
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
@@ -130,11 +129,11 @@ class GrowingSim(arcade.Window):
         need it.
         """
         self.tick += 1
-        print(f"tick {self.tick}")
+        #print(f"tick {self.tick}")
         if self.tick % 1 == 0:
             self.cell_list.update()
             # print("Cells Updated")
-            # self.vertex_mover.update()
+            self.vertex_mover.update()
             # self.circulator.update()
             # self.divider.update()
             # self.root_tip_y = self.get_root_tip_y() 
