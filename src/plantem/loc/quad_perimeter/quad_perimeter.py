@@ -107,6 +107,42 @@ class QuadPerimeter:
     
     def get_height(self) -> float:
         return self._top_left.get_y() - self._bottom_left.get_y()
+    
+    def determine_left_right(self, root_mid: float) -> tuple:
+        cell_mid = self.get_midpointx()
+        if cell_mid < root_mid:
+            return ("lateral", "medial")
+        elif cell_mid == root_mid:
+            return ("lateral", "lateral")
+        else:
+            return ("medial", "lateral")
+        
+    def get_left(self, root_mid) -> str:
+        return self.determine_left_right(root_mid)[0]
+    
+    def get_right(self, root_mid) -> str:
+        return self.determine_left_right(root_mid)[1]
+
+    def get_memfrac(self, direction: str, left: str) -> float:
+        """
+        Calculate fraction of total membrane one direction's membrane represents
+        """
+        cell_perimeter = self.get_perimeter_len()
+        if direction == "a":
+            return self.get_apical_memlen()/cell_perimeter
+        elif direction == "b":
+            return self.get_basal_memlen()/cell_perimeter
+        elif direction == "l":
+            if left == "lateral":
+                return self.get_left_memlen()/cell_perimeter
+            else:
+                return self.get_right_memlen()/cell_perimeter
+        elif direction == "m":
+            if left == "medial":
+                return self.get_left_memlen()/cell_perimeter
+            else:
+                return self.get_right_memlen()/cell_perimeter
+
 
 
 def get_len_perimeter_in_common(cellqp, neighborqp, neighbor_direction: str) -> float:
