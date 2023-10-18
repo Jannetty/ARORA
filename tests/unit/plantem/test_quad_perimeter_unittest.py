@@ -157,3 +157,41 @@ class TestQuadPerimeter(unittest.TestCase):
         self.assertEqual(v2, qp1.get_top_left())
         self.assertEqual(v3, qp1.get_top_right())
         self.assertEqual(v4, qp1.get_bottom_right())
+
+    def test_determine_left_right(self):
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        qp = QuadPerimeter([v1, v2, v3, v4])
+        self.assertEqual(("lateral", "medial"), qp.determine_left_right(250))
+        self.assertEqual(("lateral", "lateral"), qp.determine_left_right(200))
+        self.assertEqual(("medial", "lateral"), qp.determine_left_right(120))
+
+    def test_get_memfrac(self):
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        qp = QuadPerimeter([v1, v2, v3, v4])
+        self.assertEqual(0.25, qp.get_memfrac("a", "lateral"))
+
+    def test_get_left(self):
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        qp = QuadPerimeter([v1, v2, v3, v4])
+        self.assertEqual("lateral", qp.get_left(250))
+        self.assertEqual("lateral", qp.get_left(200))
+        self.assertEqual("medial", qp.get_left(120))
+
+    def test_get_right(self):
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        qp = QuadPerimeter([v1, v2, v3, v4])
+        self.assertEqual("medial", qp.get_right(250))
+        self.assertEqual("lateral", qp.get_right(200))
+        self.assertEqual("lateral", qp.get_right(120))
