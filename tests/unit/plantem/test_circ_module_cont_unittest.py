@@ -24,27 +24,6 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     Tests BaseCirculateModuleCont Class
     """
 
-    def test_determine_left_right(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        cell = GrowingCell(
-            sim,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
-            make_init_vals(),
-            sim.get_next_cell_id(),
-        )
-        circ_module = cell.get_circ_mod()
-        sim.setup()
-        found_left, found_right = circ_module.determine_left_right()
-        expected_left = "lateral"
-        expected_right = "medial"
-        self.assertEqual(expected_left, found_left)
-        self.assertEqual(expected_right, found_right)
-
     def test_calculate_cont_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
@@ -649,26 +628,8 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         expected = 0.2
         self.assertEqual(expected, found)
 
-    def test_get_self_memfrac(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        cell = GrowingCell(
-            sim,
-            [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
-            ],
-            make_init_vals(),
-            sim.get_next_cell_id(),
-        )
-        circ_module_cont = cell.get_circ_mod()
-        sim.setup()
-        found = circ_module_cont.calculate_self_memfrac("a")
-        expected = cell.get_quad_perimeter().get_apical_memlen() / cell.quad_perimeter.get_perimeter_len()
-        self.assertEqual(expected, found)
-
     def test_get_arr_hist(self):
+        # TODO: fill in
         pass
 
 

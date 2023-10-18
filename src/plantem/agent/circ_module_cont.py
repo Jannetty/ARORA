@@ -71,7 +71,8 @@ class BaseCirculateModuleCont:
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
-        self.left, self.right = self.determine_left_right()
+        self.left = self.cell.get_quad_perimeter().get_left(self.cell.get_sim().get_root_midpointx())
+        self.right = self.cell.get_quad_perimeter().get_right(self.cell.get_sim().get_root_midpointx())
 
     def f(self, y, t) -> list:
         """
@@ -132,19 +133,6 @@ class BaseCirculateModuleCont:
         self.update_auxin(soln)
         # self.update_membrane_pin()
 
-    # Helper functions
-    def determine_left_right(self) -> tuple:
-        cell = self.cell
-        qp = cell.get_quad_perimeter()
-        cell_mid = qp.get_midpointx()
-        sim = cell.get_sim()
-        root_mid = sim.get_root_midpointx()
-        if cell_mid < root_mid:
-            return ("lateral", "medial")
-        elif cell_mid == root_mid:
-            return ("lateral", "lateral")
-        else:
-            return ("medial", "lateral")
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
         """
@@ -180,36 +168,10 @@ class BaseCirculateModuleCont:
         """
         # TODO: Make get_weight a function, class of calculators that can take different values
         # TODO: have weight as parameter that is fed in
-        if direction == "a":
-            weight = self.weighta
-        if direction == "b":
-            weight = self.weightb
-        if direction == "l":
-            weight = self.weightl
-        if direction == "m":
-            weight = self.weightm
-        membrane_pin = self.calculate_self_memfrac(direction) * pini - self.kd * pindi * (1 / area) * weight
+        weight = 1
+        memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
+        membrane_pin = memfrac * pini - self.kd * pindi * (1 / area) * weight
         return membrane_pin
-    
-    def calculate_self_memfrac(self, direction) -> float:
-        """
-        Calculate fraction of total membrane one direction's membrane represents
-        """
-        cell_perimeter = self.cell.get_quad_perimeter().get_perimeter_len()
-        if direction == "a":
-            return self.cell.get_quad_perimeter().get_apical_memlen()/cell_perimeter
-        elif direction == "b":
-            return self.cell.get_quad_perimeter().get_basal_memlen()/cell_perimeter
-        elif direction == "l":
-            if self.left == "lateral":
-                return self.cell.get_quad_perimeter().get_left_memlen()/cell_perimeter
-            else:
-                return self.cell.get_quad_perimeter().get_right_memlen()/cell_perimeter
-        elif direction == "m":
-                if self.left == "medial":
-                    return self.cell.get_quad_perimeter().get_left_memlen()/cell_perimeter
-                else:
-                    return self.cell.get_quad_perimeter().get_right_memlen()/cell_perimeter
 
     def calculate_neighbor_memfrac(self, neighbor, neighbor_direction: str) -> float:
         """
