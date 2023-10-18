@@ -133,11 +133,11 @@ class GrowingSim(arcade.Window):
         print(f"tick {self.tick}")
         if self.tick % 1 == 0:
             self.cell_list.update()
-            print("Cells Updated")
-            self.vertex_mover.update()
-            self.circulator.update()
-            self.divider.update()
-            self.root_tip_y = self.get_root_tip_y() 
+            # print("Cells Updated")
+            # self.vertex_mover.update()
+            # self.circulator.update()
+            # self.divider.update()
+            # self.root_tip_y = self.get_root_tip_y() 
 
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
