@@ -71,7 +71,9 @@ class BaseCirculateModuleCont:
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
-        self.left, self.right = self.determine_left_right()
+        # self.left, self.right = self.determine_left_right()
+        self.left = self.cell.get_quad_perimeter().get_left(self.cell.get_sim().get_root_midpointx())
+        self.right = self.cell.get_quad_perimeter().get_right(self.cell.get_sim().get_root_midpointx())
 
     def f(self, y, t) -> list:
         """
@@ -177,7 +179,9 @@ class BaseCirculateModuleCont:
         # TODO: Make get_weight a function, class of calculators that can take different values
         # TODO: have weight as parameter that is fed in
         weight = 1
-        membrane_pin = self.calculate_self_memfrac(direction) * pini - self.kd * pindi * (1 / area) * weight
+        # membrane_pin = self.calculate_self_memfrac(direction) * pini - self.kd * pindi * (1 / area) * weight
+        memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
+        membrane_pin = memfrac * pini - self.kd * pindi * (1 / area) * weight
         return membrane_pin
     
     def calculate_self_memfrac(self, direction) -> float:
