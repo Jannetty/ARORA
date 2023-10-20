@@ -100,11 +100,6 @@ class GrowingCell(arcade.Sprite):
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         # if neighbor shares two vertices with self, check which ones
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
-            # if self.get_id() == 225:
-            #     print(f"cell {self.id} and cell {neighbor.id} share two vertices")
-            #     print(f"{self.get_quad_perimeter().get_bottom_left()}, {self.get_quad_perimeter().get_bottom_right()}")
-            #     print(f"{self.get_quad_perimeter().get_top_left()}, {self.get_quad_perimeter().get_top_right()}")
-            #     print(set(self_vs).intersection(set(neighbor_vs)))
             return self.get_neighbor_direction_when_neighbor_shares_two_vs(neighbor)
         # if neighbor shares only one vertex with self, check which one
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
@@ -235,8 +230,7 @@ class GrowingCell(arcade.Sprite):
         elif cell in self.m_neighbors:
             self.m_neighbors.remove(cell)
         else:
-            pass
-            # raise ValueError("Non neighbor cell being removed from neighbor list")
+            raise ValueError("Non neighbor cell being removed from neighbor list")
 
     def check_if_neighbor(self, cell: "GrowingCell") -> bool:
         if cell in self.a_neighbors:
