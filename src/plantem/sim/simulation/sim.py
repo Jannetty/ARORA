@@ -135,8 +135,8 @@ class GrowingSim(arcade.Window):
             # print("Cells Updated")
             self.vertex_mover.update()
             # self.circulator.update()
-            # self.divider.update()
-            # self.root_tip_y = self.get_root_tip_y() 
+            self.divider.update()
+            self.root_tip_y = self.get_root_tip_y() 
 
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
