@@ -51,12 +51,23 @@ class GrowingCell(arcade.Sprite):
         simulation.increment_next_cell_id()
         # Quad perimeter must be made before circ mod
         self.quad_perimeter = QuadPerimeter(corners)
-        self.color = [0, 200, 5]
         if init_vals.get('circ_mod') == 'disc':
             self.circ_mod = BaseCirculateModuleDisc(self, init_vals)
         else:
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.growing = init_vals.get('growing')
+        self.color = self.get_color()
+
+    # Sets color based on self.circ_mod.get_auxin()
+    def get_color(self):
+        auxin = self.circ_mod.get_auxin()
+        max_auxin = 2000 #TODO make this not hard coded
+        normalized_auxin = (auxin)/(max_auxin)
+        rgba = self.sim.cmap(normalized_auxin)
+        # Scale and round the RGB values
+        r, g, b = (int(rgba[0] * 255 + 0.5), int(rgba[1] * 255 + 0.5), int(rgba[2] * 255 + 0.5))
+        return [r,g,b]
+
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
@@ -250,6 +261,7 @@ class GrowingCell(arcade.Sprite):
         return self.quad_perimeter
 
     def draw(self) -> None:
+        self.color = self.get_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
         arcade.draw_polygon_filled(
             point_list=point_list, color=self.color
