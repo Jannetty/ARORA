@@ -45,6 +45,7 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("RdYlBu")
+        self.cmap = self.cmap.reversed() # reverse the colormap so that the lowest value is blue and the highest is red
         self.setup()
 
     def get_root_midpointx(self):
