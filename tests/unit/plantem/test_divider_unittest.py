@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
 
-class TestVertexMover(unittest.TestCase):
+class TestDivider(unittest.TestCase):
     init_vals = {
         "auxin": 2,
         "arr": 3,
