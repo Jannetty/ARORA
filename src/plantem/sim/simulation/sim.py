@@ -9,8 +9,8 @@ from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.sim.mover.vertex_mover import VertexMover
 from src.plantem.sim.input.input import Input
 
-SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 1200
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Starting Template"
 
 
