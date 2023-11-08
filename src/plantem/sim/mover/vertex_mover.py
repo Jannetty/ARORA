@@ -13,7 +13,7 @@ class VertexMover:
 
     def add_cell_delta_val(self, cell: GrowingCell, deltaX: float) -> None:
         if cell in self.cell_deltas:
-            raise ValueError(f"Multiple delta vals added to VertexMover for cell {cell}")
+            raise ValueError(f"Multiple delta vals added to VertexMover for cell {cell.id}. VertexMover must be updated between cell updates.")
         else:
             self.cell_deltas[cell] = deltaX
 

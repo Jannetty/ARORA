@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
 
-class TestVertexMover(unittest.TestCase):
+class TestDivider(unittest.TestCase):
     init_vals = {
         "auxin": 2,
         "arr": 3,
@@ -144,9 +144,12 @@ class TestVertexMover(unittest.TestCase):
         l_neighbor.add_neighbor(cell)
         self.assertEqual([], new_top_cell.get_l_neighbors())
         self.assertEqual([], new_bottom_cell.get_l_neighbors())
+        self.assertEqual([l_neighbor], cell.get_l_neighbors())
+        self.assertEqual([cell], l_neighbor.get_m_neighbors())
         simulation.get_divider().set_one_side_neighbors(
             new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
         )
+
         self.assertEqual([l_neighbor], cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_bottom_cell.get_l_neighbors())
