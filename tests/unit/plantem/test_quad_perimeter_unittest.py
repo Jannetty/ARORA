@@ -8,9 +8,32 @@ from src.plantem.loc.quad_perimeter.quad_perimeter import (
     get_len_perimeter_in_common,
 )
 from src.plantem.loc.vertex.vertex import Vertex
+from src.plantem.agent.cell import GrowingCell
+from src.plantem.sim.simulation.sim import GrowingSim
 
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+SCREEN_TITLE = "Starting Template"
+init_vals = {
+    "auxin": 2,
+    "arr": 3,
+    "al": 3,
+    "pina": 0.5,
+    "pinb": 0.7,
+    "pinl": 0.4,
+    "pinm": 0.2,
+    "k1": 1,
+    "k2": 1,
+    "k3": 1,
+    "k4": 1,
+    "k_s": 0.005,
+    "k_d": 0.0015,
+    "growing": True,
+    "circ_mod": 'cont'
+}
 
 class TestQuadPerimeter(unittest.TestCase):
+
     def test_QuadPerimeter_get_apical(self):
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
@@ -84,52 +107,80 @@ class TestQuadPerimeter(unittest.TestCase):
         self.assertEqual(800, this_qp.get_perimeter_len())
 
     def test_get_len_perimeter_in_common_right_neighbor(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        qp_1 = QuadPerimeter([v1, v2, v3, v4])
+        qp_1 = [v1, v2, v3, v4]
         v5 = Vertex(500, 100)
         v6 = Vertex(500, 300)
-        qp_2 = QuadPerimeter([v3, v4, v5, v6])
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "m"))
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "l"))
+        qp_2 = [v3, v4, v5, v6]
+        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
+        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        self.assertEqual(200, get_len_perimeter_in_common(cell1, cell2))
+        self.assertEqual(200, get_len_perimeter_in_common(cell2, cell1))
 
     def test_get_len_perimeter_in_common_left_neighbor(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        qp_1 = QuadPerimeter([v1, v2, v3, v4])
+        qp_1 = [v1, v2, v3, v4]
         v5 = Vertex(0, 100)
         v6 = Vertex(0, 300)
-        qp_2 = QuadPerimeter([v3, v4, v5, v6])
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "m"))
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "l"))
+        qp_2 = [v3, v4, v5, v6]
+        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
+        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        self.assertEqual(200, get_len_perimeter_in_common(cell1, cell2))
+        self.assertEqual(200, get_len_perimeter_in_common(cell2, cell1))
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        qp_1 = QuadPerimeter([v1, v2, v3, v4])
+        qp_1 = [v1, v2, v3, v4]
         v5 = Vertex(100, 500)
         v6 = Vertex(300, 500)
-        qp_2 = QuadPerimeter([v3, v2, v5, v6])
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "a"))
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "b"))
+        qp_2 = [v3, v2, v5, v6]
+        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
+        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        self.assertEqual(200, get_len_perimeter_in_common(cell1, cell2))
+        self.assertEqual(200, get_len_perimeter_in_common(cell2, cell1))
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
+        timestep = 1
+        root_midpoint_x = 1000
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+        )
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
-        qp_1 = QuadPerimeter([v1, v2, v3, v4])
+        qp_1 = [v1, v2, v3, v4]
         v5 = Vertex(100, 0)
         v6 = Vertex(300, 0)
-        qp_2 = QuadPerimeter([v3, v2, v5, v6])
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "a"))
-        self.assertEqual(200, get_len_perimeter_in_common(qp_1, qp_2, "b"))
+        qp_2 = [v3, v2, v5, v6]
+        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
+        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        self.assertEqual(200, get_len_perimeter_in_common(cell1, cell2))
+        self.assertEqual(200, get_len_perimeter_in_common(cell2, cell1))
 
     def test_get_each_vertex(self):
         v1 = Vertex(100, 100)

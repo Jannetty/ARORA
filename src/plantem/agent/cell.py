@@ -314,10 +314,15 @@ class GrowingCell(arcade.Sprite):
         return pin_weights
 
     def update(self) -> None:
-        #print(f"updating cell {self.id}")
+        print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
         # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized
-        # self.circ_mod.update(pin_weights) TODO: Turn on again when geometry finalized
+        pin_weights = {}
+        pin_weights['a'] = 1
+        pin_weights['b'] = 1
+        pin_weights['l'] = 1
+        pin_weights['m'] = 1
+        # self.circ_mod.update(pin_weights) # TODO: Turn on again when geometry finalized
         #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
         #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")
