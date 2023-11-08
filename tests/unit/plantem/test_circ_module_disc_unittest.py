@@ -148,13 +148,16 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
 
     def test_calculate_neighbor_memfrac(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100.0, 100.0)
+        v2 = Vertex(100.0, 300.0)
+        v3 = Vertex(300.0, 300.0)
+        v4 = Vertex(300.0, 100.0)
+        v5 = Vertex(300.0, 600.0)
+        v6 = Vertex(100.0, 600.0)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                v1,v2,v3,v4
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -163,17 +166,12 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         # test apical nerighbor
         neighbora = GrowingCell(
             sim,
-            [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
-            ],
+            [v2,v6,v5,v3],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         sim.setup()
-        found_memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora, "a")
+        found_memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora)
         expected_memfrac = 0.25
         self.assertEqual(expected_memfrac, found_memfrac)
 
@@ -216,13 +214,18 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
     def test_get_neighbor_auxin(self):
         timestep = 1
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100,100)
+        v2 = Vertex(100,300)
+        v3 = Vertex(300,300)
+        v4 = Vertex(300,100)
+        v5 = Vertex(100,600)
+        v6 = Vertex(300,600)
+        v7 = Vertex(600,300)
+        v8 = Vertex(600,100)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                v1,v2,v3,v4
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -233,10 +236,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         neighbora = GrowingCell(
             sim,
             [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
+                v2,v3,v5,v6
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -248,7 +248,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
             pin_dir, neighbor_list, "a", timestep, area
         )
 
-        memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora, 'a')
+        memfrac = circ_module_disc.calculate_neighbor_memfrac(neighbora)
         # TODO: Make k_al and k_pin  parameters from input
         k_al = 1
         k_pin = 1

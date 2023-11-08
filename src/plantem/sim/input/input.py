@@ -106,8 +106,8 @@ class Input:
             vertex_assign[f"c{index}"] = row
         return vertex_assign
 
-    #TODO: similarly here please put something other than iloc in here
-    # Done
+    #TODO: replace hard coded 13
+    #TODO: parse string without iterating through all elements of series (get rid of for loop so we don't give impression we are iterating through anything when we are just extracting)
     def get_neighbors_assignment(self) -> dict:
         """
         Returns neighbors dictionary with cell index as key and its neighbors
@@ -158,9 +158,13 @@ class Input:
         correspodning neighbors list (with GrowingCell objects) as value
         """
         neighbors_assignment = self.get_neighbors_assignment()
+        #print(f"neighbors_assignment: {neighbors_assignment}")
         neighbors = {}
         for cell_num, neighb in neighbors_assignment.items():
+            #print(f"cell_num: {cell_num}")
+            #print(f"neighb: {neighb}")
             for each in neighb:
+                #print(f"each: {each}")
                 if cell_num not in neighbors:
                     neighbors[cell_num] = [new_cells[each]]
                 else:

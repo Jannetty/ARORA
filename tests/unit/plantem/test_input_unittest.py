@@ -13,7 +13,7 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
 
-class InputTests(unittest.TestCase):
+class TestInput(unittest.TestCase):
     """
     Tests Input Class
     """

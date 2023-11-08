@@ -1,5 +1,7 @@
 import arcade
 import pandas
+import numpy as np
+import matplotlib.pyplot as plt
 import src.plantem.agent.cell as cell
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
@@ -38,11 +40,12 @@ class GrowingSim(arcade.Window):
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
         if type(gparam_series) == pandas.core.series.Series:
-            #Zimo calls code to change paramter values stored in input data frame to match values in gparam_file
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
+        self.cmap = plt.get_cmap("RdYlBu")
+        self.cmap = self.cmap.reversed() # reverse the colormap so that the lowest value is blue and the highest is red
         self.setup()
 
     def get_root_midpointx(self):
@@ -125,26 +128,33 @@ class GrowingSim(arcade.Window):
 
     def on_update(self, delta_time):
         """
-        All the logic to move, and the game logic goes here.
-        Normally, you'll call update() on the sprite lists that
-        need it.
+        Update cells, vertexes, circulator, and divider
         """
         self.tick += 1
-        print(f"tick {self.tick}")
-        if self.tick % 1 == 0:
+        #print(f"tick {self.tick}")
+        if self.tick < 2592000:
             self.cell_list.update()
-            print("Cells Updated")
+            # print("Cells Updated")
             self.vertex_mover.update()
             self.circulator.update()
             self.divider.update()
-            self.root_tip_y = self.get_root_tip_y() 
+            self.root_tip_y = self.get_root_tip_y()
 
+            if self.vis:
+                curr_cam_position = self.camera_sprites.position
+                self.camera_sprites.move((0, self.root_tip_y-2))
+                self.camera_sprites.update()
+                self.camera_sprites.use()
+
+
+        else:
+            print("Simulation Complete")
+            arcade.close_window()
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
     """Main function"""
     simulation = GrowingSim(
         SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_series
     )
-    simulation.setup()
     print("Running Simulation")
     arcade.run()

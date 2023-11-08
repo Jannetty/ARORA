@@ -65,7 +65,7 @@ sim.setup()
 CELL_LIST = [cell0, cell1]
 
 
-class OutputTests(unittest.TestCase):
+class TestOutput(unittest.TestCase):
     def test_get_auxin(self):
         output = Output(sim, "ouput.csv")
         expected = 2
