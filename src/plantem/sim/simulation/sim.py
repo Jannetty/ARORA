@@ -136,7 +136,7 @@ class GrowingSim(arcade.Window):
             self.cell_list.update()
             # print("Cells Updated")
             self.vertex_mover.update()
-            # self.circulator.update()
+            self.circulator.update()
             self.divider.update()
             self.root_tip_y = self.get_root_tip_y()
 

@@ -177,6 +177,22 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
         elif cellqp.right == "lateral":
             length = cellqp.get_right_memlen()
 
+
+    # cases for unusual geometry in roottip
+    elif cell.get_id() == 10 and neighbor.get_id() == 20:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 20 and neighbor.get_id() == 10:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+        
+    elif cell.get_id() == 11 and neighbor.get_id() == 25:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 25 and neighbor.get_id() == 11:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    
+        if length != 5:
+            raise Exception("Cell 10 does not share basal membrane with cell 20")
+
     if length == 0:
         raise Exception("Neighbor list is incorrect, neighbor does not share membrane with cell")
     return length

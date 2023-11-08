@@ -57,6 +57,14 @@ class GrowingCell(arcade.Sprite):
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.growing = init_vals.get('growing')
         self.color = self.get_color()
+        self.pin_weights = self.initialize_pin_weights()
+
+    def initialize_pin_weights(self):
+        # return a dictionary of pin weights for each direction
+        # each weight should be proportional to the initial PIN in each respective direction
+        # pin in a direction / sum of pins in all direction
+        # NOT unlocalized PIN
+        return {}
 
     # Sets color based on self.circ_mod.get_auxin()
     def get_color(self):
@@ -323,6 +331,6 @@ class GrowingCell(arcade.Sprite):
         pin_weights['b'] = 1
         pin_weights['l'] = 1
         pin_weights['m'] = 1
-        # self.circ_mod.update(pin_weights) # TODO: Turn on again when geometry finalized
+        self.circ_mod.update(pin_weights) # TODO: Turn on again when geometry finalized
         #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
         #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")
