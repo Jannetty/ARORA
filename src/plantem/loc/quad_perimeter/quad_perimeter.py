@@ -1,6 +1,9 @@
 from math import dist
 from src.plantem.loc.vertex.vertex import Vertex
 
+def intersection(lst1, lst2):
+    intersection = [value for value in lst1 if value in lst2]
+    return intersection
 
 class QuadPerimeter:
     _perimeter_vs = None  # list of vertices
@@ -145,37 +148,38 @@ class QuadPerimeter:
 
 
 
-def get_len_perimeter_in_common(cellqp, neighborqp, neighbor_direction: str) -> float:
-    len = 0
-    if neighbor_direction == "l" or neighbor_direction == "m":
-        if cellqp.get_top_left().get_x() == neighborqp.get_top_right().get_x():
-            # cell shares left membrane with neighbor's right membrane
-            len = get_overlap(
-                [cellqp.get_top_left().get_y(), cellqp.get_bottom_left().get_y()],
-                [neighborqp.get_top_right().get_y(), neighborqp.get_bottom_right().get_y()],
-            )
-        else:
-            # cell shares right membrane with neighbor's left membrane
-            len = get_overlap(
-                [cellqp.get_top_right().get_y(), cellqp.get_bottom_right().get_y()],
-                [neighborqp.get_top_left().get_y(), neighborqp.get_bottom_left().get_y()],
-            )
-    else:
-        if cellqp.get_top_left().get_y() == neighborqp.get_bottom_left().get_y():
-            # cell shares top membrane with neighbor's bottom membrane
-            len = get_overlap(
-                [cellqp.get_top_left().get_x(), cellqp.get_top_right().get_x()],
-                [neighborqp.get_bottom_left().get_x(), neighborqp.get_bottom_right().get_x()],
-            )
-        else:
-            # cell shares bottom membrane with neighbor's top membrane
-            len = get_overlap(
-                [cellqp.get_bottom_left().get_x(), cellqp.get_bottom_right().get_x()],
-                [neighborqp.get_top_left().get_x(), neighborqp.get_top_right().get_x()],
-            )
-    if len == 0:
+def get_len_perimeter_in_common(cell, neighbor) -> float:
+    #TODO: rewrite this function with two possibilities
+    # 1. cells share two vertices with neighbor
+    #        - find which two vertices, calculate euclidean distance between them, return that
+    # 2. cells share one or fewer vertices with neighbor (if neighbor is lateral root cap cell, can check by cell number)
+    #        - calculate length of lateral membrane and return that if lateral root cap neighbor, calculate neighbor's lateral membrane if lateral root cap cell
+    length = 0
+    rootcap_cellIDs = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
+    cellqp = cell.get_quad_perimeter()
+    neighborqp = neighbor.get_quad_perimeter()
+    # if cellqp and neighborqp share two vertices, calculate euclidean distance between them
+    cell_vs = cellqp.get_vs()
+    neighbor_vs = neighborqp.get_vs()
+    if len(intersection(cell_vs, neighbor_vs)) == 2:
+        vs = list(set(cellqp.get_vs()).intersection(set(neighborqp.get_vs())))
+        length = dist(vs[0].get_xy(), vs[1].get_xy())
+    
+    elif cell.get_id() in rootcap_cellIDs:
+        if neighborqp.left == "lateral":
+            length = neighborqp.get_left_memlen()
+        elif neighborqp.right == "lateral":
+            length = neighborqp.get_right_memlen()
+    
+    elif neighbor.get_id() in rootcap_cellIDs:
+        if cellqp.left == "lateral":
+            length = cellqp.get_left_memlen()
+        elif cellqp.right == "lateral":
+            length = cellqp.get_right_memlen()
+
+    if length == 0:
         raise Exception("Neighbor list is incorrect, neighbor does not share membrane with cell")
-    return len
+    return length
 
 
 def get_overlap(membrane1, membrane2):
@@ -184,7 +188,7 @@ def get_overlap(membrane1, membrane2):
 
 def get_apical(vertex_list: list) -> list:
     vs = vertex_list
-    maxy = 0
+    maxy = float('-inf')
     apical_v = None
     apical_vs = []
     for v in vs:
@@ -192,7 +196,7 @@ def get_apical(vertex_list: list) -> list:
             maxy = v.get_y()
             apical_v = v
     apical_vs.append(apical_v)
-    maxy = 0
+    maxy = float('-inf')
     for v in vs:
         if v.get_y() > maxy and v not in apical_vs:
             maxy = v.get_y()

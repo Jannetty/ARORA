@@ -131,13 +131,18 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     def test_calculate_neighbor_memfrac(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        v1 = Vertex(100,100)
+        v2 = Vertex(100,300)
+        v3 = Vertex(300,300)
+        v4 = Vertex(300,100)
+        v5 = Vertex(100,600)
+        v6 = Vertex(300,600)
+        v7 = Vertex(600,300)
+        v8 = Vertex(600,100)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                v1,v2,v3,v4
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -145,10 +150,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         neighbora = GrowingCell(
             sim,
             [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
+                v2,v3,v5,v6
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -157,7 +159,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim.setup()
         # test apical neighbor
         expected_f = 0.25
-        found_f = circ_module_cont.calculate_neighbor_memfrac(neighbora, "a")
+        found_f = circ_module_cont.calculate_neighbor_memfrac(neighbora)
         self.assertAlmostEqual(expected_f, found_f, places=5)
 
     def test_get_neighbor_auxin_exchange(self):
@@ -189,11 +191,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         ali = make_init_vals()['al']
         pindi = make_init_vals()['pin']
         expected_neighbor_auxin = circ_module_cont.get_neighbor_auxin_exchange(
-            ali, pindi, aneighbor_list, "a", area
+            ali, pindi, aneighbor_list, area
         )
         neighborsa, neighborsb, neighborsl, neighborsm = cell.get_circ_mod().get_neighbors()
         found_neighbor_auxin = cell.get_circ_mod().get_neighbor_auxin_exchange(
-            cell.get_circ_mod().get_al(), cell.get_circ_mod().get_pin(), neighborsa, "a", cell.quad_perimeter.get_area()
+            cell.get_circ_mod().get_al(), cell.get_circ_mod().get_pin(), neighborsa, cell.quad_perimeter.get_area()
         )
         for neighbor in aneighbor_list:
             expected = expected_neighbor_auxin[neighbor]
@@ -485,8 +487,8 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         curr_cell2.add_neighbor(neighborm2)
         sim2.setup()
        
-        auxina = circ_module_cont2.get_neighbor_auxin_exchange(curr_cell2.get_circ_mod().get_al(), curr_cell2.get_circ_mod().get_apical_pin(), [neighbora2], "a", curr_cell2.quad_perimeter.get_area())
-        auxinm = circ_module_cont2.get_neighbor_auxin_exchange(curr_cell2.get_circ_mod().get_al(), curr_cell2.get_circ_mod().get_medial_pin(), [neighborm2], "m", curr_cell2.quad_perimeter.get_area())
+        auxina = circ_module_cont2.get_neighbor_auxin_exchange(curr_cell2.get_circ_mod().get_al(), curr_cell2.get_circ_mod().get_apical_pin(), [neighbora2], curr_cell2.quad_perimeter.get_area())
+        auxinm = circ_module_cont2.get_neighbor_auxin_exchange(curr_cell2.get_circ_mod().get_al(), curr_cell2.get_circ_mod().get_medial_pin(), [neighborm2], curr_cell2.quad_perimeter.get_area())
         expected = {
             curr_cell: (soln[1, 0] - make_init_vals()['auxin']) + auxina[neighbora2] + auxinm[neighborm2],
             neighbora: -auxina[neighbora2],

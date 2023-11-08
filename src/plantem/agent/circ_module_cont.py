@@ -173,26 +173,24 @@ class BaseCirculateModuleCont:
         membrane_pin = memfrac * pini - self.kd * pindi * (1 / area) * weight
         return membrane_pin
 
-    def calculate_neighbor_memfrac(self, neighbor, neighbor_direction: str) -> float:
+    def calculate_neighbor_memfrac(self, neighbor) -> float:
         """
         Calculate the fraction of total cell membrane that is in a defined direction and shared with a specified neighbor
         """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
-        common_perimeter = get_len_perimeter_in_common(
-            self.cell.quad_perimeter, neighbor.quad_perimeter, neighbor_direction
-        )
+        common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
     def get_neighbor_auxin_exchange(
-        self, ali: float, pindi: float, neighbors: list, direction: str, area: float
+        self, ali: float, pindi: float, neighbors: list, area: float
     ) -> dict:
         """
         Calculate the amount of auxin that will be transcported across each membrane
         """
         neighbor_dict = {}
         for neighbor in neighbors:
-            memfrac = self.calculate_neighbor_memfrac(neighbor, direction)
+            memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             neighbor_aux_exchange = neighbor_aux * memfrac * ali * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
             neighbor_dict[neighbor] = neighbor_aux_exchange
@@ -253,10 +251,10 @@ class BaseCirculateModuleCont:
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()
 
-        auxina = self.get_neighbor_auxin_exchange(self.al, self.pina, neighborsa, "a", area)
-        auxinb = self.get_neighbor_auxin_exchange(self.al, self.pinb, neighborsb, "b", area)
-        auxinl = self.get_neighbor_auxin_exchange(self.al, self.pinl, neighborsl, "l", area)
-        auxinm = self.get_neighbor_auxin_exchange(self.al, self.pinm, neighborsm, "m", area)
+        auxina = self.get_neighbor_auxin_exchange(self.al, self.pina, neighborsa, area)
+        auxinb = self.get_neighbor_auxin_exchange(self.al, self.pinb, neighborsb, area)
+        auxinl = self.get_neighbor_auxin_exchange(self.al, self.pinl, neighborsl, area)
+        auxinm = self.get_neighbor_auxin_exchange(self.al, self.pinm, neighborsm, area)
         neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
         syn_deg_auxin = soln[1, 0] - self.auxin

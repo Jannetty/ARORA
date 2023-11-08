@@ -20,7 +20,7 @@ class Divider:
         for cell in self.cells_to_divide:
             print(f"Cell {cell.get_id()} dividing!")
             if (cell.get_dev_zone() != 'meristematic'):
-                print(f"Cell is in the {cell.get_dev_zone()} zone, not dividing")
+                #print(f"Cell is in the {cell.get_dev_zone()} zone, not dividing")
                 continue
             new_vs = self.get_new_vs(cell)
             # check if those vertices exist by iterating through all vs in all neighbor cells' qps
@@ -40,6 +40,8 @@ class Divider:
                 cell.get_quad_perimeter().get_bottom_right(),
                 cell.get_quad_perimeter().get_bottom_left(),
             ]
+
+            print(f"new_upper_vs = {new_upper_vs}, locs = {[v.get_x() for v in new_upper_vs]}")
 
             # make new cells using those vertices
             new_top_cell = GrowingCell(
@@ -89,6 +91,9 @@ class Divider:
         self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
 
     def set_one_side_neighbors(self, new_top_cell, new_bottom_cell, neighbor_list, cell):
+        '''
+        Sets new cell neighbors to the neighbors of the old cell that are on the same side of the old cell as the new cell
+        '''
         if len(neighbor_list) == 0:
             return
         elif len(neighbor_list) == 1:
@@ -111,4 +116,5 @@ class Divider:
     def swap_neighbors(self, new_cell, old_n, old_cell):
         new_cell.add_neighbor(old_n)
         old_n.add_neighbor(new_cell)
-        old_n.remove_neighbor(old_cell)
+        if old_n.check_if_neighbor(old_cell):
+            old_n.remove_neighbor(old_cell)

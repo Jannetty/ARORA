@@ -33,7 +33,7 @@ def make_init_vals():
 
 delta = 5
 
-class CirculatorTests(unittest.TestCase):
+class TestCirculator(unittest.TestCase):
     """
     Test Circulator Class
     """

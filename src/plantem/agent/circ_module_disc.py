@@ -169,14 +169,12 @@ class BaseCirculateModuleDisc:
         membrane_pin = (0.25 * self.init_pin - self.kd * init * (1 / area)) * timestep
         return membrane_pin
 
-    def calculate_neighbor_memfrac(self, neighbor, neighbor_direction: str) -> float:
+    def calculate_neighbor_memfrac(self, neighbor) -> float:
         """
         Calculate the fraction of total cell membrane that is in a defined direction
         """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
-        common_perimeter = get_len_perimeter_in_common(
-            self.cell.quad_perimeter, neighbor.quad_perimeter, neighbor_direction
-        )
+        common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
         memfrac = common_perimeter / cell_perimeter
         return memfrac
 
@@ -189,7 +187,7 @@ class BaseCirculateModuleDisc:
         """
         neighbor_dict = {}
         for neighbor in neighbors:
-            memfrac = self.calculate_neighbor_memfrac(neighbor, direction)
+            memfrac = self.calculate_neighbor_memfrac(neighbor)
             # TODO: Make k_al and k_pin  parameters from input
             k_al = 1
             k_pin = 1
