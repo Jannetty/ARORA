@@ -42,11 +42,11 @@ class Circulator:
         Returns:
             None
         """
-        # if cell.id == 30 or cell.id == 31:
-        #     print(f"adding delta {delta} to cell {cell.get_id()}")
+        if cell.id == 17 or cell.id == 18:
+            print(f"adding delta {delta} to cell {cell.get_id()}")
         if cell in self.delta_auxins:
             old_delta = self.delta_auxins[cell]
-            new_delta = old_delta + delta
+            new_delta = round(old_delta + delta,5)
             self.delta_auxins[cell] = new_delta
         else:
             self.delta_auxins[cell] = delta
@@ -60,6 +60,12 @@ class Circulator:
             None
         """
         for cell in self.delta_auxins:
+            if cell.id == 17 or cell.id == 18:
+                print("------------------")
+                print(f"IN CIRCULATOR updating cell {cell.get_id()}")
+                print(f"old auxin {cell.get_circ_mod().get_auxin()}")
+                print(f"delta auxin {self.delta_auxins[cell]}")
+                print(f"new auxin {cell.get_circ_mod().get_auxin() + self.delta_auxins[cell]}")
             old_aux = cell.get_circ_mod().get_auxin()
             new_aux = old_aux + self.delta_auxins[cell]
             cell.get_circ_mod().set_auxin(new_aux)
