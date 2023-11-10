@@ -186,7 +186,7 @@ class BaseCirculateModuleCont:
         self, ali: float, pindi: float, neighbors: list, area: float
     ) -> dict:
         """
-        Calculate the amount of auxin that will be transcported across each membrane
+        Calculate the amount of auxin that will be transported across each membrane
         """
         neighbor_dict = {}
         for neighbor in neighbors:

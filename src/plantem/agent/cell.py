@@ -108,6 +108,7 @@ class GrowingCell(arcade.Sprite):
                 self.m_neighbors.append(neighbor)
             elif neighbor_location == None:
                 print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
+                raise ValueError("Non-neighbor added as neighbor")
                 pass
             else:
                 raise ValueError("Non-neighbor added as neighbor")
@@ -147,42 +148,113 @@ class GrowingCell(arcade.Sprite):
             return "b"   
 
     def get_neighbor_direction_when_neighbor_shares_one_v(self, neighbor: "GrowingCell") -> str:
-        # if self's top right is neighbor's top left, neighbor is medial if sim midpoint to the right, lateral otherwise
-        if self.quad_perimeter.get_top_right().get_xy() == neighbor.get_quad_perimeter().get_top_left().get_xy():
-            if self.quad_perimeter.get_top_right().get_x() < self.sim.get_root_midpointx():
-                return "m"
-            else:
-                return "l"
-        # if self's bottom right is neighbor's bottom left, neighbor is medial if sim midpoint to the right, lateral otherwise
-        elif self.quad_perimeter.get_bottom_right().get_xy() == neighbor.get_quad_perimeter().get_bottom_left().get_xy():
-            if self.quad_perimeter.get_bottom_right().get_x() < self.sim.get_root_midpointx():
-                return "m"
-            else:
-                return "l"
-        # if self's top left is neighbor's top right, neighbor is lateral if sim midpoint to the right, medial otherwise
-        elif self.quad_perimeter.get_top_left().get_xy() == neighbor.get_quad_perimeter().get_top_right().get_xy():
-            if self.quad_perimeter.get_top_left().get_x() < self.sim.get_root_midpointx():
-                return "l"
-            else:
-                return "m"
-        # if self's bottom left is neighbor's bottom right, neighbor is lateral if sim midpoint to the right, medial otherwise
-        elif self.quad_perimeter.get_bottom_left().get_xy() == neighbor.get_quad_perimeter().get_bottom_right().get_xy():
-            if self.quad_perimeter.get_bottom_left().get_x() < self.sim.get_root_midpointx():
-                return "l"
-            else:
-                return "m"
-
-        self_top_vs = [self.quad_perimeter.get_top_left(), self.quad_perimeter.get_top_right()]
-        self_bottom_vs = [self.quad_perimeter.get_bottom_left(), self.quad_perimeter.get_bottom_right()]
-        neighbor_top_vs = [neighbor.get_quad_perimeter().get_top_left(), neighbor.get_quad_perimeter().get_top_right()]
-        neighbor_bottom_vs = [neighbor.get_quad_perimeter().get_bottom_left(), neighbor.get_quad_perimeter().get_bottom_right()]
-
-        # if either of self's bottom vs are either neighbor's top vs, neighbor is below
-        if (len(set(self_bottom_vs).intersection(set(neighbor_top_vs))) == 1) :
-            return "b"
-        # if either of self's top vs are either neighbor's bottom vs, neighbor is above
-        elif (len(set(self_top_vs).intersection(set(neighbor_bottom_vs))) == 1) :
+        # going to assign these manually for now
+        if self.get_id() == 10 and neighbor.get_id() == 20:
             return "a"
+        elif self.get_id() == 20 and neighbor.get_id() == 10:
+            return "b"
+        
+        elif self.get_id() == 11 and neighbor.get_id() == 25:
+            return "a"
+        elif self.get_id() == 25 and neighbor.get_id() == 11:
+            return "b"
+        
+        elif self.get_id() == 16 and neighbor.get_id() == 36:
+            return "a"
+        elif self.get_id() == 36 and neighbor.get_id() == 16:
+            return "b"
+        
+        elif self.get_id() == 19 and neighbor.get_id() == 37:
+            return "a"
+        elif self.get_id() == 37 and neighbor.get_id() == 19:
+            return "b"
+        
+        elif self.get_id() == 20 and neighbor.get_id() == 26:
+            return "b"
+        elif self.get_id() == 26 and neighbor.get_id() == 20:
+            return "l"
+        
+        elif self.get_id() == 20 and neighbor.get_id() == 36:
+            return "a"
+        elif self.get_id() == 36 and neighbor.get_id() == 20:
+            return "b"
+        
+        elif self.get_id() == 25 and neighbor.get_id() == 27:
+            return "b"
+        elif self.get_id() == 27 and neighbor.get_id() == 25:
+            return "l"
+        
+        elif self.get_id() == 25 and neighbor.get_id() == 37:
+            return "a"
+        elif self.get_id() == 37 and neighbor.get_id() == 25:
+            return "b"
+        
+        elif self.get_id() == 38 and neighbor.get_id() == 39:
+            return "m"
+        elif self.get_id() == 39 and neighbor.get_id() == 38:
+            return "l"
+        
+        elif self.get_id() == 39 and neighbor.get_id() == 46:
+            return "l"
+        elif self.get_id() == 46 and neighbor.get_id() == 39:
+            return "m"
+        
+        elif self.get_id() == 42 and neighbor.get_id() == 43:
+            return "l"
+        elif self.get_id() == 43 and neighbor.get_id() == 42:
+            return "m"
+        
+        elif self.get_id() == 42 and neighbor.get_id() == 47:
+            return "l"
+        elif self.get_id() == 47 and neighbor.get_id() == 42:
+            return "m"
+        
+        elif self.get_id() == 44 and neighbor.get_id() == 50:
+            return "m"
+        elif self.get_id() == 50 and neighbor.get_id() == 44:
+            return "l"
+        
+        elif self.get_id() == 45 and neighbor.get_id() == 51:
+            return "m"
+        elif self.get_id() == 51 and neighbor.get_id() == 45:
+            return "l"
+        
+        elif self.get_id() == 50 and neighbor.get_id() == 52:
+            return "l"
+        elif self.get_id() == 52 and neighbor.get_id() == 50:
+            return "m"
+        
+        elif self.get_id() == 51 and neighbor.get_id() == 59:
+            return "l"
+        elif self.get_id() == 59 and neighbor.get_id() == 51:
+            return "m"
+        
+        elif self.get_id() == 54 and neighbor.get_id() == 65:
+            return "a"
+        elif self.get_id() == 65 and neighbor.get_id() == 54:
+            return "b"
+        
+        elif self.get_id() == 54 and neighbor.get_id() == 66:
+            return "a"
+        elif self.get_id() == 66 and neighbor.get_id() == 54:
+            return "b"
+        
+        elif self.get_id() == 57 and neighbor.get_id() == 69:
+            return "a"
+        elif self.get_id() == 69 and neighbor.get_id() == 57:
+            return "b"
+        
+        elif self.get_id() == 57 and neighbor.get_id() == 70:
+            return "a"
+        elif self.get_id() == 70 and neighbor.get_id() == 57:
+            return "b"
+        
+        # This catches assignment of neighbor of root cap cells
+        rootcap_cellIDs = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
+        if self.get_id() in rootcap_cellIDs:
+            return "m"
+        if neighbor.get_id() in rootcap_cellIDs:
+            return "l"
         return None
 
     def get_neighbor_direction_when_neighbor_shares_no_vs(self, neighbor: "GrowingCell") -> str:
@@ -211,7 +283,7 @@ class GrowingCell(arcade.Sprite):
                 return "l"
             else:
                 return None
-        
+        raise ValueError("Neighbor shares no Vs, is not in root tip, and is not a root cap cell")
 
     def get_a_neighbors(self):
         return self.a_neighbors
