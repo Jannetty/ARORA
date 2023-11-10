@@ -163,5 +163,15 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
     simulation = GrowingSim(
         SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis, cell_val_file, v_file, gparam_series
     )
+    # THIS IS JUST FOR BUG HUNTING
+    keys = [0,6,13,22,30,40,55,2,8,12,21,29,39,54,4,10,17,26,28,38,46,53,16,20,34,44,50,36,48,52]
+    value = [1,7,14,23,31,41,56,3,9,15,24,32,42,57,5,11,18,27,33,43,47,58,19,25,35,45,51,37,49,59]
+    equal_dict = dict(zip(keys, value))
+    print("Checking for asymmetrical initialization")
+    for id in keys:
+        if simulation.get_cell_by_ID(id).get_circ_mod().get_state() != simulation.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_state():
+            print(f"cell {id} state {simulation.get_cell_by_ID(id).get_circ_mod().get_state()}")
+            print(f"cell {equal_dict[id]} state {simulation.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_state()}")
+            raise ValueError("asymmetrical initialization")
     print("Running Simulation")
     arcade.run()

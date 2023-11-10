@@ -131,18 +131,18 @@ class GrowingCell(arcade.Sprite):
 
     def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
         # standard case, check which vertices neighbor shares with self
-        # if neighbor shares top left and bottom left, neighbor is lateral if sim midpoint to the right, medial otherwise
+        # if neighbor shares top left and bottom left, neighbor is to the left
         if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()):
-            if self.quad_perimeter.get_top_left().get_x() < self.sim.get_root_midpointx():
+            if self.quad_perimeter.get_left_lateral_or_medial(self.sim.get_root_midpointx()) == "lateral":
                 return "l"
             else:
                 return "m"
-        # if neighbor shares top right and bottom right, neighbor is medial if sim midpoint to the right, lateral otherwise
+        # if neighbor shares top right and bottom right, neighbor is to the right
         elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()):
-            if self.quad_perimeter.get_top_right().get_x() < self.sim.get_root_midpointx():
-                return "m"
-            else:
+            if self.quad_perimeter.get_right_lateral_or_medial(self.sim.get_root_midpointx()) == "lateral":
                 return "l"
+            else:
+                return "m"
         elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()):
             return "a"
         elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()):
@@ -291,11 +291,11 @@ class GrowingCell(arcade.Sprite):
         if self.get_id() == 17 and neighbor.get_id() == 20:
             return "l"
         elif self.get_id() == 20 and neighbor.get_id() == 17:
-            return "m"
+            return "b"
         elif self.get_id() == 18 and neighbor.get_id() == 25:
-            return "m"
-        elif self.get_id() == 25 and neighbor.get_id() == 18:
             return "l"
+        elif self.get_id() == 25 and neighbor.get_id() == 18:
+            return "b"
         
         # This catches assignment of neighbor of root cap cells
         rootcap_cellIDs = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
