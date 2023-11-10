@@ -432,7 +432,3 @@ class GrowingCell(arcade.Sprite):
         pin_weights['l'] = 1
         pin_weights['m'] = 1
         self.circ_mod.update(pin_weights) # TODO: Turn on again when geometry finalized
-        if self.id == 0 or self.id == 1:
-            #print(f"Cell {self.id} ending state: {self.circ_mod.get_state()}")
-            pass
-        #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")

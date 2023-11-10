@@ -60,7 +60,7 @@ class Circulator:
             None
         """
         for cell in self.delta_auxins:
-            if cell.id == 17 or cell.id == 18:
+            if cell.id == 36 or cell.id == 37:
                 print("------------------")
                 print(f"IN CIRCULATOR updating cell {cell.get_id()}")
                 print(f"old auxin {cell.get_circ_mod().get_auxin()}")

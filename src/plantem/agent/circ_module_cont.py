@@ -128,20 +128,9 @@ class BaseCirculateModuleCont:
         self.weightb = pin_weights.get("b")
         self.weightl = pin_weights.get("l")
         self.weightm = pin_weights.get("m")
-        # if self.cell.id == 30 or self.cell.id == 31:
-        #     print(f"IN UPDATE before get_solution, CELL {self.cell.id}, al = {self.al}, pinb = {self.pinb}")
-        #     print(self.get_state())
-        #     print(f"memfrac a = {self.cell.quad_perimeter.get_memfrac('a', self.left)}")
-        #     print(f"memfrac b = {self.cell.quad_perimeter.get_memfrac('b', self.left)}")
-        #     print(f"memfrac l = {self.cell.quad_perimeter.get_memfrac('l', self.left)}")
-        #     print(f"memfrac m = {self.cell.quad_perimeter.get_memfrac('m', self.left)}")
         soln = self.get_solution()
-        # if self.cell.id == 30 or self.cell.id == 31:
-        #     print(f"IN UPDATE after get_solution, CELL {self.cell.id}, al = {soln[1][2]}, pinb = {soln[1][5]}")
-        #     print(soln[1])
         self.update_auxin(soln)
         self.update_circ_contents(soln)
-        # self.update_membrane_pin()
 
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
@@ -225,8 +214,6 @@ class BaseCirculateModuleCont:
         """
         Calculate the total amount of change in auxin for current cell
         """
-        # if self.cell.id == 39 or self.cell.id == 42:
-        #     print(f"cell {self.cell.id} neighbors_auxin = {neighbors_auxin}")
         total_auxin = syn_deg_auxin
         for neighbors in neighbors_auxin:
             auxin = sum(neighbors.values())
@@ -255,9 +242,6 @@ class BaseCirculateModuleCont:
         self.pinl = round(soln[1, 6], 5)
         self.pinm = round(soln[1, 7], 5)
         self.update_arr_hist()
-        # if self.cell.id == 17 or self.cell.id == 18:
-        #     print("in update_circ_contents")
-        #     print(self.get_state())
 
     def update_neighbor_auxin(self, sim_circ: dict, neighbors_auxin: list) -> None:
         """
@@ -286,33 +270,14 @@ class BaseCirculateModuleCont:
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()
 
-        # if self.cell.id == 13 or self.cell.id == 14:
-        #     print(f"IN UPDATE AUXIN, CELL {self.cell.id}, al = {self.al}, pinb = {self.pinb}")
-
         auxina = self.get_neighbor_auxin_exchange(self.al, self.pina, neighborsa, area)
-        # if curr_cell.id == 39 or curr_cell.id == 42:
-        #     print(f"cell {curr_cell.id} auxina = {auxina}")
         auxinb = self.get_neighbor_auxin_exchange(self.al, self.pinb, neighborsb, area)
-        # if curr_cell.id == 39 or curr_cell.id == 42:
-        #     print(f"cell {curr_cell.id} auxinb = {auxinb}")
         auxinl = self.get_neighbor_auxin_exchange(self.al, self.pinl, neighborsl, area)
-        # if curr_cell.id == 39 or curr_cell.id == 42:
-        #     print(f"cell {curr_cell.id} auxinl = {auxinl}")
         auxinm = self.get_neighbor_auxin_exchange(self.al, self.pinm, neighborsm, area)
-        # if curr_cell.id == 38 or curr_cell.id == 43:
-        #     print(f"cell {curr_cell.id} auxinm = {auxinm}")
-        #     print(f"cell {curr_cell.id} al = {self.al}")
-        #     print(f"cell {curr_cell.id} pinm = {self.pinm}")
-        #     print(f"cell {curr_cell.id} area = {area}")
-        #     print(f"cell {curr_cell.id} neighborsm = {neighborsm}")
         neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
 
         syn_deg_auxin = soln[1, 0] - self.auxin
-        # if curr_cell.id == 39 or curr_cell.id == 42:
-        #     print(f"cell {curr_cell.id} syn_deg_auxin = {syn_deg_auxin}")
         delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
-        # if curr_cell.id == 30 or curr_cell.id == 31:
-        #     print(f"cell {curr_cell.id} delta_auxin = {delta_auxin}")
 
         # update current cell
         sim_circ.add_delta(curr_cell, round(delta_auxin,5))
