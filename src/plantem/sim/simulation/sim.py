@@ -2,6 +2,7 @@ import arcade
 import pandas
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 import src.plantem.agent.cell as cell
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
@@ -140,12 +141,14 @@ class GrowingSim(arcade.Window):
             self.divider.update()
             self.root_tip_y = self.get_root_tip_y()
 
+            
+
             if self.vis:
                 curr_cam_position = self.camera_sprites.position
                 self.camera_sprites.move((0, self.root_tip_y-2))
                 self.camera_sprites.update()
                 self.camera_sprites.use()
-
+            time.sleep(5)
 
         else:
             print("Simulation Complete")
