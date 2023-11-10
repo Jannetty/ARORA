@@ -71,8 +71,8 @@ class BaseCirculateModuleCont:
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
-        self.left = self.cell.get_quad_perimeter().get_left(self.cell.get_sim().get_root_midpointx())
-        self.right = self.cell.get_quad_perimeter().get_right(self.cell.get_sim().get_root_midpointx())
+        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(self.cell.get_sim().get_root_midpointx())
+        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(self.cell.get_sim().get_root_midpointx())
 
     def f(self, y, t) -> list:
         """
@@ -128,9 +128,19 @@ class BaseCirculateModuleCont:
         self.weightb = pin_weights.get("b")
         self.weightl = pin_weights.get("l")
         self.weightm = pin_weights.get("m")
+        if self.cell.id == 30 or self.cell.id == 31:
+            print(f"IN UPDATE before get_solution, CELL {self.cell.id}, al = {self.al}, pinb = {self.pinb}")
+            print(self.get_state())
+            print(f"memfrac a = {self.cell.quad_perimeter.get_memfrac('a', self.left)}")
+            print(f"memfrac b = {self.cell.quad_perimeter.get_memfrac('b', self.left)}")
+            print(f"memfrac l = {self.cell.quad_perimeter.get_memfrac('l', self.left)}")
+            print(f"memfrac m = {self.cell.quad_perimeter.get_memfrac('m', self.left)}")
         soln = self.get_solution()
-        self.update_circ_contents(soln)
+        # if self.cell.id == 13 or self.cell.id == 14:
+        #     print(f"IN UPDATE after get_solution, CELL {self.cell.id}, al = {soln[1][2]}, pinb = {soln[1][5]}")
+        #     print(soln[1])
         self.update_auxin(soln)
+        self.update_circ_contents(soln)
         # self.update_membrane_pin()
 
 
@@ -183,30 +193,30 @@ class BaseCirculateModuleCont:
         return memfrac
 
     def get_neighbor_auxin_exchange(
-        self, ali: float, pindi: float, neighbors: list, area: float
+        self, al: float, pindi: float, neighbors: list, area: float
     ) -> dict:
         """
         Calculate the amount of auxin that will be transported across each membrane
         """
-        # if self.cell.id==100 or self.cell.id==101:
-        #     print("in get_neighbor_auxin_exchange")
-        #     print(f"cell {self.cell.get_id()} auxin = {self.auxin}")
-        #     print(f"cell {self.cell.get_id()} ali = {ali}")
-        #     print(f"cell {self.cell.get_id()} k_al = {self.k_al}")
-        #     print(f"cell {self.cell.get_id()} pindi = {pindi}")
-        #     print(f"cell {self.cell.get_id()} area = {area}")
-        #     print(f"cell {self.cell.get_id()} k_pin = {self.k_pin}")
+
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
-            # if self.cell.id==100 or self.cell.id==1011:
+            # if self.cell.id==13 or self.cell.id==14:
+            #     print(f"in get_neighbor_auxin_exchange, cell {self.cell.id} - neighbor {neighbor.id}")
+            #     print(f"cell {self.cell.get_id()} auxin = {self.auxin}")
+            #     print(f"cell {self.cell.get_id()} al = {al}")
+            #     print(f"cell {self.cell.get_id()} k_al = {self.k_al}")
+            #     print(f"cell {self.cell.get_id()} pindi = {pindi}")
+            #     print(f"cell {self.cell.get_id()} area = {area}")
+            #     print(f"cell {self.cell.get_id()} k_pin = {self.k_pin}")
             #     print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} memfrac = {memfrac}")
             #     print(f"neighbor {neighbor.get_id()} auxin = {neighbor.get_circ_mod().get_auxin()}")
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            neighbor_aux_exchange = neighbor_aux * memfrac * ali * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
-            # if self.cell.id==0 or self.cell.id==1:
+            neighbor_aux_exchange = neighbor_aux * memfrac * al * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
+            # if self.cell.id==13 or self.cell.id==14:
             #     print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} aux_exchange = {neighbor_aux_exchange}")
-            neighbor_dict[neighbor] = neighbor_aux_exchange
+            neighbor_dict[neighbor] = round(neighbor_aux_exchange, 5)
         return neighbor_dict
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
@@ -233,14 +243,17 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents except auxin
         """
-        self.arr = soln[1, 1]
-        self.al = soln[1, 2]
-        self.pin = soln[1, 3]
-        self.pina = soln[1, 4]
-        self.pinb = soln[1, 5]
-        self.pinl = soln[1, 6]
-        self.pinm = soln[1, 7]
+        self.arr = round(soln[1, 1], 5)
+        self.al = round(soln[1, 2], 5)
+        self.pin = round(soln[1, 3], 5)
+        self.pina = round(soln[1, 4], 5)
+        self.pinb = round(soln[1, 5], 5)
+        self.pinl = round(soln[1, 6], 5)
+        self.pinm = round(soln[1, 7], 5)
         self.update_arr_hist()
+        if self.cell.id == 30 or self.cell.id == 31:
+            print("in update_circ_contents")
+            print(self.get_state())
 
     def update_neighbor_auxin(self, sim_circ: dict, neighbors_auxin: list) -> None:
         """
@@ -264,6 +277,9 @@ class BaseCirculateModuleCont:
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()
 
+        # if self.cell.id == 13 or self.cell.id == 14:
+        #     print(f"IN UPDATE AUXIN, CELL {self.cell.id}, al = {self.al}, pinb = {self.pinb}")
+
         auxina = self.get_neighbor_auxin_exchange(self.al, self.pina, neighborsa, area)
         auxinb = self.get_neighbor_auxin_exchange(self.al, self.pinb, neighborsb, area)
         auxinl = self.get_neighbor_auxin_exchange(self.al, self.pinl, neighborsl, area)
@@ -274,7 +290,7 @@ class BaseCirculateModuleCont:
         delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
 
         # update current cell
-        sim_circ.add_delta(curr_cell, delta_auxin)
+        sim_circ.add_delta(curr_cell, round(delta_auxin,5))
 
         # update neighbor cell
         self.update_neighbor_auxin(sim_circ, neighbors_auxin)

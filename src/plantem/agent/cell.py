@@ -259,27 +259,27 @@ class GrowingCell(arcade.Sprite):
     
         # This catches direction of neighbor sharing one vertex in regular geometry
         if self.get_quad_perimeter().get_top_left() == neighbor.get_quad_perimeter().get_top_right():
-            if self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "lateral":
+            if self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx()) == "lateral":
                 return "l"
-            elif self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "medial":
+            elif self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx()) == "medial":
                 return "m"
             
         elif self.get_quad_perimeter().get_top_right() == neighbor.get_quad_perimeter().get_top_left():
-            if self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "lateral":
+            if self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx()) == "lateral":
                 return "l"
-            elif self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "medial":
+            elif self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx()) == "medial":
                 return "m"
             
         elif self.get_quad_perimeter().get_bottom_left() == neighbor.get_quad_perimeter().get_bottom_right():
-            if self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "lateral":
+            if self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx()) == "lateral":
                 return "l"
-            elif self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "medial":
+            elif self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx()) == "medial":
                 return "m"
         
         elif self.get_quad_perimeter().get_bottom_right() == neighbor.get_quad_perimeter().get_bottom_left():
-            if self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "lateral":
+            if self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx()) == "lateral":
                 return "l"
-            elif self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "medial":
+            elif self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx()) == "medial":
                 return "m"
 
         return None
@@ -422,10 +422,7 @@ class GrowingCell(arcade.Sprite):
         return pin_weights
 
     def update(self) -> None:
-        #print(f"updating cell {self.id}")
-        if self.id == 0 or self.id == 1:
-            #print(f"Cell {self.id} starting state: {self.circ_mod.get_state()}")
-            pass
+        print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
         # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized

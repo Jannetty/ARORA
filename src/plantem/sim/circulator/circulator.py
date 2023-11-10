@@ -29,7 +29,7 @@ class Circulator:
         """
         return self.delta_auxins
 
-    def add_delta(self, cell, delta) -> None:
+    def add_delta(self, cell, delta: float) -> None:
         """
         Adds a delta auxin to the circulator for a given cell. If the cell is already in the circulator,
         the delta auxin is added to the existing delta auxin. If the cell is not in the circulator, the 
@@ -42,15 +42,13 @@ class Circulator:
         Returns:
             None
         """
+        # if cell.id == 30 or cell.id == 31:
+        #     print(f"adding delta {delta} to cell {cell.get_id()}")
         if cell in self.delta_auxins:
             old_delta = self.delta_auxins[cell]
             new_delta = old_delta + delta
             self.delta_auxins[cell] = new_delta
-            if cell.id == 0 or cell.id == 1:
-                print (f"cell {cell.get_id()} delta to be added is = {delta}, old delta = {old_delta}, new delta = {new_delta}")
         else:
-            if cell.id == 0 or cell.id == 1 or cell.id == 2 or cell.id == 3 or cell.id == 6 or cell.id == 7:
-                print (f"cell {cell.get_id()} being added to circulator for first time with delta = {delta}")
             self.delta_auxins[cell] = delta
 
     def update(self) -> None:
@@ -62,12 +60,16 @@ class Circulator:
             None
         """
         for cell in self.delta_auxins:
-            if cell.id == 0 or cell.id == 1:
-                print(f"cell {cell.get_id()} aux before = {cell.get_circ_mod().get_auxin()}")
             old_aux = cell.get_circ_mod().get_auxin()
             new_aux = old_aux + self.delta_auxins[cell]
             cell.get_circ_mod().set_auxin(new_aux)
-            if cell.id == 0 or cell.id == 1:
-                print(f"cell {cell.get_id()} aux after = {cell.get_circ_mod().get_auxin()}")
         self.delta_auxins = dict()
-
+        # THIS IS JUST FOR BUG HUNTING
+        keys = [0,6,13,22,30,40,55,2,8,12,21,29,39,54,4,10,17,26,28,38,46,53,16,20,34,44,50,36,48,52]
+        value = [1,7,14,23,31,41,56,3,9,15,24,32,42,57,5,11,18,27,33,43,47,58,19,25,35,45,51,37,49,59]
+        equal_dict = dict(zip(keys, value))
+        for id in keys:
+            if self.sim.get_cell_by_ID(id).get_circ_mod().get_auxin() != self.sim.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_auxin():
+                print(f"cell {id} auxin {self.sim.get_cell_by_ID(id).get_circ_mod().get_auxin()}")
+                print(f"cell {equal_dict[id]} auxin {self.sim.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_auxin()}")
+                raise ValueError("auxins not equal")
