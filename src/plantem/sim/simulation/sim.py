@@ -51,6 +51,12 @@ class GrowingSim(arcade.Window):
 
     def get_root_midpointx(self):
         return self.root_midpointx
+    
+    def get_cell_by_ID(self, ID):
+        for cell in self.cell_list:
+            if cell.id == ID:
+                return cell
+        raise ValueError(f"Cell with ID {ID} not found in cell_list")
 
     def get_timestep(self):
         return self.timestep

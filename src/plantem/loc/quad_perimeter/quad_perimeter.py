@@ -63,10 +63,10 @@ class QuadPerimeter:
     def __assign_corners(self) -> None:
         top_row = get_apical(self._perimeter_vs)
         bottom_row = [v for v in self._perimeter_vs if v not in top_row]
-        self._top_left = get_left(top_row)
-        self._top_right = get_right(top_row)
-        self._bottom_left = get_left(bottom_row)
-        self._bottom_right = get_right(bottom_row)
+        self._top_left = get_left_v(top_row)
+        self._top_right = get_right_v(top_row)
+        self._bottom_left = get_left_v(bottom_row)
+        self._bottom_right = get_right_v(bottom_row)
 
     def get_corners_for_disp(self) -> list:
         return [
@@ -125,10 +125,10 @@ class QuadPerimeter:
         else:
             return ("medial", "lateral")
         
-    def get_left(self, root_mid) -> str:
+    def get_left_lateral_or_medial(self, root_mid) -> str:
         return self.determine_left_right(root_mid)[0]
     
-    def get_right(self, root_mid) -> str:
+    def get_right_lateral_or_medial(self, root_mid) -> str:
         return self.determine_left_right(root_mid)[1]
 
     def get_memfrac(self, direction: str, left: str) -> float:
@@ -172,15 +172,15 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     
     # cases for lateral root cap cells
     elif cell.get_id() in rootcap_cellIDs:
-        if neighborqp.get_left(neighbor.get_sim().get_root_midpointx()) == "lateral":
+        if neighborqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = neighborqp.get_left_memlen()
-        elif neighborqp.get_right(neighbor.get_sim().get_root_midpointx()) == "lateral":
+        elif neighborqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = neighborqp.get_right_memlen()
             
     elif neighbor.get_id() in rootcap_cellIDs:
-        if cellqp.get_left(neighbor.get_sim().get_root_midpointx()) == "lateral":
+        if cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = cellqp.get_left_memlen()
-        elif cellqp.get_right(neighbor.get_sim().get_root_midpointx()) == "lateral":
+        elif cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = cellqp.get_right_memlen()
 
 
@@ -368,7 +368,9 @@ def get_basal(vertex_list: list) -> list:
     return [v for v in vertex_list if v not in apical]
 
 
-def get_left(vertex_list: list) -> Vertex:
+def get_left_v(vertex_list: list) -> Vertex:
+    if len(vertex_list) != 2:
+        raise Exception("get_left_v called on vertex list of length != 2")
     vs = vertex_list
     minx = float('inf')
     left_v = None
@@ -379,8 +381,10 @@ def get_left(vertex_list: list) -> Vertex:
     return left_v
 
 
-def get_right(vertex_list: list) -> Vertex:
-    left = get_left(vertex_list)
+def get_right_v(vertex_list: list) -> Vertex:
+    if len(vertex_list) != 2:
+        raise Exception("get_right_v called on vertex list of length != 2")
+    left = get_left_v(vertex_list)
     right = None
     for v in vertex_list:
         if v is not left:

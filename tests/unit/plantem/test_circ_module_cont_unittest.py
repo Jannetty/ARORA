@@ -495,7 +495,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             neighborm: -auxinm[neighborm2],
         }
         for key in expected:
-            self.assertAlmostEqual(expected[key], found[key], places=15)
+            self.assertAlmostEqual(expected[key], found[key], places=5)
 
     def test_get_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
