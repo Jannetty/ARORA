@@ -101,9 +101,14 @@ class QuadPerimeter:
         ]
 
     def get_area(self) -> float:
-        width = self._top_right.get_x() - self._top_left.get_x()
-        height = self._top_left.get_y() - self._bottom_left.get_y()
-        return width * height
+        # Brahmagupta's formula
+        s = self.get_perimeter_len() / 2
+        a = math.dist(self._top_left.get_xy(), self._bottom_left.get_xy())
+        b = math.dist(self._top_right.get_xy(), self._bottom_right.get_xy())
+        c = math.dist(self._top_left.get_xy(), self._top_right.get_xy())
+        d = math.dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
+        area = math.sqrt((s - a) * (s - b) * (s - c) * (s - d))
+        return area
 
     def get_init_area(self) -> float:
         return self._init_area
@@ -154,7 +159,6 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     #        - find which two vertices, calculate euclidean distance between them, return that
     # 2. cells share one or fewer vertices with neighbor (if neighbor is lateral root cap cell, can check by cell number)
     #        - calculate length of lateral membrane and return that if lateral root cap neighbor, calculate neighbor's lateral membrane if lateral root cap cell
-    print (f"cell {cell.get_id()} neighbor {neighbor.get_id()}")
     length = 0
     rootcap_cellIDs = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
     cellqp = cell.get_quad_perimeter()
@@ -170,18 +174,14 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     elif cell.get_id() in rootcap_cellIDs:
         if neighborqp.get_left(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = neighborqp.get_left_memlen()
-            print("root cap to cell left")
         elif neighborqp.get_right(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = neighborqp.get_right_memlen()
-            print("root cap to cell right")
             
     elif neighbor.get_id() in rootcap_cellIDs:
         if cellqp.get_left(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = cellqp.get_left_memlen()
-            print("root cap to cell left")
         elif cellqp.get_right(neighbor.get_sim().get_root_midpointx()) == "lateral":
             length = cellqp.get_right_memlen()
-            print("root cap to cell right")
 
 
     # cases for unusual geometry in roottip

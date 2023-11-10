@@ -188,11 +188,24 @@ class BaseCirculateModuleCont:
         """
         Calculate the amount of auxin that will be transported across each membrane
         """
+        # if self.cell.id==100 or self.cell.id==101:
+        #     print("in get_neighbor_auxin_exchange")
+        #     print(f"cell {self.cell.get_id()} auxin = {self.auxin}")
+        #     print(f"cell {self.cell.get_id()} ali = {ali}")
+        #     print(f"cell {self.cell.get_id()} k_al = {self.k_al}")
+        #     print(f"cell {self.cell.get_id()} pindi = {pindi}")
+        #     print(f"cell {self.cell.get_id()} area = {area}")
+        #     print(f"cell {self.cell.get_id()} k_pin = {self.k_pin}")
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
+            # if self.cell.id==100 or self.cell.id==1011:
+            #     print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} memfrac = {memfrac}")
+            #     print(f"neighbor {neighbor.get_id()} auxin = {neighbor.get_circ_mod().get_auxin()}")
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             neighbor_aux_exchange = neighbor_aux * memfrac * ali * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
+            # if self.cell.id==0 or self.cell.id==1:
+            #     print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} aux_exchange = {neighbor_aux_exchange}")
             neighbor_dict[neighbor] = neighbor_aux_exchange
         return neighbor_dict
 

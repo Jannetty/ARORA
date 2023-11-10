@@ -132,23 +132,21 @@ class GrowingSim(arcade.Window):
         Update cells, vertexes, circulator, and divider
         """
         self.tick += 1
-        #print(f"tick {self.tick}")
         if self.tick < 2592000:
-            self.cell_list.update()
-            # print("Cells Updated")
-            self.vertex_mover.update()
-            self.circulator.update()
-            self.divider.update()
-            self.root_tip_y = self.get_root_tip_y()
-
-            
-
+            print(f"tick {self.tick}, before vis")
             if self.vis:
                 curr_cam_position = self.camera_sprites.position
                 self.camera_sprites.move((0, self.root_tip_y-2))
                 self.camera_sprites.update()
                 self.camera_sprites.use()
-            time.sleep(5)
+            print("after vis, before sleep")
+            time.sleep(.5)
+            print("after sleep")
+            self.cell_list.update()
+            self.vertex_mover.update()
+            self.circulator.update()
+            self.divider.update()
+            self.root_tip_y = self.get_root_tip_y()
 
         else:
             print("Simulation Complete")

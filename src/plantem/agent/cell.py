@@ -106,10 +106,11 @@ class GrowingCell(arcade.Sprite):
                 self.l_neighbors.append(neighbor)
             elif neighbor_location == "m":
                 self.m_neighbors.append(neighbor)
-            elif neighbor_location == None:
+            elif neighbor_location == "cell no longer root cap cell neighbor":
                 print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
-                raise ValueError("Non-neighbor added as neighbor")
                 pass
+            elif neighbor_location == None:
+                raise ValueError("Non-neighbor added as neighbor")
             else:
                 raise ValueError("Non-neighbor added as neighbor")
         else:
@@ -255,7 +256,34 @@ class GrowingCell(arcade.Sprite):
             return "m"
         if neighbor.get_id() in rootcap_cellIDs:
             return "l"
+    
+        # This catches direction of neighbor sharing one vertex in regular geometry
+        if self.get_quad_perimeter().get_top_left() == neighbor.get_quad_perimeter().get_top_right():
+            if self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "lateral":
+                return "l"
+            elif self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "medial":
+                return "m"
+            
+        elif self.get_quad_perimeter().get_top_right() == neighbor.get_quad_perimeter().get_top_left():
+            if self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "lateral":
+                return "l"
+            elif self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "medial":
+                return "m"
+            
+        elif self.get_quad_perimeter().get_bottom_left() == neighbor.get_quad_perimeter().get_bottom_right():
+            if self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "lateral":
+                return "l"
+            elif self.get_quad_perimeter().get_left(self.sim.get_root_midpointx()) == "medial":
+                return "m"
+        
+        elif self.get_quad_perimeter().get_bottom_right() == neighbor.get_quad_perimeter().get_bottom_left():
+            if self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "lateral":
+                return "l"
+            elif self.get_quad_perimeter().get_right(self.sim.get_root_midpointx()) == "medial":
+                return "m"
+
         return None
+
 
     def get_neighbor_direction_when_neighbor_shares_no_vs(self, neighbor: "GrowingCell") -> str:
         # This catches explicit edge cases in root tip initialization
@@ -276,13 +304,13 @@ class GrowingCell(arcade.Sprite):
             if neighbor_midpointy < self.get_quad_perimeter().get_max_y() and neighbor_midpointy > self.get_quad_perimeter().get_min_y():
                 return "m"
             else:
-                return None
+                return "cell no longer root cap cell neighbor"
         if neighbor.get_id() in rootcap_cellIDs:
             self_midpointy = self.get_quad_perimeter().get_midpointy()
             if self_midpointy < neighbor.get_quad_perimeter().get_max_y() and self_midpointy > neighbor.get_quad_perimeter().get_min_y():
                 return "l"
             else:
-                return None
+                return "cell no longer root cap cell neighbor"
         raise ValueError("Neighbor shares no Vs, is not in root tip, and is not a root cap cell")
 
     def get_a_neighbors(self):
@@ -394,7 +422,10 @@ class GrowingCell(arcade.Sprite):
         return pin_weights
 
     def update(self) -> None:
-        print(f"updating cell {self.id}")
+        #print(f"updating cell {self.id}")
+        if self.id == 0 or self.id == 1:
+            #print(f"Cell {self.id} starting state: {self.circ_mod.get_state()}")
+            pass
         if self.growing:
             self.grow()
         # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized
@@ -404,5 +435,7 @@ class GrowingCell(arcade.Sprite):
         pin_weights['l'] = 1
         pin_weights['m'] = 1
         self.circ_mod.update(pin_weights) # TODO: Turn on again when geometry finalized
-        #print(f"Cell {self.id} state: {self.circ_mod.get_state()}")
+        if self.id == 0 or self.id == 1:
+            #print(f"Cell {self.id} ending state: {self.circ_mod.get_state()}")
+            pass
         #print(f"Cell {self.id} auxin = {self.get_circ_mod().get_auxin()}")
