@@ -191,22 +191,22 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
-            if self.cell.id==20 or self.cell.id==25:
-                if neighbor.id == 17 or neighbor.id == 18:
-                    print(f"in get_neighbor_auxin_exchange, cell {self.cell.id} - neighbor {neighbor.id}")
-                    print(f"cell {self.cell.get_id()} auxin = {self.auxin}")
-                    print(f"cell {self.cell.get_id()} al = {al}")
-                    print(f"cell {self.cell.get_id()} k_al = {self.k_al}")
-                    print(f"cell {self.cell.get_id()} pindi = {pindi}")
-                    print(f"cell {self.cell.get_id()} area = {area}")
-                    print(f"cell {self.cell.get_id()} k_pin = {self.k_pin}")
-                    print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} memfrac = {memfrac}")
-                    print(f"neighbor {neighbor.get_id()} auxin = {neighbor.get_circ_mod().get_auxin()}")
+            # if self.cell.id==20 or self.cell.id==25:
+            #     if neighbor.id == 17 or neighbor.id == 18:
+            #         print(f"in get_neighbor_auxin_exchange, cell {self.cell.id} - neighbor {neighbor.id}")
+            #         print(f"cell {self.cell.get_id()} auxin = {self.auxin}")
+            #         print(f"cell {self.cell.get_id()} al = {al}")
+            #         print(f"cell {self.cell.get_id()} k_al = {self.k_al}")
+            #         print(f"cell {self.cell.get_id()} pindi = {pindi}")
+            #         print(f"cell {self.cell.get_id()} area = {area}")
+            #         print(f"cell {self.cell.get_id()} k_pin = {self.k_pin}")
+            #         print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} memfrac = {memfrac}")
+            #         print(f"neighbor {neighbor.get_id()} auxin = {neighbor.get_circ_mod().get_auxin()}")
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             neighbor_aux_exchange = neighbor_aux * memfrac * al * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
-            if self.cell.id==20 or self.cell.id==25:
-                if neighbor.id == 17 or neighbor.id == 18:
-                    print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} aux_exchange = {neighbor_aux_exchange}")
+            # if self.cell.id==20 or self.cell.id==25:
+            #     if neighbor.id == 17 or neighbor.id == 18:
+            #         print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} aux_exchange = {neighbor_aux_exchange}")
             neighbor_dict[neighbor] = round(neighbor_aux_exchange, 5)
         return neighbor_dict
 
@@ -256,11 +256,11 @@ class BaseCirculateModuleCont:
         neighborsb = self.cell.get_b_neighbors()
         neighborsl = self.cell.get_l_neighbors()
         neighborsm = self.cell.get_m_neighbors()
-        if self.cell.id == 20 or self.cell.id == 25:
-            print(f"cell {self.cell.id} neighborsa = {[thiscell.id for thiscell in neighborsa]}")
-            print(f"cell {self.cell.id} neighborsb = {[thiscell.id for thiscell in neighborsb]}")
-            print(f"cell {self.cell.id} neighborsl = {[thiscell.id for thiscell in neighborsl]}")
-            print(f"cell {self.cell.id} neighborsm = {[thiscell.id for thiscell in neighborsm]}")
+        # if self.cell.id == 60 or self.cell.id == 75:
+        #     print(f"cell {self.cell.id} neighborsa = {[thiscell.id for thiscell in neighborsa]}")
+        #     print(f"cell {self.cell.id} neighborsb = {[thiscell.id for thiscell in neighborsb]}")
+        #     print(f"cell {self.cell.id} neighborsl = {[thiscell.id for thiscell in neighborsl]}")
+        #     print(f"cell {self.cell.id} neighborsm = {[thiscell.id for thiscell in neighborsm]}")
         return neighborsa, neighborsb, neighborsl, neighborsm
 
     def update_auxin(self, soln) -> None:
