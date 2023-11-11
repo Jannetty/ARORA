@@ -422,7 +422,7 @@ class GrowingCell(arcade.Sprite):
         return pin_weights
 
     def update(self) -> None:
-        print(f"updating cell {self.id}")
+        #print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
         # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized
