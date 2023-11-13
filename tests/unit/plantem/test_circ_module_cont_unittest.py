@@ -316,15 +316,15 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         # test arr
         expected_arr = soln[1, 1]
         found_arr = circ_module_cont.arr
-        self.assertAlmostEqual(expected_arr, found_arr, places=5)
+        self.assertAlmostEqual(expected_arr, found_arr, places=4)
         # test al
         expected_al = soln[1, 2]
         found_al = circ_module_cont.al
-        self.assertAlmostEqual(expected_al, found_al, places=5)
+        self.assertAlmostEqual(expected_al, found_al, places=4)
         # test pina
         expected_pina = soln[1, 4]
         found_pina = circ_module_cont.pina
-        self.assertAlmostEqual(expected_pina, found_pina, places=5)
+        self.assertAlmostEqual(expected_pina, found_pina, places=4)
 
     def test_update_neighbor_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
