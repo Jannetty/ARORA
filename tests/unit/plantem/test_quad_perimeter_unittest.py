@@ -3,8 +3,8 @@ from src.plantem.loc.quad_perimeter.quad_perimeter import (
     QuadPerimeter,
     get_apical,
     get_basal,
-    get_left,
-    get_right,
+    get_left_v,
+    get_right_v,
     get_len_perimeter_in_common,
 )
 from src.plantem.loc.vertex.vertex import Vertex
@@ -52,18 +52,18 @@ class TestQuadPerimeter(unittest.TestCase):
         found_basal = get_basal([v1, v2, v3, v4])
         self.assertCountEqual(expected_basal, found_basal)
 
-    def test_QuadPerimeter_get_left(self):
+    def test_QuadPerimeter_get_left_v(self):
         v1 = Vertex(100, 100)
         v3 = Vertex(300, 300)
         expected_left = v1
-        found_left = get_left([v1, v3])
+        found_left = get_left_v([v1, v3])
         self.assertEqual(expected_left, found_left)
 
-    def test_QuadPerimeter_get_right(self):
+    def test_QuadPerimeter_get_right_v(self):
         v1 = Vertex(100, 100)
         v3 = Vertex(300, 300)
         expected_right = v3
-        found_right = get_right([v1, v3])
+        found_right = get_right_v([v1, v3])
         self.assertEqual(expected_right, found_right)
 
     def test_QuadPerimeter_assign_corners(self):
@@ -227,22 +227,22 @@ class TestQuadPerimeter(unittest.TestCase):
         qp = QuadPerimeter([v1, v2, v3, v4])
         self.assertEqual(0.25, qp.get_memfrac("a", "lateral"))
 
-    def test_get_left(self):
+    def test_get_left_lateral_or_medial(self):
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
         qp = QuadPerimeter([v1, v2, v3, v4])
-        self.assertEqual("lateral", qp.get_left(250))
-        self.assertEqual("lateral", qp.get_left(200))
-        self.assertEqual("medial", qp.get_left(120))
+        self.assertEqual("lateral", qp.get_left_lateral_or_medial(250))
+        self.assertEqual("lateral", qp.get_left_lateral_or_medial(200))
+        self.assertEqual("medial", qp.get_left_lateral_or_medial(120))
 
-    def test_get_right(self):
+    def test_get_right_lateral_or_medial(self):
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
         v4 = Vertex(300, 100)
         qp = QuadPerimeter([v1, v2, v3, v4])
-        self.assertEqual("medial", qp.get_right(250))
-        self.assertEqual("lateral", qp.get_right(200))
-        self.assertEqual("lateral", qp.get_right(120))
+        self.assertEqual("medial", qp.get_right_lateral_or_medial(250))
+        self.assertEqual("lateral", qp.get_right_lateral_or_medial(200))
+        self.assertEqual("lateral", qp.get_right_lateral_or_medial(120))
