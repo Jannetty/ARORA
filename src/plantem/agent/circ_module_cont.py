@@ -250,22 +250,13 @@ class BaseCirculateModuleCont:
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                # if self.cell.id == 774 or self.cell.id == 787 or neighbor.id == 774 or neighbor.id == 787:
-                # print(f"In circ_mod, Cell {self.cell.id} adding delta {-each_dirct[neighbor]} to cell {neighbor.id}")
-                # print("about to add delta to circulator")
                 self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
-                # print("AFTER ADDING DELTA TO CIRCULATOR")
 
     def get_neighbors(self) -> tuple:
         neighborsa = self.cell.get_a_neighbors()
         neighborsb = self.cell.get_b_neighbors()
         neighborsl = self.cell.get_l_neighbors()
         neighborsm = self.cell.get_m_neighbors()
-        # if self.cell.id == 569 or self.cell.id == 572:
-        #     print(f"cell {self.cell.id} neighborsa = {[thiscell.id for thiscell in neighborsa]}")
-        #     print(f"cell {self.cell.id} neighborsb = {[thiscell.id for thiscell in neighborsb]}")
-        #     print(f"cell {self.cell.id} neighborsl = {[thiscell.id for thiscell in neighborsl]}")
-        #     print(f"cell {self.cell.id} neighborsm = {[thiscell.id for thiscell in neighborsm]}")
         return neighborsa, neighborsb, neighborsl, neighborsm
 
     def update_auxin(self, soln) -> None:
@@ -285,8 +276,6 @@ class BaseCirculateModuleCont:
         delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
 
         # update current cell
-        # if curr_cell.id == 774 or curr_cell.id == 787:
-        #     print(f"cell {curr_cell.id} adding delta {round_to_sf(delta_auxin,5)} to self")
         curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin, 5))
 
         # update neighbor cell
