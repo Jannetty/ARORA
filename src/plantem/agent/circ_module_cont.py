@@ -1,5 +1,6 @@
 from scipy.integrate import odeint
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
+from src.plantem.sim.util.math_helpers import round_to_sf
 import numpy as np
 
 
@@ -179,7 +180,7 @@ class BaseCirculateModuleCont:
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
         common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
         memfrac = common_perimeter / cell_perimeter
-        return memfrac
+        return round_to_sf(memfrac, 6)
 
     def get_neighbor_auxin_exchange(
         self, al: float, pindi: float, neighbors: list, area: float
@@ -190,24 +191,13 @@ class BaseCirculateModuleCont:
 
         neighbor_dict = {}
         for neighbor in neighbors:
+            #if self.cell.id == 774 or self.cell.id == 787:
+                #print(f"cell {self.cell.id} neighbor {neighbor.id}")
+                #print(f"memfrac = {self.calculate_neighbor_memfrac(neighbor)}, neighbor_aux = {neighbor.get_circ_mod().get_auxin()}, area = {area}")
             memfrac = self.calculate_neighbor_memfrac(neighbor)
-            # if self.cell.id==20 or self.cell.id==25:
-            #     if neighbor.id == 17 or neighbor.id == 18:
-            #         print(f"in get_neighbor_auxin_exchange, cell {self.cell.id} - neighbor {neighbor.id}")
-            #         print(f"cell {self.cell.get_id()} auxin = {self.auxin}")
-            #         print(f"cell {self.cell.get_id()} al = {al}")
-            #         print(f"cell {self.cell.get_id()} k_al = {self.k_al}")
-            #         print(f"cell {self.cell.get_id()} pindi = {pindi}")
-            #         print(f"cell {self.cell.get_id()} area = {area}")
-            #         print(f"cell {self.cell.get_id()} k_pin = {self.k_pin}")
-            #         print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} memfrac = {memfrac}")
-            #         print(f"neighbor {neighbor.get_id()} auxin = {neighbor.get_circ_mod().get_auxin()}")
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             neighbor_aux_exchange = neighbor_aux * memfrac * al * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
-            # if self.cell.id==20 or self.cell.id==25:
-            #     if neighbor.id == 17 or neighbor.id == 18:
-            #         print(f"cell {self.cell.get_id()} neighbor {neighbor.get_id()} aux_exchange = {neighbor_aux_exchange}")
-            neighbor_dict[neighbor] = round(neighbor_aux_exchange, 5)
+            neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
@@ -234,29 +224,33 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents except auxin
         """
-        self.arr = round(soln[1, 1], 5)
-        self.al = round(soln[1, 2], 5)
-        self.pin = round(soln[1, 3], 5)
-        self.pina = round(soln[1, 4], 5)
-        self.pinb = round(soln[1, 5], 5)
-        self.pinl = round(soln[1, 6], 5)
-        self.pinm = round(soln[1, 7], 5)
+        self.arr = round_to_sf(soln[1, 1], 5)
+        self.al = round_to_sf(soln[1, 2], 5)
+        self.pin = round_to_sf(soln[1, 3], 5)
+        self.pina = round_to_sf(soln[1, 4], 5)
+        self.pinb = round_to_sf(soln[1, 5], 5)
+        self.pinl = round_to_sf(soln[1, 6], 5)
+        self.pinm = round_to_sf(soln[1, 7], 5)
         self.update_arr_hist()
 
-    def update_neighbor_auxin(self, sim_circ: dict, neighbors_auxin: list) -> None:
+    def update_neighbor_auxin(self, sim_circ, neighbors_auxin: list) -> None:
         """
         Update the change in auxin of neighbor cells in the circulator
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                sim_circ.add_delta(neighbor, -each_dirct[neighbor])
+                #if self.cell.id == 774 or self.cell.id == 787 or neighbor.id == 774 or neighbor.id == 787:
+                # print(f"In circ_mod, Cell {self.cell.id} adding delta {-each_dirct[neighbor]} to cell {neighbor.id}")
+                # print("about to add delta to circulator")
+                self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
+                # print("AFTER ADDING DELTA TO CIRCULATOR")
 
     def get_neighbors(self) -> tuple:
         neighborsa = self.cell.get_a_neighbors()
         neighborsb = self.cell.get_b_neighbors()
         neighborsl = self.cell.get_l_neighbors()
         neighborsm = self.cell.get_m_neighbors()
-        # if self.cell.id == 60 or self.cell.id == 75:
+        # if self.cell.id == 569 or self.cell.id == 572:
         #     print(f"cell {self.cell.id} neighborsa = {[thiscell.id for thiscell in neighborsa]}")
         #     print(f"cell {self.cell.id} neighborsb = {[thiscell.id for thiscell in neighborsb]}")
         #     print(f"cell {self.cell.id} neighborsl = {[thiscell.id for thiscell in neighborsl]}")
@@ -280,10 +274,12 @@ class BaseCirculateModuleCont:
         delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
 
         # update current cell
-        sim_circ.add_delta(curr_cell, round(delta_auxin,5))
+        # if curr_cell.id == 774 or curr_cell.id == 787:
+        #     print(f"cell {curr_cell.id} adding delta {round_to_sf(delta_auxin,5)} to self")
+        curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin,5))
 
         # update neighbor cell
-        self.update_neighbor_auxin(sim_circ, neighbors_auxin)
+        self.update_neighbor_auxin(curr_cell.get_sim().get_circulator(), neighbors_auxin)
 
     # getter functions
     def get_auxin(self) -> float:

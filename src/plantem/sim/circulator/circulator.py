@@ -1,3 +1,5 @@
+from src.plantem.sim.util.math_helpers import round_to_sf
+
 class Circulator:
     """
     Circulator manages the delta auxins in a simulation. Each time step cells save their delta auxin to the circulator
@@ -42,11 +44,10 @@ class Circulator:
         Returns:
             None
         """
-        # if cell.id == 60 or cell.id == 75:
-        #     print(f"adding delta {delta} to cell {cell.get_id()}")
         if cell in self.delta_auxins:
-            old_delta = self.delta_auxins[cell]
-            new_delta = round(old_delta + delta,5)
+            delta = round_to_sf(delta, 10)
+            old_delta = round_to_sf(self.delta_auxins[cell], 10)
+            new_delta = round_to_sf(old_delta + delta, 10)
             self.delta_auxins[cell] = new_delta
         else:
             self.delta_auxins[cell] = delta
@@ -61,6 +62,6 @@ class Circulator:
         """
         for cell in self.delta_auxins:
             old_aux = cell.get_circ_mod().get_auxin()
-            new_aux = round(old_aux + self.delta_auxins[cell],5)
+            new_aux = round_to_sf(old_aux + self.delta_auxins[cell],6)
             cell.get_circ_mod().set_auxin(new_aux)
         self.delta_auxins = dict()

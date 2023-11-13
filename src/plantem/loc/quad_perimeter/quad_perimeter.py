@@ -1,4 +1,5 @@
 import math
+from src.plantem.sim.util.math_helpers import round_to_sf
 from src.plantem.loc.vertex.vertex import Vertex
 
 def intersection(lst1, lst2):
@@ -108,7 +109,7 @@ class QuadPerimeter:
         c = math.dist(self._top_left.get_xy(), self._top_right.get_xy())
         d = math.dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
         area = math.sqrt((s - a) * (s - b) * (s - c) * (s - d))
-        return area
+        return round_to_sf(area, 6)
 
     def get_init_area(self) -> float:
         return self._init_area
@@ -137,19 +138,21 @@ class QuadPerimeter:
         """
         cell_perimeter = self.get_perimeter_len()
         if direction == "a":
-            return self.get_apical_memlen()/cell_perimeter
+            memfrac = self.get_apical_memlen()/cell_perimeter
         elif direction == "b":
-            return self.get_basal_memlen()/cell_perimeter
+            memfrac = self.get_basal_memlen()/cell_perimeter
         elif direction == "l":
             if left == "lateral":
-                return self.get_left_memlen()/cell_perimeter
+                memfrac = self.get_left_memlen()/cell_perimeter
             else:
-                return self.get_right_memlen()/cell_perimeter
+                memfrac = self.get_right_memlen()/cell_perimeter
         elif direction == "m":
             if left == "medial":
-                return self.get_left_memlen()/cell_perimeter
+                memfrac = self.get_left_memlen()/cell_perimeter
             else:
-                return self.get_right_memlen()/cell_perimeter
+                memfrac = self.get_right_memlen()/cell_perimeter
+        # print(f"MEMFRAC = {round_to_sf(memfrac, 6)}")
+        return round_to_sf(memfrac, 6)
 
 
 
@@ -247,93 +250,53 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
 
     elif cell.get_id() == 42 and neighbor.get_id() == 43:
         length = neighbor.get_quad_perimeter().get_left_memlen()
-        if length != math.sqrt(10):
-            raise Exception("cell 42 neighbor 43 wrong")
     elif cell.get_id() == 43 and neighbor.get_id() == 42:
         length = cell.get_quad_perimeter().get_left_memlen()
-        if length != math.sqrt(10):
-            raise Exception("cell 43 neighbor 42 wrong")
 
     elif cell.get_id() == 42 and neighbor.get_id() == 47:
         length = neighbor.get_quad_perimeter().get_left_memlen()
-        if length != 5:
-            raise Exception("cell 42 neighbor 47 wrong")
     elif cell.get_id() == 47 and neighbor.get_id() == 42:
         length = cell.get_quad_perimeter().get_left_memlen()
-        if length != 5:
-            raise Exception("cell 47 neighbor 42 wrong")
 
     elif cell.get_id() == 44 and neighbor.get_id() == 50:
         length = cell.get_quad_perimeter().get_right_memlen()
-        if length != math.sqrt(74):
-            raise Exception("cell 44 neighbor 50 wrong")
     elif cell.get_id() == 50 and neighbor.get_id() == 44:
         length = neighbor.get_quad_perimeter().get_right_memlen()
-        if length != math.sqrt(74):
-            raise Exception("cell 50 neighbor 44 wrong")
 
     elif cell.get_id() == 45 and neighbor.get_id() == 51:
         length = cell.get_quad_perimeter().get_left_memlen()
-        if length != math.sqrt(74):
-            raise Exception("cell 45 neighbor 51 wrong")
     elif cell.get_id() == 51 and neighbor.get_id() == 45:
         length = neighbor.get_quad_perimeter().get_left_memlen()
-        if length != math.sqrt(74):
-            raise Exception("cell 51 neighbor 45 wrong")
 
     elif cell.get_id() == 52 and neighbor.get_id() == 50:
         length = cell.get_quad_perimeter().get_right_memlen()
-        if length != math.sqrt(5):
-            raise Exception("cell 52 neighbor 50 wrong")
     elif cell.get_id() == 50 and neighbor.get_id() == 52:
         length = neighbor.get_quad_perimeter().get_right_memlen()
-        if length != math.sqrt(5):
-            raise Exception("cell 50 neighbor 52 wrong")
 
     elif cell.get_id() == 51 and neighbor.get_id() == 59:
         length = neighbor.get_quad_perimeter().get_left_memlen()
-        if length != math.sqrt(5):
-            raise Exception("cell 52 neighbor 50 wrong")
     elif cell.get_id() == 59 and neighbor.get_id() == 51:
         length = cell.get_quad_perimeter().get_left_memlen()
-        if length != math.sqrt(5):
-            raise Exception("cell 50 neighbor 52 wrong")
 
     elif cell.get_id() == 54 and neighbor.get_id() == 65:
         length = neighbor.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 54 neighbor 65 wrong")
     elif cell.get_id() == 65 and neighbor.get_id() == 54:
         length = cell.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 65 neighbor 54 wrong")
 
     elif cell.get_id() == 54 and neighbor.get_id() == 66:
         length = neighbor.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 54 neighbor 66 wrong")
     elif cell.get_id() == 66 and neighbor.get_id() == 54:
         length = cell.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 66 neighbor 54 wrong")
 
     elif cell.get_id() == 57 and neighbor.get_id() == 69:
         length = neighbor.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 57 neighbor 69 wrong")
     elif cell.get_id() == 69 and neighbor.get_id() == 57:
         length = cell.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 69 neighbor 57 wrong")
 
     elif cell.get_id() == 57 and neighbor.get_id() == 70:
         length = neighbor.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 57 neighbor 70 wrong")
     elif cell.get_id() == 70 and neighbor.get_id() == 57:
         length = cell.get_quad_perimeter().get_apical_memlen()
-        if length != 4:
-            raise Exception("cell 70 neighbor 57 wrong")
 
     if length == 0:
         raise Exception("Neighbor list is incorrect, neighbor does not share membrane with cell")
