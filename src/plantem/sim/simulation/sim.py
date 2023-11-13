@@ -9,7 +9,7 @@ from src.plantem.sim.input.input import Input
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
-SCREEN_TITLE = "Starting Template"
+SCREEN_TITLE = "ARORA"
 
 
 class GrowingSim(arcade.Window):
@@ -81,10 +81,10 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        self.cmap = plt.get_cmap("RdYlBu")
-        self.cmap = (
-            self.cmap.reversed()
-        )  # reverse the colormap so that the lowest value is blue and the highest is red
+        self.cmap = plt.get_cmap("Greys")
+        # self.cmap = (
+        #     self.cmap.reversed()
+        # )  # reverse the colormap so that the lowest value is blue and the highest is red
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -227,7 +227,7 @@ class GrowingSim(arcade.Window):
 
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
-    """Main function"""
+    """Creates and runs the ABM."""
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
