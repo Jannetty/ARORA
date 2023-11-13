@@ -72,8 +72,12 @@ class BaseCirculateModuleCont:
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
-        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(self.cell.get_sim().get_root_midpointx())
-        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(self.cell.get_sim().get_root_midpointx())
+        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )
+        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )
 
     def f(self, y, t) -> list:
         """
@@ -101,10 +105,10 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_membrane_pin(pini, pinai, area, 'a')
-        f5 = self.calculate_membrane_pin(pini, pinbi, area, 'b')
-        f6 = self.calculate_membrane_pin(pini, pinli, area, 'l')
-        f7 = self.calculate_membrane_pin(pini, pinmi, area, 'm')
+        f4 = self.calculate_membrane_pin(pini, pinai, area, "a")
+        f5 = self.calculate_membrane_pin(pini, pinbi, area, "b")
+        f6 = self.calculate_membrane_pin(pini, pinli, area, "l")
+        f7 = self.calculate_membrane_pin(pini, pinmi, area, "m")
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
@@ -133,7 +137,6 @@ class BaseCirculateModuleCont:
         self.update_auxin(soln)
         self.update_circ_contents(soln)
 
-
     def calculate_auxin(self, auxini: float, area: float) -> float:
         """
         Calculate the auxin expression of current cell
@@ -159,10 +162,15 @@ class BaseCirculateModuleCont:
         """
         Calculate the PIN expression of current cell
         """
-        pin = self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin)) - self.kd * self.pin
+        pin = (
+            self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin))
+            - self.kd * self.pin
+        )
         return pin
 
-    def calculate_membrane_pin(self, pini: float, pindi: float, area: float, direction: str) -> float:
+    def calculate_membrane_pin(
+        self, pini: float, pindi: float, area: float, direction: str
+    ) -> float:
         """
         Calculate the PIN expression of neighbor cells
         """
@@ -191,12 +199,15 @@ class BaseCirculateModuleCont:
 
         neighbor_dict = {}
         for neighbor in neighbors:
-            #if self.cell.id == 774 or self.cell.id == 787:
-                #print(f"cell {self.cell.id} neighbor {neighbor.id}")
-                #print(f"memfrac = {self.calculate_neighbor_memfrac(neighbor)}, neighbor_aux = {neighbor.get_circ_mod().get_auxin()}, area = {area}")
+            # if self.cell.id == 774 or self.cell.id == 787:
+            # print(f"cell {self.cell.id} neighbor {neighbor.id}")
+            # print(f"memfrac = {self.calculate_neighbor_memfrac(neighbor)}, neighbor_aux = {neighbor.get_circ_mod().get_auxin()}, area = {area}")
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            neighbor_aux_exchange = neighbor_aux * memfrac * al * self.k_al - self.auxin * pindi * (1 / area) * self.k_pin
+            neighbor_aux_exchange = (
+                neighbor_aux * memfrac * al * self.k_al
+                - self.auxin * pindi * (1 / area) * self.k_pin
+            )
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
@@ -239,7 +250,7 @@ class BaseCirculateModuleCont:
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                #if self.cell.id == 774 or self.cell.id == 787 or neighbor.id == 774 or neighbor.id == 787:
+                # if self.cell.id == 774 or self.cell.id == 787 or neighbor.id == 774 or neighbor.id == 787:
                 # print(f"In circ_mod, Cell {self.cell.id} adding delta {-each_dirct[neighbor]} to cell {neighbor.id}")
                 # print("about to add delta to circulator")
                 self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
@@ -276,7 +287,7 @@ class BaseCirculateModuleCont:
         # update current cell
         # if curr_cell.id == 774 or curr_cell.id == 787:
         #     print(f"cell {curr_cell.id} adding delta {round_to_sf(delta_auxin,5)} to self")
-        curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin,5))
+        curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin, 5))
 
         # update neighbor cell
         self.update_neighbor_auxin(curr_cell.get_sim().get_circulator(), neighbors_auxin)
@@ -319,7 +330,7 @@ class BaseCirculateModuleCont:
             return self.pinm
         else:
             return self.pinl
-        
+
     def get_arr_hist(self) -> list:
         return self.arr_hist
 
@@ -344,7 +355,6 @@ class BaseCirculateModuleCont:
             "arr_hist": self.arr_hist,
         }
         return state
-    
 
     # setter function
     def set_auxin(self, new_aux: float) -> None:

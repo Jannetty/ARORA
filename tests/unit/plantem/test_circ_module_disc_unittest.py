@@ -117,10 +117,14 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         timestep = 1
         area = cell.quad_perimeter.get_area()
         init_vals = make_init_vals()
-        expected_PIN = ((init_vals['k_s']
-            * (1 / (init_vals['arr'] / init_vals['k4'] + 1))
-            * (init_vals['auxin'] / (init_vals['auxin'] + init_vals['k3']))
-        ) - init_vals['k_d'] * init_vals['pin'])* timestep
+        expected_PIN = (
+            (
+                init_vals["k_s"]
+                * (1 / (init_vals["arr"] / init_vals["k4"] + 1))
+                * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k3"]))
+            )
+            - init_vals["k_d"] * init_vals["pin"]
+        ) * timestep
         found_PIN = circ_module_disc.calculate_pin(timestep, area)
         self.assertAlmostEqual(expected_PIN, found_PIN, places=5)
 
@@ -156,9 +160,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         v6 = Vertex(100.0, 600.0)
         cell = GrowingCell(
             sim,
-            [
-                v1,v2,v3,v4
-            ],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -166,7 +168,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         # test apical nerighbor
         neighbora = GrowingCell(
             sim,
-            [v2,v6,v5,v3],
+            [v2, v6, v5, v3],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -177,30 +179,30 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
 
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         curr_cell = GrowingCell(
             sim,
-            [v1,v2,v3,v4],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         circ_module_disc_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
             sim,
-            [v2,v5,v6,v3],
+            [v2, v5, v6, v3],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         neighborm = GrowingCell(
             sim,
-            [v4,v3,v7,v8],
+            [v4, v3, v7, v8],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -214,19 +216,17 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
     def test_get_neighbor_auxin(self):
         timestep = 1
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         cell = GrowingCell(
             sim,
-            [
-                v1,v2,v3,v4
-            ],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -235,15 +235,13 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         # test apical neighbor
         neighbora = GrowingCell(
             sim,
-            [
-                v2,v3,v5,v6
-            ],
+            [v2, v3, v5, v6],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         sim.setup()
         neighbor_list = [neighbora]
-        pin_dir = .5
+        pin_dir = 0.5
         found_neighbor_auxin = circ_module_disc.get_neighbor_auxin_exchange(
             pin_dir, neighbor_list, "a", timestep, area
         )
@@ -254,7 +252,8 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         k_pin = 1
         neighbor_aux = neighbora.get_circ_mod().get_auxin()
         neighbor_aux = (
-            neighbor_aux * memfrac * circ_module_disc.al * k_al - circ_module_disc.auxin * pin_dir * (1 / area) * k_pin
+            neighbor_aux * memfrac * circ_module_disc.al * k_al
+            - circ_module_disc.auxin * pin_dir * (1 / area) * k_pin
         ) * timestep
 
         expected_neighbor_auxin = {neighbora: neighbor_aux}
@@ -360,30 +359,30 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
 
     def test_update(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         curr_cell = GrowingCell(
             sim,
-            [v1,v2,v3,v4],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         circ_module_disc = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
             sim,
-            [v2,v5,v6,v3],
+            [v2, v5, v6, v3],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         neighborm = GrowingCell(
             sim,
-            [v4,v3,v7,v8],
+            [v4, v3, v7, v8],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -400,8 +399,12 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         pinm = circ_module_disc.calculate_membrane_pin(circ_module_disc.pinm, timestep, area)
         syn_deg_auxin = circ_module_disc.calculate_auxin(timestep, area)
 
-        auxina = circ_module_disc.get_neighbor_auxin_exchange(pina, [neighbora], "a", timestep, area)
-        auxinm = circ_module_disc.get_neighbor_auxin_exchange(pinm, [neighborm], "m", timestep, area)
+        auxina = circ_module_disc.get_neighbor_auxin_exchange(
+            pina, [neighbora], "a", timestep, area
+        )
+        auxinm = circ_module_disc.get_neighbor_auxin_exchange(
+            pinm, [neighborm], "m", timestep, area
+        )
 
         expected_circulator = {
             curr_cell: syn_deg_auxin + auxina[neighbora] + auxinm[neighborm],
@@ -548,6 +551,6 @@ def make_init_vals():
         "k_d": 0.0015,
         "arr_hist": [0.1, 0.2, 0.3],
         "growing": True,
-        "circ_mod": 'disc'
+        "circ_mod": "disc",
     }
     return init_vals

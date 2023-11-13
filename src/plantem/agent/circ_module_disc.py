@@ -156,10 +156,13 @@ class BaseCirculateModuleDisc:
         Calculate the PIN expression of current cell
         """
         pin = (
-            (self.ks
-            * (1 / (self.init_arr / self.k_arr_pin + 1))
-            * (self.init_auxin / (self.init_auxin + self.k_auxin_pin))
-        ) - self.kd * self.pin)* timestep
+            (
+                self.ks
+                * (1 / (self.init_arr / self.k_arr_pin + 1))
+                * (self.init_auxin / (self.init_auxin + self.k_auxin_pin))
+            )
+            - self.kd * self.pin
+        ) * timestep
         return pin
 
     def calculate_membrane_pin(self, init: float, timestep: float, area: float) -> float:
@@ -291,7 +294,7 @@ class BaseCirculateModuleDisc:
             "arr_hist": self.arr_hist,
         }
         return state
-    
+
     # setter function
     def set_auxin(self, new_aux: float) -> None:
         self.auxin = new_aux

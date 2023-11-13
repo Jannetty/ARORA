@@ -9,6 +9,7 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
 
+
 def make_init_vals():
     init_vals = {
         "auxin": 2,
@@ -27,17 +28,18 @@ def make_init_vals():
         "kd": 0.0015,
         "arr_hist": [0.1, 0.2, 0.3],
         "growing": True,
-        "circ_mod": 'cont'
+        "circ_mod": "cont",
     }
     return init_vals
 
+
 delta = 5
+
 
 class TestCirculator(unittest.TestCase):
     """
     Test Circulator Class
     """
-
 
     def test_add_delta(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
@@ -72,5 +74,4 @@ class TestCirculator(unittest.TestCase):
         sim.add_to_cell_list(cell)
         sim.get_circulator().add_delta(cell, delta)
         sim.get_circulator().update()
-        self.assertEqual(cell.get_circ_mod().get_auxin(), delta + make_init_vals()['auxin'])
-    
+        self.assertEqual(cell.get_circ_mod().get_auxin(), delta + make_init_vals()["auxin"])

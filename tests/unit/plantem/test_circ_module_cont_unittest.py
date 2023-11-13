@@ -39,9 +39,18 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         circ_module_cont = cell.get_circ_mod()
         area = cell.quad_perimeter.get_area()
-        
+
         init_vals = make_init_vals()
-        y0 = [init_vals['auxin'], init_vals['arr'], init_vals['al'], init_vals['pin'], init_vals['pina'], init_vals['pinb'], init_vals['pinl'], init_vals['pinm']]
+        y0 = [
+            init_vals["auxin"],
+            init_vals["arr"],
+            init_vals["al"],
+            init_vals["pin"],
+            init_vals["pina"],
+            init_vals["pinb"],
+            init_vals["pinl"],
+            init_vals["pinm"],
+        ]
         t = np.array([0, 1])
         expected_soln = odeint(f, y0, t)
         expected_auxin = expected_soln[1][0]
@@ -126,32 +135,28 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
         expected_pin = 0.2499999813
-        found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, 'a')
+        found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, "a")
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
     def test_calculate_neighbor_memfrac(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         cell = GrowingCell(
             sim,
-            [
-                v1,v2,v3,v4
-            ],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         neighbora = GrowingCell(
             sim,
-            [
-                v2,v3,v5,v6
-            ],
+            [v2, v3, v5, v6],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -164,15 +169,15 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     def test_get_neighbor_auxin_exchange(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
         cell = GrowingCell(
             sim,
-            [ v1,v2,v3,v4],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -180,7 +185,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         # test apical neighbor
         neighbora = GrowingCell(
             sim,
-            [v2,v5,v6,v3],
+            [v2, v5, v6, v3],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -188,14 +193,17 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         cell.add_neighbor(neighbora)
         area = cell.quad_perimeter.get_area()
         aneighbor_list = [neighbora]
-        ali = make_init_vals()['al']
-        pindi = make_init_vals()['pin']
+        ali = make_init_vals()["al"]
+        pindi = make_init_vals()["pin"]
         expected_neighbor_auxin = circ_module_cont.get_neighbor_auxin_exchange(
             ali, pindi, aneighbor_list, area
         )
         neighborsa, neighborsb, neighborsl, neighborsm = cell.get_circ_mod().get_neighbors()
         found_neighbor_auxin = cell.get_circ_mod().get_neighbor_auxin_exchange(
-            cell.get_circ_mod().get_al(), cell.get_circ_mod().get_pin(), neighborsa, cell.quad_perimeter.get_area()
+            cell.get_circ_mod().get_al(),
+            cell.get_circ_mod().get_pin(),
+            neighborsa,
+            cell.quad_perimeter.get_area(),
         )
         for neighbor in aneighbor_list:
             expected = expected_neighbor_auxin[neighbor]
@@ -257,7 +265,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pina,
             circ_module_cont.pinb,
             circ_module_cont.pinl,
-            circ_module_cont.pinm
+            circ_module_cont.pinm,
         ]
         t = np.array([0, 1])
         expected_soln = odeint(f, y0, t)
@@ -372,14 +380,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         curr_cell = GrowingCell(
             sim,
             [v1, v2, v3, v4],
@@ -409,30 +417,30 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     # TODO: Rewrite this test this thing is brutal
     def test_update_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         curr_cell = GrowingCell(
             sim,
-            [v1,v2,v3,v4],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         circ_module_cont = curr_cell.get_circ_mod()
         neighbora = GrowingCell(
             sim,
-            [v2,v3,v5,v6],
+            [v2, v3, v5, v6],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
         neighborm = GrowingCell(
             sim,
-            [v3,v4,v7,v8],
+            [v3, v4, v7, v8],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
@@ -447,7 +455,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pina,
             circ_module_cont.pinb,
             circ_module_cont.pinl,
-            circ_module_cont.pinm
+            circ_module_cont.pinm,
         ]
         t = np.array([0, 1])
         soln = odeint(f, y0, t)
@@ -456,41 +464,53 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
         # Make new cells with same properties to check calculations individually
         sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100,100)
-        v2 = Vertex(100,300)
-        v3 = Vertex(300,300)
-        v4 = Vertex(300,100)
-        v5 = Vertex(100,600)
-        v6 = Vertex(300,600)
-        v7 = Vertex(600,300)
-        v8 = Vertex(600,100)
+        v1 = Vertex(100, 100)
+        v2 = Vertex(100, 300)
+        v3 = Vertex(300, 300)
+        v4 = Vertex(300, 100)
+        v5 = Vertex(100, 600)
+        v6 = Vertex(300, 600)
+        v7 = Vertex(600, 300)
+        v8 = Vertex(600, 100)
         curr_cell2 = GrowingCell(
             sim2,
-            [v1,v2,v3,v4],
+            [v1, v2, v3, v4],
             make_init_vals(),
             sim2.get_next_cell_id(),
         )
         circ_module_cont2 = curr_cell2.get_circ_mod()
         neighbora2 = GrowingCell(
             sim2,
-            [v2,v3,v5,v6],
+            [v2, v3, v5, v6],
             make_init_vals(),
             sim2.get_next_cell_id(),
         )
         neighborm2 = GrowingCell(
             sim2,
-            [v3,v4,v7,v8],
+            [v3, v4, v7, v8],
             make_init_vals(),
             sim2.get_next_cell_id(),
         )
         curr_cell2.add_neighbor(neighbora2)
         curr_cell2.add_neighbor(neighborm2)
         sim2.setup()
-       
-        auxina = circ_module_cont2.get_neighbor_auxin_exchange(curr_cell2.get_circ_mod().get_al(), curr_cell2.get_circ_mod().get_apical_pin(), [neighbora2], curr_cell2.quad_perimeter.get_area())
-        auxinm = circ_module_cont2.get_neighbor_auxin_exchange(curr_cell2.get_circ_mod().get_al(), curr_cell2.get_circ_mod().get_medial_pin(), [neighborm2], curr_cell2.quad_perimeter.get_area())
+
+        auxina = circ_module_cont2.get_neighbor_auxin_exchange(
+            curr_cell2.get_circ_mod().get_al(),
+            curr_cell2.get_circ_mod().get_apical_pin(),
+            [neighbora2],
+            curr_cell2.quad_perimeter.get_area(),
+        )
+        auxinm = circ_module_cont2.get_neighbor_auxin_exchange(
+            curr_cell2.get_circ_mod().get_al(),
+            curr_cell2.get_circ_mod().get_medial_pin(),
+            [neighborm2],
+            curr_cell2.quad_perimeter.get_area(),
+        )
         expected = {
-            curr_cell: (soln[1, 0] - make_init_vals()['auxin']) + auxina[neighbora2] + auxinm[neighborm2],
+            curr_cell: (soln[1, 0] - make_init_vals()["auxin"])
+            + auxina[neighbora2]
+            + auxinm[neighborm2],
             neighbora: -auxina[neighbora2],
             neighborm: -auxinm[neighborm2],
         }
@@ -653,15 +673,15 @@ def make_init_vals():
         "k2": 1,
         "k3": 1,
         "k4": 1,
-        "k5" : 1,
-        "k6" : 1,
+        "k5": 1,
+        "k6": 1,
         "k_s": 0.005,
         "k_d": 0.0015,
         "k_al": 1,
         "k_pin": 1,
         "arr_hist": [0.1, 0.2, 0.3],
         "growing": True,
-        "circ_mod": 'cont'
+        "circ_mod": "cont",
     }
     return init_vals
 

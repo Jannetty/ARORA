@@ -29,11 +29,11 @@ init_vals = {
     "k_s": 0.005,
     "k_d": 0.0015,
     "growing": True,
-    "circ_mod": 'cont'
+    "circ_mod": "cont",
 }
 
-class TestQuadPerimeter(unittest.TestCase):
 
+class TestQuadPerimeter(unittest.TestCase):
     def test_QuadPerimeter_get_apical(self):
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
