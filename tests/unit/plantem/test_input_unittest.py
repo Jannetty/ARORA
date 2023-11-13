@@ -67,7 +67,7 @@ class TestInput(unittest.TestCase):
                 "growing": False,
                 "circ_mod": "cont",
                 "vertices": [0, 1, 2, 3],
-                "neighbors": ["c1"]
+                "neighbors": ["c1"],
             },
             "c1": {
                 "auxin": 2,
@@ -90,7 +90,7 @@ class TestInput(unittest.TestCase):
                 "growing": False,
                 "circ_mod": "cont",
                 "vertices": [1, 3, 4, 5],
-                "neighbors": ["c0"]
+                "neighbors": ["c0"],
             },
         }
         found = input.get_init_vals()
@@ -127,7 +127,7 @@ class TestInput(unittest.TestCase):
                 "growing": False,
                 "circ_mod": "cont",
                 "vertices": [0, 1, 2, 3],
-                "neighbors": ["c1"]
+                "neighbors": ["c1"],
             },
             "c1": {
                 "auxin": 2,
@@ -150,7 +150,7 @@ class TestInput(unittest.TestCase):
                 "growing": False,
                 "circ_mod": "cont",
                 "vertices": [1, 3, 4, 5],
-                "neighbors": ["c0"]
+                "neighbors": ["c0"],
             },
         }
         expected = {
@@ -175,7 +175,7 @@ class TestInput(unittest.TestCase):
                 "growing": False,
                 "circ_mod": "cont",
                 "vertices": [0, 1, 2, 3],
-                "neighbors": ["c1"]
+                "neighbors": ["c1"],
             },
             "c1": {
                 "auxin": 2,
@@ -198,7 +198,7 @@ class TestInput(unittest.TestCase):
                 "growing": False,
                 "circ_mod": "cont",
                 "vertices": [1, 3, 4, 5],
-                "neighbors": ["c0"]
+                "neighbors": ["c0"],
             },
         }
         input.set_arr_hist(dict)
@@ -392,20 +392,27 @@ class TestInput(unittest.TestCase):
                 found_cell_list[i].get_circ_mod().get_auxin(),
             )
 
-
     def test_replace_default_to_gparam(self):
         gparam_file = "src/plantem/sim/input/default_input_gparam.csv"
         full_gparam_df = pandas.read_csv(gparam_file)
         for index, row in full_gparam_df.iterrows():
             this_sim_gparam_series = row
-            this_sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False, cell_val_file="tests/unit/plantem/test_csv/init_vals.csv",
-            v_file="tests/unit/plantem/test_csv/vertex.csv")
+            this_sim = GrowingSim(
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                SCREEN_TITLE,
+                1,
+                400,
+                False,
+                cell_val_file="tests/unit/plantem/test_csv/init_vals.csv",
+                v_file="tests/unit/plantem/test_csv/vertex.csv",
+            )
             # check to make sure that cells have gparams instead of cell_val_file params
-            #this_input = Input(
+            # this_input = Input(
             #    "tests/unit/plantem/test_csv/init_vals.csv",
             #    "tests/unit/plantem/test_csv/vertex.csv",
             #    this_sim
-            #)
+            # )
             this_input = this_sim.input
             this_input.replace_default_to_gparam(this_sim_gparam_series)
             for _, row_df in this_input.init_vals_input.iterrows():
@@ -414,8 +421,6 @@ class TestInput(unittest.TestCase):
                         self.assertEqual(row_df[index_s], value)
                     else:
                         self.assertEqual(len(row_df["arr_hist"]), value)
-
-
 
 
 def make_init_vals():
@@ -436,14 +441,14 @@ def make_init_vals():
         "k2": 1,
         "k3": 1,
         "k4": 1,
-        "k5" : 1,
-        "k6" : 1,
+        "k5": 1,
+        "k6": 1,
         "k_s": 0.005,
         "k_d": 0.0015,
         "k_al": 1,
         "k_pin": 1,
         "arr_hist": [0.1, 0.2, 0.3],
         "growing": False,
-        "circ_mod": 'cont'
+        "circ_mod": "cont",
     }
     return init_vals
