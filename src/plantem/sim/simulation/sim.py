@@ -1,3 +1,5 @@
+import os
+import pyglet
 import time
 import pandas
 import matplotlib.pyplot as plt
@@ -70,9 +72,11 @@ class GrowingSim(arcade.Window):
             cell_val_file: The file containing the cell values.
             v_file: The file containing the vertex values.
         """
-        if vis:
+        if vis == True:
             super().__init__(width, height, title)
-            arcade.set_background_color(color=[250, 250, 250])
+        else:
+            super().__init__(width, height, title, visible=False)
+        arcade.set_background_color(color=[250, 250, 250])
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
@@ -163,7 +167,7 @@ class GrowingSim(arcade.Window):
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
         if self.vis:
-            self.camera_sprites = arcade.Camera(self.width, self.height)
+            self.camera_sprites = arcade.Camera()
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.input()
@@ -228,6 +232,11 @@ class GrowingSim(arcade.Window):
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
     """Creates and runs the ABM."""
+    if vis == False:
+        pyglet.options["headless"] = True
+        print("Running headless")
+    #print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
+    print("Making GrowingSim")
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,

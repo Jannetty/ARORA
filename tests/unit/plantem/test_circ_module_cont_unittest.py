@@ -416,7 +416,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     # TODO: Rewrite this test this thing is brutal
     def test_update_auxin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, vis=False)
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)
@@ -463,7 +463,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         found = curr_cell.get_sim().get_circulator().delta_auxins
 
         # Make new cells with same properties to check calculations individually
-        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, vis=False)
         v1 = Vertex(100, 100)
         v2 = Vertex(100, 300)
         v3 = Vertex(300, 300)

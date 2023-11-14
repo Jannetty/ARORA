@@ -199,9 +199,6 @@ class BaseCirculateModuleCont:
 
         neighbor_dict = {}
         for neighbor in neighbors:
-            # if self.cell.id == 774 or self.cell.id == 787:
-            # print(f"cell {self.cell.id} neighbor {neighbor.id}")
-            # print(f"memfrac = {self.calculate_neighbor_memfrac(neighbor)}, neighbor_aux = {neighbor.get_circ_mod().get_auxin()}, area = {area}")
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             neighbor_aux_exchange = (
