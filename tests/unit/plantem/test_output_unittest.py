@@ -26,7 +26,7 @@ init_vals = {
     "kd": 0.0015,
     "arr_hist": [0.1, 0.2, 0.3],
     "growing": False,
-    "circ_mod": 'cont',
+    "circ_mod": "cont",
 }
 init_vals2 = {
     "auxin": 2,
@@ -46,7 +46,7 @@ init_vals2 = {
     "kd": 0.0015,
     "arr_hist": [0.1, 0.2, 0.3, 0.4],
     "growing": False,
-    "circ_mod": 'cont',
+    "circ_mod": "cont",
 }
 sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
 cell0 = GrowingCell(
@@ -89,7 +89,7 @@ class TestOutput(unittest.TestCase):
             "PIN_basal": 0.7,
             "PIN_left": 0.4,
             "PIN_right": 0.2,
-            "arr_hist": [0.1, 0.2, 0.3]
+            "arr_hist": [0.1, 0.2, 0.3],
         }
         found = output.get_circ_contents(summary, cell0)
         self.assertEqual(expected, found)
@@ -103,7 +103,7 @@ class TestOutput(unittest.TestCase):
             "PIN_basal": 0.7,
             "PIN_left": 0.4,
             "PIN_right": 0.2,
-            "arr_hist": [0.1, 0.2, 0.3, 0.4]
+            "arr_hist": [0.1, 0.2, 0.3, 0.4],
         }
         found1 = output.get_circ_contents(summary1, cell1)
         self.assertEqual(expected1, found1)

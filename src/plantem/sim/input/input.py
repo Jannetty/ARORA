@@ -47,7 +47,7 @@ class Input:
 
     def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
         """
-        update the default_init_val dataframe to fit in the value from 
+        update the default_init_val dataframe to fit in the value from
         """
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
@@ -62,10 +62,29 @@ class Input:
         init_vals set as value
         """
         init_vals_dict = {}
-        init_vals_names = ["auxin", "arr", "al", "pin", "pina", "pinb",
-                           "pinl", "pinm", "k1", "k2", "k3", "k4", "k5",
-                           "k6", "k_s", "k_d", "arr_hist", "growing",
-                           "circ_mod", "vertices", "neighbors"]
+        init_vals_names = [
+            "auxin",
+            "arr",
+            "al",
+            "pin",
+            "pina",
+            "pinb",
+            "pinl",
+            "pinm",
+            "k1",
+            "k2",
+            "k3",
+            "k4",
+            "k5",
+            "k6",
+            "k_s",
+            "k_d",
+            "arr_hist",
+            "growing",
+            "circ_mod",
+            "vertices",
+            "neighbors",
+        ]
         for index, row in self.init_vals_input[init_vals_names].iterrows():
             cell_num = f"c{index}"
             init_vals_dict[cell_num] = row.to_dict()
@@ -73,9 +92,17 @@ class Input:
                 if val in ["arr_hist", "vertices"]:
                     init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
                 if val == "neighbors":
-                    init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val].replace(" ", "").replace("[", "").replace("]", "").split(",")
+                    init_vals_dict[cell_num][val] = (
+                        init_vals_dict[cell_num][val]
+                        .replace(" ", "")
+                        .replace("[", "")
+                        .replace("]", "")
+                        .split(",")
+                    )
             # update arr_hist
-            init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(init_vals_dict[cell_num]["arr_hist"])
+            init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
+                init_vals_dict[cell_num]["arr_hist"]
+            )
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
 
@@ -152,9 +179,13 @@ class Input:
         correspodning neighbors list (with GrowingCell objects) as value
         """
         neighbors_assignment = self.get_neighbors_assignment()
+        # print(f"neighbors_assignment: {neighbors_assignment}")
         neighbors = {}
         for cell_num, neighb in neighbors_assignment.items():
+            # print(f"cell_num: {cell_num}")
+            # print(f"neighb: {neighb}")
             for each in neighb:
+                # print(f"each: {each}")
                 if cell_num not in neighbors:
                     neighbors[cell_num] = [new_cells[each]]
                 else:

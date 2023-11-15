@@ -25,7 +25,7 @@ class TestDivider(unittest.TestCase):
         "k_s": 0.005,
         "k_d": 0.0015,
         "growing": True,
-        "circ_mod": 'cont'
+        "circ_mod": "cont",
     }
 
     def test_get_new_vs(self):
@@ -134,7 +134,7 @@ class TestDivider(unittest.TestCase):
         self.assertEqual([], cell.get_all_neighbors())
         self.assertEqual([], new_top_cell.get_all_neighbors())
         self.assertEqual([], new_bottom_cell.get_all_neighbors())
-        
+
         v7 = Vertex(1, 100)
         v8 = Vertex(1, 300)
         l_neighbor = GrowingCell(
