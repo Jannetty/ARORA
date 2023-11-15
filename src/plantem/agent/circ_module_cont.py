@@ -247,7 +247,7 @@ class BaseCirculateModuleCont:
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                print (f"cell {self.cell.id} neighbor {neighbor.id} neighbor's new delta {-each_dirct[neighbor]}")
+                #print (f"cell {self.cell.id} neighbor {neighbor.id} neighbor's new delta {-each_dirct[neighbor]}")
                 self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
 
     def get_neighbors(self) -> tuple:
