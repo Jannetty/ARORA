@@ -85,7 +85,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        self.cmap = plt.get_cmap("Greys")
+        self.cmap = plt.get_cmap("Blues")
         # self.cmap = (
         #     self.cmap.reversed()
         # )  # reverse the colormap so that the lowest value is blue and the highest is red
@@ -210,15 +210,12 @@ class GrowingSim(arcade.Window):
             delta_time: The time step.
         """
         self.tick += 1
-        if self.tick < 2592000:
-            print(f"tick {self.tick}, before vis")
+        if self.tick < 2592:
+            print(f"tick: {self.tick}")
             if self.vis:
                 self.camera_sprites.move((0, self.root_tip_y - 2))
                 self.camera_sprites.update()
                 self.camera_sprites.use()
-            print("after vis, before sleep")
-            time.sleep(0.5)
-            print("after sleep")
             self.cell_list.update()
             self.vertex_mover.update()
             self.circulator.update()
@@ -235,7 +232,6 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
     if vis == False:
         pyglet.options["headless"] = True
         print("Running headless")
-    #print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
     print("Making GrowingSim")
     simulation = GrowingSim(
         SCREEN_WIDTH,
