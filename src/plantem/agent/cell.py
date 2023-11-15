@@ -107,7 +107,7 @@ class GrowingCell(arcade.Sprite):
             elif neighbor_location == "m":
                 self.m_neighbors.append(neighbor)
             elif neighbor_location == "cell no longer root cap cell neighbor":
-                print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
+                #print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
                 pass
             elif neighbor_location == None:
                 raise ValueError("Non-neighbor added as neighbor")

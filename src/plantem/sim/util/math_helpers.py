@@ -2,7 +2,7 @@ from math import log10, floor
 
 
 def round_to_sf(number, sf):
-    print(f"number: {number}, sf: {sf}")
+    #print(f"number: {number}, sf: {sf}")
     if number == 0:
         return 0.0
     if number == float('inf'):

@@ -72,7 +72,12 @@ class GrowingSim(arcade.Window):
             cell_val_file: The file containing the cell values.
             v_file: The file containing the vertex values.
         """
-        if vis == True:
+        if vis is False:
+            pyglet.options["headless"] = True
+            print("Running headless")
+            os.environ["ARCADE_HEADLESS"] = "true"
+        print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
+        if vis is True:
             super().__init__(width, height, title)
         else:
             super().__init__(width, height, title, visible=False)
@@ -229,9 +234,6 @@ class GrowingSim(arcade.Window):
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
     """Creates and runs the ABM."""
-    if vis == False:
-        pyglet.options["headless"] = True
-        print("Running headless")
     print("Making GrowingSim")
     simulation = GrowingSim(
         SCREEN_WIDTH,

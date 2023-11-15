@@ -48,11 +48,11 @@ class Circulator:
         """
         if cell in self.delta_auxins:
             delta = round_to_sf(delta, 10)
-            print(f"cell {cell.id} delta after rounding: {delta}")
+            #print(f"cell {cell.id} delta after rounding: {delta}")
             old_delta = round_to_sf(self.delta_auxins[cell], 10)
-            print(f"cell {cell.id} old delta after rounding: {delta}")
+            #print(f"cell {cell.id} old delta after rounding: {delta}")
             new_delta = round_to_sf(old_delta + delta, 10)
-            print(f"cell {cell.id} new_delta after rounding: {delta}")
+            #print(f"cell {cell.id} new_delta after rounding: {delta}")
             self.delta_auxins[cell] = new_delta
         else:
             self.delta_auxins[cell] = delta

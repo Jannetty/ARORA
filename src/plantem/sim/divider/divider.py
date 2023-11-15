@@ -72,7 +72,7 @@ class Divider:
                 cell.get_quad_perimeter().get_bottom_left(),
             ]
 
-            print(f"new_upper_vs = {new_upper_vs}, locs = {[v.get_x() for v in new_upper_vs]}")
+            #print(f"new_upper_vs = {new_upper_vs}, locs = {[v.get_x() for v in new_upper_vs]}")
 
             # make new cells using those vertices
             new_top_cell = GrowingCell(
