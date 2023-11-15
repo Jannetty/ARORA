@@ -44,7 +44,7 @@ class Input:
             y = vertex["y"]
             new_vertex_dict[v_num] = Vertex(x, y)
         return new_vertex_dict
-    
+
     def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
         """
         update the default_init_val dataframe to fit in the value from 
@@ -56,8 +56,6 @@ class Input:
                 else:
                     self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * value
 
-    # TODO: make iloc so it isn't using raw number
-    # Done
     def get_init_vals(self) -> dict:
         """
         Returns inital values dictionary with cell index as key and its
@@ -93,8 +91,6 @@ class Input:
             #     new.append(float(val))
             init_vals_dict[cell]["arr_hist"] = hist
 
-    # TODO: Please make this dynamic so it pulls out the vertex row by something other than its raw col number in the csv
-    # Done
     def get_vertex_assignment(self) -> dict:
         """
         Returns vertex assignment dictionary with cell index as key and its
@@ -106,8 +102,6 @@ class Input:
             vertex_assign[f"c{index}"] = row
         return vertex_assign
 
-    #TODO: replace hard coded 13
-    #TODO: parse string without iterating through all elements of series (get rid of for loop so we don't give impression we are iterating through anything when we are just extracting)
     def get_neighbors_assignment(self) -> dict:
         """
         Returns neighbors dictionary with cell index as key and its neighbors
@@ -158,13 +152,9 @@ class Input:
         correspodning neighbors list (with GrowingCell objects) as value
         """
         neighbors_assignment = self.get_neighbors_assignment()
-        #print(f"neighbors_assignment: {neighbors_assignment}")
         neighbors = {}
         for cell_num, neighb in neighbors_assignment.items():
-            #print(f"cell_num: {cell_num}")
-            #print(f"neighb: {neighb}")
             for each in neighb:
-                #print(f"each: {each}")
                 if cell_num not in neighbors:
                     neighbors[cell_num] = [new_cells[each]]
                 else:
