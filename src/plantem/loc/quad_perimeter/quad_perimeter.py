@@ -1,9 +1,12 @@
-from math import dist
+import math
+from src.plantem.sim.util.math_helpers import round_to_sf
 from src.plantem.loc.vertex.vertex import Vertex
+
 
 def intersection(lst1, lst2):
     intersection = [value for value in lst1 if value in lst2]
     return intersection
+
 
 class QuadPerimeter:
     _perimeter_vs = None  # list of vertices
@@ -27,16 +30,16 @@ class QuadPerimeter:
     def __calc_midpointy(self):
         sumy = sum([corner.get_y() for corner in self._perimeter_vs])
         return sumy / len(self._perimeter_vs)
-    
+
     def get_max_y(self):
         return max([corner.get_y() for corner in self._perimeter_vs])
-    
+
     def get_min_y(self):
         return min([corner.get_y() for corner in self._perimeter_vs])
 
     def get_midpointx(self) -> float:
         return self._midpointx
-    
+
     def get_midpointy(self) -> float:
         return self.__calc_midpointy()
 
@@ -49,24 +52,24 @@ class QuadPerimeter:
         )
 
     def get_left_memlen(self) -> float:
-        return dist(self._top_left.get_xy(), self._bottom_left.get_xy())
+        return math.dist(self._top_left.get_xy(), self._bottom_left.get_xy())
 
     def get_right_memlen(self) -> float:
-        return dist(self._top_right.get_xy(), self._bottom_right.get_xy())
+        return math.dist(self._top_right.get_xy(), self._bottom_right.get_xy())
 
     def get_apical_memlen(self) -> float:
-        return dist(self._top_left.get_xy(), self._top_right.get_xy())
+        return math.dist(self._top_left.get_xy(), self._top_right.get_xy())
 
     def get_basal_memlen(self) -> float:
-        return dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
+        return math.dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
 
     def __assign_corners(self) -> None:
         top_row = get_apical(self._perimeter_vs)
         bottom_row = [v for v in self._perimeter_vs if v not in top_row]
-        self._top_left = get_left(top_row)
-        self._top_right = get_right(top_row)
-        self._bottom_left = get_left(bottom_row)
-        self._bottom_right = get_right(bottom_row)
+        self._top_left = get_left_v(top_row)
+        self._top_right = get_right_v(top_row)
+        self._bottom_left = get_left_v(bottom_row)
+        self._bottom_right = get_right_v(bottom_row)
 
     def get_corners_for_disp(self) -> list:
         return [
@@ -101,16 +104,21 @@ class QuadPerimeter:
         ]
 
     def get_area(self) -> float:
-        width = self._top_right.get_x() - self._top_left.get_x()
-        height = self._top_left.get_y() - self._bottom_left.get_y()
-        return width * height
+        # Brahmagupta's formula
+        s = self.get_perimeter_len() / 2
+        a = math.dist(self._top_left.get_xy(), self._bottom_left.get_xy())
+        b = math.dist(self._top_right.get_xy(), self._bottom_right.get_xy())
+        c = math.dist(self._top_left.get_xy(), self._top_right.get_xy())
+        d = math.dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
+        area = math.sqrt((s - a) * (s - b) * (s - c) * (s - d))
+        return round_to_sf(area, 6)
 
     def get_init_area(self) -> float:
         return self._init_area
-    
+
     def get_height(self) -> float:
         return self._top_left.get_y() - self._bottom_left.get_y()
-    
+
     def determine_left_right(self, root_mid: float) -> tuple:
         cell_mid = self.get_midpointx()
         if cell_mid < root_mid:
@@ -119,11 +127,11 @@ class QuadPerimeter:
             return ("lateral", "lateral")
         else:
             return ("medial", "lateral")
-        
-    def get_left(self, root_mid) -> str:
+
+    def get_left_lateral_or_medial(self, root_mid) -> str:
         return self.determine_left_right(root_mid)[0]
-    
-    def get_right(self, root_mid) -> str:
+
+    def get_right_lateral_or_medial(self, root_mid) -> str:
         return self.determine_left_right(root_mid)[1]
 
     def get_memfrac(self, direction: str, left: str) -> float:
@@ -132,30 +140,31 @@ class QuadPerimeter:
         """
         cell_perimeter = self.get_perimeter_len()
         if direction == "a":
-            return self.get_apical_memlen()/cell_perimeter
+            memfrac = self.get_apical_memlen() / cell_perimeter
         elif direction == "b":
-            return self.get_basal_memlen()/cell_perimeter
+            memfrac = self.get_basal_memlen() / cell_perimeter
         elif direction == "l":
             if left == "lateral":
-                return self.get_left_memlen()/cell_perimeter
+                memfrac = self.get_left_memlen() / cell_perimeter
             else:
-                return self.get_right_memlen()/cell_perimeter
+                memfrac = self.get_right_memlen() / cell_perimeter
         elif direction == "m":
             if left == "medial":
-                return self.get_left_memlen()/cell_perimeter
+                memfrac = self.get_left_memlen() / cell_perimeter
             else:
-                return self.get_right_memlen()/cell_perimeter
-
+                memfrac = self.get_right_memlen() / cell_perimeter
+        # print(f"MEMFRAC = {round_to_sf(memfrac, 6)}")
+        return round_to_sf(memfrac, 6)
 
 
 def get_len_perimeter_in_common(cell, neighbor) -> float:
-    #TODO: rewrite this function with two possibilities
+    # TODO: rewrite this function with two possibilities
     # 1. cells share two vertices with neighbor
     #        - find which two vertices, calculate euclidean distance between them, return that
     # 2. cells share one or fewer vertices with neighbor (if neighbor is lateral root cap cell, can check by cell number)
     #        - calculate length of lateral membrane and return that if lateral root cap neighbor, calculate neighbor's lateral membrane if lateral root cap cell
     length = 0
-    rootcap_cellIDs = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
+    rootcap_cellIDs = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
     cellqp = cell.get_quad_perimeter()
     neighborqp = neighbor.get_quad_perimeter()
     # if cellqp and neighborqp share two vertices, calculate euclidean distance between them
@@ -163,35 +172,139 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     neighbor_vs = neighborqp.get_vs()
     if len(intersection(cell_vs, neighbor_vs)) == 2:
         vs = list(set(cellqp.get_vs()).intersection(set(neighborqp.get_vs())))
-        length = dist(vs[0].get_xy(), vs[1].get_xy())
-    
-    elif cell.get_id() in rootcap_cellIDs:
-        if neighborqp.left == "lateral":
-            length = neighborqp.get_left_memlen()
-        elif neighborqp.right == "lateral":
-            length = neighborqp.get_right_memlen()
-    
-    elif neighbor.get_id() in rootcap_cellIDs:
-        if cellqp.left == "lateral":
-            length = cellqp.get_left_memlen()
-        elif cellqp.right == "lateral":
-            length = cellqp.get_right_memlen()
+        length = math.dist(vs[0].get_xy(), vs[1].get_xy())
 
+    # cases for lateral root cap cells
+    elif cell.get_id() in rootcap_cellIDs:
+        if (
+            neighborqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+            == "lateral"
+        ):
+            length = neighborqp.get_left_memlen()
+        elif (
+            neighborqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+            == "lateral"
+        ):
+            length = neighborqp.get_right_memlen()
+
+    elif neighbor.get_id() in rootcap_cellIDs:
+        if cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
+            length = cellqp.get_left_memlen()
+        elif (
+            cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral"
+        ):
+            length = cellqp.get_right_memlen()
 
     # cases for unusual geometry in roottip
     elif cell.get_id() == 10 and neighbor.get_id() == 20:
         length = cell.get_quad_perimeter().get_apical_memlen()
     elif cell.get_id() == 20 and neighbor.get_id() == 10:
         length = neighbor.get_quad_perimeter().get_apical_memlen()
-        
+
     elif cell.get_id() == 11 and neighbor.get_id() == 25:
         length = cell.get_quad_perimeter().get_apical_memlen()
     elif cell.get_id() == 25 and neighbor.get_id() == 11:
         length = neighbor.get_quad_perimeter().get_apical_memlen()
 
-    
-        if length != 5:
-            raise Exception("Cell 10 does not share basal membrane with cell 20")
+    elif cell.get_id() == 16 and neighbor.get_id() == 36:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 36 and neighbor.get_id() == 16:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 17 and neighbor.get_id() == 20:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 20 and neighbor.get_id() == 17:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 18 and neighbor.get_id() == 25:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 25 and neighbor.get_id() == 18:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 19 and neighbor.get_id() == 37:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 37 and neighbor.get_id() == 19:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 26 and neighbor.get_id() == 20:
+        length = cell.get_quad_perimeter().get_left_memlen()
+    elif cell.get_id() == 20 and neighbor.get_id() == 26:
+        length = neighbor.get_quad_perimeter().get_left_memlen()
+
+    elif cell.get_id() == 20 and neighbor.get_id() == 36:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 36 and neighbor.get_id() == 20:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 25 and neighbor.get_id() == 27:
+        length = neighbor.get_quad_perimeter().get_right_memlen()
+    elif cell.get_id() == 27 and neighbor.get_id() == 25:
+        length = cell.get_quad_perimeter().get_right_memlen()
+
+    elif cell.get_id() == 25 and neighbor.get_id() == 37:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 37 and neighbor.get_id() == 25:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 38 and neighbor.get_id() == 39:
+        length = cell.get_quad_perimeter().get_right_memlen()
+    elif cell.get_id() == 39 and neighbor.get_id() == 38:
+        length = neighbor.get_quad_perimeter().get_right_memlen()
+
+    elif cell.get_id() == 39 and neighbor.get_id() == 46:
+        length = neighbor.get_quad_perimeter().get_right_memlen()
+    elif cell.get_id() == 46 and neighbor.get_id() == 39:
+        length = cell.get_quad_perimeter().get_right_memlen()
+
+    elif cell.get_id() == 42 and neighbor.get_id() == 43:
+        length = neighbor.get_quad_perimeter().get_left_memlen()
+    elif cell.get_id() == 43 and neighbor.get_id() == 42:
+        length = cell.get_quad_perimeter().get_left_memlen()
+
+    elif cell.get_id() == 42 and neighbor.get_id() == 47:
+        length = neighbor.get_quad_perimeter().get_left_memlen()
+    elif cell.get_id() == 47 and neighbor.get_id() == 42:
+        length = cell.get_quad_perimeter().get_left_memlen()
+
+    elif cell.get_id() == 44 and neighbor.get_id() == 50:
+        length = cell.get_quad_perimeter().get_right_memlen()
+    elif cell.get_id() == 50 and neighbor.get_id() == 44:
+        length = neighbor.get_quad_perimeter().get_right_memlen()
+
+    elif cell.get_id() == 45 and neighbor.get_id() == 51:
+        length = cell.get_quad_perimeter().get_left_memlen()
+    elif cell.get_id() == 51 and neighbor.get_id() == 45:
+        length = neighbor.get_quad_perimeter().get_left_memlen()
+
+    elif cell.get_id() == 52 and neighbor.get_id() == 50:
+        length = cell.get_quad_perimeter().get_right_memlen()
+    elif cell.get_id() == 50 and neighbor.get_id() == 52:
+        length = neighbor.get_quad_perimeter().get_right_memlen()
+
+    elif cell.get_id() == 51 and neighbor.get_id() == 59:
+        length = neighbor.get_quad_perimeter().get_left_memlen()
+    elif cell.get_id() == 59 and neighbor.get_id() == 51:
+        length = cell.get_quad_perimeter().get_left_memlen()
+
+    elif cell.get_id() == 54 and neighbor.get_id() == 65:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 65 and neighbor.get_id() == 54:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 54 and neighbor.get_id() == 66:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 66 and neighbor.get_id() == 54:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 57 and neighbor.get_id() == 69:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 69 and neighbor.get_id() == 57:
+        length = cell.get_quad_perimeter().get_apical_memlen()
+
+    elif cell.get_id() == 57 and neighbor.get_id() == 70:
+        length = neighbor.get_quad_perimeter().get_apical_memlen()
+    elif cell.get_id() == 70 and neighbor.get_id() == 57:
+        length = cell.get_quad_perimeter().get_apical_memlen()
 
     if length == 0:
         raise Exception("Neighbor list is incorrect, neighbor does not share membrane with cell")
@@ -204,7 +317,7 @@ def get_overlap(membrane1, membrane2):
 
 def get_apical(vertex_list: list) -> list:
     vs = vertex_list
-    maxy = float('-inf')
+    maxy = float("-inf")
     apical_v = None
     apical_vs = []
     for v in vs:
@@ -212,7 +325,7 @@ def get_apical(vertex_list: list) -> list:
             maxy = v.get_y()
             apical_v = v
     apical_vs.append(apical_v)
-    maxy = float('-inf')
+    maxy = float("-inf")
     for v in vs:
         if v.get_y() > maxy and v not in apical_vs:
             maxy = v.get_y()
@@ -226,9 +339,11 @@ def get_basal(vertex_list: list) -> list:
     return [v for v in vertex_list if v not in apical]
 
 
-def get_left(vertex_list: list) -> Vertex:
+def get_left_v(vertex_list: list) -> Vertex:
+    if len(vertex_list) != 2:
+        raise Exception("get_left_v called on vertex list of length != 2")
     vs = vertex_list
-    minx = float('inf')
+    minx = float("inf")
     left_v = None
     for v in vs:
         if v.get_x() < minx:
@@ -237,8 +352,10 @@ def get_left(vertex_list: list) -> Vertex:
     return left_v
 
 
-def get_right(vertex_list: list) -> Vertex:
-    left = get_left(vertex_list)
+def get_right_v(vertex_list: list) -> Vertex:
+    if len(vertex_list) != 2:
+        raise Exception("get_right_v called on vertex list of length != 2")
+    left = get_left_v(vertex_list)
     right = None
     for v in vertex_list:
         if v is not left:

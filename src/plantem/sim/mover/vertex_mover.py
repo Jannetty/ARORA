@@ -13,7 +13,9 @@ class VertexMover:
 
     def add_cell_delta_val(self, cell: GrowingCell, deltaX: float) -> None:
         if cell in self.cell_deltas:
-            raise ValueError(f"Multiple delta vals added to VertexMover for cell {cell.id}. VertexMover must be updated between cell updates.")
+            raise ValueError(
+                f"Multiple delta vals added to VertexMover for cell {cell.id}. VertexMover must be updated between cell updates."
+            )
         else:
             self.cell_deltas[cell] = deltaX
 
@@ -24,14 +26,15 @@ class VertexMover:
         return self.vertex_deltas[vertex]
 
     def update(self) -> None:
-        top_row = self.get_top_row()
-        sorted_top_row = self.sort_top_row(top_row)
-        self.propogate_deltas(sorted_top_row)
-        max_delta = self.get_max_delta()
-        self.execute_vertex_movement(max_delta)
-        self.check_if_divide(self.cell_deltas.keys())
-        self.cell_deltas.clear()
-        self.vertex_deltas.clear()
+        if self.cell_deltas:
+            top_row = self.get_top_row()
+            sorted_top_row = self.sort_top_row(top_row)
+            self.propogate_deltas(sorted_top_row)
+            max_delta = self.get_max_delta()
+            self.execute_vertex_movement(max_delta)
+            self.check_if_divide(self.cell_deltas.keys())
+            self.cell_deltas.clear()
+            self.vertex_deltas.clear()
 
     def get_max_delta(self) -> float:
         max_delta = None
@@ -105,7 +108,6 @@ class VertexMover:
                     if vertex not in moved_vs:
                         vertex.set_y(vertex.get_y() + max_delta)
                         moved_vs.append(vertex)
-        
 
     def check_if_divide(self, cells) -> None:
         for cell in cells:

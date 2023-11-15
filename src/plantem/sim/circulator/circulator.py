@@ -1,27 +1,72 @@
+from src.plantem.sim.util.math_helpers import round_to_sf
+
+
 class Circulator:
+    """
+    Circulator manages the delta auxins in a simulation. Each time step cells save their delta auxin to the circulator
+    and delta auxins of that cell's neighbors are updated. At the end of the time step, the circulator updates the auxin
+
+    Attributes:
+        delta_auxins: A dictionary to store the delta auxins for each cell. Keys are cells, values are delta auxins.
+        sim: The simulation that this circulator is part of.
+    """
+
     delta_auxins = None
 
     def __init__(self, sim):
+        """
+        Constructs a new Circulator instance.
+
+        Args:
+            sim: The simulation that this circulator is part of.
+        """
         self.delta_auxins = dict()
         self.sim = sim
 
     def get_delta_auxins(self) -> dict:
+        """
+        Returns the dictionary of delta auxins that the circulator is managing.
+        Keys are cells, values are delta auxins.
+
+        Returns:
+            dict: The dictionary of delta auxins.
+        """
         return self.delta_auxins
 
-    def add_delta(self, cell, delta) -> None:
+    def add_delta(self, cell, delta: float) -> None:
+        """
+        Adds a delta auxin to the circulator for a given cell. If the cell is already in the circulator,
+        the delta auxin is added to the existing delta auxin. If the cell is not in the circulator, the
+        delta auxin is added to the circulator.
+
+        Args:
+            cell: The cell that the delta auxin is for.
+            delta: The delta auxin to add.
+
+        Returns:
+            None
+        """
         if cell in self.delta_auxins:
-            old_delta = self.delta_auxins[cell]
-            new_delta = old_delta + delta
-            self.delta_auxins[cell] += new_delta
+            delta = round_to_sf(delta, 10)
+            #print(f"cell {cell.id} delta after rounding: {delta}")
+            old_delta = round_to_sf(self.delta_auxins[cell], 10)
+            #print(f"cell {cell.id} old delta after rounding: {delta}")
+            new_delta = round_to_sf(old_delta + delta, 10)
+            #print(f"cell {cell.id} new_delta after rounding: {delta}")
+            self.delta_auxins[cell] = new_delta
         else:
             self.delta_auxins[cell] = delta
 
     def update(self) -> None:
-        for cell in self.delta_auxins:
-            print(f"cell {cell.get_id()} aux before = {cell.get_circ_mod().get_auxin()}")
-            old_aux = cell.get_circ_mod().get_auxin()
-            new_aux = old_aux + self.delta_auxins[cell]
-            cell.get_circ_mod().set_auxin(new_aux)
-            print(f"cell {cell.get_id()} aux after = {cell.get_circ_mod().get_auxin()}")
-        self.delta_auxins = dict()
+        """
+        Updates the auxin of each cell in the circulator by adding the delta auxin to each cell's
+        existing auxin.
 
+        Returns:
+            None
+        """
+        for cell in self.delta_auxins:
+            old_aux = cell.get_circ_mod().get_auxin()
+            new_aux = round_to_sf(old_aux + self.delta_auxins[cell], 6)
+            cell.get_circ_mod().set_auxin(new_aux)
+        self.delta_auxins = dict()
