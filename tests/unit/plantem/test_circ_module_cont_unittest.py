@@ -679,6 +679,7 @@ def make_init_vals():
         "k_d": 0.0015,
         "k_al": 1,
         "k_pin": 1,
+        "auxin_w": 1,
         "arr_hist": [0.1, 0.2, 0.3],
         "growing": True,
         "circ_mod": "cont",

@@ -67,6 +67,8 @@ class BaseCirculateModuleCont:
         self.ks = init_vals.get("k_s")
         self.kd = init_vals.get("k_d")
 
+        self.auxin_w = init_vals.get("auxin_w")
+
         self.arr_hist = init_vals.get("arr_hist")
 
         # set medial to either "left" or "right" and lateral to the opposite
@@ -141,7 +143,7 @@ class BaseCirculateModuleCont:
         """
         Calculate the auxin expression of current cell
         """
-        auxin = self.ks - self.kd * auxini * (1 / area)
+        auxin = self.ks * self.auxin_w - self.kd * auxini * (1 / area)
         return auxin
 
     def calculate_arr(self, arri: float, area: float) -> float:
@@ -339,6 +341,7 @@ class BaseCirculateModuleCont:
             "k6": self.k_pin,
             "k_s": self.ks,
             "k_d": self.kd,
+            "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
         }
         return state

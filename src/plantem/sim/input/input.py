@@ -79,6 +79,7 @@ class Input:
             "k6",
             "k_s",
             "k_d",
+            "auxin_w",
             "arr_hist",
             "growing",
             "circ_mod",

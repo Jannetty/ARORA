@@ -74,9 +74,9 @@ class GrowingSim(arcade.Window):
         """
         if vis is False:
             pyglet.options["headless"] = True
-            print("Running headless")
+            # print("Running headless")
             os.environ["ARCADE_HEADLESS"] = "true"
-        print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
+        # print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
         if vis is True:
             super().__init__(width, height, title)
         else:
