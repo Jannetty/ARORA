@@ -73,10 +73,11 @@ class GrowingSim(arcade.Window):
             v_file: The file containing the vertex values.
         """
         if vis is False:
-            pyglet.options["headless"] = True
             print("Running headless")
+            #for mac
+            pyglet.options["headless"] = True
+            # for PC
             os.environ["ARCADE_HEADLESS"] = "true"
-        print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
         if vis is True:
             super().__init__(width, height, title)
         else:
@@ -171,8 +172,6 @@ class GrowingSim(arcade.Window):
         self.circulator = Circulator(self)
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
-        if self.vis:
-            self.camera_sprites = arcade.Camera()
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.input()
@@ -201,11 +200,25 @@ class GrowingSim(arcade.Window):
         """
         Renders the screen.
         """
+        print("drawing")
         if self.vis:
             self.clear()
             # Call draw() on all your sprite lists below
             for cell in self.cell_list:
                 cell.draw()
+            pass
+
+    def update_viewport_position(self) -> None:
+        """
+        Updates the position of the viewport.
+        """
+        self.set_viewport(
+            0,
+            SCREEN_WIDTH,
+            self.root_tip_y - 2,
+            SCREEN_HEIGHT + self.root_tip_y - 2,
+        )
+
 
     def on_update(self, delta_time):
         """
@@ -218,9 +231,7 @@ class GrowingSim(arcade.Window):
         if self.tick < 2592:
             print(f"tick: {self.tick}")
             if self.vis:
-                self.camera_sprites.move((0, self.root_tip_y - 2))
-                self.camera_sprites.update()
-                self.camera_sprites.use()
+                self.update_viewport_position()
             self.cell_list.update()
             self.vertex_mover.update()
             self.circulator.update()
