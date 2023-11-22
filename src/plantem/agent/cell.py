@@ -71,7 +71,7 @@ class GrowingCell(arcade.Sprite):
         pinl = self.circ_mod.get_lateral_pin()
         pinm = self.circ_mod.get_medial_pin()
         pin_vals = [pina, pinb, pinl, pinm]
-        pin_sum = sum(pina, pinb, pinl, pinm)
+        pin_sum = pina + pinb + pinl + pinm
         for (val, direction) in zip(pin_vals, ["a", "b", "l", "m"]):
             pin_weights_dict[direction] = val / pin_sum
         return pin_weights_dict
