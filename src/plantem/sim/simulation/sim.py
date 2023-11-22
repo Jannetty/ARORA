@@ -227,6 +227,7 @@ class GrowingSim(arcade.Window):
         Args:
             delta_time: The time step.
         """
+        print("updating")
         self.tick += 1
         if self.tick < 2592:
             print(f"tick: {self.tick}")
