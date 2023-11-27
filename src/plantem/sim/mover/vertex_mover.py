@@ -17,24 +17,34 @@ class VertexMover:
                 f"Multiple delta vals added to VertexMover for cell {cell.id}. VertexMover must be updated between cell updates."
             )
         else:
+            if cell.get_id() == 816:
+                print(f"Adding cell {cell.get_id()} delta {deltaX} to cell_deltas")
             self.cell_deltas[cell] = deltaX
 
     def get_cell_delta_val(self, cell: GrowingCell) -> float:
         return self.cell_deltas[cell]
 
     def get_vertex_delta_val(self, vertex: Vertex) -> float:
+        if vertex.get_id() == 888:
+            print(f"Getting vertex {vertex.get_id()} delta {self.vertex_deltas[vertex]} from vertex_deltas")
         return self.vertex_deltas[vertex]
 
     def update(self) -> None:
+        #top_row_ids = [816,817,818,819,820,821,822,823,824,825,826,827,828,829]
         if self.cell_deltas:
             top_row = self.get_top_row()
             sorted_top_row = self.sort_top_row(top_row)
             self.propogate_deltas(sorted_top_row)
             max_delta = self.get_max_delta()
+            #print(f" cell 816 corners pre movement = {[v.get_id() for v in self.sim.get_cell_by_ID(816).get_quad_perimeter().get_vs()]} ")
+            #print(f" cell 816 cornerslocations pre movement = {[v.get_xy() for v in self.sim.get_cell_by_ID(816).get_quad_perimeter().get_vs()]} ")
             self.execute_vertex_movement(max_delta)
+            #print(f" cell 816 corners post movement = {[v.get_id() for v in self.sim.get_cell_by_ID(816).get_quad_perimeter().get_vs()]} ")
+            #print(f" cell 816 cornerslocations post movement = {[v.get_xy() for v in self.sim.get_cell_by_ID(816).get_quad_perimeter().get_vs()]} ")
             self.check_if_divide(self.cell_deltas.keys())
             self.cell_deltas.clear()
             self.vertex_deltas.clear()
+            print(self.vertex_deltas)
 
     def get_max_delta(self) -> float:
         max_delta = None
@@ -72,6 +82,8 @@ class VertexMover:
             self.propogate_deltas_to_b_neighbors(cell, this_delta)
 
     def add_cell_b_vertices_to_vertex_deltas(self, cell: GrowingCell, delta: float) -> None:
+        if cell.get_id() == 802:
+            print(f"Adding cell {cell.get_id()} b vertices {cell.get_quad_perimeter().get_bottom_left().get_id()}, {cell.get_quad_perimeter().get_bottom_right().get_id()} to vertex_deltas, delta {delta}")
         bottom_left_v = cell.get_quad_perimeter().get_bottom_left()
         bottom_right_v = cell.get_quad_perimeter().get_bottom_right()
         if bottom_left_v in self.vertex_deltas:
@@ -102,7 +114,7 @@ class VertexMover:
         # iterate through all nongrowing cells, move all basal vertices not yet moved
         moved_vs = list(self.vertex_deltas.keys())
         for cell in self.sim.get_cell_list():
-            if not cell.get_growing():
+            if not cell.get_growing() and cell.get_dev_zone() is not "differentiation":
                 vertices = cell.get_quad_perimeter().get_vs()
                 for vertex in vertices:
                     if vertex not in moved_vs:

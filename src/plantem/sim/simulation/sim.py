@@ -78,10 +78,9 @@ class GrowingSim(arcade.Window):
             pyglet.options["headless"] = True
             # for PC
             os.environ["ARCADE_HEADLESS"] = "true"
+            super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        else:
-            super().__init__(width, height, title, visible=False)
         arcade.set_background_color(color=[250, 250, 250])
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
@@ -174,7 +173,7 @@ class GrowingSim(arcade.Window):
         self.divider = Divider(self)
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
         if self.input_from_file:
-            self.input.input()
+            self.input.make_cells_from_input_files()
         self.root_tip_y = self.get_root_tip_y()
         self.set_dev_zones()
 
@@ -215,8 +214,10 @@ class GrowingSim(arcade.Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            self.root_tip_y - 2,
-            SCREEN_HEIGHT + self.root_tip_y - 2,
+            0,
+            #self.root_tip_y - 2,
+            #SCREEN_HEIGHT + self.root_tip_y - 2,
+            1200,
         )
 
 
