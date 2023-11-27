@@ -374,7 +374,7 @@ class TestInput(unittest.TestCase):
         v3 = Vertex(30, 330)
         v4 = Vertex(10, 360)
         v5 = Vertex(30, 360)
-        input.input()
+        input.make_cells_from_input_files()
         found_cell_list = sim.get_cell_list()
         expected_cell0 = GrowingCell(sim2, [v0, v1, v2, v3], make_init_vals(), 0)
         expected_cell1 = GrowingCell(sim2, [v1, v3, v4, v5], make_init_vals(), 1)

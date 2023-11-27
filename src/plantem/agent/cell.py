@@ -84,7 +84,8 @@ class GrowingCell(arcade.Sprite):
         rgba = self.sim.cmap(normalized_auxin)
         # Scale and round the RGB values
         r, g, b = (int(rgba[0] * 255 + 0.5), int(rgba[1] * 255 + 0.5), int(rgba[2] * 255 + 0.5))
-        return [r, g, b]
+        #return [r, g, b]
+        return [255,255,255]
 
     def get_quad_perimeter(self):
         return self.quad_perimeter
@@ -439,7 +440,6 @@ class GrowingCell(arcade.Sprite):
         arcade.draw_polygon_outline(point_list=point_list, color=[0, 0, 0])
 
     def grow(self) -> None:
-        # print(f"cell {self.id} adding delta {self.calculate_delta()} to vertex_mover")
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def get_distance_from_tip(self) -> float:
@@ -458,17 +458,19 @@ class GrowingCell(arcade.Sprite):
             self.dev_zone = "differentiation"
 
     def get_growth_rate(self) -> float:
-        if self.get_quad_perimeter().get_height() >= 100:
-            growthRate = 0
+        if self.get_quad_perimeter().get_height() >= 250:
+            print(f"cell {self.id} has reached max height")
+            self.growing = False
+            return 0
         if self.dev_zone == "meristematic":
-            growthRate = MERISTEMATIC_GROWTH_RATE
+            return MERISTEMATIC_GROWTH_RATE
         elif self.dev_zone == "transition":
-            growthRate = TRANSITION_GROWTH_RATE
+            return TRANSITION_GROWTH_RATE
         elif self.dev_zone == "elongation":
-            growthRate = ELONGATION_GROWTH_RATE
+            return ELONGATION_GROWTH_RATE
         elif self.dev_zone == "differentiation":
-            growthRate = DIFFERENTIATION_GROWTH_RATE
-        return growthRate
+            return DIFFERENTIATION_GROWTH_RATE
+        raise ValueError("Cell has no recognizable dev zone")
 
     def calculate_delta(self) -> float:
         dist_to_root_tip = self.get_distance_from_tip()
@@ -476,21 +478,12 @@ class GrowingCell(arcade.Sprite):
         return self.get_growth_rate()
 
     def calculate_pin_weights(self) -> dict:
-        pin_weights = {}
-        for direction in ["a", "b", "l", "m"]:
-            #TODO: make this calculate pin weights
-            pin_weights[direction] = 1
-        return pin_weights
+        return self.pin_weights
 
     def update(self) -> None:
-        # print(f"updating cell {self.id}")
+        #print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
-        # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized
-        pin_weights = {}
-        pin_weights["a"] = 1
-        pin_weights["b"] = 1
-        pin_weights["l"] = 1
-        pin_weights["m"] = 1
-        self.circ_mod.update(pin_weights)  # TODO: Turn on again when geometry finalized
+        pin_weights = self.calculate_pin_weights() 
+        self.circ_mod.update(self.pin_weights)
         #print(f"cell {self.id} auxin: {self.circ_mod.get_auxin()}")
