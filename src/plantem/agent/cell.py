@@ -42,7 +42,6 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
-        # print(f"making cell {id}")
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []
@@ -116,7 +115,6 @@ class GrowingCell(arcade.Sprite):
             elif neighbor_location == "m":
                 self.m_neighbors.append(neighbor)
             elif neighbor_location == "cell no longer root cap cell neighbor":
-                #print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
                 pass
             elif neighbor_location == None:
                 raise ValueError("Non-neighbor added as neighbor")
@@ -480,9 +478,7 @@ class GrowingCell(arcade.Sprite):
         return self.pin_weights
 
     def update(self) -> None:
-        print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
         self.pin_weights = self.calculate_pin_weights() 
         self.circ_mod.update(self.pin_weights)
-        #print(f"cell {self.id} auxin: {self.circ_mod.get_auxin()}")
