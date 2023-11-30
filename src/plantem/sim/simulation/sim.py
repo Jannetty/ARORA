@@ -230,18 +230,23 @@ class GrowingSim(arcade.Window):
         """
         print("updating")
         self.tick += 1
-        if self.tick < 2592:
-            print(f"tick: {self.tick}")
-            if self.vis:
-                self.update_viewport_position()
-            self.cell_list.update()
-            self.vertex_mover.update()
-            self.circulator.update()
-            self.divider.update()
-            self.root_tip_y = self.calculate_root_tip_y()
+        try:
+            if self.tick < 2592:
+                print(f"tick: {self.tick}")
+                if self.vis:
+                    self.update_viewport_position()
+                self.cell_list.update()
+                self.vertex_mover.update()
+                self.circulator.update()
+                self.divider.update()
+                self.root_tip_y = self.calculate_root_tip_y()
 
-        else:
-            print("Simulation Complete")
+            else:
+                print("Simulation Complete")
+                arcade.close_window()
+        except Exception as e:
+            print(e)
+            print("Ending Simulation")
             arcade.close_window()
 
 
