@@ -91,9 +91,6 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("Blues")
-        # self.cmap = (
-        #     self.cmap.reversed()
-        # )  # reverse the colormap so that the lowest value is blue and the highest is red
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -199,7 +196,6 @@ class GrowingSim(arcade.Window):
         """
         Renders the screen.
         """
-        print("drawing")
         if self.vis:
             self.clear()
             # Call draw() on all your sprite lists below
@@ -228,7 +224,6 @@ class GrowingSim(arcade.Window):
         Args:
             delta_time: The time step.
         """
-        print("updating")
         self.tick += 1
         try:
             if self.tick < 2592:
@@ -244,13 +239,13 @@ class GrowingSim(arcade.Window):
             else:
                 print("Simulation Complete")
                 arcade.close_window()
-        except Exception as e:
+        except (ValueError, OverflowError) as e:
             print(e)
             print("Ending Simulation")
             arcade.close_window()
 
 
-def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
+def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
     simulation = GrowingSim(
@@ -266,3 +261,5 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
     )
     print("Running Simulation")
     arcade.run()
+
+    return simulation.get_tick()

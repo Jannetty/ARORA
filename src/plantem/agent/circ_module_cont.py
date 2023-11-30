@@ -208,7 +208,6 @@ class BaseCirculateModuleCont:
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            #print(f"cell {self.cell.id} auxin {self.auxin}, neighbor {neighbor.id} neighbor's auxin {neighbor_aux}")
             neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
             self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
             if neighbor_aux_in == float('inf') or neighbor_aux_in == float('-inf') or self_aux_out == float('inf') or self_aux_out == float('-inf'):
@@ -230,7 +229,6 @@ class BaseCirculateModuleCont:
             auxin = sum(neighbors.values())
             if auxin == float('inf') or total_auxin == float('inf') or auxin == float('-inf') or total_auxin == float('-inf'):
                 print(f"cell {self.cell.id} auxin {auxin}, total auxin {total_auxin}")
-                arcade.close_window()
             else: 
                 total_auxin += auxin
         return total_auxin
@@ -264,7 +262,6 @@ class BaseCirculateModuleCont:
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                #print (f"cell {self.cell.id} neighbor {neighbor.id} neighbor's new delta {-each_dirct[neighbor]}")
                 self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
 
     def get_neighbors(self) -> tuple:
