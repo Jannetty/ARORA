@@ -49,7 +49,7 @@ class Divider:
         simulation.
         """
         for cell in self.cells_to_divide:
-            print(f"Cell {cell.get_id()} dividing!")
+            #print(f"Cell {cell.get_id()} dividing!")
             if cell.get_dev_zone() != "meristematic":
                 print(f"Cell is in the {cell.get_dev_zone()} zone, not dividing")
                 continue

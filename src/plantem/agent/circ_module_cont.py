@@ -1,4 +1,5 @@
 from scipy.integrate import odeint
+import arcade
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 from src.plantem.sim.util.math_helpers import round_to_sf
 import numpy as np
@@ -173,6 +174,12 @@ class BaseCirculateModuleCont:
     ) -> float:
         """
         Calculate the PIN expression of neighbor cells
+
+        Args:
+            pini: the current cell's unlocalized PIN expression
+            pindi: the current cell's localized PIN expression in the direction of the current cell
+            area: the area of the current cell
+            direction: the direction of the neighbor cell
         """
         # TODO: Make get_weight a function, class of calculators that can take different values
         # TODO: have weight as parameter that is fed in
@@ -201,9 +208,15 @@ class BaseCirculateModuleCont:
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
+            #print(f"cell {self.cell.id} auxin {self.auxin}, neighbor {neighbor.id} neighbor's auxin {neighbor_aux}")
+            neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
+            self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
+            if neighbor_aux_in == float('inf') or neighbor_aux_in == float('-inf') or self_aux_out == float('inf') or self_aux_out == float('-inf'):
+                print(f"cell {self.cell.id} neighbor {neighbor.id} neighbor's auxin {neighbor_aux_in}, self aux out {self_aux_out}")
+
+
             neighbor_aux_exchange = (
-                neighbor_aux * memfrac * al * self.k_al
-                - self.auxin * pindi * (1 / area) * self.k_pin
+                neighbor_aux_in - self_aux_out
             )
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
@@ -215,7 +228,11 @@ class BaseCirculateModuleCont:
         total_auxin = syn_deg_auxin
         for neighbors in neighbors_auxin:
             auxin = sum(neighbors.values())
-            total_auxin += auxin
+            if auxin == float('inf') or total_auxin == float('inf') or auxin == float('-inf') or total_auxin == float('-inf'):
+                print(f"cell {self.cell.id} auxin {auxin}, total auxin {total_auxin}")
+                arcade.close_window()
+            else: 
+                total_auxin += auxin
         return total_auxin
 
     def update_arr_hist(self) -> None:

@@ -1,3 +1,4 @@
+import arcade
 from src.plantem.sim.util.math_helpers import round_to_sf
 
 
@@ -47,6 +48,10 @@ class Circulator:
             None
         """
         if cell in self.delta_auxins:
+            if delta == float('inf') or delta == float('-inf'):
+                print(f"cell {cell.id} delta = {delta}")
+                arcade.close_window()
+            #print(f"cell {cell.id} delta before rounding in if: {delta}")
             delta = round_to_sf(delta, 10)
             #print(f"cell {cell.id} delta after rounding: {delta}")
             old_delta = round_to_sf(self.delta_auxins[cell], 10)
@@ -55,7 +60,11 @@ class Circulator:
             #print(f"cell {cell.id} new_delta after rounding: {delta}")
             self.delta_auxins[cell] = new_delta
         else:
-            self.delta_auxins[cell] = delta
+            if delta == float('inf') or delta == float('-inf'):
+                print(f"cell {cell.id} delta = {delta}")
+                arcade.close_window()
+            #print(f"cell {cell.id} delta before rounding in else: {delta}")
+            self.delta_auxins[cell] = round_to_sf(delta, 10)
 
     def update(self) -> None:
         """
