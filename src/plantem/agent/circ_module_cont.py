@@ -106,10 +106,10 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_membrane_pin(pini, pinai, area, "a")
-        f5 = self.calculate_membrane_pin(pini, pinbi, area, "b")
-        f6 = self.calculate_membrane_pin(pini, pinli, area, "l")
-        f7 = self.calculate_membrane_pin(pini, pinmi, area, "m")
+        f4 = self.calculate_membrane_pin(pini, pinai, area, "a", self.pin_weight_a)
+        f5 = self.calculate_membrane_pin(pini, pinbi, area, "b", self.pin_weight_b)
+        f6 = self.calculate_membrane_pin(pini, pinli, area, "l", self.pin_weight_l)
+        f7 = self.calculate_membrane_pin(pini, pinmi, area, "m", self.pin_weight_m)
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
@@ -130,10 +130,10 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents to the circulator
         """
-        self.weighta = pin_weights.get("a")
-        self.weightb = pin_weights.get("b")
-        self.weightl = pin_weights.get("l")
-        self.weightm = pin_weights.get("m")
+        self.pin_weight_a = pin_weights.get("a")
+        self.pin_weight_b = pin_weights.get("b")
+        self.pin_weight_l = pin_weights.get("l")
+        self.pin_weight_m = pin_weights.get("m")
         soln = self.get_solution()
         self.update_auxin(soln)
         self.update_circ_contents(soln)
@@ -170,7 +170,7 @@ class BaseCirculateModuleCont:
         return pin
 
     def calculate_membrane_pin(
-        self, pini: float, pindi: float, area: float, direction: str
+        self, pini: float, pindi: float, area: float, direction: str, pin_weight: float
     ) -> float:
         """
         Calculate the PIN expression of neighbor cells
@@ -180,12 +180,11 @@ class BaseCirculateModuleCont:
             pindi: the current cell's localized PIN expression in the direction of the current cell
             area: the area of the current cell
             direction: the direction of the neighbor cell
+            pin_weight: the pin degradation weight for the membrane in this direction
         """
-        # TODO: Make get_weight a function, class of calculators that can take different values
-        # TODO: have weight as parameter that is fed in
-        weight = 1
+        weight = pin_weight
         memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
-        membrane_pin = memfrac * pini - self.kd * pindi * (1 / area) * weight
+        membrane_pin = memfrac * pini - self.kd * pindi * (1 / area) * (weight)
         return membrane_pin
 
     def calculate_neighbor_memfrac(self, neighbor) -> float:
@@ -212,8 +211,6 @@ class BaseCirculateModuleCont:
             self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
             if neighbor_aux_in == float('inf') or neighbor_aux_in == float('-inf') or self_aux_out == float('inf') or self_aux_out == float('-inf'):
                 print(f"cell {self.cell.id} neighbor {neighbor.id} neighbor's auxin {neighbor_aux_in}, self aux out {self_aux_out}")
-
-
             neighbor_aux_exchange = (
                 neighbor_aux_in - self_aux_out
             )
