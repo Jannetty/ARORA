@@ -135,7 +135,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
         expected_pin = 0.2499999813
-        found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, "a")
+        found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, "a", circ_module_cont.pin_weights.get('a'))
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
     def test_calculate_neighbor_memfrac(self):
