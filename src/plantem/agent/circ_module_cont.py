@@ -162,7 +162,7 @@ class BaseCirculateModuleCont:
         """
         Calculate the ARR expression of current cell
         """
-        arr = self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1) - self.kd * arri * (1 / area)
+        arr = self.ks * (self.k_arr_arr / (self.arr_hist[0] / self.k_arr_arr + 1)) - self.kd * arri * (1 / area)
         return arr
 
     def calculate_al(self, auxini: float, ali: float, area: float) -> float:
@@ -186,13 +186,13 @@ class BaseCirculateModuleCont:
         self, pini: float, pindi: float, area: float, direction: str, pin_weight: float
     ) -> float:
         """
-        Calculate the PIN expression of neighbor cells
+        Calculate the PIN expression on one membrane
 
         Args:
             pini: the current cell's unlocalized PIN expression
-            pindi: the current cell's localized PIN expression in the direction of the current cell
+            pindi: the current cell's localized PIN expression in direction
             area: the area of the current cell
-            direction: the direction of the neighbor cell
+            direction: the direction of the membrane
             pin_weight: the pin degradation weight for the membrane in this direction
         """
         weight = pin_weight
