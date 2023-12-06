@@ -1,6 +1,5 @@
 import os
 import pyglet
-import time
 import pandas
 import matplotlib.pyplot as plt
 import arcade
