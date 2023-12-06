@@ -153,16 +153,24 @@ class BaseCirculateModuleCont:
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
         """
-        Calculate the auxin expression of current cell
+        Calculate the auxin synthesis and degradation of current cell
+
+        Args:
+            auxini: the initial (current) auxin concentration of the current cell in au/um^2
+            area: the area of the current cell in um^2
         """
-        auxin = self.ks * self.auxin_w - self.kd * auxini * (1 / area)
+        auxin = (self.ks * self.auxin_w) - (self.kd * auxini * (1 / area))
         return auxin
 
     def calculate_arr(self, arri: float, area: float) -> float:
         """
         Calculate the ARR expression of current cell
+
+        Args:
+            arri: the initial (current) ARR expression in au/um^2
+            area: the area of the current cell in um^2
         """
-        arr = self.ks * (self.k_arr_arr / (self.arr_hist[0] / self.k_arr_arr + 1)) - self.kd * arri * (1 / area)
+        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] / self.k_arr_arr + 1))) - (self.kd * arri * (1 / area))
         return arr
 
     def calculate_al(self, auxini: float, ali: float, area: float) -> float:
