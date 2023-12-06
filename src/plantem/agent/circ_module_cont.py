@@ -82,6 +82,24 @@ class BaseCirculateModuleCont:
             self.cell.get_sim().get_root_midpointx()
         )
 
+        self.pin_weights = self.initialize_pin_weights()
+
+    def initialize_pin_weights(self):
+        # return a dictionary of pin weights for each direction
+        # each weight should be proportional to the initial PIN in each respective direction
+        # 1 - (pin in a direction / sum of pins in all direction)
+        # NOT unlocalized PIN
+        pin_weights_dict = {}
+        pina = self.get_apical_pin()
+        pinb = self.get_basal_pin()
+        pinl = self.get_lateral_pin()
+        pinm = self.get_medial_pin()
+        pin_vals = [pina, pinb, pinl, pinm]
+        pin_sum = pina + pinb + pinl + pinm
+        for (val, direction) in zip(pin_vals, ["a", "b", "l", "m"]):
+            pin_weights_dict[direction] = 1 - (val / pin_sum)
+        return pin_weights_dict
+
     def f(self, y, t) -> list:
         """
         Setup the model functions
@@ -108,10 +126,10 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_membrane_pin(pini, pinai, area, "a", self.pin_weight_a)
-        f5 = self.calculate_membrane_pin(pini, pinbi, area, "b", self.pin_weight_b)
-        f6 = self.calculate_membrane_pin(pini, pinli, area, "l", self.pin_weight_l)
-        f7 = self.calculate_membrane_pin(pini, pinmi, area, "m", self.pin_weight_m)
+        f4 = self.calculate_membrane_pin(pini, pinai, area, "a", self.pin_weights.get("a"))
+        f5 = self.calculate_membrane_pin(pini, pinbi, area, "b", self.pin_weights.get("b"))
+        f6 = self.calculate_membrane_pin(pini, pinli, area, "l", self.pin_weights.get("l"))
+        f7 = self.calculate_membrane_pin(pini, pinmi, area, "m", self.pin_weights.get("m"))
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
@@ -132,10 +150,7 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents to the circulator
         """
-        self.pin_weight_a = pin_weights.get("a")
-        self.pin_weight_b = pin_weights.get("b")
-        self.pin_weight_l = pin_weights.get("l")
-        self.pin_weight_m = pin_weights.get("m")
+        self.pin_weights = pin_weights
         soln = self.get_solution()
         self.update_auxin(soln)
         self.update_circ_contents(soln)
