@@ -142,16 +142,12 @@ class BaseCirculateModuleCont:
         soln = odeint(self.f, y0, t)
         return soln
 
-    def get_solution(self):
-        soln = self.solve_equations()
-        return soln
-
     def update(self, pin_weights: dict) -> None:
         """
         Update the circulation contents to the circulator
         """
         self.pin_weights = pin_weights
-        soln = self.get_solution()
+        soln = self.solve_equations()
         self.update_auxin(soln)
         self.update_circ_contents(soln)
 
