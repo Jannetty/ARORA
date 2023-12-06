@@ -135,7 +135,7 @@ class BaseCirculateModuleCont:
 
     def solve_equations(self):
         """
-        Solve the differential euqations
+        Solve the differential equations
         """
         y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
         t = np.array([0, 1])
