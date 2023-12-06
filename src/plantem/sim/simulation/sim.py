@@ -73,14 +73,14 @@ class GrowingSim(arcade.Window):
             v_file: The file containing the vertex values.
         """
         if vis is False:
+            print("Running headless")
+            #for mac
             pyglet.options["headless"] = True
-            # print("Running headless")
+            # for PC
             os.environ["ARCADE_HEADLESS"] = "true"
-        # print(f"os.environ[\"ARCADE_HEADLESS\"] = {os.environ['ARCADE_HEADLESS']}")
+            super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        else:
-            super().__init__(width, height, title, visible=False)
         arcade.set_background_color(color=[250, 250, 250])
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
@@ -91,9 +91,6 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("Blues")
-        # self.cmap = (
-        #     self.cmap.reversed()
-        # )  # reverse the colormap so that the lowest value is blue and the highest is red
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -171,11 +168,9 @@ class GrowingSim(arcade.Window):
         self.circulator = Circulator(self)
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
-        if self.vis:
-            self.camera_sprites = arcade.Camera()
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
         if self.input_from_file:
-            self.input.input()
+            self.input.make_cells_from_input_files()
         self.root_tip_y = self.get_root_tip_y()
         self.set_dev_zones()
 
@@ -206,6 +201,21 @@ class GrowingSim(arcade.Window):
             # Call draw() on all your sprite lists below
             for cell in self.cell_list:
                 cell.draw()
+            pass
+
+    def update_viewport_position(self) -> None:
+        """
+        Updates the position of the viewport.
+        """
+        self.set_viewport(
+            0,
+            SCREEN_WIDTH,
+            0,
+            #self.root_tip_y - 2,
+            #SCREEN_HEIGHT + self.root_tip_y - 2,
+            1200,
+        )
+
 
     def on_update(self, delta_time):
         """
@@ -215,24 +225,27 @@ class GrowingSim(arcade.Window):
             delta_time: The time step.
         """
         self.tick += 1
-        if self.tick < 2592:
-            print(f"tick: {self.tick}")
-            if self.vis:
-                self.camera_sprites.move((0, self.root_tip_y - 2))
-                self.camera_sprites.update()
-                self.camera_sprites.use()
-            self.cell_list.update()
-            self.vertex_mover.update()
-            self.circulator.update()
-            self.divider.update()
-            self.root_tip_y = self.calculate_root_tip_y()
+        try:
+            if self.tick < 2592:
+                print(f"tick: {self.tick}")
+                if self.vis:
+                    self.update_viewport_position()
+                self.cell_list.update()
+                self.vertex_mover.update()
+                self.circulator.update()
+                self.divider.update()
+                self.root_tip_y = self.calculate_root_tip_y()
 
-        else:
-            print("Simulation Complete")
+            else:
+                print("Simulation Complete")
+                arcade.close_window()
+        except (ValueError, OverflowError) as e:
+            print(e)
+            print("Ending Simulation")
             arcade.close_window()
 
 
-def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None):
+def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
     simulation = GrowingSim(
@@ -248,3 +261,5 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
     )
     print("Running Simulation")
     arcade.run()
+
+    return simulation.get_tick()

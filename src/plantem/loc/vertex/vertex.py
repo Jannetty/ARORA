@@ -3,10 +3,11 @@ class Vertex:
     y = None
     xy = None
 
-    def __init__(self, x: float, y: float):
+    def __init__(self, x: float, y: float, id=None):
         self.x = x
         self.y = y
         self.xy = [x, y]
+        self.id = id
 
     def get_xy(self) -> list:
         return self.xy
@@ -24,3 +25,6 @@ class Vertex:
     def set_y(self, newy: float) -> None:
         self.y = newy
         self.xy[1] = self.y
+
+    def get_id(self) -> int:
+        return self.id

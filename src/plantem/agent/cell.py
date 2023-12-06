@@ -42,7 +42,6 @@ class GrowingCell(arcade.Sprite):
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
-        # print(f"making cell {id}")
         super().__init__()
         self.a_neighbors = []
         self.b_neighbors = []
@@ -63,7 +62,7 @@ class GrowingCell(arcade.Sprite):
     def initialize_pin_weights(self):
         # return a dictionary of pin weights for each direction
         # each weight should be proportional to the initial PIN in each respective direction
-        # pin in a direction / sum of pins in all direction
+        # 1 - (pin in a direction / sum of pins in all direction)
         # NOT unlocalized PIN
         pin_weights_dict = {}
         pina = self.circ_mod.get_apical_pin()
@@ -73,7 +72,7 @@ class GrowingCell(arcade.Sprite):
         pin_vals = [pina, pinb, pinl, pinm]
         pin_sum = pina + pinb + pinl + pinm
         for (val, direction) in zip(pin_vals, ["a", "b", "l", "m"]):
-            pin_weights_dict[direction] = val / pin_sum
+            pin_weights_dict[direction] = 1 - (val / pin_sum)
         return pin_weights_dict
 
     # Sets color based on self.circ_mod.get_auxin()
@@ -116,7 +115,6 @@ class GrowingCell(arcade.Sprite):
             elif neighbor_location == "m":
                 self.m_neighbors.append(neighbor)
             elif neighbor_location == "cell no longer root cap cell neighbor":
-                #print(f"cell {self.id} and cell {neighbor.id} are not neighbors anymore")
                 pass
             elif neighbor_location == None:
                 raise ValueError("Non-neighbor added as neighbor")
@@ -439,7 +437,6 @@ class GrowingCell(arcade.Sprite):
         arcade.draw_polygon_outline(point_list=point_list, color=[0, 0, 0])
 
     def grow(self) -> None:
-        # print(f"cell {self.id} adding delta {self.calculate_delta()} to vertex_mover")
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
     def get_distance_from_tip(self) -> float:
@@ -458,17 +455,19 @@ class GrowingCell(arcade.Sprite):
             self.dev_zone = "differentiation"
 
     def get_growth_rate(self) -> float:
-        if self.get_quad_perimeter().get_height() >= 100:
-            growthRate = 0
+        if self.get_quad_perimeter().get_height() >= 250:
+            print(f"cell {self.id} has reached max height")
+            self.growing = False
+            return 0
         if self.dev_zone == "meristematic":
-            growthRate = MERISTEMATIC_GROWTH_RATE
+            return MERISTEMATIC_GROWTH_RATE
         elif self.dev_zone == "transition":
-            growthRate = TRANSITION_GROWTH_RATE
+            return TRANSITION_GROWTH_RATE
         elif self.dev_zone == "elongation":
-            growthRate = ELONGATION_GROWTH_RATE
+            return ELONGATION_GROWTH_RATE
         elif self.dev_zone == "differentiation":
-            growthRate = DIFFERENTIATION_GROWTH_RATE
-        return growthRate
+            return DIFFERENTIATION_GROWTH_RATE
+        raise ValueError("Cell has no recognizable dev zone")
 
     def calculate_delta(self) -> float:
         dist_to_root_tip = self.get_distance_from_tip()
@@ -476,21 +475,10 @@ class GrowingCell(arcade.Sprite):
         return self.get_growth_rate()
 
     def calculate_pin_weights(self) -> dict:
-        pin_weights = {}
-        for direction in ["a", "b", "l", "m"]:
-            #TODO: make this calculate pin weights
-            pin_weights[direction] = 1
-        return pin_weights
+        return self.pin_weights
 
     def update(self) -> None:
-        # print(f"updating cell {self.id}")
         if self.growing:
             self.grow()
-        # pin_weights = self.calculate_pin_weights() TODO: Turn on again when geometry finalized
-        pin_weights = {}
-        pin_weights["a"] = 1
-        pin_weights["b"] = 1
-        pin_weights["l"] = 1
-        pin_weights["m"] = 1
-        self.circ_mod.update(pin_weights)  # TODO: Turn on again when geometry finalized
-        #print(f"cell {self.id} auxin: {self.circ_mod.get_auxin()}")
+        self.pin_weights = self.calculate_pin_weights() 
+        self.circ_mod.update(self.pin_weights)
