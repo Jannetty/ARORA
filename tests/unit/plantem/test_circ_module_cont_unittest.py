@@ -54,7 +54,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         t = np.array([0, 1])
         expected_soln = odeint(f, y0, t)
         expected_auxin = expected_soln[1][0]
-        found_soln = cell.get_circ_mod().get_solution()
+        found_soln = cell.get_circ_mod().solve_equations()
         found_auxin = found_soln[1][0]
         self.assertAlmostEqual(expected_auxin, found_auxin, places=5)
 
@@ -241,7 +241,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         found_delta_auxin = circ_module_cont.calculate_delta_auxin(0.004999925, neighbors_auxin)
         self.assertAlmostEqual(expected_delta_auxin, found_delta_auxin, places=5)
 
-    def test_get_solution(self):
+    def test_solve_equations(self):
         pass
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         cell = GrowingCell(
@@ -269,7 +269,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         ]
         t = np.array([0, 1])
         expected_soln = odeint(f, y0, t)
-        found_soln = circ_module_cont.get_solution()
+        found_soln = circ_module_cont.solve_equations()
         for i in range(8):
             self.assertAlmostEqual(expected_soln[1, i], found_soln[1, i], places=5)
 
