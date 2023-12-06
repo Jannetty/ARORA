@@ -57,23 +57,8 @@ class GrowingCell(arcade.Sprite):
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.growing = init_vals.get("growing")
         self.color = self.get_color()
-        self.pin_weights = self.initialize_pin_weights()
+        #self.pin_weights = self.initialize_pin_weights()
 
-    def initialize_pin_weights(self):
-        # return a dictionary of pin weights for each direction
-        # each weight should be proportional to the initial PIN in each respective direction
-        # 1 - (pin in a direction / sum of pins in all direction)
-        # NOT unlocalized PIN
-        pin_weights_dict = {}
-        pina = self.circ_mod.get_apical_pin()
-        pinb = self.circ_mod.get_basal_pin()
-        pinl = self.circ_mod.get_lateral_pin()
-        pinm = self.circ_mod.get_medial_pin()
-        pin_vals = [pina, pinb, pinl, pinm]
-        pin_sum = pina + pinb + pinl + pinm
-        for (val, direction) in zip(pin_vals, ["a", "b", "l", "m"]):
-            pin_weights_dict[direction] = 1 - (val / pin_sum)
-        return pin_weights_dict
 
     # Sets color based on self.circ_mod.get_auxin()
     def get_color(self):
@@ -475,7 +460,7 @@ class GrowingCell(arcade.Sprite):
         return self.get_growth_rate()
 
     def calculate_pin_weights(self) -> dict:
-        return self.pin_weights
+        return self.circ_mod.pin_weights
 
     def update(self) -> None:
         if self.growing:
