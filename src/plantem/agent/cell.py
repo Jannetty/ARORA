@@ -56,12 +56,14 @@ class GrowingCell(arcade.Sprite):
         else:
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.growing = init_vals.get("growing")
-        self.color = self.get_color()
-        #self.pin_weights = self.initialize_pin_weights()
+        self.color = self.calculate_color()
 
 
     # Sets color based on self.circ_mod.get_auxin()
-    def get_color(self):
+    def calculate_color(self):
+        # temp color
+        if self.color == (255,0,0):
+            return (255,0,0)
         auxin = self.circ_mod.get_auxin()
         max_auxin = 2000  # TODO make this not hard coded
         normalized_auxin = (auxin) / (max_auxin)
@@ -102,6 +104,7 @@ class GrowingCell(arcade.Sprite):
             elif neighbor_location == "cell no longer root cap cell neighbor":
                 pass
             elif neighbor_location == None:
+                print(f"cell {self.id} is not neighbors with cell {neighbor.get_id()}")
                 raise ValueError("Non-neighbor added as neighbor")
             else:
                 raise ValueError("Non-neighbor added as neighbor")
@@ -323,6 +326,26 @@ class GrowingCell(arcade.Sprite):
                 == "medial"
             ):
                 return "m"
+        elif (
+            self.get_quad_perimeter().get_top_left()
+            == neighbor.get_quad_perimeter().get_bottom_left()
+        ):
+            return "a"
+        elif (
+            self.get_quad_perimeter().get_top_right()
+            == neighbor.get_quad_perimeter().get_bottom_right()
+        ):
+            return "a"
+        elif (
+            self.get_quad_perimeter().get_bottom_left()
+            == neighbor.get_quad_perimeter().get_top_left()
+        ):
+            return "b"
+        elif (
+            self.get_quad_perimeter().get_bottom_right()
+            == neighbor.get_quad_perimeter().get_top_right()
+        ):
+            return "b"
 
         return None
 
@@ -416,7 +439,7 @@ class GrowingCell(arcade.Sprite):
         return self.quad_perimeter
 
     def draw(self) -> None:
-        self.color = self.get_color()
+        self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
         arcade.draw_polygon_filled(point_list=point_list, color=self.color)
         arcade.draw_polygon_outline(point_list=point_list, color=[0, 0, 0])
@@ -465,5 +488,5 @@ class GrowingCell(arcade.Sprite):
     def update(self) -> None:
         if self.growing:
             self.grow()
-        self.pin_weights = self.calculate_pin_weights() 
-        self.circ_mod.update(self.pin_weights)
+        #self.pin_weights = self.calculate_pin_weights() 
+        #self.circ_mod.update(self.pin_weights)
