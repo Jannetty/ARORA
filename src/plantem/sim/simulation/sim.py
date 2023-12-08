@@ -162,6 +162,8 @@ class GrowingSim(arcade.Window):
 
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
+        # find midpoint x of root basd on vertices that exist
+        # I think function will be (max_x - min_x) / 2
         self.tick = 0
         self.next_cell_id = 0
         self.circulator = Circulator(self)
@@ -209,11 +211,10 @@ class GrowingSim(arcade.Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            0,
-            #self.root_tip_y - 2,
-            #SCREEN_HEIGHT + self.root_tip_y - 2,
-            1200,
+            self.root_tip_y - 2,
+            SCREEN_HEIGHT + self.root_tip_y - 2,
         )
+        self.window_offset = self.root_tip_y - 2
 
 
     def on_update(self, delta_time):
@@ -227,6 +228,8 @@ class GrowingSim(arcade.Window):
         try:
             if self.tick < 2592:
                 print(f"tick: {self.tick}")
+                if self.tick == 280:
+                    print("ABOUT TO DIVIDE EVERYTHING")
                 if self.vis:
                     self.update_viewport_position()
                 self.cell_list.update()
@@ -242,6 +245,15 @@ class GrowingSim(arcade.Window):
             print(e)
             print("Ending Simulation")
             arcade.close_window()
+
+    def on_mouse_press(self, x, y, button, modifiers): 
+        print("Mouse press!")
+        print(f"X: {x}, Y: {y}")
+        y = self.window_offset + y
+        print(f"with, windowoffset, X: {x}, Y: {y}")
+        for cell in self.cell_list:
+            if cell.get_quad_perimeter().point_inside(x,y):
+                print(f"Cell {cell.get_id()}, growing = {cell.growing}")
 
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:

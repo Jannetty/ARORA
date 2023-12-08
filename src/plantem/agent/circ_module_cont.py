@@ -124,7 +124,7 @@ class BaseCirculateModuleCont:
         # al
         f2 = self.calculate_al(auxini, ali, area)
         # pin
-        f3 = self.calculate_pin(auxini, arri)
+        f3 = self.calculate_pin(auxini, arri, area)
         # neighbor pin
         f4 = self.calculate_membrane_pin(pini, pinai, area, "a", self.pin_weights.get("a"))
         f5 = self.calculate_membrane_pin(pini, pinbi, area, "b", self.pin_weights.get("b"))
@@ -148,7 +148,7 @@ class BaseCirculateModuleCont:
         """
         self.pin_weights = pin_weights
         soln = self.solve_equations()
-        self.update_auxin(soln)
+        # self.update_auxin(soln)
         self.update_circ_contents(soln)
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
@@ -180,13 +180,13 @@ class BaseCirculateModuleCont:
         al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali * (1 / area)
         return al
 
-    def calculate_pin(self, auxini: float, arri: float) -> float:
+    def calculate_pin(self, auxini: float, arri: float, area:float) -> float:
         """
         Calculate the PIN expression of current cell
         """
         pin = (
             self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin))
-            - self.kd * self.pin
+            - self.kd * self.pin * (1 / area)
         )
         return pin
 
@@ -265,6 +265,9 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents except auxin
         """
+        #------- TEMPORARY DELETE LATER -------#
+        self.auxin = round_to_sf(soln[1, 0], 5)
+        #--------------------------------------#
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
         self.pin = round_to_sf(soln[1, 3], 5)
