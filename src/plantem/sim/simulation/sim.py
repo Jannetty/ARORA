@@ -172,7 +172,7 @@ class GrowingSim(arcade.Window):
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.make_cells_from_input_files()
-        self.root_tip_y = self.get_root_tip_y()
+        self.root_tip_y = self.calculate_root_tip_y()
         self.set_dev_zones()
 
     def set_dev_zones(self) -> None:
@@ -189,8 +189,9 @@ class GrowingSim(arcade.Window):
         if len(self.cell_list) == 0:
             return 0
         for cell in self.cell_list:
-            y = cell.get_quad_perimeter().get_bottom_left().get_y()
+            y = cell.get_quad_perimeter().get_min_y()
             ys.append(y)
+        print(f"root tip y = {min(ys)}")
         return min(ys)
 
     def on_draw(self) -> None:
@@ -228,8 +229,7 @@ class GrowingSim(arcade.Window):
         try:
             if self.tick < 2592:
                 print(f"tick: {self.tick}")
-                if self.tick == 280:
-                    print("ABOUT TO DIVIDE EVERYTHING")
+                print(f"root tip cells: {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'roottip']}")
                 if self.vis:
                     self.update_viewport_position()
                 self.cell_list.update()

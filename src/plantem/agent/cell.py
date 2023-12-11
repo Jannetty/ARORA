@@ -16,7 +16,10 @@ ELONGATION_GROWTH_RATE = -0.00112
 # Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
 DIFFERENTIATION_GROWTH_RATE = -0.00112
 
-# um distance from tip at which cells pass from meristeamtic to transition zone from Van den Berg et al. 2018
+# um distance from tip at which cells pass from root tip to meristematic zone, inferred from Van dn Berg et al. 2018
+ROOT_TIP_DIST_FROM_TIP = 74
+
+# um distance from tip at which cells pass from meristemtic to transition zone from Van den Berg et al. 2018
 MERISTEMATIC_MAX_DIST_FROM_TIP = 160
 
 # um distance from tip at which cells pass from transition to elongation zone from Van den Berg et al. 2018
@@ -449,11 +452,13 @@ class GrowingCell(arcade.Sprite):
 
     def get_distance_from_tip(self) -> float:
         root_tip_y = self.sim.get_root_tip_y()
-        self_y = self.quad_perimeter.get_bottom_left().get_y()
+        self_y = self.quad_perimeter.get_top_left().get_y()
         return self_y - root_tip_y
 
     def calculate_dev_zone(self, dist_to_root_tip) -> None:
-        if dist_to_root_tip < MERISTEMATIC_MAX_DIST_FROM_TIP:
+        if dist_to_root_tip < ROOT_TIP_DIST_FROM_TIP:
+            self.dev_zone = "roottip"
+        elif dist_to_root_tip < MERISTEMATIC_MAX_DIST_FROM_TIP:
             self.dev_zone = "meristematic"
         elif dist_to_root_tip < TRANSITION_MAX_DIST_FROM_TIP:
             self.dev_zone = "transition"
@@ -467,6 +472,8 @@ class GrowingCell(arcade.Sprite):
             print(f"cell {self.id} has reached max height")
             self.growing = False
             return 0
+        if self.dev_zone == "roottip":
+            return 0
         if self.dev_zone == "meristematic":
             return MERISTEMATIC_GROWTH_RATE
         elif self.dev_zone == "transition":
@@ -475,6 +482,7 @@ class GrowingCell(arcade.Sprite):
             return ELONGATION_GROWTH_RATE
         elif self.dev_zone == "differentiation":
             return DIFFERENTIATION_GROWTH_RATE
+        print(f"Cell {self.id} distance to root tip = {self.get_distance_from_tip()}")
         raise ValueError("Cell has no recognizable dev zone")
 
     def calculate_delta(self) -> float:
@@ -488,5 +496,5 @@ class GrowingCell(arcade.Sprite):
     def update(self) -> None:
         if self.growing:
             self.grow()
-        #self.pin_weights = self.calculate_pin_weights() 
-        #self.circ_mod.update(self.pin_weights)
+        self.pin_weights = self.calculate_pin_weights() 
+        self.circ_mod.update(self.pin_weights)
