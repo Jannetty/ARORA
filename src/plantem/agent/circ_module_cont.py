@@ -148,7 +148,7 @@ class BaseCirculateModuleCont:
         """
         self.pin_weights = pin_weights
         soln = self.solve_equations()
-        # self.update_auxin(soln)
+        self.update_auxin(soln)
         self.update_circ_contents(soln)
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
@@ -223,7 +223,6 @@ class BaseCirculateModuleCont:
         """
         Calculate the amount of auxin that will be transported across each membrane
         """
-
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
@@ -294,7 +293,6 @@ class BaseCirculateModuleCont:
 
     def update_auxin(self, soln) -> None:
         curr_cell = self.cell
-        sim_circ = curr_cell.get_sim().get_circulator()
 
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()

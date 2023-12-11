@@ -49,15 +49,9 @@ class Divider:
         simulation.
         """
         if len(self.cells_to_divide) != 0:
-            #print(f"len(cells_to_divide) = {len(self.cells_to_divide)}")
-            #print(f"cells in cells_to_divide = {[cell.id for cell in self.cells_to_divide]}")
             meristematic_cells_to_divide = [cell for cell in self.cells_to_divide if cell.get_dev_zone() == 'meristematic']
-            print(f"len meristamtic_cells_to_divide = {len(meristematic_cells_to_divide)}")
-            print(f"cells in meristematic_cells_to_divide = {[cell.id for cell in meristematic_cells_to_divide]}")
             for cell in meristematic_cells_to_divide:
-                if cell.id == 859:
-                    print("dividing cell 159")
-                print(f"Dividing cell {cell.get_id()}")
+                #print(f"Dividing cell {cell.get_id()}")
                 new_vs = self.get_new_vs(cell)
                 # check if those vertices exist by iterating through all vs in all neighbor cells' qps
                 left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
