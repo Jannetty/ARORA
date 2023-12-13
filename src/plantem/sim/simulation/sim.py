@@ -3,6 +3,7 @@ import pyglet
 import pandas
 import matplotlib.pyplot as plt
 import arcade
+import time
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
 from src.plantem.sim.mover.vertex_mover import VertexMover
@@ -89,7 +90,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        self.cmap = plt.get_cmap("Blues")
+        self.cmap = plt.get_cmap("coolwarm")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -191,19 +192,17 @@ class GrowingSim(arcade.Window):
         for cell in self.cell_list:
             y = cell.get_quad_perimeter().get_min_y()
             ys.append(y)
-        print(f"root tip y = {min(ys)}")
         return min(ys)
 
     def on_draw(self) -> None:
         """
         Renders the screen.
         """
+        print("Drawing")
         if self.vis:
             self.clear()
-            # Call draw() on all your sprite lists below
             for cell in self.cell_list:
                 cell.draw()
-            pass
 
     def update_viewport_position(self) -> None:
         """
@@ -225,16 +224,18 @@ class GrowingSim(arcade.Window):
         Args:
             delta_time: The time step.
         """
+        print("--------------------")
         self.tick += 1
         try:
             if self.tick < 2592:
                 print(f"tick: {self.tick}")
-                print(f"root tip cells: {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'roottip']}")
+                #print(f"Cell 354 starting circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 if self.vis:
                     self.update_viewport_position()
                 self.cell_list.update()
                 self.vertex_mover.update()
                 self.circulator.update()
+                #print(f"Cell 354 ending circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
 
@@ -271,6 +272,6 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
         gparam_series,
     )
     print("Running Simulation")
-    arcade.run()
+    pyglet.app.run(0)
 
     return simulation.get_tick()
