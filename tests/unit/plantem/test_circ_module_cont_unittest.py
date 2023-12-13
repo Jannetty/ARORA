@@ -111,10 +111,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
+        init_vals = make_init_vals()
+        expected_pin = (
+            init_vals['k_s'] * (1 / (init_vals['arr'] / init_vals['k3'] + 1)) * (init_vals['auxin'] / (init_vals['auxin'] + init_vals['k4']))
+            - init_vals['k_d'] * init_vals['pin'] * (1 / cell.get_quad_perimeter().get_area())
+        )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        expected_pin = 8.33333333 * 0.0001 - 0.0015 * 1
-        found_pin = circ_module_cont.calculate_pin(2, 3)
+        found_pin = circ_module_cont.calculate_pin(2, 3, cell.get_quad_perimeter().get_area())
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
     def test_calculate_membrane_pin(self):
@@ -715,7 +719,7 @@ def f(y, t) -> list:
     # al
     f2 = KS * (auxini / (auxini + K2)) - KD * ali * (1 / area)
     # pin
-    f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4)) - KD * pini
+    f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4)) - KD * pini * (1 / area)
     # neighbor pin
     f4 = 0.25 * pini - w_pina * KD * pinai * (1 / area)
     f5 = 0.25 * pini - w_pinb * KD * pinbi * (1 / area)

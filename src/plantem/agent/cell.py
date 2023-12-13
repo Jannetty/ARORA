@@ -64,15 +64,14 @@ class GrowingCell(arcade.Sprite):
 
     # Sets color based on self.circ_mod.get_auxin()
     def calculate_color(self):
-        # temp color
-        if self.color == (255,0,0):
-            return (255,0,0)
         auxin = self.circ_mod.get_auxin()
         max_auxin = 2000  # TODO make this not hard coded
         normalized_auxin = (auxin) / (max_auxin)
         rgba = self.sim.cmap(normalized_auxin)
         # Scale and round the RGB values
         r, g, b = (int(rgba[0] * 255 + 0.5), int(rgba[1] * 255 + 0.5), int(rgba[2] * 255 + 0.5))
+        if self.id == 354:
+            print(f"cell 354 auxin = {auxin}, normalized auxin = {normalized_auxin}, r = {r}, g = {g}, b = {b}")
         return [r, g, b]
 
     def get_quad_perimeter(self):
@@ -494,6 +493,8 @@ class GrowingCell(arcade.Sprite):
         return self.circ_mod.pin_weights
 
     def update(self) -> None:
+        if self.id == 354:
+            print("Updating cell 354")
         if self.growing:
             self.grow()
         self.pin_weights = self.calculate_pin_weights() 

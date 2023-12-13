@@ -265,7 +265,7 @@ class BaseCirculateModuleCont:
         Update the circulation contents except auxin
         """
         #------- TEMPORARY DELETE LATER -------#
-        self.auxin = round_to_sf(soln[1, 0], 5)
+        #self.auxin = round_to_sf(soln[1, 0], 5)
         #--------------------------------------#
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
