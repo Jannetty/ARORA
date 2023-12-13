@@ -322,6 +322,9 @@ class BaseCirculateModuleCont:
 
     def get_arr_hist(self) -> list:
         return self.arr_hist
+    
+    def get_axuin_w(self) -> float:
+        return self.auxin_w
 
     def get_state(self) -> dict:
         state = {

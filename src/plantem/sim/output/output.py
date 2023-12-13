@@ -65,6 +65,7 @@ class Output:
         summary["PIN_left"] = cell.get_circ_mod().get_left_pin()
         summary["PIN_right"] = cell.get_circ_mod().get_right_pin()
         summary["arr_hist"] = cell.get_circ_mod().get_arr_hist()
+        summary["auxin_w"] = cell.get_circ_mod().get_auxin_w()
         return summary
 
     def get_division_number(self, cell) -> float:
