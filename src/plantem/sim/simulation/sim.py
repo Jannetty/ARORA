@@ -196,6 +196,18 @@ class GrowingSim(arcade.Window):
             y = cell.get_quad_perimeter().get_bottom_left().get_y()
             ys.append(y)
         return min(ys)
+    
+    def calculate_root_midpoint_x(self) -> float:
+        xs = []
+        if len(self.cell_list) == 0:
+            return 0
+        for cell in self.cell_list:
+            x = cell.get_quad_perimeter().vertex_list
+            xs.append(y)
+        min_x = min(xs)
+        max_x = max(xs)
+        mid_x = (min_x + max_x) / 2
+        return mid_x
 
     def on_draw(self) -> None:
         """
