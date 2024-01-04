@@ -70,8 +70,6 @@ class GrowingCell(arcade.Sprite):
         rgba = self.sim.cmap(normalized_auxin)
         # Scale and round the RGB values
         r, g, b = (int(rgba[0] * 255 + 0.5), int(rgba[1] * 255 + 0.5), int(rgba[2] * 255 + 0.5))
-        if self.id == 354:
-            print(f"cell 354 auxin = {auxin}, normalized auxin = {normalized_auxin}, r = {r}, g = {g}, b = {b}")
         return [r, g, b]
 
     def get_quad_perimeter(self):
@@ -455,6 +453,10 @@ class GrowingCell(arcade.Sprite):
         return self_y - root_tip_y
 
     def calculate_dev_zone(self, dist_to_root_tip) -> None:
+        root_cap_cells = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
+        if self.id in root_cap_cells:
+            self.dev_zone = "roottip"
+            return
         if dist_to_root_tip < ROOT_TIP_DIST_FROM_TIP:
             self.dev_zone = "roottip"
         elif dist_to_root_tip < MERISTEMATIC_MAX_DIST_FROM_TIP:
