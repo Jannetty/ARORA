@@ -213,7 +213,13 @@ class BaseCirculateModuleCont:
         Calculate the fraction of total cell membrane that is in a defined direction and shared with a specified neighbor
         """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
-        common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
+        try:
+            common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
+        except Exception as e:
+            print(f"Cell {self.cell.id} neighbor {neighbor.id}")
+            print (f"Cell {self.cell.id} perimeter {self.cell.quad_perimeter.get_corners_for_disp()}, vs = {[v.id for v in self.cell.quad_perimeter.get_vs()]}")
+            print(f"Neighbor {neighbor.id} perimeter {neighbor.quad_perimeter.get_corners_for_disp()}, vs = {[v.id for v in neighbor.quad_perimeter.get_vs()]}")
+            raise e
         memfrac = common_perimeter / cell_perimeter
         return round_to_sf(memfrac, 6)
 
@@ -227,6 +233,14 @@ class BaseCirculateModuleCont:
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
+            #if self.cell.id == 354:
+                #print("--------------------")
+                #print(f"Cell 354 neighbor {neighbor.id} neighbor's auxin {neighbor_aux}")
+                #print(f"memfrac {memfrac} al {al} k_al {self.k_al}")
+                #neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
+                #print(f"neighbor_aux_in {neighbor_aux_in}")
+                #self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
+                #print(f"self_aux_out {self_aux_out}")
             neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
             self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
             if neighbor_aux_in == float('inf') or neighbor_aux_in == float('-inf') or self_aux_out == float('inf') or self_aux_out == float('-inf'):

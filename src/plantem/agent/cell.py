@@ -495,8 +495,6 @@ class GrowingCell(arcade.Sprite):
         return self.circ_mod.pin_weights
 
     def update(self) -> None:
-        if self.id == 354:
-            print("Updating cell 354")
         if self.growing:
             self.grow()
         self.pin_weights = self.calculate_pin_weights() 
