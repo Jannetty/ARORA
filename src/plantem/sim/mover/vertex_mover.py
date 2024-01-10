@@ -18,8 +18,8 @@ class VertexMover:
             )
         else:
             self.cell_deltas[cell] = deltaX
-            if cell.get_id() == 815:
-                print(f"Cell 815 delta: {deltaX}")
+            # if cell.get_id() == 815:
+            #     print(f"Cell 815 delta: {deltaX}")
 
     def get_cell_delta_val(self, cell: GrowingCell) -> float:
         return self.cell_deltas[cell]
