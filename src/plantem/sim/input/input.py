@@ -12,6 +12,7 @@ class Input:
     def __init__(self, init_vals_file: str, vertex_file: str, sim):
         self.init_vals_input = pandas.read_csv(init_vals_file)
         self.vertex_input = pandas.read_csv(vertex_file)
+        self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
 
     def make_cells_from_input_files(self) -> None:

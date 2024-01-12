@@ -233,14 +233,15 @@ class BaseCirculateModuleCont:
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            #if self.cell.id == 354:
-                #print("--------------------")
-                #print(f"Cell 354 neighbor {neighbor.id} neighbor's auxin {neighbor_aux}")
-                #print(f"memfrac {memfrac} al {al} k_al {self.k_al}")
-                #neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
-                #print(f"neighbor_aux_in {neighbor_aux_in}")
-                #self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
-                #print(f"self_aux_out {self_aux_out}")
+            # if self.cell.id == 68:
+            #     print("--------------------")
+            #     print(f"Cell {self.cell.id}, neighbor {neighbor.id} neighbor's auxin {neighbor_aux}")
+            #     print(f"memfrac {memfrac} al {al} k_al {self.k_al}")
+            #     neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
+            #     print(f"neighbor_aux_in {neighbor_aux_in}")
+            #     print(f"self.auxin {self.auxin} pindi {pindi} 1/area {1/area} k_pin {self.k_pin}")
+            #     self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
+            #     print(f"self_aux_out {self_aux_out}")
             neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
             self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
             if neighbor_aux_in == float('inf') or neighbor_aux_in == float('-inf') or self_aux_out == float('inf') or self_aux_out == float('-inf'):
@@ -248,6 +249,8 @@ class BaseCirculateModuleCont:
             neighbor_aux_exchange = (
                 neighbor_aux_in - self_aux_out
             )
+            if self.cell.id == 68:
+                print("neighbor_aux_exchange", neighbor_aux_exchange)
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 

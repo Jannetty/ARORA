@@ -86,6 +86,7 @@ class GrowingSim(arcade.Window):
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
+            self.root_tip_y = self.input.initial_v_miny
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
