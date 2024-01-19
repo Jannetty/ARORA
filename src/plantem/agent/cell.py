@@ -16,20 +16,35 @@ ELONGATION_GROWTH_RATE = -0.00112
 # Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
 DIFFERENTIATION_GROWTH_RATE = -0.00112
 
-# um distance from tip at which cells pass from root tip to meristematic zone, inferred from Van dn Berg et al. 2018
+# um Y distance from tip at which cells pass from root tip to meristematic zone, inferred from Van dn Berg et al. 2018
 ROOT_TIP_DIST_FROM_TIP = 74
 
-# um distance from tip at which cells pass from meristemtic to transition zone from Van den Berg et al. 2018
+# um Y distance from tip at which cells pass from meristemtic to transition zone from Van den Berg et al. 2018
 MERISTEMATIC_MAX_DIST_FROM_TIP = 160
 
-# um distance from tip at which cells pass from transition to elongation zone from Van den Berg et al. 2018
+# um Y distance from tip at which cells pass from transition to elongation zone from Van den Berg et al. 2018
 TRANSITION_MAX_DIST_FROM_TIP = 340
 
-# um distance from tip at which cells pass from elongation to differentiation zone from Van den Berg et al. 2018
+# um Y distance from tip at which cells pass from elongation to differentiation zone from Van den Berg et al. 2018
 ELONGATION_MAX_DIST_FROM_TIP = 460
 
-# um distance from tip at which cells leave differentiation zone from Van den Berg et al. 2018
+# um Y distance from tip at which cells leave differentiation zone from Van den Berg et al. 2018
 DIFFERENTIATION_MAX_DIST_FROM_TIP = 960
+
+# max um X distance vasc cells can be from self.sim.get_root_midpointx() from Salvi et al. 2020
+VASC_CELL_DIST_FROM_ROOT_MIDPOINTX = 12
+
+# max um X distance peri cells can be from self.sim.get_root_midpointx() from Salvi et al. 2020
+PERI_CELL_DIST_FROM_ROOT_MIDPOINTX = 17
+
+# max um X distance endo cells can be from self.sim.get_root_midpointx() from Salvi et al. 2020
+ENDO_CELL_DIST_FROM_ROOT_MIDPOINTX = 24
+
+# max um X distance cortex cells can be from self.sim.get_root_midpointx() from Salvi et al. 2020
+CORTEX_CELL_DIST_FROM_ROOT_MIDPOINTX = 35
+
+# max um X distance epidermis cells can be from self.sim.get_root_midpointx() from Salvi et al. 2020
+EPIDERMIS_CELL_DIST_FROM_ROOT_MIDPOINTX = 45
 
 
 class GrowingCell(arcade.Sprite):
@@ -42,6 +57,7 @@ class GrowingCell(arcade.Sprite):
     l_neighbors = None
     m_neighbors = None
     dev_zone = None
+    cell_type = None
 
     def __init__(self, simulation, corners: list, init_vals: dict, id: int):
         self.id = id
@@ -59,7 +75,36 @@ class GrowingCell(arcade.Sprite):
         else:
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.growing = init_vals.get("growing")
+        self.dev_zone = self.calculate_dev_zone(self.get_distance_from_tip())
+        self.cell_type = self.calculate_cell_type()
         self.color = self.calculate_color()
+
+    def calculate_cell_type(self) -> str:
+        """Calculates the type of cell based on its x location in relation to center of root
+
+        Returns:
+            Type of cell (str)
+        """
+        root_tip_midpoint_x = self.sim.get_root_midpointx()
+        cell_midpoint_x = self.quad_perimeter.get_midpointx()
+        dist_from_root_midpoint = abs(root_tip_midpoint_x - cell_midpoint_x)
+        cell_type = None
+        if self.dev_zone == "roottip":
+            cell_type = "roottip"
+        elif dist_from_root_midpoint < VASC_CELL_DIST_FROM_ROOT_MIDPOINTX:
+            cell_type = "vasc"
+        elif dist_from_root_midpoint < PERI_CELL_DIST_FROM_ROOT_MIDPOINTX:
+            cell_type = "peri"
+        elif dist_from_root_midpoint < ENDO_CELL_DIST_FROM_ROOT_MIDPOINTX:
+            cell_type = "endo"
+        elif dist_from_root_midpoint < CORTEX_CELL_DIST_FROM_ROOT_MIDPOINTX:
+            cell_type = "cortex"
+        elif dist_from_root_midpoint < EPIDERMIS_CELL_DIST_FROM_ROOT_MIDPOINTX:
+            cell_type = "epidermis"
+        if cell_type == None:
+            raise ValueError("Cell type not recognized")
+        return cell_type
+
 
 
     # Sets color based on self.circ_mod.get_auxin()
@@ -70,8 +115,6 @@ class GrowingCell(arcade.Sprite):
         rgba = self.sim.cmap(normalized_auxin)
         # Scale and round the RGB values
         r, g, b = (int(rgba[0] * 255 + 0.5), int(rgba[1] * 255 + 0.5), int(rgba[2] * 255 + 0.5))
-        if self.id == 354:
-            print(f"cell 354 auxin = {auxin}, normalized auxin = {normalized_auxin}, r = {r}, g = {g}, b = {b}")
         return [r, g, b]
 
     def get_quad_perimeter(self):
@@ -451,20 +494,23 @@ class GrowingCell(arcade.Sprite):
 
     def get_distance_from_tip(self) -> float:
         root_tip_y = self.sim.get_root_tip_y()
-        self_y = self.quad_perimeter.get_top_left().get_y()
-        return self_y - root_tip_y
+        self_y = self.quad_perimeter.get_midpointy()
+        return abs(self_y - root_tip_y)
 
-    def calculate_dev_zone(self, dist_to_root_tip) -> None:
+    def calculate_dev_zone(self, dist_to_root_tip) -> str:
+        root_cap_cells = [60,90,120,136,166,210,296,75,105,135,151,181,225,311]
+        if self.id in root_cap_cells:
+            return "roottip"
         if dist_to_root_tip < ROOT_TIP_DIST_FROM_TIP:
-            self.dev_zone = "roottip"
+            return "roottip"
         elif dist_to_root_tip < MERISTEMATIC_MAX_DIST_FROM_TIP:
-            self.dev_zone = "meristematic"
+            return "meristematic"
         elif dist_to_root_tip < TRANSITION_MAX_DIST_FROM_TIP:
-            self.dev_zone = "transition"
+            return "transition"
         elif dist_to_root_tip < ELONGATION_MAX_DIST_FROM_TIP:
-            self.dev_zone = "elongation"
+            return "elongation"
         elif dist_to_root_tip < DIFFERENTIATION_MAX_DIST_FROM_TIP:
-            self.dev_zone = "differentiation"
+            return "differentiation"
 
     def get_growth_rate(self) -> float:
         if self.get_quad_perimeter().get_height() >= 250:
@@ -486,15 +532,13 @@ class GrowingCell(arcade.Sprite):
 
     def calculate_delta(self) -> float:
         dist_to_root_tip = self.get_distance_from_tip()
-        self.calculate_dev_zone(dist_to_root_tip)
+        self.dev_zone = self.calculate_dev_zone(dist_to_root_tip)
         return self.get_growth_rate()
 
     def calculate_pin_weights(self) -> dict:
         return self.circ_mod.pin_weights
 
     def update(self) -> None:
-        if self.id == 354:
-            print("Updating cell 354")
         if self.growing:
             self.grow()
         self.pin_weights = self.calculate_pin_weights() 

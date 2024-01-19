@@ -8,6 +8,7 @@ from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
 from src.plantem.sim.mover.vertex_mover import VertexMover
 from src.plantem.sim.input.input import Input
+from src.plantem.sim.output.output import Output
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -85,12 +86,14 @@ class GrowingSim(arcade.Window):
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
+            self.root_tip_y = self.input.initial_v_miny
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
+        self.output = Output(self, "yes_aux_exchange_output.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -174,7 +177,6 @@ class GrowingSim(arcade.Window):
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
-        self.set_dev_zones()
 
     def set_dev_zones(self) -> None:
         """
@@ -223,6 +225,8 @@ class GrowingSim(arcade.Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
+            #0,
+            #1200,
             self.root_tip_y - 2,
             SCREEN_HEIGHT + self.root_tip_y - 2,
         )
@@ -240,6 +244,7 @@ class GrowingSim(arcade.Window):
         self.tick += 1
         try:
             if self.tick < 2592:
+                self.output.output_cells()
                 print(f"tick: {self.tick}")
                 #print(f"Cell 354 starting circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 if self.vis:
@@ -248,6 +253,8 @@ class GrowingSim(arcade.Window):
                 self.vertex_mover.update()
                 self.circulator.update()
                 #print(f"Cell 354 ending circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
+                #print(f"Cell 815 area = {self.get_cell_by_ID(815).get_quad_perimeter().get_area()}")
+                #print(f"Cell 829 area = {self.get_cell_by_ID(829).get_quad_perimeter().get_area()}")
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
 

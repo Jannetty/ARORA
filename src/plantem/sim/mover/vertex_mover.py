@@ -18,6 +18,8 @@ class VertexMover:
             )
         else:
             self.cell_deltas[cell] = deltaX
+            # if cell.get_id() == 815:
+            #     print(f"Cell 815 delta: {deltaX}")
 
     def get_cell_delta_val(self, cell: GrowingCell) -> float:
         return self.cell_deltas[cell]
@@ -30,6 +32,13 @@ class VertexMover:
             top_row = self.get_top_row()
             sorted_top_row = self.sort_top_row(top_row)
             self.propogate_deltas(sorted_top_row)
+            # cell_815 = self.sim.get_cell_by_ID(815)
+            # cell_815_tr = cell_815.get_quad_perimeter().get_top_right()
+            # cell_815_tl = cell_815.get_quad_perimeter().get_top_left()
+            # cell_815_br = cell_815.get_quad_perimeter().get_bottom_right()
+            # cell_815_bl = cell_815.get_quad_perimeter().get_bottom_left()
+            #print(f"815 top right delta: {self.vertex_deltas[cell_815_tr]} top left delta {self.vertex_deltas[cell_815_tl]}")
+            #print(f"815 bottom right delta: {self.vertex_deltas[cell_815_br]} top bottom delta {self.vertex_deltas[cell_815_bl]}")
             max_delta = self.get_max_delta()
             self.execute_vertex_movement(max_delta)
             self.check_if_divide(self.cell_deltas.keys())
@@ -102,7 +111,7 @@ class VertexMover:
         # iterate through all nongrowing cells in root tip, move all basal vertices not yet moved
         moved_vs = list(self.vertex_deltas.keys())
         for cell in self.sim.get_cell_list():
-            if not cell.get_growing() and cell.get_dev_zone() is not "differentiation":
+            if not cell.get_growing() and cell.get_dev_zone() is "roottip":
                 vertices = cell.get_quad_perimeter().get_vs()
                 for vertex in vertices:
                     if vertex not in moved_vs:
