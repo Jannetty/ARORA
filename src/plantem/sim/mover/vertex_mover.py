@@ -99,10 +99,10 @@ class VertexMover:
     def execute_vertex_movement(self, max_delta: int) -> None:
         for vertex in self.vertex_deltas:
             vertex.set_y(vertex.get_y() + self.vertex_deltas[vertex])
-        # iterate through all nongrowing cells, move all basal vertices not yet moved
+        # iterate through all nongrowing cells in root tip, move all basal vertices not yet moved
         moved_vs = list(self.vertex_deltas.keys())
         for cell in self.sim.get_cell_list():
-            if not cell.get_growing():
+            if not cell.get_growing() and cell.get_dev_zone() is not "differentiation":
                 vertices = cell.get_quad_perimeter().get_vs()
                 for vertex in vertices:
                     if vertex not in moved_vs:

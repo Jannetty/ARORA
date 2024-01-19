@@ -14,7 +14,7 @@ class Input:
         self.vertex_input = pandas.read_csv(vertex_file)
         self.sim = sim
 
-    def input(self) -> None:
+    def make_cells_from_input_files(self) -> None:
         """
         Add new cells to the cell_list and update their neighbors
         """
@@ -42,7 +42,7 @@ class Input:
         for v_num, vertex in vertex_dict.items():
             x = vertex["x"]
             y = vertex["y"]
-            new_vertex_dict[v_num] = Vertex(x, y)
+            new_vertex_dict[v_num] = Vertex(x, y, v_num)
         return new_vertex_dict
 
     def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
@@ -100,7 +100,6 @@ class Input:
                         .replace("]", "")
                         .split(",")
                     )
-            # update arr_hist
             init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
                 init_vals_dict[cell_num]["arr_hist"]
             )
@@ -113,10 +112,6 @@ class Input:
         """
         for cell, dict in init_vals_dict.items():
             hist = dict["arr_hist"]
-            # hist_list = hist.replace(" ", "").replace("[", "").replace("]", "").split(",")
-            # new = []
-            # for val in hist_list:
-            #     new.append(float(val))
             init_vals_dict[cell]["arr_hist"] = hist
 
     def get_vertex_assignment(self) -> dict:
@@ -180,13 +175,9 @@ class Input:
         correspodning neighbors list (with GrowingCell objects) as value
         """
         neighbors_assignment = self.get_neighbors_assignment()
-        # print(f"neighbors_assignment: {neighbors_assignment}")
         neighbors = {}
         for cell_num, neighb in neighbors_assignment.items():
-            # print(f"cell_num: {cell_num}")
-            # print(f"neighb: {neighb}")
             for each in neighb:
-                # print(f"each: {each}")
                 if cell_num not in neighbors:
                     neighbors[cell_num] = [new_cells[each]]
                 else:

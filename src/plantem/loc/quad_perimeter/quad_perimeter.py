@@ -153,7 +153,6 @@ class QuadPerimeter:
                 memfrac = self.get_left_memlen() / cell_perimeter
             else:
                 memfrac = self.get_right_memlen() / cell_perimeter
-        # print(f"MEMFRAC = {round_to_sf(memfrac, 6)}")
         return round_to_sf(memfrac, 6)
 
 
