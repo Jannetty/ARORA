@@ -103,8 +103,6 @@ class GrowingCell(arcade.Sprite):
             cell_type = "epidermis"
         if cell_type == None:
             raise ValueError("Cell type not recognized")
-        if self.id < 89:
-            print (f"cell {self.id} is {cell_type}")
         return cell_type
 
 

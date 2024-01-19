@@ -177,24 +177,6 @@ class GrowingSim(arcade.Window):
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
-        # import csv
-        # with open("cell_pin_vals_per_type_and_zone.csv", "w", newline="") as f:
-        #     writer = csv.writer(f)
-        #     writer.writerow(["cell_id", "cell_type", "cell_zone", "pin_wa", "pin_wb", "pin_wl", "pin_wm"])
-        #     for cell in self.cell_list:
-        #         pin_weights_dict = cell.get_circ_mod().pin_weights
-        #         print(f"cell {cell.id} pin weights = {pin_weights_dict}")
-        #         writer.writerow([cell.id, cell.cell_type, cell.dev_zone, pin_weights_dict.get('a'), pin_weights_dict.get('b'), pin_weights_dict.get('l'), pin_weights_dict.get('m')])
-        # print("--------------------")
-        # print(f"root tip cells : {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'roottip']}")
-        # print("--------------------")
-        # print(f"meristematic : {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'meristematic']}")
-        # print("--------------------")
-        # print(f"transition : {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'transition']}")
-        # print("--------------------")
-        # print(f"elongation : {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'elongation']}")
-        # print("--------------------")
-        # print(f"differentiation : {[cell.id for cell in self.cell_list if cell.get_dev_zone() == 'differentiation']}")
 
     def set_dev_zones(self) -> None:
         """
