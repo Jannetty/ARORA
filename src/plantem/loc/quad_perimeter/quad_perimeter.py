@@ -297,25 +297,25 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     elif cell.get_id() == 59 and neighbor.get_id() == 51:
         length = cell.get_quad_perimeter().get_left_memlen()
 
-    elif cell.get_id() == 54 and neighbor.get_id() == 65:
-        length = neighbor.get_quad_perimeter().get_apical_memlen()
-    elif cell.get_id() == 65 and neighbor.get_id() == 54:
-        length = cell.get_quad_perimeter().get_apical_memlen()
+    # If it is either of 54's apical neighbors, return cell's basal length
+    elif cell.get_id() == 54 and neighbor.get_quad_perimeter().get_bottom_left() == cell.get_quad_perimeter().get_top_left():
+        length = neighbor.get_quad_perimeter().get_basal_memlen()
+    elif neighbor.get_id() == 54 and cell.get_quad_perimeter().get_bottom_left() == neighbor.get_quad_perimeter().get_top_left():
+        length = cell.get_quad_perimeter().get_basal_memlen()
+    elif cell.get_id() == 54 and neighbor.get_quad_perimeter().get_bottom_right() == cell.get_quad_perimeter().get_top_right():
+        length = neighbor.get_quad_perimeter().get_basal_memlen()
+    elif neighbor.get_id() == 54 and cell.get_quad_perimeter().get_bottom_right() == neighbor.get_quad_perimeter().get_top_right():
+        length = cell.get_quad_perimeter().get_basal_memlen()
 
-    elif cell.get_id() == 54 and neighbor.get_id() == 66:
-        length = neighbor.get_quad_perimeter().get_apical_memlen()
-    elif cell.get_id() == 66 and neighbor.get_id() == 54:
-        length = cell.get_quad_perimeter().get_apical_memlen()
-
-    elif cell.get_id() == 57 and neighbor.get_id() == 69:
-        length = neighbor.get_quad_perimeter().get_apical_memlen()
-    elif cell.get_id() == 69 and neighbor.get_id() == 57:
-        length = cell.get_quad_perimeter().get_apical_memlen()
-
-    elif cell.get_id() == 57 and neighbor.get_id() == 70:
-        length = neighbor.get_quad_perimeter().get_apical_memlen()
-    elif cell.get_id() == 70 and neighbor.get_id() == 57:
-        length = cell.get_quad_perimeter().get_apical_memlen()
+    # If it is either of 57's apical neighbors, return cell's basal length
+    elif cell.get_id() == 57 and neighbor.get_quad_perimeter().get_bottom_left() == cell.get_quad_perimeter().get_top_left():
+        length = neighbor.get_quad_perimeter().get_basal_memlen()
+    elif neighbor.get_id() == 57 and cell.get_quad_perimeter().get_bottom_left() == neighbor.get_quad_perimeter().get_top_left():
+        length = cell.get_quad_perimeter().get_basal_memlen()
+    elif cell.get_id() == 57 and neighbor.get_quad_perimeter().get_bottom_right() == cell.get_quad_perimeter().get_top_right():
+        length = neighbor.get_quad_perimeter().get_basal_memlen()
+    elif neighbor.get_id() == 57 and cell.get_quad_perimeter().get_bottom_right() == neighbor.get_quad_perimeter().get_top_right():
+        length = cell.get_quad_perimeter().get_basal_memlen()
 
     if length == 0:
         raise Exception("Neighbor list is incorrect, neighbor does not share membrane with cell")
