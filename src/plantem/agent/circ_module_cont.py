@@ -124,7 +124,7 @@ class BaseCirculateModuleCont:
         # al
         f2 = self.calculate_al(auxini, ali, area)
         # pin
-        f3 = self.calculate_pin(auxini, arri)
+        f3 = self.calculate_pin(auxini, arri, area)
         # neighbor pin
         f4 = self.calculate_membrane_pin(pini, pinai, area, "a", self.pin_weights.get("a"))
         f5 = self.calculate_membrane_pin(pini, pinbi, area, "b", self.pin_weights.get("b"))
@@ -135,15 +135,11 @@ class BaseCirculateModuleCont:
 
     def solve_equations(self):
         """
-        Solve the differential euqations
+        Solve the differential equations
         """
         y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
         t = np.array([0, 1])
         soln = odeint(self.f, y0, t)
-        return soln
-
-    def get_solution(self):
-        soln = self.solve_equations()
         return soln
 
     def update(self, pin_weights: dict) -> None:
@@ -151,22 +147,30 @@ class BaseCirculateModuleCont:
         Update the circulation contents to the circulator
         """
         self.pin_weights = pin_weights
-        soln = self.get_solution()
+        soln = self.solve_equations()
         self.update_auxin(soln)
         self.update_circ_contents(soln)
 
     def calculate_auxin(self, auxini: float, area: float) -> float:
         """
-        Calculate the auxin expression of current cell
+        Calculate the auxin synthesis and degradation of current cell
+
+        Args:
+            auxini: the initial (current) auxin concentration of the current cell in au/um^2
+            area: the area of the current cell in um^2
         """
-        auxin = self.ks * self.auxin_w - self.kd * auxini * (1 / area)
+        auxin = (self.ks * self.auxin_w) - (self.kd * auxini * (1 / area))
         return auxin
 
     def calculate_arr(self, arri: float, area: float) -> float:
         """
         Calculate the ARR expression of current cell
+
+        Args:
+            arri: the initial (current) ARR expression in au/um^2
+            area: the area of the current cell in um^2
         """
-        arr = self.ks * 1 / (self.arr_hist[0] / self.k_arr_arr + 1) - self.kd * arri * (1 / area)
+        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] / self.k_arr_arr + 1))) - (self.kd * arri * (1 / area))
         return arr
 
     def calculate_al(self, auxini: float, ali: float, area: float) -> float:
@@ -176,13 +180,13 @@ class BaseCirculateModuleCont:
         al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali * (1 / area)
         return al
 
-    def calculate_pin(self, auxini: float, arri: float) -> float:
+    def calculate_pin(self, auxini: float, arri: float, area:float) -> float:
         """
         Calculate the PIN expression of current cell
         """
         pin = (
             self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin))
-            - self.kd * self.pin
+            - self.kd * self.pin * (1 / area)
         )
         return pin
 
@@ -190,13 +194,13 @@ class BaseCirculateModuleCont:
         self, pini: float, pindi: float, area: float, direction: str, pin_weight: float
     ) -> float:
         """
-        Calculate the PIN expression of neighbor cells
+        Calculate the PIN expression on one membrane
 
         Args:
             pini: the current cell's unlocalized PIN expression
-            pindi: the current cell's localized PIN expression in the direction of the current cell
+            pindi: the current cell's localized PIN expression in direction
             area: the area of the current cell
-            direction: the direction of the neighbor cell
+            direction: the direction of the membrane
             pin_weight: the pin degradation weight for the membrane in this direction
         """
         weight = pin_weight
@@ -219,7 +223,6 @@ class BaseCirculateModuleCont:
         """
         Calculate the amount of auxin that will be transported across each membrane
         """
-
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
@@ -261,6 +264,9 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents except auxin
         """
+        #------- TEMPORARY DELETE LATER -------#
+        #self.auxin = round_to_sf(soln[1, 0], 5)
+        #--------------------------------------#
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
         self.pin = round_to_sf(soln[1, 3], 5)
@@ -287,7 +293,6 @@ class BaseCirculateModuleCont:
 
     def update_auxin(self, soln) -> None:
         curr_cell = self.cell
-        sim_circ = curr_cell.get_sim().get_circulator()
 
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()

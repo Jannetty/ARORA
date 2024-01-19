@@ -3,6 +3,7 @@ import pyglet
 import pandas
 import matplotlib.pyplot as plt
 import arcade
+import time
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
 from src.plantem.sim.mover.vertex_mover import VertexMover
@@ -89,7 +90,7 @@ class GrowingSim(arcade.Window):
         self.root_midpointx = root_midpoint_x
         self.timestep = timestep
         self.vis = vis
-        self.cmap = plt.get_cmap("Blues")
+        self.cmap = plt.get_cmap("coolwarm")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -162,6 +163,8 @@ class GrowingSim(arcade.Window):
 
     def setup(self):
         """Set up the Simulation. Call to re-start the Simulation."""
+        # find midpoint x of root basd on vertices that exist
+        # I think function will be (max_x - min_x) / 2
         self.tick = 0
         self.next_cell_id = 0
         self.circulator = Circulator(self)
@@ -170,7 +173,7 @@ class GrowingSim(arcade.Window):
         self.cell_list = arcade.SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.make_cells_from_input_files()
-        self.root_tip_y = self.get_root_tip_y()
+        self.root_tip_y = self.calculate_root_tip_y()
         self.set_dev_zones()
 
     def set_dev_zones(self) -> None:
@@ -187,7 +190,7 @@ class GrowingSim(arcade.Window):
         if len(self.cell_list) == 0:
             return 0
         for cell in self.cell_list:
-            y = cell.get_quad_perimeter().get_bottom_left().get_y()
+            y = cell.get_quad_perimeter().get_min_y()
             ys.append(y)
         return min(ys)
     
@@ -207,12 +210,11 @@ class GrowingSim(arcade.Window):
         """
         Renders the screen.
         """
+        print("Drawing")
         if self.vis:
             self.clear()
-            # Call draw() on all your sprite lists below
             for cell in self.cell_list:
                 cell.draw()
-            pass
 
     def update_viewport_position(self) -> None:
         """
@@ -221,11 +223,10 @@ class GrowingSim(arcade.Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            0,
-            #self.root_tip_y - 2,
-            #SCREEN_HEIGHT + self.root_tip_y - 2,
-            1200,
+            self.root_tip_y - 2,
+            SCREEN_HEIGHT + self.root_tip_y - 2,
         )
+        self.window_offset = self.root_tip_y - 2
 
 
     def on_update(self, delta_time):
@@ -235,15 +236,18 @@ class GrowingSim(arcade.Window):
         Args:
             delta_time: The time step.
         """
+        print("--------------------")
         self.tick += 1
         try:
             if self.tick < 2592:
                 print(f"tick: {self.tick}")
+                #print(f"Cell 354 starting circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 if self.vis:
                     self.update_viewport_position()
                 self.cell_list.update()
                 self.vertex_mover.update()
                 self.circulator.update()
+                #print(f"Cell 354 ending circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
 
@@ -254,6 +258,15 @@ class GrowingSim(arcade.Window):
             print(e)
             print("Ending Simulation")
             arcade.close_window()
+
+    def on_mouse_press(self, x, y, button, modifiers): 
+        print("Mouse press!")
+        print(f"X: {x}, Y: {y}")
+        y = self.window_offset + y
+        print(f"with, windowoffset, X: {x}, Y: {y}")
+        for cell in self.cell_list:
+            if cell.get_quad_perimeter().point_inside(x,y):
+                print(f"Cell {cell.get_id()}, growing = {cell.growing}")
 
 
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
@@ -271,6 +284,6 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
         gparam_series,
     )
     print("Running Simulation")
-    arcade.run()
+    pyglet.app.run(0)
 
     return simulation.get_tick()
