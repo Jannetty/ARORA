@@ -48,53 +48,61 @@ class Divider:
         Divides all cells that are ready to divide and adds the new cells to the
         simulation.
         """
-        for cell in self.cells_to_divide:
-            if cell.get_dev_zone() != "meristematic":
-                print(f"Cell is in the {cell.get_dev_zone()} zone, not dividing")
-                continue
-            new_vs = self.get_new_vs(cell)
-            # check if those vertices exist by iterating through all vs in all neighbor cells' qps
-            left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
-            right_v = self.check_neighbors_for_v_existence(cell, new_vs[1])
+        if len(self.cells_to_divide) != 0:
+            meristematic_cells_to_divide = [cell for cell in self.cells_to_divide if cell.get_dev_zone() == 'meristematic']
+            for cell in meristematic_cells_to_divide:
+                #print(f"Dividing cell {cell.get_id()}")
+                new_vs = self.get_new_vs(cell)
+                # check if those vertices exist by iterating through all vs in all neighbor cells' qps
+                left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
+                right_v = self.check_neighbors_for_v_existence(cell, new_vs[1])
 
-            # make new cell qp lists
-            new_upper_vs = [
-                cell.get_quad_perimeter().get_top_left(),
-                cell.get_quad_perimeter().get_top_right(),
-                right_v,
-                left_v,
-            ]
-            new_lower_vs = [
-                left_v,
-                right_v,
-                cell.get_quad_perimeter().get_bottom_right(),
-                cell.get_quad_perimeter().get_bottom_left(),
-            ]
+                # make new cell qp lists
+                new_upper_vs = [
+                    cell.get_quad_perimeter().get_top_left(),
+                    cell.get_quad_perimeter().get_top_right(),
+                    right_v,
+                    left_v,
+                ]
+                new_lower_vs = [
+                    left_v,
+                    right_v,
+                    cell.get_quad_perimeter().get_bottom_right(),
+                    cell.get_quad_perimeter().get_bottom_left(),
+                ]
 
-            # make new cells using those vertices
-            new_top_cell = GrowingCell(
-                self.sim,
-                new_upper_vs,
-                cell.get_circ_mod().get_state(),
-                self.sim.get_next_cell_id(),
-            )
-            new_top_cell.set_growing(cell.get_growing())
-            new_bottom_cell = GrowingCell(
-                self.sim,
-                new_lower_vs,
-                cell.get_circ_mod().get_state(),
-                self.sim.get_next_cell_id(),
-            )
-            new_bottom_cell.set_growing(cell.get_growing())
-            # update neighbor lists
-            self.update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
+                # make new cells using those vertices
+                new_top_cell = GrowingCell(
+                    self.sim,
+                    new_upper_vs,
+                    cell.get_circ_mod().get_state(),
+                    self.sim.get_next_cell_id(),
+                )
 
-            # add two new cells to sim.cell_list
-            self.sim.get_cell_list().append(new_top_cell)
-            self.sim.get_cell_list().append(new_bottom_cell)
+                # temp color
+                new_top_cell.color = (255,0,0)
 
-            self.sim.get_cell_list().remove(cell)
-        self.cells_to_divide = []
+                new_top_cell.set_growing(cell.get_growing())
+                new_bottom_cell = GrowingCell(
+                    self.sim,
+                    new_lower_vs,
+                    cell.get_circ_mod().get_state(),
+                    self.sim.get_next_cell_id(),
+                )
+
+                # temp color
+                new_bottom_cell.color = (255,0,0)
+
+                new_bottom_cell.set_growing(cell.get_growing())
+                # update neighbor lists
+                self.update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
+
+                # add two new cells to sim.cell_list
+                self.sim.get_cell_list().append(new_top_cell)
+                self.sim.get_cell_list().append(new_bottom_cell)
+
+                self.sim.get_cell_list().remove(cell)
+            self.cells_to_divide = []
 
     def get_new_vs(self, cell) -> list:
         """
