@@ -202,7 +202,7 @@ class GrowingSim(arcade.Window):
             return 0
         for cell in self.cell_list:
             x = cell.get_quad_perimeter().vertex_list
-            xs.append(y)
+            xs.append(x)
         min_x = min(xs)
         max_x = max(xs)
         mid_x = (min_x + max_x) / 2
