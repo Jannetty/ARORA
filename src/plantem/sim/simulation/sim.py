@@ -47,6 +47,7 @@ class GrowingSim(arcade.Window):
     cell_val_file = None
     v_file = None
     input_from_file = False
+    geometry = None
 
     def __init__(
         self,
@@ -59,6 +60,7 @@ class GrowingSim(arcade.Window):
         cell_val_file=None,
         v_file=None,
         gparam_series=None,
+        geometry=None,
     ):
         """
         Constructs a new Simulation instance.
@@ -90,6 +92,7 @@ class GrowingSim(arcade.Window):
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
+        self.geometry = geometry
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
@@ -279,6 +282,11 @@ class GrowingSim(arcade.Window):
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
+    geometry = None
+    if  cell_val_file == 'default' and v_file == 'default':
+        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
+        v_file = "src/plantem/sim/input/default_vs.csv"
+        geometry = "default"
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
@@ -289,6 +297,7 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
         cell_val_file,
         v_file,
         gparam_series,
+        geometry,
     )
     print("Running Simulation")
     pyglet.app.run(0)
