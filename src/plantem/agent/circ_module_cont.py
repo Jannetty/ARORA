@@ -25,6 +25,7 @@ class BaseCirculateModuleCont:
     weightb = 0
     weightl = 0
     weightm = 0
+    auxin_w = 0
 
     def __init__(self, cell, init_vals: dict):
         """
@@ -338,6 +339,12 @@ class BaseCirculateModuleCont:
 
     def get_al(self) -> float:
         return self.al
+    
+    def get_arr_hist(self) -> list:
+        return self.arr_hist
+    
+    def get_auxin_w(self) -> float:
+        return self.auxin_w
 
     def get_pin(self) -> float:
         return self.pin
@@ -367,12 +374,6 @@ class BaseCirculateModuleCont:
             return self.pinm
         else:
             return self.pinl
-
-    def get_arr_hist(self) -> list:
-        return self.arr_hist
-    
-    def get_axuin_w(self) -> float:
-        return self.auxin_w
 
     def get_state(self) -> dict:
         state = {
