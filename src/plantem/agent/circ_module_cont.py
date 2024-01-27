@@ -205,7 +205,7 @@ class BaseCirculateModuleCont:
         """
         weight = pin_weight
         memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
-        membrane_pin = memfrac * pini - self.kd * pindi * (1 / area) * (weight)
+        membrane_pin = memfrac * pini - self.kd * pindi * (weight)
         return membrane_pin
 
     def calculate_neighbor_memfrac(self, neighbor) -> float:
@@ -370,8 +370,8 @@ class BaseCirculateModuleCont:
 
     def get_arr_hist(self) -> list:
         return self.arr_hist
-    
-    def get_axuin_w(self) -> float:
+
+    def get_auxin_w(self) -> float:
         return self.auxin_w
 
     def get_state(self) -> dict:

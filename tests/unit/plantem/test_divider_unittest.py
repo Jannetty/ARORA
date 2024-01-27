@@ -30,69 +30,69 @@ class TestDivider(unittest.TestCase):
 
     def test_get_new_vs(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 40
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell1 = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
         new_vs = simulation.get_divider().get_new_vs(cell1)
-        self.assertEqual([100, 200], new_vs[0].get_xy())
-        self.assertEqual([300, 200], new_vs[1].get_xy())
+        self.assertEqual([10, 20], new_vs[0].get_xy())
+        self.assertEqual([30, 20], new_vs[1].get_xy())
 
     def test_check_neighbors_for_v_existence(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 40
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell1 = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v5 = Vertex(100, 200)
+        v5 = Vertex(10, 20)
         thisv = simulation.get_divider().check_neighbors_for_v_existence(cell1, v5)
         self.assertEqual(v5, thisv)
-        v6 = Vertex(300, 200)
+        v6 = Vertex(30, 20)
         cell2 = GrowingCell(
             simulation, [v5, v6, v4, v1], self.init_vals, simulation.get_next_cell_id()
         )
         cell1.add_neighbor(cell2)
         cell2.add_neighbor(cell1)
-        v7 = Vertex(1000, 1000)
-        thisv2 = simulation.get_divider().check_neighbors_for_v_existence(cell1, Vertex(300, 200))
+        v7 = Vertex(100, 100)
+        thisv2 = simulation.get_divider().check_neighbors_for_v_existence(cell1, Vertex(30, 20))
         thisv3 = simulation.get_divider().check_neighbors_for_v_existence(cell1, v7)
         self.assertEqual(v6, thisv2)
         self.assertEqual(v7, thisv3)
 
     def test_swap_neighbors(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 40
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell1 = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v5 = Vertex(100, 400)
-        v6 = Vertex(300, 400)
+        v5 = Vertex(10, 40)
+        v6 = Vertex(30, 40)
         a_neighbor = GrowingCell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
-        v7 = Vertex(100, 150)
-        v8 = Vertex(300, 150)
+        v7 = Vertex(10, 15)
+        v8 = Vertex(30, 15)
         new_neighbor = GrowingCell(
             simulation, [v7, v8, v2, v3], self.init_vals, simulation.get_next_cell_id()
         )
@@ -106,19 +106,19 @@ class TestDivider(unittest.TestCase):
 
     def test_set_one_side_neighbors(self):
         timestep = 1
-        root_midpoint_x = 1000
+        root_midpoint_x = 100
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v5 = Vertex(100, 200)
-        v6 = Vertex(300, 200)
+        v5 = Vertex(10, 20)
+        v6 = Vertex(30, 20)
         new_top_cell = GrowingCell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
@@ -135,8 +135,8 @@ class TestDivider(unittest.TestCase):
         self.assertEqual([], new_top_cell.get_all_neighbors())
         self.assertEqual([], new_bottom_cell.get_all_neighbors())
 
-        v7 = Vertex(1, 100)
-        v8 = Vertex(1, 300)
+        v7 = Vertex(1, 10)
+        v8 = Vertex(1, 30)
         l_neighbor = GrowingCell(
             simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
         )
@@ -154,9 +154,9 @@ class TestDivider(unittest.TestCase):
         self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_bottom_cell.get_l_neighbors())
 
-        v9 = Vertex(600, 100)
-        v10 = Vertex(600, 200)
-        v11 = Vertex(600, 300)
+        v9 = Vertex(60, 10)
+        v10 = Vertex(60, 20)
+        v11 = Vertex(60, 30)
         m_top_neighbor = GrowingCell(
             simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
         )
@@ -180,21 +180,21 @@ class TestDivider(unittest.TestCase):
 
     def test_update_neighbor_lists(self):
         timestep = 1
-        root_midpoint_x = 1000
+        root_midpoint_x = 100
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 200)
-        v6 = Vertex(300, 200)
-        v7 = Vertex(1, 100)
-        v8 = Vertex(1, 300)
-        v9 = Vertex(600, 100)
-        v10 = Vertex(600, 200)
-        v11 = Vertex(600, 300)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 20)
+        v6 = Vertex(30, 20)
+        v7 = Vertex(1, 10)
+        v8 = Vertex(1, 30)
+        v9 = Vertex(60, 10)
+        v10 = Vertex(60, 20)
+        v11 = Vertex(60, 30)
         cell = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
@@ -232,21 +232,21 @@ class TestDivider(unittest.TestCase):
 
     def test_update(self):
         timestep = 1
-        root_midpoint_x = 1000
+        root_midpoint_x = 100
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 200)
-        v6 = Vertex(300, 200)
-        v7 = Vertex(1, 100)
-        v8 = Vertex(1, 300)
-        v9 = Vertex(600, 100)
-        v10 = Vertex(600, 200)
-        v11 = Vertex(600, 300)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 20)
+        v6 = Vertex(30, 20)
+        v7 = Vertex(1, 10)
+        v8 = Vertex(1, 30)
+        v9 = Vertex(60, 10)
+        v10 = Vertex(60, 20)
+        v11 = Vertex(60, 30)
         cell = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
@@ -283,5 +283,5 @@ class TestDivider(unittest.TestCase):
         self.assertNotEqual(m_top_neighbor.get_l_neighbors(), m_lower_neighbor.get_l_neighbors())
         self.assertEqual(
             m_top_neighbor.get_l_neighbors()[0].get_quad_perimeter().get_bottom_left().get_xy(),
-            [100, 200],
+            [10, 20],
         )

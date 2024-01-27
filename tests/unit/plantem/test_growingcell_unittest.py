@@ -30,50 +30,50 @@ class TestGrowingCell(unittest.TestCase):
 
     def test_get_area(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 40
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell1 = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        self.assertEqual(40000, cell1.get_area())
+        self.assertEqual(400, cell1.get_area())
 
     def test_add_neighbor(self):
         timestep = 1
-        root_midpoint_x = 600
+        root_midpoint_x = 60
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
         init_id = simulation.get_next_cell_id()
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell1 = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v5 = Vertex(100, 400)
-        v6 = Vertex(300, 400)
+        v5 = Vertex(10, 40)
+        v6 = Vertex(30, 40)
         a_neighbor = GrowingCell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
-        v7 = Vertex(1, 100)
-        v8 = Vertex(1, 300)
+        v7 = Vertex(1, 10)
+        v8 = Vertex(1, 30)
         l_neighbor = GrowingCell(
             simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
         )
-        v9 = Vertex(100, 1)
-        v10 = Vertex(300, 1)
+        v9 = Vertex(10, 1)
+        v10 = Vertex(30, 1)
         b_neighbor = GrowingCell(
             simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v11 = Vertex(500, 100)
-        v12 = Vertex(500, 300)
+        v11 = Vertex(50, 10)
+        v12 = Vertex(50, 30)
         m_neighbor = GrowingCell(
             simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id()
         )
@@ -95,34 +95,34 @@ class TestGrowingCell(unittest.TestCase):
 
     def test_remove_neighbor(self):
         timestep = 1
-        root_midpoint_x = 400
+        root_midpoint_x = 40
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
         cell1 = GrowingCell(
             simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v5 = Vertex(100, 400)
-        v6 = Vertex(300, 400)
+        v5 = Vertex(10, 40)
+        v6 = Vertex(30, 40)
         a_neighbor = GrowingCell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
-        v7 = Vertex(1, 100)
-        v8 = Vertex(1, 300)
+        v7 = Vertex(1, 10)
+        v8 = Vertex(1, 30)
         l_neighbor = GrowingCell(
             simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
         )
-        v9 = Vertex(100, 1)
-        v10 = Vertex(300, 1)
+        v9 = Vertex(10, 1)
+        v10 = Vertex(30, 1)
         b_neighbor = GrowingCell(
             simulation, [v9, v10, v1, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        v11 = Vertex(500, 100)
-        v12 = Vertex(500, 300)
+        v11 = Vertex(50, 10)
+        v12 = Vertex(50, 30)
         m_neighbor = GrowingCell(
             simulation, [v11, v12, v4, v3], self.init_vals, simulation.get_next_cell_id()
         )
