@@ -199,11 +199,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         aneighbor_list = [neighbora]
         ali = make_init_vals()["al"]
         pindi = make_init_vals()["pin"]
-        expected_neighbor_auxin = circ_module_cont.get_neighbor_auxin_exchange(
+        expected_neighbor_auxin = circ_module_cont.get_aux_exchange_across_membrane(
             ali, pindi, aneighbor_list, area
         )
         neighborsa, neighborsb, neighborsl, neighborsm = cell.get_circ_mod().get_neighbors()
-        found_neighbor_auxin = cell.get_circ_mod().get_neighbor_auxin_exchange(
+        found_neighbor_auxin = cell.get_circ_mod().get_aux_exchange_across_membrane(
             cell.get_circ_mod().get_al(),
             cell.get_circ_mod().get_pin(),
             neighborsa,
@@ -499,13 +499,13 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         curr_cell2.add_neighbor(neighborm2)
         sim2.setup()
 
-        auxina = circ_module_cont2.get_neighbor_auxin_exchange(
+        auxina = circ_module_cont2.get_aux_exchange_across_membrane(
             curr_cell2.get_circ_mod().get_al(),
             curr_cell2.get_circ_mod().get_apical_pin(),
             [neighbora2],
             curr_cell2.quad_perimeter.get_area(),
         )
-        auxinm = circ_module_cont2.get_neighbor_auxin_exchange(
+        auxinm = circ_module_cont2.get_aux_exchange_across_membrane(
             curr_cell2.get_circ_mod().get_al(),
             curr_cell2.get_circ_mod().get_medial_pin(),
             [neighborm2],

@@ -96,7 +96,7 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        self.output = Output(self, "yes_aux_exchange_output.csv")
+        self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -245,19 +245,17 @@ class GrowingSim(arcade.Window):
         """
         print("--------------------")
         self.tick += 1
+        max_tick = 200
+        #max_tick = 2592
         try:
-            if self.tick < 2592:
+            if self.tick < max_tick:
                 self.output.output_cells()
                 print(f"tick: {self.tick}")
-                #print(f"Cell 354 starting circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 if self.vis:
                     self.update_viewport_position()
                 self.cell_list.update()
                 self.vertex_mover.update()
                 self.circulator.update()
-                #print(f"Cell 354 ending circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
-                #print(f"Cell 815 area = {self.get_cell_by_ID(815).get_quad_perimeter().get_area()}")
-                #print(f"Cell 829 area = {self.get_cell_by_ID(829).get_quad_perimeter().get_area()}")
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
 
