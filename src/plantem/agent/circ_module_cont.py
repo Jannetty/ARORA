@@ -86,10 +86,9 @@ class BaseCirculateModuleCont:
         self.pin_weights = self.initialize_pin_weights()
 
     def initialize_pin_weights(self):
-        # return a dictionary of pin weights for each direction
-        # each weight should be proportional to the initial PIN in each respective direction
-        # 1 - (pin in a direction / sum of pins in all direction)
-        # NOT unlocalized PIN
+        """
+        Initialize the pin weights for each membrane given input-file specified initial PIN distribution
+        """
         pin_weights_dict = {}
         pina = self.get_apical_pin()
         pinb = self.get_basal_pin()
@@ -98,12 +97,12 @@ class BaseCirculateModuleCont:
         pin_vals = [pina, pinb, pinl, pinm]
         pin_sum = pina + pinb + pinl + pinm
         for (val, direction) in zip(pin_vals, ["a", "b", "l", "m"]):
-            pin_weights_dict[direction] = 1 - (val / pin_sum)
+            pin_weights_dict[direction] = val / pin_sum
         return pin_weights_dict
 
     def f(self, y, t) -> list:
         """
-        Setup the model functions
+        Setup the model differential equations
         """
         area = self.cell.get_quad_perimeter().get_area()
 
@@ -147,7 +146,10 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents to the circulator
         """
+        if self.cell.id == 77:
+            print (f"cell {self.cell.id} pin weights {pin_weights}")
         self.pin_weights = pin_weights
+        assert(round_to_sf(sum(self.pin_weights.values()), 2) == 1.0)
         soln = self.solve_equations()
         self.update_auxin(soln)
         self.update_circ_contents(soln)
@@ -160,7 +162,7 @@ class BaseCirculateModuleCont:
             auxini: the initial (current) auxin concentration of the current cell in au/um^2
             area: the area of the current cell in um^2
         """
-        auxin = (self.ks * self.auxin_w) - (self.kd * auxini * (1 / area))
+        auxin = (self.ks * self.auxin_w) - (self.kd * auxini )
         return auxin
 
     def calculate_arr(self, arri: float, area: float) -> float:
@@ -171,14 +173,14 @@ class BaseCirculateModuleCont:
             arri: the initial (current) ARR expression in au/um^2
             area: the area of the current cell in um^2
         """
-        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] / self.k_arr_arr + 1))) - (self.kd * arri * (1 / area))
+        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (self.kd * arri )
         return arr
 
     def calculate_al(self, auxini: float, ali: float, area: float) -> float:
         """
         Calculate the AUX/LAX expression of current cell
         """
-        al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali * (1 / area)
+        al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali
         return al
 
     def calculate_pin(self, auxini: float, arri: float, area:float) -> float:
@@ -186,8 +188,8 @@ class BaseCirculateModuleCont:
         Calculate the PIN expression of current cell
         """
         pin = (
-            self.ks * (1 / (arri / self.k_arr_pin + 1)) * (auxini / (auxini + self.k_auxin_pin))
-            - self.kd * self.pin * (1 / area)
+            self.ks * (self.k_arr_pin / (arri + self.k_arr_pin)) * (auxini / (auxini + self.k_auxin_pin))
+            - self.kd * self.pin
         )
         return pin
 
@@ -206,7 +208,7 @@ class BaseCirculateModuleCont:
         """
         weight = pin_weight
         memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
-        membrane_pin = memfrac * pini - self.kd * pindi * (weight)
+        membrane_pin = pin_weight * pini - (self.kd * pindi)
         return membrane_pin
 
     def calculate_neighbor_memfrac(self, neighbor) -> float:
@@ -224,7 +226,7 @@ class BaseCirculateModuleCont:
         memfrac = common_perimeter / cell_perimeter
         return round_to_sf(memfrac, 6)
 
-    def get_neighbor_auxin_exchange(
+    def get_aux_exchange_across_membrane(
         self, al: float, pindi: float, neighbors: list, area: float
     ) -> dict:
         """
@@ -234,15 +236,18 @@ class BaseCirculateModuleCont:
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            neighbor_aux_in = neighbor_aux * memfrac * al * self.k_al
-            self_aux_out = self.auxin * pindi * (1 / area) * self.k_pin
-            if neighbor_aux_in == float('inf') or neighbor_aux_in == float('-inf') or self_aux_out == float('inf') or self_aux_out == float('-inf'):
-                print(f"cell {self.cell.id} neighbor {neighbor.id} neighbor's auxin {neighbor_aux_in}, self aux out {self_aux_out}")
+            # added memfrac to export al term
+            auxin_influx = (neighbor_aux * (memfrac)) * (al * memfrac) * self.k_al
+            # added memfrac to export term
+            # TODO: Make pin_activity a sigmoidal variable that ranges from 0 to 1 based on the amount of PIN in the membrane
+            pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
+            accessible_pin = self.auxin * memfrac
+            auxin_efflux = accessible_pin * pin_activity
+            if auxin_influx == float('inf') or auxin_influx == float('-inf') or auxin_efflux == float('inf') or auxin_efflux == float('-inf'):
+                print(f"cell {self.cell.id} neighbor {neighbor.id} neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}")
             neighbor_aux_exchange = (
-                neighbor_aux_in - self_aux_out
+                auxin_influx - auxin_efflux
             )
-            if self.cell.id == 68:
-                print("neighbor_aux_exchange", neighbor_aux_exchange)
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
@@ -306,20 +311,30 @@ class BaseCirculateModuleCont:
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
         area = self.cell.quad_perimeter.get_area()
 
-        auxina = self.get_neighbor_auxin_exchange(self.al, self.pina, neighborsa, area)
-        auxinb = self.get_neighbor_auxin_exchange(self.al, self.pinb, neighborsb, area)
-        auxinl = self.get_neighbor_auxin_exchange(self.al, self.pinl, neighborsl, area)
-        auxinm = self.get_neighbor_auxin_exchange(self.al, self.pinm, neighborsm, area)
-        neighbors_auxin = [auxina, auxinb, auxinl, auxinm]
+        auxina_exchange = self.get_aux_exchange_across_membrane(self.al, self.pina, neighborsa, area)
+        auxinb_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinb, neighborsb, area)
+        auxinl_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinl, neighborsl, area)
+        auxinm_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinm, neighborsm, area)
+        neighbors_auxin_exchange = [auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange]
 
-        syn_deg_auxin = soln[1, 0] - self.auxin
-        delta_auxin = self.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
+        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
+
+        total_aux_exchange = sum(auxina_exchange.values()) + sum(auxinb_exchange.values()) + sum(auxinl_exchange.values()) + sum(auxinm_exchange.values())
+        if (soln[1, 0] + total_aux_exchange) < 0:
+            print("-------------------")
+            print(f"cell {self.cell.id} auxin {soln[1, 0]}, total aux exchange {total_aux_exchange}")
+            print(f"a_neighbors {[neighbor.id for neighbor in neighborsa]}, b_neighbors {[neighbor.id for neighbor in neighborsb]}, l_neighbors {[neighbor.id for neighbor in neighborsl]}, m_neighbors {[neighbor.id for neighbor in neighborsm]}")
+            print(f"auxina_exchange {sum(auxina_exchange.values())}, auxinb_exchange {sum(auxinb_exchange.values())}, auxinl_exchange {sum(auxinl_exchange.values())}, auxinm_exchange {sum(auxinm_exchange.values())}")
+            print("-------------------")
+            raise ValueError("Negative auxin")
+
+        delta_auxin = self.calculate_delta_auxin(auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange)
 
         # update current cell
         curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin, 5))
 
         # update neighbor cell
-        self.update_neighbor_auxin(curr_cell.get_sim().get_circulator(), neighbors_auxin)
+        self.update_neighbor_auxin(curr_cell.get_sim().get_circulator(), neighbors_auxin_exchange)
 
     # getter functions
     def get_auxin(self) -> float:

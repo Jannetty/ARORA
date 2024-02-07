@@ -47,7 +47,7 @@ class Output:
     # Helper functions
     def get_auxin(self, cell) -> float:
         """
-        Get auxion concentration for each cell
+        Get auxin concentration for each cell
         """
         return cell.get_circ_mod().get_auxin()
 
