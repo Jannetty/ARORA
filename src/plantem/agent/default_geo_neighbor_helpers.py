@@ -112,7 +112,6 @@ class DefaultGeoNeighborHelpers:
             return "l"
 
         return None
-    
 
     def get_neighbor_direction_when_neighbor_shares_no_vs_default_geo(cell, neighbor) -> str:
         if cell.get_id() == 17 and neighbor.get_id() == 20:

@@ -107,7 +107,7 @@ class TestOutput(unittest.TestCase):
             "PIN_left": 0.4,
             "PIN_right": 0.2,
             "arr_hist": [0.1, 0.2, 0.3],
-            "auxin_w": 1
+            "auxin_w": 1,
         }
         found = output.get_circ_contents(summary, cell0)
         self.assertEqual(expected, found)
@@ -123,7 +123,7 @@ class TestOutput(unittest.TestCase):
             "PIN_left": 0.4,
             "PIN_right": 0.2,
             "arr_hist": [0.1, 0.2, 0.3, 0.4],
-            "auxin_w": 1
+            "auxin_w": 1,
         }
         found1 = output.get_circ_contents(summary1, cell1)
         self.assertEqual(expected1, found1)
