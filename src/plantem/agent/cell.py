@@ -511,6 +511,8 @@ class GrowingCell(arcade.Sprite):
             return "elongation"
         elif dist_to_root_tip < DIFFERENTIATION_MAX_DIST_FROM_TIP:
             return "differentiation"
+        else:
+            return "differentiation"
 
     def get_growth_rate(self) -> float:
         if self.get_quad_perimeter().get_height() >= 250:
