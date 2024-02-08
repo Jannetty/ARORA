@@ -1,9 +1,9 @@
-class DefaultGeoNeighborHelper:
+class CellNeighborHelpers:
     """
     Helper functions for Cell to figure out its default neighbor information
     """
 
-    def get_neighbor_direction_when_neighbor_shares_one_v(cell, neighbor) -> str:
+    def get_neighbor_direction_when_neighbor_shares_one_v_default_geo(cell, neighbor) -> str:
         if cell.get_id() == 10 and neighbor.get_id() == 20:
             return "a"
         elif cell.get_id() == 20 and neighbor.get_id() == 10:
@@ -111,6 +111,9 @@ class DefaultGeoNeighborHelper:
         if neighbor.get_id() in rootcap_cellIDs:
             return "l"
 
+        return None
+    
+    def get_neighbor_direction_when_neighbor_shares_one_v(cell, neighbor) -> str:
         # This catches direction of neighbor sharing one vertex in regular geometry
         if (
             cell.get_quad_perimeter().get_top_left()
@@ -191,10 +194,10 @@ class DefaultGeoNeighborHelper:
             == neighbor.get_quad_perimeter().get_top_right()
         ):
             return "b"
-
+        
         return None
 
-    def get_neighbor_direction_when_neighbor_shares_no_vs(cell, neighbor) -> str:
+    def get_neighbor_direction_when_neighbor_shares_no_vs_default_geo(cell, neighbor) -> str:
         if cell.get_id() == 17 and neighbor.get_id() == 20:
             return "l"
         elif cell.get_id() == 20 and neighbor.get_id() == 17:

@@ -96,7 +96,7 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
+        #self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -249,7 +249,7 @@ class GrowingSim(arcade.Window):
         #max_tick = 2592
         try:
             if self.tick < max_tick:
-                self.output.output_cells()
+                #self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
@@ -281,7 +281,7 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
     """Creates and runs the ABM."""
     print("Making GrowingSim")
     geometry = None
-    if  cell_val_file == 'default' and v_file == 'default':
+    if  cell_val_file == "default" and v_file == "default":
         cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
         v_file = "src/plantem/sim/input/default_vs.csv"
         geometry = "default"
