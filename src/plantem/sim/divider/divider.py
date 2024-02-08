@@ -79,9 +79,6 @@ class Divider:
                     self.sim.get_next_cell_id(),
                 )
 
-                # temp color
-                new_top_cell.color = (255,0,0)
-
                 new_top_cell.set_growing(cell.get_growing())
                 new_bottom_cell = GrowingCell(
                     self.sim,
@@ -89,10 +86,8 @@ class Divider:
                     cell.get_circ_mod().get_state(),
                     self.sim.get_next_cell_id(),
                 )
-
-                # temp color
-                new_bottom_cell.color = (255,0,0)
-
+                
+                # TODO: reconsider why I am setting growing here as opposed to when the cells are made?
                 new_bottom_cell.set_growing(cell.get_growing())
                 # update neighbor lists
                 self.update_neighbor_lists(new_top_cell, new_bottom_cell, cell)

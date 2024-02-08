@@ -69,7 +69,7 @@ class GrowingSim(arcade.Window):
             width: The width of the simulation window.
             height: The height of the simulation window.
             title: The title of the simulation window.
-            timestep: The size of the timestep of the simulation (in seconds).
+            timestep: The size of the timestep of the simulation (in hours).
             root_midpoint_x: The x-coordinate of the midpoint of the root.
             vis: Whether or not to visualize the simulation.
             cell_val_file: The file containing the cell values.
