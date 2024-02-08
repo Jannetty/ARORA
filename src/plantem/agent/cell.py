@@ -3,7 +3,7 @@ from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.default_geo_neighbor_helper import CellNeighborHelpers
+from src.plantem.agent.default_geo_neighbor_helpers import DefaultGeoNeighborHelpers
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
 MERISTEMATIC_GROWTH_RATE = -0.0179
@@ -162,48 +162,15 @@ class GrowingCell(arcade.Sprite):
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         # With default geometry, neighbors sharing fewer than 2 vertices are assigned manually in helper functions
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and self.sim.geometry == "default":
-            return CellNeighborHelpers.get_neighbor_direction_when_neighbor_shares_one_v_default_geo(self, neighbor)
+            return DefaultGeoNeighborHelpers.get_neighbor_direction_when_neighbor_shares_one_v_default_geo(self, neighbor)
         if len(set(self_vs).intersection(set(neighbor_vs))) == 0 and self.sim.geometry == "default":
-            return CellNeighborHelpers.get_neighbor_direction_when_neighbor_shares_no_vs_default_geo(self, neighbor)
+            return DefaultGeoNeighborHelpers.get_neighbor_direction_when_neighbor_shares_no_vs_default_geo(self, neighbor)
         # Without default geometry, cells can only be neighbors if they share two or one vertices
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
             return self.get_neighbor_direction_when_neighbor_shares_two_vs(neighbor)
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
-            return CellNeighborHelpers.get_neighbor_direction_when_neighbor_shares_one_v(self, neighbor)
+            return self.get_neighbor_direction_when_neighbor_shares_one_v(neighbor)
         raise ValueError("Neighbor not recognized")
-
-    def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
-        # standard case, check which vertices neighbor shares with self
-        # if neighbor shares top left and bottom left, neighbor is to the left
-        if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()
-        ):
-            if (
-                self.quad_perimeter.get_left_lateral_or_medial(self.sim.get_root_midpointx())
-                == "lateral"
-            ):
-                return "l"
-            else:
-                return "m"
-        # if neighbor shares top right and bottom right, neighbor is to the right
-        elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
-        ):
-            if (
-                self.quad_perimeter.get_right_lateral_or_medial(self.sim.get_root_midpointx())
-                == "lateral"
-            ):
-                return "l"
-            else:
-                return "m"
-        elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()
-        ):
-            return "a"
-        elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
-        ):
-            return "b"
 
     def get_a_neighbors(self):
         return self.a_neighbors
@@ -322,3 +289,119 @@ class GrowingCell(arcade.Sprite):
             self.grow()
         self.pin_weights = self.calculate_pin_weights() 
         self.circ_mod.update(self.pin_weights)
+
+    def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
+            # standard case, check which vertices neighbor shares with self
+            # if neighbor shares top left and bottom left, neighbor is to the left
+            if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
+                self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()
+            ):
+                if (
+                    self.quad_perimeter.get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                    == "lateral"
+                ):
+                    return "l"
+                else:
+                    return "m"
+            # if neighbor shares top right and bottom right, neighbor is to the right
+            elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (
+                self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
+            ):
+                if (
+                    self.quad_perimeter.get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                    == "lateral"
+                ):
+                    return "l"
+                else:
+                    return "m"
+            elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
+                self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()
+            ):
+                return "a"
+            elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (
+                self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
+            ):
+                return "b"
+            
+    def get_neighbor_direction_when_neighbor_shares_one_v(self, neighbor) -> str:
+        # This catches direction of neighbor sharing one vertex in regular geometry
+        if (
+            self.get_quad_perimeter().get_top_left()
+            == neighbor.get_quad_perimeter().get_top_right()
+        ):
+            if (
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                == "lateral"
+            ):
+                return "l"
+            elif (
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                == "medial"
+            ):
+                return "m"
+
+        elif (
+            self.get_quad_perimeter().get_top_right()
+            == neighbor.get_quad_perimeter().get_top_left()
+        ):
+            if (
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                == "lateral"
+            ):
+                return "l"
+            elif (
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                == "medial"
+            ):
+                return "m"
+
+        elif (
+            self.get_quad_perimeter().get_bottom_left()
+            == neighbor.get_quad_perimeter().get_bottom_right()
+        ):
+            if (
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                == "lateral"
+            ):
+                return "l"
+            elif (
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                == "medial"
+            ):
+                return "m"
+
+        elif (
+            self.get_quad_perimeter().get_bottom_right()
+            == neighbor.get_quad_perimeter().get_bottom_left()
+        ):
+            if (
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                == "lateral"
+            ):
+                return "l"
+            elif (
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                == "medial"
+            ):
+                return "m"
+        elif (
+            self.get_quad_perimeter().get_top_left()
+            == neighbor.get_quad_perimeter().get_bottom_left()
+        ):
+            return "a"
+        elif (
+            self.get_quad_perimeter().get_top_right()
+            == neighbor.get_quad_perimeter().get_bottom_right()
+        ):
+            return "a"
+        elif (
+            self.get_quad_perimeter().get_bottom_left()
+            == neighbor.get_quad_perimeter().get_top_left()
+        ):
+            return "b"
+        elif (
+            self.get_quad_perimeter().get_bottom_right()
+            == neighbor.get_quad_perimeter().get_top_right()
+        ):
+            return "b"
+        return None

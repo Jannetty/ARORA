@@ -206,6 +206,7 @@ class BaseCirculateModuleCont:
         """
         weight = pin_weight
         memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
+        print(f"pin_weight {pin_weight}")
         membrane_pin = pin_weight * pini - (self.kd * pindi)
         return membrane_pin
 
