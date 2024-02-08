@@ -77,7 +77,7 @@ class GrowingSim(arcade.Window):
         """
         if vis is False:
             print("Running headless")
-            #for mac
+            # for mac
             pyglet.options["headless"] = True
             # for PC
             os.environ["ARCADE_HEADLESS"] = "true"
@@ -96,7 +96,7 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        #self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
+        # self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -198,7 +198,7 @@ class GrowingSim(arcade.Window):
             y = cell.get_quad_perimeter().get_min_y()
             ys.append(y)
         return min(ys)
-    
+
     def calculate_root_midpoint_x(self) -> float:
         xs = []
         if len(self.cell_list) == 0:
@@ -228,13 +228,12 @@ class GrowingSim(arcade.Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            #0,
-            #1200,
+            # 0,
+            # 1200,
             self.root_tip_y - 2,
             SCREEN_HEIGHT + self.root_tip_y - 2,
         )
         self.window_offset = self.root_tip_y - 2
-
 
     def on_update(self, delta_time):
         """
@@ -246,10 +245,10 @@ class GrowingSim(arcade.Window):
         print("--------------------")
         self.tick += 1
         max_tick = 200
-        #max_tick = 2592
+        # max_tick = 2592
         try:
             if self.tick < max_tick:
-                #self.output.output_cells()
+                # self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
@@ -267,21 +266,23 @@ class GrowingSim(arcade.Window):
             print("Ending Simulation")
             arcade.close_window()
 
-    def on_mouse_press(self, x, y, button, modifiers): 
+    def on_mouse_press(self, x, y, button, modifiers):
         print("Mouse press!")
         print(f"X: {x}, Y: {y}")
         y = self.window_offset + y
         print(f"with, windowoffset, X: {x}, Y: {y}")
         for cell in self.cell_list:
-            if cell.get_quad_perimeter().point_inside(x,y):
+            if cell.get_quad_perimeter().point_inside(x, y):
                 print(f"Cell {cell.get_id()}, growing = {cell.growing}")
 
 
-def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
+def main(
+    timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None
+) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
     geometry = None
-    if  cell_val_file == "default" and v_file == "default":
+    if cell_val_file == "default" and v_file == "default":
         cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
         v_file = "src/plantem/sim/input/default_vs.csv"
         geometry = "default"

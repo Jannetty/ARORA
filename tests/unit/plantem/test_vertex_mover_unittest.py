@@ -146,7 +146,7 @@ class TestVertexMover(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis=False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -195,7 +195,7 @@ class TestVertexMover(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis=False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -327,7 +327,7 @@ class TestVertexMover(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis=False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)

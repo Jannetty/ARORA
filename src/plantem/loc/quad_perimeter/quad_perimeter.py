@@ -36,10 +36,10 @@ class QuadPerimeter:
 
     def get_min_y(self):
         return min([corner.get_y() for corner in self._perimeter_vs])
-    
+
     def get_max_x(self):
         return max([corner.get_x() for corner in self._perimeter_vs])
-    
+
     def get_min_x(self):
         return min([corner.get_x() for corner in self._perimeter_vs])
 
@@ -48,7 +48,7 @@ class QuadPerimeter:
 
     def get_midpointy(self) -> float:
         return self.__calc_midpointy()
-    
+
     def point_inside(self, x: int, y: int) -> bool:
         if x > self.get_min_x() and x < self.get_max_x():
             if y > self.get_min_y() and y < self.get_max_y():
@@ -298,23 +298,55 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
         length = cell.get_quad_perimeter().get_left_memlen()
 
     # If it is either of 54's apical neighbors, return cell's basal length
-    elif cell.get_id() == 54 and neighbor.get_quad_perimeter().get_bottom_left() == cell.get_quad_perimeter().get_top_left():
+    elif (
+        cell.get_id() == 54
+        and neighbor.get_quad_perimeter().get_bottom_left()
+        == cell.get_quad_perimeter().get_top_left()
+    ):
         length = neighbor.get_quad_perimeter().get_basal_memlen()
-    elif neighbor.get_id() == 54 and cell.get_quad_perimeter().get_bottom_left() == neighbor.get_quad_perimeter().get_top_left():
+    elif (
+        neighbor.get_id() == 54
+        and cell.get_quad_perimeter().get_bottom_left()
+        == neighbor.get_quad_perimeter().get_top_left()
+    ):
         length = cell.get_quad_perimeter().get_basal_memlen()
-    elif cell.get_id() == 54 and neighbor.get_quad_perimeter().get_bottom_right() == cell.get_quad_perimeter().get_top_right():
+    elif (
+        cell.get_id() == 54
+        and neighbor.get_quad_perimeter().get_bottom_right()
+        == cell.get_quad_perimeter().get_top_right()
+    ):
         length = neighbor.get_quad_perimeter().get_basal_memlen()
-    elif neighbor.get_id() == 54 and cell.get_quad_perimeter().get_bottom_right() == neighbor.get_quad_perimeter().get_top_right():
+    elif (
+        neighbor.get_id() == 54
+        and cell.get_quad_perimeter().get_bottom_right()
+        == neighbor.get_quad_perimeter().get_top_right()
+    ):
         length = cell.get_quad_perimeter().get_basal_memlen()
 
     # If it is either of 57's apical neighbors, return cell's basal length
-    elif cell.get_id() == 57 and neighbor.get_quad_perimeter().get_bottom_left() == cell.get_quad_perimeter().get_top_left():
+    elif (
+        cell.get_id() == 57
+        and neighbor.get_quad_perimeter().get_bottom_left()
+        == cell.get_quad_perimeter().get_top_left()
+    ):
         length = neighbor.get_quad_perimeter().get_basal_memlen()
-    elif neighbor.get_id() == 57 and cell.get_quad_perimeter().get_bottom_left() == neighbor.get_quad_perimeter().get_top_left():
+    elif (
+        neighbor.get_id() == 57
+        and cell.get_quad_perimeter().get_bottom_left()
+        == neighbor.get_quad_perimeter().get_top_left()
+    ):
         length = cell.get_quad_perimeter().get_basal_memlen()
-    elif cell.get_id() == 57 and neighbor.get_quad_perimeter().get_bottom_right() == cell.get_quad_perimeter().get_top_right():
+    elif (
+        cell.get_id() == 57
+        and neighbor.get_quad_perimeter().get_bottom_right()
+        == cell.get_quad_perimeter().get_top_right()
+    ):
         length = neighbor.get_quad_perimeter().get_basal_memlen()
-    elif neighbor.get_id() == 57 and cell.get_quad_perimeter().get_bottom_right() == neighbor.get_quad_perimeter().get_top_right():
+    elif (
+        neighbor.get_id() == 57
+        and cell.get_quad_perimeter().get_bottom_right()
+        == neighbor.get_quad_perimeter().get_top_right()
+    ):
         length = cell.get_quad_perimeter().get_basal_memlen()
 
     if length == 0:

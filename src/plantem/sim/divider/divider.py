@@ -49,9 +49,11 @@ class Divider:
         simulation.
         """
         if len(self.cells_to_divide) != 0:
-            meristematic_cells_to_divide = [cell for cell in self.cells_to_divide if cell.get_dev_zone() == 'meristematic']
+            meristematic_cells_to_divide = [
+                cell for cell in self.cells_to_divide if cell.get_dev_zone() == "meristematic"
+            ]
             for cell in meristematic_cells_to_divide:
-                #print(f"Dividing cell {cell.get_id()}")
+                # print(f"Dividing cell {cell.get_id()}")
                 new_vs = self.get_new_vs(cell)
                 # check if those vertices exist by iterating through all vs in all neighbor cells' qps
                 left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
@@ -86,7 +88,7 @@ class Divider:
                     cell.get_circ_mod().get_state(),
                     self.sim.get_next_cell_id(),
                 )
-                
+
                 # TODO: reconsider why I am setting growing here as opposed to when the cells are made?
                 new_bottom_cell.set_growing(cell.get_growing())
                 # update neighbor lists
@@ -198,8 +200,12 @@ class Divider:
             old_cell: The old cell to remove the neighbor from.
         """
         print("Here 5 ------------------")
-        print(f"new cell vertices {[vertex.get_xy() for vertex in new_cell.get_quad_perimeter().get_vs()]}")
-        print(f"new neighbor vertices {[vertex.get_xy() for vertex in old_n.get_quad_perimeter().get_vs()]}")
+        print(
+            f"new cell vertices {[vertex.get_xy() for vertex in new_cell.get_quad_perimeter().get_vs()]}"
+        )
+        print(
+            f"new neighbor vertices {[vertex.get_xy() for vertex in old_n.get_quad_perimeter().get_vs()]}"
+        )
         new_cell.add_neighbor(old_n)
         print("Here 6 ------------------")
         old_n.add_neighbor(new_cell)
