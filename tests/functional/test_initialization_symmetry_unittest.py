@@ -28,6 +28,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             cell_val_file,
             v_file,
             gparam_series,
+            geometry="default"
         )
         keys = [
             0,
@@ -887,6 +888,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             cell_val_file,
             v_file,
             gparam_series,
+            geometry="default"
         )
         keys = [
             0,

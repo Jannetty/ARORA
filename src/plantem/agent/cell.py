@@ -3,7 +3,7 @@ from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.default_geo_neighbor_helper import DefaultGeoNeighborHelper
+from src.plantem.agent.default_geo_neighbor_helper import CellNeighborHelpers
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
 MERISTEMATIC_GROWTH_RATE = -0.0179
@@ -160,15 +160,17 @@ class GrowingCell(arcade.Sprite):
     def find_new_neighbor_relative_location(self, neighbor: "GrowingCell") -> str:
         self_vs = self.get_quad_perimeter().get_vs()
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
-        # if neighbor shares two vertices with self, check which ones
+        # With default geometry, neighbors sharing fewer than 2 vertices are assigned manually in helper functions
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and self.sim.geometry == "default":
+            return CellNeighborHelpers.get_neighbor_direction_when_neighbor_shares_one_v_default_geo(self, neighbor)
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 0 and self.sim.geometry == "default":
+            return CellNeighborHelpers.get_neighbor_direction_when_neighbor_shares_no_vs_default_geo(self, neighbor)
+        # Without default geometry, cells can only be neighbors if they share two or one vertices
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
             return self.get_neighbor_direction_when_neighbor_shares_two_vs(neighbor)
-        # if neighbor shares only one vertex with self, check which one
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
-            return DefaultGeoNeighborHelper.get_neighbor_direction_when_neighbor_shares_one_v(self, neighbor)
-        # if neighbor shares no vertices with self, check for very specific edge cases in root tip
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 0:
-            return DefaultGeoNeighborHelper.get_neighbor_direction_when_neighbor_shares_no_vs(self, neighbor)
+            return CellNeighborHelpers.get_neighbor_direction_when_neighbor_shares_one_v(self, neighbor)
+        raise ValueError("Neighbor not recognized")
 
     def get_neighbor_direction_when_neighbor_shares_two_vs(self, neighbor: "GrowingCell") -> str:
         # standard case, check which vertices neighbor shares with self
