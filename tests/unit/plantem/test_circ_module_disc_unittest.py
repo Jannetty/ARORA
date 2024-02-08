@@ -245,7 +245,7 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         sim.setup()
         neighbor_list = [neighbora]
         pin_dir = 0.5
-        found_neighbor_auxin = circ_module_disc.get_neighbor_auxin_exchange(
+        found_neighbor_auxin = circ_module_disc.get_aux_exchange_across_membrane(
             pin_dir, neighbor_list, "a", timestep, area
         )
 
@@ -402,10 +402,10 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
         pinm = circ_module_disc.calculate_membrane_pin(circ_module_disc.pinm, timestep, area)
         syn_deg_auxin = circ_module_disc.calculate_auxin(timestep, area)
 
-        auxina = circ_module_disc.get_neighbor_auxin_exchange(
+        auxina = circ_module_disc.get_aux_exchange_across_membrane(
             pina, [neighbora], "a", timestep, area
         )
-        auxinm = circ_module_disc.get_neighbor_auxin_exchange(
+        auxinm = circ_module_disc.get_aux_exchange_across_membrane(
             pinm, [neighborm], "m", timestep, area
         )
 

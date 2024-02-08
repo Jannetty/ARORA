@@ -47,6 +47,7 @@ class GrowingSim(arcade.Window):
     cell_val_file = None
     v_file = None
     input_from_file = False
+    geometry = None
 
     def __init__(
         self,
@@ -59,6 +60,7 @@ class GrowingSim(arcade.Window):
         cell_val_file=None,
         v_file=None,
         gparam_series=None,
+        geometry=None,
     ):
         """
         Constructs a new Simulation instance.
@@ -90,10 +92,11 @@ class GrowingSim(arcade.Window):
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
+        self.geometry = geometry
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        self.output = Output(self, "yes_aux_exchange_output.csv")
+        self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -202,7 +205,7 @@ class GrowingSim(arcade.Window):
             return 0
         for cell in self.cell_list:
             x = cell.get_quad_perimeter().vertex_list
-            xs.append(y)
+            xs.append(x)
         min_x = min(xs)
         max_x = max(xs)
         mid_x = (min_x + max_x) / 2
@@ -242,19 +245,17 @@ class GrowingSim(arcade.Window):
         """
         print("--------------------")
         self.tick += 1
+        max_tick = 200
+        #max_tick = 2592
         try:
-            if self.tick < 2592:
+            if self.tick < max_tick:
                 self.output.output_cells()
                 print(f"tick: {self.tick}")
-                #print(f"Cell 354 starting circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
                 if self.vis:
                     self.update_viewport_position()
                 self.cell_list.update()
                 self.vertex_mover.update()
                 self.circulator.update()
-                #print(f"Cell 354 ending circ_state = {self.get_cell_by_ID(354).circ_mod.get_state()}")
-                #print(f"Cell 815 area = {self.get_cell_by_ID(815).get_quad_perimeter().get_area()}")
-                #print(f"Cell 829 area = {self.get_cell_by_ID(829).get_quad_perimeter().get_area()}")
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
 
@@ -279,6 +280,11 @@ class GrowingSim(arcade.Window):
 def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
+    geometry = None
+    if  cell_val_file == 'default' and v_file == 'default':
+        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
+        v_file = "src/plantem/sim/input/default_vs.csv"
+        geometry = "default"
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
@@ -289,6 +295,7 @@ def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam
         cell_val_file,
         v_file,
         gparam_series,
+        geometry,
     )
     print("Running Simulation")
     pyglet.app.run(0)
