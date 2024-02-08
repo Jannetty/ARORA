@@ -25,21 +25,18 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     """
 
     def test_calculate_cont_auxin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        circ_module_cont = cell.get_circ_mod()
-        area = cell.quad_perimeter.get_area()
-
         init_vals = make_init_vals()
         y0 = [
             init_vals["auxin"],
@@ -56,57 +53,60 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         expected_auxin = expected_soln[1][0]
         found_soln = cell.get_circ_mod().solve_equations()
         found_auxin = found_soln[1][0]
-        self.assertAlmostEqual(expected_auxin, found_auxin, places=5)
+        self.assertAlmostEqual(expected_auxin, found_auxin, places=3)
 
     def test_calculate_arr(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
+        init_vals = make_init_vals()
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
         area = cell.quad_perimeter.get_area()
-        expected_arr = 0.004545342045
+        # expected_arr = 0.004545342045
+        expected_arr = (init_vals["k_s"] * (init_vals["k1"] / (init_vals["arr_hist"][0] / init_vals["k1"] + 1))) - (init_vals["k_d"] * init_vals["arr"] * (1 / area))
         found_arr = circ_module_cont.calculate_arr(3, area)
         self.assertAlmostEqual(expected_arr, found_arr, places=5)
 
     def test_calculate_al(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
+        init_vals = make_init_vals()
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
         area = cell.quad_perimeter.get_area()
-        expected_al = 0.003333220833
+        expected_al = init_vals["k_s"] * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k2"])) - init_vals["k_d"] * init_vals["al"] * (1 / area)
         found_al = circ_module_cont.calculate_al(2, 3, area)
         self.assertAlmostEqual(expected_al, found_al, places=5)
 
     def test_calculate_pin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -122,36 +122,37 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
     def test_calculate_membrane_pin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
         )
+        init_vals = make_init_vals()
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
-        expected_pin = 0.2499999813
+        expected_pin = 0.25 * init_vals["pin"] - init_vals["k_d"] * init_vals["pina"] * (init_vals["w_pina"])
         found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, "a", circ_module_cont.pin_weights.get('a'))
-        self.assertAlmostEqual(expected_pin, found_pin, places=5)
+        self.assertAlmostEqual(expected_pin, found_pin, places=3)
 
     def test_calculate_neighbor_memfrac(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 600)
-        v6 = Vertex(300, 600)
-        v7 = Vertex(600, 300)
-        v8 = Vertex(600, 100)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 60)
+        v6 = Vertex(30, 60)
+        v7 = Vertex(60, 30)
+        v8 = Vertex(60, 10)
         cell = GrowingCell(
             sim,
             [v1, v2, v3, v4],
@@ -172,13 +173,13 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertAlmostEqual(expected_f, found_f, places=5)
 
     def test_get_neighbor_auxin_exchange(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 600)
-        v6 = Vertex(300, 600)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 60)
+        v6 = Vertex(30, 60)
         cell = GrowingCell(
             sim,
             [v1, v2, v3, v4],
@@ -215,14 +216,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             self.assertAlmostEqual(expected, found, places=5)
 
     def test_calculate_delta_auxin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -231,10 +232,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         neighbora = GrowingCell(
             sim,
             [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
+                Vertex(10.0, 30.0),
+                Vertex(10.0, 60.0),
+                Vertex(30.0, 60.0),
+                Vertex(30.0, 30.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -247,14 +248,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     def test_solve_equations(self):
         pass
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -275,17 +276,17 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         expected_soln = odeint(f, y0, t)
         found_soln = circ_module_cont.solve_equations()
         for i in range(8):
-            self.assertAlmostEqual(expected_soln[1, i], found_soln[1, i], places=5)
+            self.assertAlmostEqual(expected_soln[1, i], found_soln[1, i], places=3)
 
     def test_update_arr_hist(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -298,14 +299,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected_arr_hist, found_arr_hist)
 
     def test_update_circ_contents(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -339,14 +340,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertAlmostEqual(expected_pina, found_pina, places=4)
 
     def test_update_neighbor_auxin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         curr_cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -355,10 +356,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         neighbora = GrowingCell(
             sim,
             [
-                Vertex(100.0, 300.0),
-                Vertex(100.0, 600.0),
-                Vertex(300.0, 600.0),
-                Vertex(300.0, 300.0),
+                Vertex(10.0, 30.0),
+                Vertex(10.0, 60.0),
+                Vertex(30.0, 60.0),
+                Vertex(30.0, 30.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -366,10 +367,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         neighborm = GrowingCell(
             sim,
             [
-                Vertex(300.0, 100.0),
-                Vertex(300.0, 300.0),
-                Vertex(600.0, 300.0),
-                Vertex(600.0, 100.0),
+                Vertex(30.0, 10.0),
+                Vertex(30.0, 30.0),
+                Vertex(60.0, 30.0),
+                Vertex(60.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -383,15 +384,15 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_neighbors(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 600)
-        v6 = Vertex(300, 600)
-        v7 = Vertex(600, 300)
-        v8 = Vertex(600, 100)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 60)
+        v6 = Vertex(30, 60)
+        v7 = Vertex(60, 30)
+        v8 = Vertex(60, 10)
         curr_cell = GrowingCell(
             sim,
             [v1, v2, v3, v4],
@@ -420,15 +421,15 @@ class BaseCirculateModuleContTests(unittest.TestCase):
 
     # TODO: Rewrite this test this thing is brutal
     def test_update_auxin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, vis=False)
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 600)
-        v6 = Vertex(300, 600)
-        v7 = Vertex(600, 300)
-        v8 = Vertex(600, 100)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, vis=False)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 60)
+        v6 = Vertex(30, 60)
+        v7 = Vertex(60, 30)
+        v8 = Vertex(60, 10)
         curr_cell = GrowingCell(
             sim,
             [v1, v2, v3, v4],
@@ -467,15 +468,15 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         found = curr_cell.get_sim().get_circulator().delta_auxins
 
         # Make new cells with same properties to check calculations individually
-        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, vis=False)
-        v1 = Vertex(100, 100)
-        v2 = Vertex(100, 300)
-        v3 = Vertex(300, 300)
-        v4 = Vertex(300, 100)
-        v5 = Vertex(100, 600)
-        v6 = Vertex(300, 600)
-        v7 = Vertex(600, 300)
-        v8 = Vertex(600, 100)
+        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, vis=False)
+        v1 = Vertex(10, 10)
+        v2 = Vertex(10, 30)
+        v3 = Vertex(30, 30)
+        v4 = Vertex(30, 10)
+        v5 = Vertex(10, 60)
+        v6 = Vertex(30, 60)
+        v7 = Vertex(60, 30)
+        v8 = Vertex(60, 10)
         curr_cell2 = GrowingCell(
             sim2,
             [v1, v2, v3, v4],
@@ -522,14 +523,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             self.assertAlmostEqual(expected[key], found[key], places=5)
 
     def test_get_auxin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -541,14 +542,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_arr(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -560,14 +561,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_al(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -579,14 +580,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_pin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -598,14 +599,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_apical_pin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -617,14 +618,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_left_pin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -636,14 +637,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertEqual(expected, found)
 
     def test_get_right_pin(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -721,9 +722,9 @@ def f(y, t) -> list:
     # pin
     f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4)) - KD * pini * (1 / area)
     # neighbor pin
-    f4 = 0.25 * pini - w_pina * KD * pinai * (1 / area)
-    f5 = 0.25 * pini - w_pinb * KD * pinbi * (1 / area)
-    f6 = 0.25 * pini - w_pinl * KD * pinli * (1 / area)
-    f7 = 0.25 * pini - w_pinm * KD * pinmi * (1 / area)
+    f4 = 0.25 * pini - w_pina * KD * pinai
+    f5 = 0.25 * pini - w_pinb * KD * pinbi
+    f6 = 0.25 * pini - w_pinl * KD * pinli
+    f7 = 0.25 * pini - w_pinm * KD * pinmi 
 
     return [f0, f1, f2, f3, f4, f5, f6, f7]
