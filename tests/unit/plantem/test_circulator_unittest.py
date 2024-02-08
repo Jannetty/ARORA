@@ -42,14 +42,14 @@ class TestCirculator(unittest.TestCase):
     """
 
     def test_add_delta(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
@@ -59,14 +59,14 @@ class TestCirculator(unittest.TestCase):
         self.assertEqual(sim.get_circulator().get_delta_auxins()[cell], delta)
 
     def test_update(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
             [
-                Vertex(100.0, 100.0),
-                Vertex(100.0, 300.0),
-                Vertex(300.0, 300.0),
-                Vertex(300.0, 100.0),
+                Vertex(10.0, 10.0),
+                Vertex(10.0, 30.0),
+                Vertex(30.0, 30.0),
+                Vertex(30.0, 10.0),
             ],
             make_init_vals(),
             sim.get_next_cell_id(),
