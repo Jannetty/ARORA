@@ -146,8 +146,6 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents to the circulator
         """
-        if self.cell.id == 77:
-            print (f"cell {self.cell.id} pin weights {pin_weights}")
         self.pin_weights = pin_weights
         assert(round_to_sf(sum(self.pin_weights.values()), 2) == 1.0)
         soln = self.solve_equations()
@@ -237,9 +235,10 @@ class BaseCirculateModuleCont:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             # added memfrac to export al term
+            #TODO: change memfrac below multiplied by neighbor_aux to be neighbor memfrac
             auxin_influx = (neighbor_aux * (memfrac)) * (al * memfrac) * self.k_al
             # added memfrac to export term
-            # TODO: Make pin_activity a sigmoidal variable that ranges from 0 to 1 based on the amount of PIN in the membrane
+            # TODO: Make pin_activity a sigmoidal variable that ranges from 0 to 1 based on the amount of SOMETHING in the membrane
             pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
             accessible_pin = self.auxin * memfrac
             auxin_efflux = accessible_pin * pin_activity
@@ -320,6 +319,7 @@ class BaseCirculateModuleCont:
         auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
 
         total_aux_exchange = sum(auxina_exchange.values()) + sum(auxinb_exchange.values()) + sum(auxinl_exchange.values()) + sum(auxinm_exchange.values())
+        
         if (soln[1, 0] + total_aux_exchange) < 0:
             print("-------------------")
             print(f"cell {self.cell.id} auxin {soln[1, 0]}, total aux exchange {total_aux_exchange}")
