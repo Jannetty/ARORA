@@ -1,4 +1,5 @@
-import arcade
+from arcade import Sprite
+from arcade import draw_polygon_filled
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
@@ -48,7 +49,7 @@ CORTEX_CELL_DIST_FROM_ROOT_MIDPOINTX = 35
 EPIDERMIS_CELL_DIST_FROM_ROOT_MIDPOINTX = 45
 
 
-class GrowingCell(arcade.Sprite):
+class GrowingCell(Sprite):
     id = None
     quad_perimeter = None
     circ_mod = None
@@ -232,8 +233,8 @@ class GrowingCell(arcade.Sprite):
     def draw(self) -> None:
         self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
-        arcade.draw_polygon_filled(point_list=point_list, color=self.color)
-        arcade.draw_polygon_outline(point_list=point_list, color=[0, 0, 0])
+        draw_polygon_filled(point_list=point_list, color=self.color)
+        draw_polygon_outline(point_list=point_list, color=[0, 0, 0])
 
     def grow(self) -> None:
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
