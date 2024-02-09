@@ -266,14 +266,14 @@ class GrowingSim(arcade.Window):
             print("Ending Simulation")
             arcade.close_window()
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        print("Mouse press!")
-        print(f"X: {x}, Y: {y}")
-        y = self.window_offset + y
-        print(f"with, windowoffset, X: {x}, Y: {y}")
-        for cell in self.cell_list:
-            if cell.get_quad_perimeter().point_inside(x, y):
-                print(f"Cell {cell.get_id()}, growing = {cell.growing}")
+    # def on_mouse_press(self, x, y, button, modifiers):
+    #     print("Mouse press!")
+    #     print(f"X: {x}, Y: {y}")
+    #     y = self.window_offset + y
+    #     print(f"with, windowoffset, X: {x}, Y: {y}")
+    #     for cell in self.cell_list:
+    #         if cell.get_quad_perimeter().point_inside(x, y):
+    #             print(f"Cell {cell.get_id()}, growing = {cell.growing}")
 
 
 def main(
