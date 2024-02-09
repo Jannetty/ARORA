@@ -2,7 +2,10 @@ import os
 import pyglet
 import pandas
 import matplotlib.pyplot as plt
-import arcade
+from arcade import Window
+from arcade import SpriteList
+from arcade import set_background_color
+from arcade import close_window
 import time
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
@@ -15,7 +18,7 @@ SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "ARORA"
 
 
-class GrowingSim(arcade.Window):
+class GrowingSim(Window):
     """
     Simulation class. Manages the simulation and all of its components.
 
@@ -84,7 +87,7 @@ class GrowingSim(arcade.Window):
             super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        arcade.set_background_color(color=[250, 250, 250])
+        set_background_color(color=[250, 250, 250])
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
@@ -141,7 +144,7 @@ class GrowingSim(arcade.Window):
         """Returns the vertex mover of the simulation."""
         return self.vertex_mover
 
-    def get_cell_list(self) -> arcade.SpriteList:
+    def get_cell_list(self) -> SpriteList:
         """Returns the list of all cells in the simulation."""
         return self.cell_list
 
@@ -176,7 +179,7 @@ class GrowingSim(arcade.Window):
         self.circulator = Circulator(self)
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
-        self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+        self.cell_list = SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
@@ -260,11 +263,11 @@ class GrowingSim(arcade.Window):
 
             else:
                 print("Simulation Complete")
-                arcade.close_window()
+                close_window()
         except (ValueError, OverflowError) as e:
             print(e)
             print("Ending Simulation")
-            arcade.close_window()
+            close_window()
 
     # def on_mouse_press(self, x, y, button, modifiers):
     #     print("Mouse press!")
