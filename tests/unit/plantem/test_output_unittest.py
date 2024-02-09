@@ -1,5 +1,6 @@
 import unittest
-
+import os
+import pyglet
 from src.plantem.sim.output.output import Output
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.cell import GrowingCell
@@ -82,6 +83,14 @@ CELL_LIST = [cell0, cell1]
 
 
 class TestOutput(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        print("Running headless")
+        # for mac
+        pyglet.options["headless"] = True
+        # for PC
+        os.environ["ARCADE_HEADLESS"] = "true"
+
     def test_get_auxin(self):
         output = Output(sim, "ouput.csv")
         expected = 2

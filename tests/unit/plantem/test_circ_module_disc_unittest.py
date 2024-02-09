@@ -1,5 +1,6 @@
 import unittest
-
+import pyglet
+import os
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.agent.cell import GrowingCell
@@ -14,6 +15,14 @@ class BaseCirculateModuleDiscTests(unittest.TestCase):
     """
     Tests BaseCirculateModuleDisc Class
     """
+
+    @classmethod
+    def setUpClass(cls):
+        print("Running headless")
+        # for mac
+        pyglet.options["headless"] = True
+        # for PC
+        os.environ["ARCADE_HEADLESS"] = "true"
 
     def test_determine_left_right(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)

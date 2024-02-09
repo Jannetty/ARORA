@@ -1,5 +1,6 @@
 import unittest
-
+import pyglet
+import os
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.cell import GrowingCell
@@ -40,6 +41,14 @@ class TestCirculator(unittest.TestCase):
     """
     Test Circulator Class
     """
+
+    @classmethod
+    def setUpClass(cls):
+        print("Running headless")
+        # for mac
+        pyglet.options["headless"] = True
+        # for PC
+        os.environ["ARCADE_HEADLESS"] = "true"
 
     def test_add_delta(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
