@@ -231,8 +231,6 @@ class GrowingSim(Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            # 0,
-            # 1200,
             self.root_tip_y - 2,
             SCREEN_HEIGHT + self.root_tip_y - 2,
         )

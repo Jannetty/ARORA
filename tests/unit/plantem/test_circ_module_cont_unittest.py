@@ -1,5 +1,6 @@
 import unittest
-
+import pyglet
+import os
 from scipy.integrate import odeint
 import numpy as np
 from src.plantem.loc.vertex.vertex import Vertex
@@ -23,6 +24,14 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     """
     Tests BaseCirculateModuleCont Class
     """
+
+    @classmethod
+    def setUpClass(cls):
+        print("Running headless")
+        # for mac
+        pyglet.options["headless"] = True
+        # for PC
+        os.environ["ARCADE_HEADLESS"] = "true"
 
     def test_calculate_cont_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)

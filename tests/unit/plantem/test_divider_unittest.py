@@ -1,4 +1,6 @@
 import unittest
+import os
+import pyglet
 from src.plantem.sim.divider.divider import Divider
 from src.plantem.agent.cell import GrowingCell
 from src.plantem.sim.simulation.sim import GrowingSim
@@ -10,6 +12,14 @@ SCREEN_TITLE = "Starting Template"
 
 
 class TestDivider(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        print("Running headless")
+        # for mac
+        pyglet.options["headless"] = True
+        # for PC
+        os.environ["ARCADE_HEADLESS"] = "true"
+
     init_vals = {
         "auxin": 2,
         "arr": 3,
