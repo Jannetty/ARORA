@@ -1,4 +1,3 @@
-import arcade
 from src.plantem.sim.util.math_helpers import round_to_sf
 
 

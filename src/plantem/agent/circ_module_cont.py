@@ -1,5 +1,4 @@
 from scipy.integrate import odeint
-import arcade
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 from src.plantem.sim.util.math_helpers import round_to_sf
 import numpy as np
