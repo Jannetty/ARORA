@@ -1,5 +1,4 @@
 import unittest
-
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.cell import GrowingCell

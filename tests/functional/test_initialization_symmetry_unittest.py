@@ -28,6 +28,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             cell_val_file,
             v_file,
             gparam_series,
+            geometry="default",
         )
         keys = [
             0,
@@ -887,6 +888,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             cell_val_file,
             v_file,
             gparam_series,
+            geometry="default",
         )
         keys = [
             0,
@@ -1733,8 +1735,12 @@ class TestInitializationSymmetry(unittest.TestCase):
                     )
                 except AssertionError:
                     print(f"cell {id} and cell {equal_dict[id]} are not equal")
-                    print(f"cell {id} state: {simulation.get_cell_by_ID(id).get_circ_mod().get_state()}")
-                    print(f"cell {equal_dict[id]} state: {simulation.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_state()}")
+                    print(
+                        f"cell {id} state: {simulation.get_cell_by_ID(id).get_circ_mod().get_state()}"
+                    )
+                    print(
+                        f"cell {equal_dict[id]} state: {simulation.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_state()}"
+                    )
                     raise AssertionError
             simulation.cell_list.update()
             simulation.vertex_mover.update()

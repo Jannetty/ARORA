@@ -1,5 +1,4 @@
 import unittest
-
 from scipy.integrate import odeint
 import numpy as np
 from src.plantem.loc.vertex.vertex import Vertex
@@ -73,7 +72,9 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim.setup()
         area = cell.quad_perimeter.get_area()
         # expected_arr = 0.004545342045
-        expected_arr = (init_vals["k_s"] * (init_vals["k1"] / (init_vals["arr_hist"][0] / init_vals["k1"] + 1))) - (init_vals["k_d"] * init_vals["arr"] * (1 / area))
+        expected_arr = (
+            init_vals["k_s"] * (init_vals["k1"] / (init_vals["arr_hist"][0] + init_vals["k1"]))
+        ) - (init_vals["k_d"] * init_vals["arr"])
         found_arr = circ_module_cont.calculate_arr(3, area)
         self.assertAlmostEqual(expected_arr, found_arr, places=5)
 
@@ -94,7 +95,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
         area = cell.quad_perimeter.get_area()
-        expected_al = init_vals["k_s"] * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k2"])) - init_vals["k_d"] * init_vals["al"] * (1 / area)
+        expected_al = (
+            init_vals["k_s"] * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k2"]))
+            - init_vals["k_d"] * init_vals["al"]
+        )
         found_al = circ_module_cont.calculate_al(2, 3, area)
         self.assertAlmostEqual(expected_al, found_al, places=5)
 
@@ -113,8 +117,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         init_vals = make_init_vals()
         expected_pin = (
-            init_vals['k_s'] * (1 / (init_vals['arr'] / init_vals['k3'] + 1)) * (init_vals['auxin'] / (init_vals['auxin'] + init_vals['k4']))
-            - init_vals['k_d'] * init_vals['pin'] * (1 / cell.get_quad_perimeter().get_area())
+            init_vals["k_s"]
+            * (init_vals["k3"] / (init_vals["arr"] + init_vals["k3"]))
+            * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k4"]))
+            - init_vals["k_d"] * init_vals["pin"]
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
@@ -139,8 +145,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim.setup()
         area = cell.quad_perimeter.get_area()
         # test apical neighbor
-        expected_pin = 0.25 * init_vals["pin"] - init_vals["k_d"] * init_vals["pina"] * (init_vals["w_pina"])
-        found_pin = circ_module_cont.calculate_membrane_pin(1, 0.5, area, "a", circ_module_cont.pin_weights.get('a'))
+        expected_pin = init_vals["w_pina"] * init_vals["pin"] - init_vals["k_d"] * init_vals["pina"]
+        found_pin = circ_module_cont.calculate_membrane_pin(
+            init_vals["pin"], init_vals["pina"], area, "a", init_vals["w_pina"]
+        )
         self.assertAlmostEqual(expected_pin, found_pin, places=3)
 
     def test_calculate_neighbor_memfrac(self):
@@ -247,7 +255,6 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertAlmostEqual(expected_delta_auxin, found_delta_auxin, places=5)
 
     def test_solve_equations(self):
-        pass
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = GrowingCell(
             sim,
@@ -276,6 +283,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         expected_soln = odeint(f, y0, t)
         found_soln = circ_module_cont.solve_equations()
         for i in range(8):
+            print("expected: ", expected_soln[1, i], "found: ", found_soln[1, i])
             self.assertAlmostEqual(expected_soln[1, i], found_soln[1, i], places=3)
 
     def test_update_arr_hist(self):
@@ -697,10 +705,11 @@ def f(y, t) -> list:
     Setup the model functions
     """
     area = 40000
-    w_pina = 1
-    w_pinb = 1
-    w_pinl = 1
-    w_pinm = 1
+    w_pina = 0.5 / (0.5 + 0.7 + 0.4 + 0.2)
+    w_pinb = 0.7 / (0.5 + 0.7 + 0.4 + 0.2)
+    w_pinl = 0.4 / (0.5 + 0.7 + 0.4 + 0.2)
+    w_pinm = 0.2 / (0.5 + 0.7 + 0.4 + 0.2)
+    auxin_w = 1
 
     # setup species
     auxini = y[0]
@@ -714,17 +723,17 @@ def f(y, t) -> list:
 
     # the model equations
     # auxin
-    f0 = KS - KD * auxini * (1 / area)
+    f0 = KS * auxin_w - KD * auxini
     # arr
-    f1 = KS * 1 / (ARR_HIST[0] / K1 + 1) - KD * arri * (1 / area)
+    f1 = KS * (K1 / (ARR_HIST[0] + K1)) - KD * arri
     # al
-    f2 = KS * (auxini / (auxini + K2)) - KD * ali * (1 / area)
+    f2 = KS * (auxini / (auxini + K2)) - KD * ali
     # pin
-    f3 = KS * (1 / (arri / K3 + 1)) * (auxini / (auxini + K4)) - KD * pini * (1 / area)
+    f3 = KS * (K3 / (arri + K3)) * (auxini / (auxini + K4)) - KD * pini
     # neighbor pin
-    f4 = 0.25 * pini - w_pina * KD * pinai
-    f5 = 0.25 * pini - w_pinb * KD * pinbi
-    f6 = 0.25 * pini - w_pinl * KD * pinli
-    f7 = 0.25 * pini - w_pinm * KD * pinmi 
+    f4 = w_pina * pini - KD * pinai
+    f5 = w_pinb * pini - KD * pinbi
+    f6 = w_pinl * pini - KD * pinli
+    f7 = w_pinm * pini - KD * pinmi
 
     return [f0, f1, f2, f3, f4, f5, f6, f7]

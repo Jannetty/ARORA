@@ -5,6 +5,8 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ARCADE_HEADLESS: True
 
     strategy:
       matrix:
@@ -38,7 +40,15 @@ jobs:
       run: poetry install --no-interaction --no-root
 
     - name: Install library
-      run: poetry install --no-interaction
+      run: poetry install --no-interaction --no-root
+
+    - name: Install EGL mesa
+      run: |
+        sudo apt-get update -y -qq
+        sudo apt-get install -y -qq libegl1-mesa libegl1-mesa-dev     
+           
+    - name: Check if EGL library exists
+      run: ldconfig -p | grep EGL
 
     - name: Test with pytest
       run: |

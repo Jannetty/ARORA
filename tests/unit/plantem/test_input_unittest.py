@@ -1,6 +1,5 @@
 import unittest
 import pandas
-
 from src.plantem.sim.input.input import Input
 from src.plantem.sim.simulation.sim import GrowingSim
 from src.plantem.agent.cell import GrowingCell
