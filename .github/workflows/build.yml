@@ -2,12 +2,11 @@ name: build
 
 on: [push]
 
-env:
-  ARCADE_HEADLESS=True
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ARCADE_HEADLESS: True
 
     strategy:
       matrix:
