@@ -7,8 +7,6 @@ from src.plantem.loc.quad_perimeter.quad_perimeter import (
     get_right_v,
     get_len_perimeter_in_common,
 )
-import os
-import pyglet
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.cell import GrowingCell
 from src.plantem.sim.simulation.sim import GrowingSim
@@ -36,14 +34,6 @@ init_vals = {
 
 
 class TestQuadPerimeter(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        print("Running headless")
-        # for mac
-        pyglet.options["headless"] = True
-        # for PC
-        os.environ["ARCADE_HEADLESS"] = "true"
-
     def test_QuadPerimeter_get_apical(self):
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)

@@ -1,7 +1,5 @@
 import unittest
 import pandas
-import os
-import pyglet
 from src.plantem.sim.input.input import Input
 from src.plantem.sim.simulation.sim import GrowingSim
 from src.plantem.agent.cell import GrowingCell
@@ -18,14 +16,6 @@ class TestInput(unittest.TestCase):
     """
     Tests Input Class
     """
-
-    @classmethod
-    def setUpClass(cls):
-        print("Running headless")
-        # for mac
-        pyglet.options["headless"] = True
-        # for PC
-        os.environ["ARCADE_HEADLESS"] = "true"
 
     def test_get_vertex(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
