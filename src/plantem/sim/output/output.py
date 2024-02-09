@@ -11,7 +11,22 @@ class Output:
         self.filename = filename
         with open(self.filename, "w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["tick", "cell", "auxin", "location", "ARR", "AUX/LAX", "PIN_unlocalized", "PIN_apical", "PIN_basal", "PIN_left", "PIN_right", "arr_hist"])
+            writer.writerow(
+                [
+                    "tick",
+                    "cell",
+                    "auxin",
+                    "location",
+                    "ARR",
+                    "AUX/LAX",
+                    "PIN_unlocalized",
+                    "PIN_apical",
+                    "PIN_basal",
+                    "PIN_left",
+                    "PIN_right",
+                    "arr_hist",
+                ]
+            )
 
     def output_cells(self) -> None:
         """
@@ -34,14 +49,14 @@ class Output:
             summary["auxin"] = self.get_auxin(cell)
             summary["location"] = self.get_location(cell)
             summary = self.get_circ_contents(summary, cell)
-            #summary["num_divisions"] = self.get_division_number(cell)
+            # summary["num_divisions"] = self.get_division_number(cell)
             output.append(summary)
 
         # generate spreadsheet
         header = output[0].keys()
         with open(self.filename, "a", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=header)
-            #writer.writeheader()
+            # writer.writeheader()
             writer.writerows(output)
 
     # Helper functions

@@ -10,6 +10,7 @@ SCREEN_TITLE = "Starting Template"
 
 
 class TestGrowingCell(unittest.TestCase):
+
     init_vals = {
         "auxin": 2,
         "arr": 3,

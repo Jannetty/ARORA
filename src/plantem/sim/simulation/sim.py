@@ -2,7 +2,10 @@ import os
 import pyglet
 import pandas
 import matplotlib.pyplot as plt
-import arcade
+from arcade import Window
+from arcade import SpriteList
+from arcade import set_background_color
+from arcade import close_window
 import time
 from src.plantem.sim.circulator.circulator import Circulator
 from src.plantem.sim.divider.divider import Divider
@@ -15,7 +18,7 @@ SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "ARORA"
 
 
-class GrowingSim(arcade.Window):
+class GrowingSim(Window):
     """
     Simulation class. Manages the simulation and all of its components.
 
@@ -69,7 +72,7 @@ class GrowingSim(arcade.Window):
             width: The width of the simulation window.
             height: The height of the simulation window.
             title: The title of the simulation window.
-            timestep: The size of the timestep of the simulation (in seconds).
+            timestep: The size of the timestep of the simulation (in hours).
             root_midpoint_x: The x-coordinate of the midpoint of the root.
             vis: Whether or not to visualize the simulation.
             cell_val_file: The file containing the cell values.
@@ -77,14 +80,14 @@ class GrowingSim(arcade.Window):
         """
         if vis is False:
             print("Running headless")
-            #for mac
+            # for mac
             pyglet.options["headless"] = True
             # for PC
             os.environ["ARCADE_HEADLESS"] = "true"
             super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        arcade.set_background_color(color=[250, 250, 250])
+        set_background_color(color=[250, 250, 250])
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
@@ -96,7 +99,7 @@ class GrowingSim(arcade.Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
+        # self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -141,7 +144,7 @@ class GrowingSim(arcade.Window):
         """Returns the vertex mover of the simulation."""
         return self.vertex_mover
 
-    def get_cell_list(self) -> arcade.SpriteList:
+    def get_cell_list(self) -> SpriteList:
         """Returns the list of all cells in the simulation."""
         return self.cell_list
 
@@ -176,7 +179,7 @@ class GrowingSim(arcade.Window):
         self.circulator = Circulator(self)
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
-        self.cell_list = arcade.SpriteList(use_spatial_hash=False)
+        self.cell_list = SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
@@ -198,7 +201,7 @@ class GrowingSim(arcade.Window):
             y = cell.get_quad_perimeter().get_min_y()
             ys.append(y)
         return min(ys)
-    
+
     def calculate_root_midpoint_x(self) -> float:
         xs = []
         if len(self.cell_list) == 0:
@@ -228,13 +231,10 @@ class GrowingSim(arcade.Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            #0,
-            #1200,
             self.root_tip_y - 2,
             SCREEN_HEIGHT + self.root_tip_y - 2,
         )
         self.window_offset = self.root_tip_y - 2
-
 
     def on_update(self, delta_time):
         """
@@ -246,10 +246,10 @@ class GrowingSim(arcade.Window):
         print("--------------------")
         self.tick += 1
         max_tick = 200
-        #max_tick = 2592
+        # max_tick = 2592
         try:
             if self.tick < max_tick:
-                self.output.output_cells()
+                # self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
@@ -261,27 +261,29 @@ class GrowingSim(arcade.Window):
 
             else:
                 print("Simulation Complete")
-                arcade.close_window()
+                close_window()
         except (ValueError, OverflowError) as e:
             print(e)
             print("Ending Simulation")
-            arcade.close_window()
+            close_window()
 
-    def on_mouse_press(self, x, y, button, modifiers): 
-        print("Mouse press!")
-        print(f"X: {x}, Y: {y}")
-        y = self.window_offset + y
-        print(f"with, windowoffset, X: {x}, Y: {y}")
-        for cell in self.cell_list:
-            if cell.get_quad_perimeter().point_inside(x,y):
-                print(f"Cell {cell.get_id()}, growing = {cell.growing}")
+    # def on_mouse_press(self, x, y, button, modifiers):
+    #     print("Mouse press!")
+    #     print(f"X: {x}, Y: {y}")
+    #     y = self.window_offset + y
+    #     print(f"with, windowoffset, X: {x}, Y: {y}")
+    #     for cell in self.cell_list:
+    #         if cell.get_quad_perimeter().point_inside(x, y):
+    #             print(f"Cell {cell.get_id()}, growing = {cell.growing}")
 
 
-def main(timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None) -> int:
+def main(
+    timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None
+) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
     geometry = None
-    if  cell_val_file == 'default' and v_file == 'default':
+    if cell_val_file == "default" and v_file == "default":
         cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
         v_file = "src/plantem/sim/input/default_vs.csv"
         geometry = "default"

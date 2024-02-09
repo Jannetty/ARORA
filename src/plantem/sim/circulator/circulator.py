@@ -1,4 +1,3 @@
-import arcade
 from src.plantem.sim.util.math_helpers import round_to_sf
 
 
@@ -48,14 +47,14 @@ class Circulator:
             None
         """
         if cell in self.delta_auxins:
-            if delta == float('inf') or delta == float('-inf'):
+            if delta == float("inf") or delta == float("-inf"):
                 print(f"cell {cell.id} delta = {delta}")
             delta = round_to_sf(delta, 10)
             old_delta = round_to_sf(self.delta_auxins[cell], 10)
             new_delta = round_to_sf(old_delta + delta, 10)
             self.delta_auxins[cell] = new_delta
         else:
-            if delta == float('inf') or delta == float('-inf'):
+            if delta == float("inf") or delta == float("-inf"):
                 print(f"cell {cell.id} delta = {delta}")
             self.delta_auxins[cell] = round_to_sf(delta, 10)
 
