@@ -1,6 +1,4 @@
 import unittest
-import os
-import pyglet
 from src.plantem.sim.mover.vertex_mover import VertexMover
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
@@ -13,13 +11,6 @@ SCREEN_TITLE = "Starting Template"
 
 
 class TestVertexMover(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        print("Running headless")
-        # for mac
-        pyglet.options["headless"] = True
-        # for PC
-        os.environ["ARCADE_HEADLESS"] = "true"
 
     init_vals = {
         "auxin": 2,

@@ -1,6 +1,4 @@
 import unittest
-import pyglet
-import os
 from src.plantem.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
@@ -12,14 +10,6 @@ class TestInitializationSymmetry(unittest.TestCase):
     """
     Tests the symmetry of the default simulation initialization.
     """
-
-    @classmethod
-    def setUpClass(cls):
-        print("Running headless")
-        # for mac
-        pyglet.options["headless"] = True
-        # for PC
-        os.environ["ARCADE_HEADLESS"] = "true"
 
     def test_initial_symmetry(self):
         timestep = 1
