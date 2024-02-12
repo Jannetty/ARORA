@@ -88,6 +88,7 @@ class Input:
             "neighbors",
         ]
         # make changes: ser.iloc[pos]
+        # task for this week!
         for index, row in self.init_vals_input[init_vals_names].iterrows():
             cell_num = f"c{index}"
             init_vals_dict[cell_num] = row.to_dict()
