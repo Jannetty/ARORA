@@ -1,7 +1,6 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
-from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.agent.default_geo_neighbor_helpers import NeighborHelpers
 
@@ -98,8 +97,8 @@ class Cell(Sprite):
         self.sim = simulation
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
-        if init_vals.get("circ_mod") == "disc":
-            self.circ_mod = BaseCirculateModuleDisc(self, init_vals)
+        if init_vals.get("circ_mod") == "cont":
+            self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         else:
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.pin_weights = self.calculate_pin_weights()
