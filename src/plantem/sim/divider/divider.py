@@ -50,9 +50,7 @@ class Divider:
         """
         if len(self.cells_to_divide) != 0:
             meristematic_cells_to_divide = [
-                cell
-                for cell in self.cells_to_divide
-                if cell.get_dev_zone() == "meristematic"
+                cell for cell in self.cells_to_divide if cell.get_dev_zone() == "meristematic"
             ]
             for cell in meristematic_cells_to_divide:
                 # print(f"Dividing cell {cell.get_c_id()}")
@@ -120,9 +118,7 @@ class Divider:
         bottomleft = cell.get_quad_perimeter().get_bottom_left()
         bottomright = cell.get_quad_perimeter().get_bottom_right()
         new_left = Vertex(topleft.get_x(), (topleft.get_y() + bottomleft.get_y()) / 2)
-        new_right = Vertex(
-            topright.get_x(), (topright.get_y() + bottomright.get_y()) / 2
-        )
+        new_right = Vertex(topright.get_x(), (topright.get_y() + bottomright.get_y()) / 2)
         return [new_left, new_right]
 
     def check_neighbors_for_v_existence(self, cell, new_vertex: Vertex):
@@ -159,16 +155,10 @@ class Divider:
             self.swap_neighbors(new_top_cell, apical_neighbor, cell)
         for basal_neighbor in cell.get_b_neighbors():
             self.swap_neighbors(new_bottom_cell, basal_neighbor, cell)
-        self.set_one_side_neighbors(
-            new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
-        )
-        self.set_one_side_neighbors(
-            new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell
-        )
+        self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
+        self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
 
-    def set_one_side_neighbors(
-        self, new_top_cell, new_bottom_cell, neighbor_list, cell
-    ):
+    def set_one_side_neighbors(self, new_top_cell, new_bottom_cell, neighbor_list, cell):
         """
         Sets new cells' neighbors to the neighbors of the old cell that each
         neighbors
