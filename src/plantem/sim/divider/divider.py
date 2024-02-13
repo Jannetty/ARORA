@@ -1,5 +1,5 @@
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 
 
 class Divider:
@@ -53,7 +53,7 @@ class Divider:
                 cell for cell in self.cells_to_divide if cell.get_dev_zone() == "meristematic"
             ]
             for cell in meristematic_cells_to_divide:
-                # print(f"Dividing cell {cell.get_id()}")
+                # print(f"Dividing cell {cell.get_c_id()}")
                 new_vs = self.get_new_vs(cell)
                 # check if those vertices exist by iterating through all vs in all neighbor cells' qps
                 left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
@@ -74,7 +74,7 @@ class Divider:
                 ]
 
                 # make new cells using those vertices
-                new_top_cell = GrowingCell(
+                new_top_cell = Cell(
                     self.sim,
                     new_upper_vs,
                     cell.get_circ_mod().get_state(),
@@ -82,7 +82,7 @@ class Divider:
                 )
 
                 new_top_cell.set_growing(cell.get_growing())
-                new_bottom_cell = GrowingCell(
+                new_bottom_cell = Cell(
                     self.sim,
                     new_lower_vs,
                     cell.get_circ_mod().get_state(),

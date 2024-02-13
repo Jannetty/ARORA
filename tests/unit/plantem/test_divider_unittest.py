@@ -1,6 +1,6 @@
 import unittest
 from src.plantem.sim.divider.divider import Divider
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 from src.plantem.sim.simulation.sim import GrowingSim
 from src.plantem.loc.vertex.vertex import Vertex
 
@@ -39,9 +39,7 @@ class TestDivider(unittest.TestCase):
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
         v4 = Vertex(30, 10)
-        cell1 = GrowingCell(
-            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
-        )
+        cell1 = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
         new_vs = simulation.get_divider().get_new_vs(cell1)
         self.assertEqual([10, 20], new_vs[0].get_xy())
         self.assertEqual([30, 20], new_vs[1].get_xy())
@@ -56,16 +54,12 @@ class TestDivider(unittest.TestCase):
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
         v4 = Vertex(30, 10)
-        cell1 = GrowingCell(
-            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
-        )
+        cell1 = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
         v5 = Vertex(10, 20)
         thisv = simulation.get_divider().check_neighbors_for_v_existence(cell1, v5)
         self.assertEqual(v5, thisv)
         v6 = Vertex(30, 20)
-        cell2 = GrowingCell(
-            simulation, [v5, v6, v4, v1], self.init_vals, simulation.get_next_cell_id()
-        )
+        cell2 = Cell(simulation, [v5, v6, v4, v1], self.init_vals, simulation.get_next_cell_id())
         cell1.add_neighbor(cell2)
         cell2.add_neighbor(cell1)
         v7 = Vertex(100, 100)
@@ -84,17 +78,15 @@ class TestDivider(unittest.TestCase):
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
         v4 = Vertex(30, 10)
-        cell1 = GrowingCell(
-            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
-        )
+        cell1 = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
         v5 = Vertex(10, 40)
         v6 = Vertex(30, 40)
-        a_neighbor = GrowingCell(
+        a_neighbor = Cell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
         v7 = Vertex(10, 15)
         v8 = Vertex(30, 15)
-        new_neighbor = GrowingCell(
+        new_neighbor = Cell(
             simulation, [v7, v8, v2, v3], self.init_vals, simulation.get_next_cell_id()
         )
         cell1.add_neighbor(a_neighbor)
@@ -115,15 +107,13 @@ class TestDivider(unittest.TestCase):
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
         v4 = Vertex(30, 10)
-        cell = GrowingCell(
-            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
-        )
+        cell = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
         v5 = Vertex(10, 20)
         v6 = Vertex(30, 20)
-        new_top_cell = GrowingCell(
+        new_top_cell = Cell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
-        new_bottom_cell = GrowingCell(
+        new_bottom_cell = Cell(
             simulation, [v1, v4, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
         simulation.get_divider().set_one_side_neighbors(
@@ -138,7 +128,7 @@ class TestDivider(unittest.TestCase):
 
         v7 = Vertex(1, 10)
         v8 = Vertex(1, 30)
-        l_neighbor = GrowingCell(
+        l_neighbor = Cell(
             simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
         )
         cell.add_neighbor(l_neighbor)
@@ -160,10 +150,10 @@ class TestDivider(unittest.TestCase):
         v9 = Vertex(60, 10)
         v10 = Vertex(60, 20)
         v11 = Vertex(60, 30)
-        m_top_neighbor = GrowingCell(
+        m_top_neighbor = Cell(
             simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
         )
-        m_lower_neighbor = GrowingCell(
+        m_lower_neighbor = Cell(
             simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id()
         )
         cell.add_neighbor(m_top_neighbor)
@@ -198,16 +188,14 @@ class TestDivider(unittest.TestCase):
         v9 = Vertex(60, 10)
         v10 = Vertex(60, 20)
         v11 = Vertex(60, 30)
-        cell = GrowingCell(
-            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
-        )
-        m_top_neighbor = GrowingCell(
+        cell = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        m_top_neighbor = Cell(
             simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
         )
-        m_lower_neighbor = GrowingCell(
+        m_lower_neighbor = Cell(
             simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        l_neighbor = GrowingCell(
+        l_neighbor = Cell(
             simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
         )
 
@@ -218,10 +206,10 @@ class TestDivider(unittest.TestCase):
         cell.add_neighbor(m_lower_neighbor)
         m_lower_neighbor.add_neighbor(cell)
 
-        new_top_cell = GrowingCell(
+        new_top_cell = Cell(
             simulation, [v2, v3, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
-        new_bottom_cell = GrowingCell(
+        new_bottom_cell = Cell(
             simulation, [v1, v4, v5, v6], self.init_vals, simulation.get_next_cell_id()
         )
         simulation.get_divider().update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
@@ -250,16 +238,14 @@ class TestDivider(unittest.TestCase):
         v9 = Vertex(60, 10)
         v10 = Vertex(60, 20)
         v11 = Vertex(60, 30)
-        cell = GrowingCell(
-            simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id()
-        )
-        m_top_neighbor = GrowingCell(
+        cell = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
+        m_top_neighbor = Cell(
             simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
         )
-        m_lower_neighbor = GrowingCell(
+        m_lower_neighbor = Cell(
             simulation, [v9, v10, v6, v4], self.init_vals, simulation.get_next_cell_id()
         )
-        l_neighbor = GrowingCell(
+        l_neighbor = Cell(
             simulation, [v7, v8, v1, v2], self.init_vals, simulation.get_next_cell_id()
         )
 

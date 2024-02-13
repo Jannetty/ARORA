@@ -120,7 +120,7 @@ class GrowingSim(Window):
             The cell with the given ID.
         """
         for cell in self.cell_list:
-            if cell.id == ID:
+            if cell.get_c_id() == ID:
                 return cell
         raise ValueError(f"Cell with ID {ID} not found in cell_list")
 
@@ -274,7 +274,7 @@ class GrowingSim(Window):
     #     print(f"with, windowoffset, X: {x}, Y: {y}")
     #     for cell in self.cell_list:
     #         if cell.get_quad_perimeter().point_inside(x, y):
-    #             print(f"Cell {cell.get_id()}, growing = {cell.growing}")
+    #             print(f"Cell {cell.get_c_id()}, growing = {cell.growing}")
 
 
 def main(

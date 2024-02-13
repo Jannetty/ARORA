@@ -1,7 +1,7 @@
 import unittest
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 from src.plantem.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 800
@@ -42,7 +42,7 @@ class TestCirculator(unittest.TestCase):
 
     def test_add_delta(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
-        cell = GrowingCell(
+        cell = Cell(
             sim,
             [
                 Vertex(10.0, 10.0),
@@ -59,7 +59,7 @@ class TestCirculator(unittest.TestCase):
 
     def test_update(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
-        cell = GrowingCell(
+        cell = Cell(
             sim,
             [
                 Vertex(10.0, 10.0),

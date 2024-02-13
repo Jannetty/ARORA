@@ -141,11 +141,11 @@ class BaseCirculateModuleCont:
         soln = odeint(self.f, y0, t)
         return soln
 
-    def update(self, pin_weights: dict) -> None:
+    def update(self) -> None:
         """
         Update the circulation contents to the circulator
         """
-        self.pin_weights = pin_weights
+        self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0
         soln = self.solve_equations()
         self.update_auxin(soln)
@@ -218,12 +218,12 @@ class BaseCirculateModuleCont:
         try:
             common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
         except Exception as e:
-            print(f"Cell {self.cell.id} neighbor {neighbor.id}")
+            print(f"Cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()}")
             print(
-                f"Cell {self.cell.id} perimeter {self.cell.quad_perimeter.get_corners_for_disp()}, vs = {[v.id for v in self.cell.quad_perimeter.get_vs()]}"
+                f"Cell {self.cell.get_c_id()} perimeter {self.cell.quad_perimeter.get_corners_for_disp()}, vs = {[v.v_id for v in self.cell.quad_perimeter.get_vs()]}"
             )
             print(
-                f"Neighbor {neighbor.id} perimeter {neighbor.quad_perimeter.get_corners_for_disp()}, vs = {[v.id for v in neighbor.quad_perimeter.get_vs()]}"
+                f"Neighbor {neighbor.get_c_id()} perimeter {neighbor.quad_perimeter.get_corners_for_disp()}, vs = {[v.v_id for v in neighbor.quad_perimeter.get_vs()]}"
             )
             raise e
         memfrac = common_perimeter / cell_perimeter
@@ -254,7 +254,7 @@ class BaseCirculateModuleCont:
                 or auxin_efflux == float("-inf")
             ):
                 print(
-                    f"cell {self.cell.id} neighbor {neighbor.id} neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}"
+                    f"cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()} neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}"
                 )
             neighbor_aux_exchange = auxin_influx - auxin_efflux
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
@@ -273,7 +273,7 @@ class BaseCirculateModuleCont:
                 or auxin == float("-inf")
                 or total_auxin == float("-inf")
             ):
-                print(f"cell {self.cell.id} auxin {auxin}, total auxin {total_auxin}")
+                print(f"cell {self.cell.get_c_id()} auxin {auxin}, total auxin {total_auxin}")
             else:
                 total_auxin += auxin
         return total_auxin
@@ -356,10 +356,10 @@ class BaseCirculateModuleCont:
         if (soln[1, 0] + total_aux_exchange) < 0:
             print("-------------------")
             print(
-                f"cell {self.cell.id} auxin {soln[1, 0]}, total aux exchange {total_aux_exchange}"
+                f"cell {self.cell.get_c_id()} auxin {soln[1, 0]}, total aux exchange {total_aux_exchange}"
             )
             print(
-                f"a_neighbors {[neighbor.id for neighbor in neighborsa]}, b_neighbors {[neighbor.id for neighbor in neighborsb]}, l_neighbors {[neighbor.id for neighbor in neighborsl]}, m_neighbors {[neighbor.id for neighbor in neighborsm]}"
+                f"a_neighbors {[neighbor.get_c_id() for neighbor in neighborsa]}, b_neighbors {[neighbor.get_c_id() for neighbor in neighborsb]}, l_neighbors {[neighbor.get_c_id() for neighbor in neighborsl]}, m_neighbors {[neighbor.get_c_id() for neighbor in neighborsm]}"
             )
             print(
                 f"auxina_exchange {sum(auxina_exchange.values())}, auxinb_exchange {sum(auxinb_exchange.values())}, auxinl_exchange {sum(auxinl_exchange.values())}, auxinm_exchange {sum(auxinm_exchange.values())}"

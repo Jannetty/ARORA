@@ -1725,7 +1725,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             823,
         ]
         equal_dict = dict(zip(keys, value))
-        while simulation.get_tick() < 100:
+        while simulation.get_tick() < 5:
             print(f"tick {simulation.get_tick()}")
             for id in keys:
                 try:

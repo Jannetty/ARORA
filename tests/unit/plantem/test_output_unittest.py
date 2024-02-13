@@ -1,7 +1,7 @@
 import unittest
 from src.plantem.sim.output.output import Output
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 from src.plantem.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 800
@@ -64,13 +64,13 @@ init_vals2 = {
     "circ_mod": "cont",
 }
 sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
-cell0 = GrowingCell(
+cell0 = Cell(
     sim,
     [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
     init_vals,
     sim.get_next_cell_id(),
 )
-cell1 = GrowingCell(
+cell1 = Cell(
     sim,
     [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
     init_vals2,

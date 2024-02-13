@@ -8,7 +8,7 @@ from src.plantem.loc.quad_perimeter.quad_perimeter import (
     get_len_perimeter_in_common,
 )
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 from src.plantem.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 800
@@ -120,8 +120,8 @@ class TestQuadPerimeter(unittest.TestCase):
         v5 = Vertex(50, 10)
         v6 = Vertex(50, 30)
         qp_2 = [v3, v4, v5, v6]
-        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
-        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        cell1 = Cell(simulation, qp_1, init_vals, 1)
+        cell2 = Cell(simulation, qp_2, init_vals, 2)
         self.assertEqual(20, get_len_perimeter_in_common(cell1, cell2))
         self.assertEqual(20, get_len_perimeter_in_common(cell2, cell1))
 
@@ -139,8 +139,8 @@ class TestQuadPerimeter(unittest.TestCase):
         v5 = Vertex(0, 10)
         v6 = Vertex(0, 30)
         qp_2 = [v3, v4, v5, v6]
-        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
-        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        cell1 = Cell(simulation, qp_1, init_vals, 1)
+        cell2 = Cell(simulation, qp_2, init_vals, 2)
         self.assertEqual(20, get_len_perimeter_in_common(cell1, cell2))
         self.assertEqual(20, get_len_perimeter_in_common(cell2, cell1))
 
@@ -158,8 +158,8 @@ class TestQuadPerimeter(unittest.TestCase):
         v5 = Vertex(10, 50)
         v6 = Vertex(30, 50)
         qp_2 = [v3, v2, v5, v6]
-        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
-        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        cell1 = Cell(simulation, qp_1, init_vals, 1)
+        cell2 = Cell(simulation, qp_2, init_vals, 2)
         self.assertEqual(20, get_len_perimeter_in_common(cell1, cell2))
         self.assertEqual(20, get_len_perimeter_in_common(cell2, cell1))
 
@@ -177,8 +177,8 @@ class TestQuadPerimeter(unittest.TestCase):
         v5 = Vertex(10, 0)
         v6 = Vertex(30, 0)
         qp_2 = [v3, v2, v5, v6]
-        cell1 = GrowingCell(simulation, qp_1, init_vals, 1)
-        cell2 = GrowingCell(simulation, qp_2, init_vals, 2)
+        cell1 = Cell(simulation, qp_1, init_vals, 1)
+        cell2 = Cell(simulation, qp_2, init_vals, 2)
         self.assertEqual(20, get_len_perimeter_in_common(cell1, cell2))
         self.assertEqual(20, get_len_perimeter_in_common(cell2, cell1))
 

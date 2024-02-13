@@ -2,7 +2,7 @@ import unittest
 import pandas
 from src.plantem.sim.input.input import Input
 from src.plantem.sim.simulation.sim import GrowingSim
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
@@ -271,11 +271,11 @@ class TestInput(unittest.TestCase):
         v4 = Vertex(10, 36)
         v5 = Vertex(30, 36)
         cell_dict = input.create_cells()
-        expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
-        expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
+        expected_cell0 = Cell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
+        expected_cell1 = Cell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
         found_cell0 = cell_dict["c0"]
         # test cell0
-        self.assertEqual(expected_cell0.get_id(), found_cell0.get_id())
+        self.assertEqual(expected_cell0.get_c_id(), found_cell0.get_c_id())
         self.assertEqual(
             expected_cell0.get_quad_perimeter().get_area(),
             found_cell0.get_quad_perimeter().get_area(),
@@ -288,7 +288,7 @@ class TestInput(unittest.TestCase):
         )
         # test cell1
         found_cell1 = cell_dict["c1"]
-        self.assertEqual(expected_cell1.get_id(), found_cell1.get_id())
+        self.assertEqual(expected_cell1.get_c_id(), found_cell1.get_c_id())
         self.assertEqual(
             expected_cell1.get_quad_perimeter().get_area(),
             found_cell1.get_quad_perimeter().get_area(),
@@ -316,8 +316,8 @@ class TestInput(unittest.TestCase):
         v4 = Vertex(10, 360)
         v5 = Vertex(30, 360)
         cell_dict = input.create_cells()
-        expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
-        expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
+        expected_cell0 = Cell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
+        expected_cell1 = Cell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
         found_neighbors_dict = input.get_neighbors(cell_dict)
         found_cell0_neighbors = found_neighbors_dict["c0"]
         found_cell1_neighbors = found_neighbors_dict["c1"]
@@ -326,12 +326,12 @@ class TestInput(unittest.TestCase):
         # check cell0
         for cell in range(len(expected_cell0_neighbors)):
             self.assertEqual(
-                expected_cell0_neighbors[cell].get_id(), found_cell0_neighbors[cell].get_id()
+                expected_cell0_neighbors[cell].get_c_id(), found_cell0_neighbors[cell].get_c_id()
             )
         # check cell1
         for cell in range(len(expected_cell1_neighbors)):
             self.assertEqual(
-                expected_cell1_neighbors[cell].get_id(), found_cell1_neighbors[cell].get_id()
+                expected_cell1_neighbors[cell].get_c_id(), found_cell1_neighbors[cell].get_c_id()
             )
 
     def test_update_neighbors(self):
@@ -348,8 +348,8 @@ class TestInput(unittest.TestCase):
         v4 = Vertex(10, 36)
         v5 = Vertex(30, 36)
         cell_dict = input.create_cells()
-        expected_cell0 = GrowingCell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
-        expected_cell1 = GrowingCell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
+        expected_cell0 = Cell(sim, [v0, v1, v2, v3], make_init_vals(), 0)
+        expected_cell1 = Cell(sim, [v1, v3, v4, v5], make_init_vals(), 1)
         expected_cell0.add_neighbor(expected_cell1)
         expected_cell1.add_neighbor(expected_cell0)
         neighbors = input.get_neighbors(cell_dict)
@@ -358,12 +358,12 @@ class TestInput(unittest.TestCase):
         for i in range(len(expected_cell0.get_a_neighbors())):
             found = neighbors["c0"][i]
             expected = expected_cell0.get_a_neighbors()[i]
-            self.assertEqual(expected.get_id(), found.get_id())
+            self.assertEqual(expected.get_c_id(), found.get_c_id())
         # test cell1
         for i in range(len(expected_cell1.get_b_neighbors())):
             found = neighbors["c1"][i]
             expected = expected_cell1.get_b_neighbors()[i]
-            self.assertEqual(expected.get_id(), found.get_id())
+            self.assertEqual(expected.get_c_id(), found.get_c_id())
 
     def test_input(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
@@ -381,13 +381,13 @@ class TestInput(unittest.TestCase):
         v5 = Vertex(30, 36)
         input.make_cells_from_input_files()
         found_cell_list = sim.get_cell_list()
-        expected_cell0 = GrowingCell(sim2, [v0, v1, v2, v3], make_init_vals(), 0)
-        expected_cell1 = GrowingCell(sim2, [v1, v3, v4, v5], make_init_vals(), 1)
+        expected_cell0 = Cell(sim2, [v0, v1, v2, v3], make_init_vals(), 0)
+        expected_cell1 = Cell(sim2, [v1, v3, v4, v5], make_init_vals(), 1)
         expected_cell_list = sim2.get_cell_list()
         expected_cell_list.append(expected_cell0)
         expected_cell_list.append(expected_cell1)
         for i in range(len(expected_cell_list)):
-            self.assertEqual(expected_cell_list[i].get_id(), found_cell_list[i].get_id())
+            self.assertEqual(expected_cell_list[i].get_c_id(), found_cell_list[i].get_c_id())
             self.assertEqual(
                 expected_cell_list[i].get_quad_perimeter().get_area(),
                 found_cell_list[i].get_quad_perimeter().get_area(),

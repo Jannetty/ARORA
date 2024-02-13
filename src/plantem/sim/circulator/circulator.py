@@ -48,14 +48,14 @@ class Circulator:
         """
         if cell in self.delta_auxins:
             if delta == float("inf") or delta == float("-inf"):
-                print(f"cell {cell.id} delta = {delta}")
+                print(f"cell {cell.get_c_id()} delta = {delta}")
             delta = round_to_sf(delta, 10)
             old_delta = round_to_sf(self.delta_auxins[cell], 10)
             new_delta = round_to_sf(old_delta + delta, 10)
             self.delta_auxins[cell] = new_delta
         else:
             if delta == float("inf") or delta == float("-inf"):
-                print(f"cell {cell.id} delta = {delta}")
+                print(f"cell {cell.get_c_id()} delta = {delta}")
             self.delta_auxins[cell] = round_to_sf(delta, 10)
 
     def update(self) -> None:
