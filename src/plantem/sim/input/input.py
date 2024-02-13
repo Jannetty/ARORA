@@ -1,7 +1,7 @@
 import pandas
 import csv
 from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 
 
 class Input:
@@ -154,7 +154,7 @@ class Input:
     def create_cells(self) -> dict:
         """
         Returns newly made cells dictionary with cell index as key and its
-        corresponding GrowingCell object as value
+        corresponding Cell object as value
         """
         vertices = self.get_vertex()
         vertex_assignment = self.get_vertex_assignment()
@@ -165,7 +165,7 @@ class Input:
         # generate new cells
         new_cells = {}
         for cell_num, vertices in vertex_grouping.items():
-            new_cells[cell_num] = GrowingCell(
+            new_cells[cell_num] = Cell(
                 self.sim, vertices, init_vals[cell_num], self.sim.get_next_cell_id()
             )
         return new_cells
@@ -173,7 +173,7 @@ class Input:
     def get_neighbors(self, new_cells: dict) -> dict:
         """
         Returns neighbors dictionary with cell index as key and its
-        correspodning neighbors list (with GrowingCell objects) as value
+        correspodning neighbors list (with Cell objects) as value
         """
         neighbors_assignment = self.get_neighbors_assignment()
         neighbors = {}

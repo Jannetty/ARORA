@@ -45,7 +45,7 @@ class Output:
         for cell in cell_list:
             summary = {}
             summary["tick"] = self.sim.get_tick()
-            summary["cell"] = cell.get_id()
+            summary["cell"] = cell.get_c_id()
             summary["auxin"] = self.get_auxin(cell)
             summary["location"] = self.get_location(cell)
             summary = self.get_circ_contents(summary, cell)

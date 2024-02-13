@@ -1,4 +1,4 @@
-from src.plantem.agent.cell import GrowingCell
+from src.plantem.agent.cell import Cell
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.loc.vertex.vertex import Vertex
 
@@ -11,15 +11,15 @@ class VertexMover:
         self.vertex_deltas = {}
         self.sim = sim
 
-    def add_cell_delta_val(self, cell: GrowingCell, deltaX: float) -> None:
+    def add_cell_delta_val(self, cell: Cell, deltaX: float) -> None:
         if cell in self.cell_deltas:
             raise ValueError(
-                f"Multiple delta vals added to VertexMover for cell {cell.id}. VertexMover must be updated between cell updates."
+                f"Multiple delta vals added to VertexMover for cell {cell.get_c_id()}. VertexMover must be updated between cell updates."
             )
         else:
             self.cell_deltas[cell] = deltaX
 
-    def get_cell_delta_val(self, cell: GrowingCell) -> float:
+    def get_cell_delta_val(self, cell: Cell) -> float:
         return self.cell_deltas[cell]
 
     def get_vertex_delta_val(self, vertex: Vertex) -> float:
@@ -71,7 +71,7 @@ class VertexMover:
             self.add_cell_b_vertices_to_vertex_deltas(cell, this_delta)
             self.propogate_deltas_to_b_neighbors(cell, this_delta)
 
-    def add_cell_b_vertices_to_vertex_deltas(self, cell: GrowingCell, delta: float) -> None:
+    def add_cell_b_vertices_to_vertex_deltas(self, cell: Cell, delta: float) -> None:
         bottom_left_v = cell.get_quad_perimeter().get_bottom_left()
         bottom_right_v = cell.get_quad_perimeter().get_bottom_right()
         if bottom_left_v in self.vertex_deltas:
@@ -83,7 +83,7 @@ class VertexMover:
         else:
             self.vertex_deltas[bottom_right_v] = delta
 
-    def propogate_deltas_to_b_neighbors(self, cell: GrowingCell, delta: float) -> None:
+    def propogate_deltas_to_b_neighbors(self, cell: Cell, delta: float) -> None:
         stack = [(cell, delta)]
         while stack:
             cell, delta = stack.pop()
