@@ -15,7 +15,7 @@ class Divider:
 
     cells_to_divide = []
 
-    def __init__(self, sim: "GrowingSim"):
+    def __init__(self, sim):
         """
         Constructs a new Divider instance.
 
