@@ -100,6 +100,7 @@ class Cell(Sprite):
         if init_vals.get("circ_mod") == "cont":
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         else:
+            print("Circ mod not recognized, using continuous circ mod")
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.pin_weights = self.calculate_pin_weights()
         self.growing = init_vals.get("growing")
@@ -502,6 +503,7 @@ class Cell(Sprite):
         """
         # standard case, check which vertices neighbor shares with self
         # if neighbor shares top left and bottom left, neighbor is to the left
+        neighbor_direction = None
         if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
             self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()
         ):
@@ -509,8 +511,9 @@ class Cell(Sprite):
                 self.quad_perimeter.get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
-                return "l"
-            return "m"
+                neighbor_direction = "l"
+            else:
+                neighbor_direction = "m"
         # if neighbor shares top right and bottom right, neighbor is to the right
         elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (
             self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
@@ -519,17 +522,18 @@ class Cell(Sprite):
                 self.quad_perimeter.get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
-                return "l"
-            return "m"
+                neighbor_direction = "l"
+            else:
+                neighbor_direction = "m"
         elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
             self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()
         ):
-            return "a"
+            neighbor_direction = "a"
         elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (
             self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
         ):
-            return "b"
-        return None
+            neighbor_direction = "b"
+        return neighbor_direction
 
     def get_neighbor_dir_neighbor_shares_one_v_std(self, neighbor) -> str:
         """
@@ -542,7 +546,7 @@ class Cell(Sprite):
         Returns:
             string: The direction of the neighbor.
         """
-        # This catches direction of neighbor sharing one vertex in regular geometry
+        neighbor_direction = None
         if (
             self.get_quad_perimeter().get_top_left()
             == neighbor.get_quad_perimeter().get_top_right()
@@ -551,12 +555,12 @@ class Cell(Sprite):
                 self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
-                return "l"
+                neighbor_direction = "l"
             if (
                 self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
-                return "m"
+                neighbor_direction = "m"
 
         if (
             self.get_quad_perimeter().get_top_right()
@@ -566,12 +570,12 @@ class Cell(Sprite):
                 self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
-                return "l"
+                neighbor_direction = "l"
             if (
                 self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
-                return "m"
+                neighbor_direction = "m"
 
         if (
             self.get_quad_perimeter().get_bottom_left()
@@ -581,12 +585,12 @@ class Cell(Sprite):
                 self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
-                return "l"
+                neighbor_direction = "l"
             if (
                 self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
-                return "m"
+                neighbor_direction = "m"
 
         if (
             self.get_quad_perimeter().get_bottom_right()
@@ -596,30 +600,30 @@ class Cell(Sprite):
                 self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
-                return "l"
+                neighbor_direction = "l"
             if (
                 self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
-                return "m"
+                neighbor_direction = "m"
         if (
             self.get_quad_perimeter().get_top_left()
             == neighbor.get_quad_perimeter().get_bottom_left()
         ):
-            return "a"
+            neighbor_direction = "a"
         if (
             self.get_quad_perimeter().get_top_right()
             == neighbor.get_quad_perimeter().get_bottom_right()
         ):
-            return "a"
+            neighbor_direction = "a"
         if (
             self.get_quad_perimeter().get_bottom_left()
             == neighbor.get_quad_perimeter().get_top_left()
         ):
-            return "b"
+            neighbor_direction = "b"
         if (
             self.get_quad_perimeter().get_bottom_right()
             == neighbor.get_quad_perimeter().get_top_right()
         ):
-            return "b"
-        return None
+            neighbor_direction = "b"
+        return neighbor_direction

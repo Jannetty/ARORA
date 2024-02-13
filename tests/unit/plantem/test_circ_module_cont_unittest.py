@@ -70,12 +70,13 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         init_vals = make_init_vals()
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        area = cell.quad_perimeter.get_area()
         # expected_arr = 0.004545342045
         expected_arr = (
             init_vals["k_s"] * (init_vals["k1"] / (init_vals["arr_hist"][0] + init_vals["k1"]))
         ) - (init_vals["k_d"] * init_vals["arr"])
-        found_arr = circ_module_cont.calculate_arr(3, area)
+        found_arr = circ_module_cont.calculate_arr(
+            3,
+        )
         self.assertAlmostEqual(expected_arr, found_arr, places=5)
 
     def test_calculate_al(self):
@@ -94,12 +95,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         init_vals = make_init_vals()
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        area = cell.quad_perimeter.get_area()
         expected_al = (
             init_vals["k_s"] * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k2"]))
             - init_vals["k_d"] * init_vals["al"]
         )
-        found_al = circ_module_cont.calculate_al(2, 3, area)
+        found_al = circ_module_cont.calculate_al(2, 3)
         self.assertAlmostEqual(expected_al, found_al, places=5)
 
     def test_calculate_pin(self):
@@ -124,7 +124,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        found_pin = circ_module_cont.calculate_pin(2, 3, cell.get_quad_perimeter().get_area())
+        found_pin = circ_module_cont.calculate_pin(2, 3)
         self.assertAlmostEqual(expected_pin, found_pin, places=5)
 
     def test_calculate_membrane_pin(self):
@@ -143,11 +143,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         init_vals = make_init_vals()
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        area = cell.quad_perimeter.get_area()
         # test apical neighbor
         expected_pin = init_vals["w_pina"] * init_vals["pin"] - init_vals["k_d"] * init_vals["pina"]
         found_pin = circ_module_cont.calculate_membrane_pin(
-            init_vals["pin"], init_vals["pina"], area, "a", init_vals["w_pina"]
+            init_vals["pin"], init_vals["pina"], "a", init_vals["w_pina"]
         )
         self.assertAlmostEqual(expected_pin, found_pin, places=3)
 
@@ -204,19 +203,17 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         sim.setup()
         cell.add_neighbor(neighbora)
-        area = cell.quad_perimeter.get_area()
         aneighbor_list = [neighbora]
         ali = make_init_vals()["al"]
         pindi = make_init_vals()["pin"]
         expected_neighbor_auxin = circ_module_cont.get_aux_exchange_across_membrane(
-            ali, pindi, aneighbor_list, area
+            ali, pindi, aneighbor_list
         )
         neighborsa, neighborsb, neighborsl, neighborsm = cell.get_circ_mod().get_neighbors()
         found_neighbor_auxin = cell.get_circ_mod().get_aux_exchange_across_membrane(
             cell.get_circ_mod().get_al(),
             cell.get_circ_mod().get_pin(),
             neighborsa,
-            cell.quad_perimeter.get_area(),
         )
         for neighbor in aneighbor_list:
             expected = expected_neighbor_auxin[neighbor]
@@ -385,8 +382,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         sim.setup()
         neighbors_auxin = [{neighbora: 0.00374998125}, {neighborm: 0.0037499925}]
-        sim_circ = curr_cell.get_sim().get_circulator()
-        circ_module_cont.update_neighbor_auxin(sim_circ, neighbors_auxin)
+        circ_module_cont.update_neighbor_auxin(neighbors_auxin)
         expected = curr_cell.get_sim().get_circulator().delta_auxins
         found = {neighbora: -0.00374998125, neighborm: -0.0037499925}
         self.assertEqual(expected, found)
@@ -512,13 +508,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             curr_cell2.get_circ_mod().get_al(),
             curr_cell2.get_circ_mod().get_apical_pin(),
             [neighbora2],
-            curr_cell2.quad_perimeter.get_area(),
         )
         auxinm = circ_module_cont2.get_aux_exchange_across_membrane(
             curr_cell2.get_circ_mod().get_al(),
             curr_cell2.get_circ_mod().get_medial_pin(),
             [neighborm2],
-            curr_cell2.quad_perimeter.get_area(),
         )
         expected = {
             curr_cell: (soln[1, 0] - make_init_vals()["auxin"])
