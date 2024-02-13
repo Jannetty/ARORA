@@ -1,146 +1,175 @@
 class NeighborHelpers:
     """
-    Helper functions for Cell to figure out its default neighbor information
+    Helper functions to determine the direction of a neighbor cell relative to a cell
+    when initializing model to default geometry.
     """
 
+    @staticmethod
     def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor) -> str:
+        """
+        Determines the direction of the neighbor based on the cell IDs.
+
+        Args:
+            cell (Cell): The current cell.
+            neighbor (Cell): The neighboring cell.
+
+        Returns:
+            str: The direction of the neighbor ('a', 'b', 'l', 'm')
+                or None if no direction is found.
+        """
+        neighbor_direct = None
         if cell.get_c_id() == 10 and neighbor.get_c_id() == 20:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 10:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 11 and neighbor.get_c_id() == 25:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 25 and neighbor.get_c_id() == 11:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 16 and neighbor.get_c_id() == 36:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 36 and neighbor.get_c_id() == 16:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 19 and neighbor.get_c_id() == 37:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 37 and neighbor.get_c_id() == 19:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 26:
-            return "b"
+            neighbor_direct = "b"
         elif cell.get_c_id() == 26 and neighbor.get_c_id() == 20:
-            return "l"
+            neighbor_direct = "l"
 
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 36:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 36 and neighbor.get_c_id() == 20:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 25 and neighbor.get_c_id() == 27:
-            return "b"
+            neighbor_direct = "b"
         elif cell.get_c_id() == 27 and neighbor.get_c_id() == 25:
-            return "l"
+            neighbor_direct = "l"
 
         elif cell.get_c_id() == 25 and neighbor.get_c_id() == 37:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 37 and neighbor.get_c_id() == 25:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 38 and neighbor.get_c_id() == 39:
-            return "m"
+            neighbor_direct = "m"
         elif cell.get_c_id() == 39 and neighbor.get_c_id() == 38:
-            return "l"
+            neighbor_direct = "l"
 
         elif cell.get_c_id() == 39 and neighbor.get_c_id() == 46:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 46 and neighbor.get_c_id() == 39:
-            return "m"
+            neighbor_direct = "m"
 
         elif cell.get_c_id() == 42 and neighbor.get_c_id() == 43:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 43 and neighbor.get_c_id() == 42:
-            return "m"
+            neighbor_direct = "m"
 
         elif cell.get_c_id() == 42 and neighbor.get_c_id() == 47:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 47 and neighbor.get_c_id() == 42:
-            return "m"
+            neighbor_direct = "m"
 
         elif cell.get_c_id() == 44 and neighbor.get_c_id() == 50:
-            return "m"
+            neighbor_direct = "m"
         elif cell.get_c_id() == 50 and neighbor.get_c_id() == 44:
-            return "l"
+            neighbor_direct = "l"
 
         elif cell.get_c_id() == 45 and neighbor.get_c_id() == 51:
-            return "m"
+            neighbor_direct = "m"
         elif cell.get_c_id() == 51 and neighbor.get_c_id() == 45:
-            return "l"
+            neighbor_direct = "l"
 
         elif cell.get_c_id() == 50 and neighbor.get_c_id() == 52:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 52 and neighbor.get_c_id() == 50:
-            return "m"
+            neighbor_direct = "m"
 
         elif cell.get_c_id() == 51 and neighbor.get_c_id() == 59:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 59 and neighbor.get_c_id() == 51:
-            return "m"
+            neighbor_direct = "m"
 
         elif cell.get_c_id() == 54 and neighbor.get_c_id() == 65:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 65 and neighbor.get_c_id() == 54:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 54 and neighbor.get_c_id() == 66:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 66 and neighbor.get_c_id() == 54:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 57 and neighbor.get_c_id() == 69:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 69 and neighbor.get_c_id() == 57:
-            return "b"
+            neighbor_direct = "b"
 
         elif cell.get_c_id() == 57 and neighbor.get_c_id() == 70:
-            return "a"
+            neighbor_direct = "a"
         elif cell.get_c_id() == 70 and neighbor.get_c_id() == 57:
-            return "b"
+            neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cellIDs = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
-        if cell.get_c_id() in rootcap_cellIDs:
-            return "m"
-        if neighbor.get_c_id() in rootcap_cellIDs:
-            return "l"
+        rootcap_cell_ids = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
+        if cell.get_c_id() in rootcap_cell_ids:
+            neighbor_direct = "m"
+        if neighbor.get_c_id() in rootcap_cell_ids:
+            neighbor_direct = "l"
 
-        return None
+        return neighbor_direct
 
+    @staticmethod
     def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell, neighbor) -> str:
+        """
+        Determines the direction of the neighbor based on the cell IDs.
+
+        Args:
+            cell (Cell): The current cell.
+            neighbor (Cell): The neighboring cell.
+
+        Returns:
+            str: The direction of the neighbor ('a', 'b', 'l', 'm')
+                or None if no direction is found.
+        """
+        neighbor_direct = None
         if cell.get_c_id() == 17 and neighbor.get_c_id() == 20:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 17:
-            return "b"
+            neighbor_direct = "b"
         elif cell.get_c_id() == 18 and neighbor.get_c_id() == 25:
-            return "l"
+            neighbor_direct = "l"
         elif cell.get_c_id() == 25 and neighbor.get_c_id() == 18:
-            return "b"
+            neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cellIDs = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
-        if cell.get_c_id() in rootcap_cellIDs:
+        rootcap_cell_ids = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
+        if cell.get_c_id() in rootcap_cell_ids:
             neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
             if (
-                neighbor_midpointy < cell.get_quad_perimeter().get_max_y()
-                and neighbor_midpointy > cell.get_quad_perimeter().get_min_y()
+                cell.get_quad_perimeter().get_min_y()
+                < neighbor_midpointy
+                < cell.get_quad_perimeter().get_max_y()
             ):
-                return "m"
+                neighbor_direct = "m"
             else:
-                return "cell no longer root cap cell neighbor"
-        if neighbor.get_c_id() in rootcap_cellIDs:
+                neighbor_direct = "cell no longer root cap cell neighbor"
+        if neighbor.get_c_id() in rootcap_cell_ids:
             self_midpointy = cell.get_quad_perimeter().get_midpointy()
             if (
-                self_midpointy < neighbor.get_quad_perimeter().get_max_y()
-                and self_midpointy > neighbor.get_quad_perimeter().get_min_y()
+                neighbor.get_quad_perimeter().get_min_y()
+                < self_midpointy
+                < neighbor.get_quad_perimeter().get_max_y()
             ):
-                return "l"
+                neighbor_direct = "l"
             else:
-                return "cell no longer root cap cell neighbor"
-        raise ValueError("Neighbor shares no Vs, is not in root tip, and is not a root cap cell")
+                neighbor_direct = "cell no longer root cap cell neighbor"
+        return neighbor_direct

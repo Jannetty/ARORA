@@ -1,7 +1,7 @@
+import numpy as np
 from scipy.integrate import odeint
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 from src.plantem.sim.util.math_helpers import round_to_sf
-import numpy as np
 
 
 class BaseCirculateModuleCont:
@@ -552,8 +552,7 @@ class BaseCirculateModuleCont:
         """
         if self.left == "medial":
             return self.pinm
-        else:
-            return self.pinl
+        return self.pinl
 
     def get_right_pin(self) -> float:
         """
@@ -564,8 +563,7 @@ class BaseCirculateModuleCont:
         """
         if self.right == "medial":
             return self.pinm
-        else:
-            return self.pinl
+        return self.pinl
 
     def get_state(self) -> dict:
         """
