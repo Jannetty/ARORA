@@ -93,7 +93,9 @@ class VertexMover:
                         neighbor_delta = self.cell_deltas[b_neighbor]
                     else:
                         neighbor_delta = 0
-                    self.add_cell_b_vertices_to_vertex_deltas(b_neighbor, delta + neighbor_delta)
+                    self.add_cell_b_vertices_to_vertex_deltas(
+                        b_neighbor, delta + neighbor_delta
+                    )
                     stack.append((b_neighbor, delta + neighbor_delta))
 
     def execute_vertex_movement(self, max_delta: int) -> None:

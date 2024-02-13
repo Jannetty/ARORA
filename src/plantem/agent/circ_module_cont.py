@@ -168,7 +168,16 @@ class BaseCirculateModuleCont:
         Returns:
             ndarray: The solution of the differential equations.
         """
-        y0 = [self.auxin, self.arr, self.al, self.pin, self.pina, self.pinb, self.pinl, self.pinm]
+        y0 = [
+            self.auxin,
+            self.arr,
+            self.al,
+            self.pin,
+            self.pina,
+            self.pinb,
+            self.pinl,
+            self.pinm,
+        ]
         t = np.array([0, 1])
         soln = odeint(self.f, y0, t)
         return soln
@@ -207,7 +216,9 @@ class BaseCirculateModuleCont:
         Returns:
             float: The calculated ARR concentration.
         """
-        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (self.kd * arri)
+        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (
+            self.kd * arri
+        )
         return arr
 
     def calculate_al(self, auxini: float, ali: float) -> float:
@@ -282,12 +293,19 @@ class BaseCirculateModuleCont:
         try:
             common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
         except Exception as e:
-            print("cell", self.cell.get_c_id(), " does not neighbor cell", neighbor.get_c_id())
+            print(
+                "cell",
+                self.cell.get_c_id(),
+                " does not neighbor cell",
+                neighbor.get_c_id(),
+            )
             raise e
         memfrac = common_perimeter / cell_perimeter
         return round_to_sf(memfrac, 6)
 
-    def get_aux_exchange_across_membrane(self, al: float, pindi: float, neighbors: list) -> dict:
+    def get_aux_exchange_across_membrane(
+        self, al: float, pindi: float, neighbors: list
+    ) -> dict:
         """
         Calculate the amount of auxin that will be transported across each membrane.
 
@@ -310,7 +328,9 @@ class BaseCirculateModuleCont:
             auxin_influx = (neighbor_aux * (memfrac)) * (al * memfrac) * self.k_al
             # added memfrac to export term
             # TODO: Make pin_activity a sigmoidal variable that ranges from 0 to 1
-            pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
+            pin_activity = (
+                (pindi * memfrac) / (pindi * memfrac + self.k_pin)
+            ) * self.k_pin
             accessible_pin = self.auxin * memfrac
             auxin_efflux = accessible_pin * pin_activity
             if (
@@ -325,7 +345,9 @@ class BaseCirculateModuleCont:
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
-    def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
+    def calculate_delta_auxin(
+        self, syn_deg_auxin: float, neighbors_auxin: list
+    ) -> float:
         """
         Calculate the total amount of change in auxin for the current cell.
 
@@ -348,7 +370,9 @@ class BaseCirculateModuleCont:
                 or auxin == float("-inf")
                 or total_auxin == float("-inf")
             ):
-                print(f"cell {self.cell.get_c_id()} auxin {auxin}, total auxin {total_auxin}")
+                print(
+                    f"cell {self.cell.get_c_id()} auxin {auxin}, total auxin {total_auxin}"
+                )
             else:
                 total_auxin += auxin
         return total_auxin
@@ -389,7 +413,9 @@ class BaseCirculateModuleCont:
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
+                self.cell.get_sim().get_circulator().add_delta(
+                    neighbor, -each_dirct[neighbor]
+                )
 
     def get_neighbors(self) -> tuple:
         """
@@ -415,10 +441,18 @@ class BaseCirculateModuleCont:
 
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
-        auxina_exchange = self.get_aux_exchange_across_membrane(self.al, self.pina, neighborsa)
-        auxinb_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinb, neighborsb)
-        auxinl_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinl, neighborsl)
-        auxinm_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinm, neighborsm)
+        auxina_exchange = self.get_aux_exchange_across_membrane(
+            self.al, self.pina, neighborsa
+        )
+        auxinb_exchange = self.get_aux_exchange_across_membrane(
+            self.al, self.pinb, neighborsb
+        )
+        auxinl_exchange = self.get_aux_exchange_across_membrane(
+            self.al, self.pinl, neighborsl
+        )
+        auxinm_exchange = self.get_aux_exchange_across_membrane(
+            self.al, self.pinm, neighborsm
+        )
         neighbors_auxin_exchange = [
             auxina_exchange,
             auxinb_exchange,
@@ -447,7 +481,9 @@ class BaseCirculateModuleCont:
         )
 
         # update current cell
-        curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin, 5))
+        curr_cell.get_sim().get_circulator().add_delta(
+            curr_cell, round_to_sf(delta_auxin, 5)
+        )
 
         # update neighbor cell
         self.update_neighbor_auxin(neighbors_auxin_exchange)

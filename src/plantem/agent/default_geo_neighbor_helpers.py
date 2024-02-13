@@ -119,7 +119,22 @@ class NeighborHelpers:
             neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cell_ids = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
+        rootcap_cell_ids = [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
         if cell.get_c_id() in rootcap_cell_ids:
             neighbor_direct = "m"
         if neighbor.get_c_id() in rootcap_cell_ids:
@@ -151,7 +166,22 @@ class NeighborHelpers:
             neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cell_ids = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
+        rootcap_cell_ids = [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
         if cell.get_c_id() in rootcap_cell_ids:
             neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
             if (

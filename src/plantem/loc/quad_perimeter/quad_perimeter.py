@@ -397,7 +397,22 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     """
 
     length = 0
-    rootcap_cell_ids = [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]
+    rootcap_cell_ids = [
+        60,
+        90,
+        120,
+        136,
+        166,
+        210,
+        296,
+        75,
+        105,
+        135,
+        151,
+        181,
+        225,
+        311,
+    ]
     cellqp = cell.get_quad_perimeter()
     neighborqp = neighbor.get_quad_perimeter()
     # if cellqp and neighborqp share two vertices, calculate euclidean distance between them
@@ -410,21 +425,29 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     # cases for lateral root cap cells
     elif cell.get_c_id() in rootcap_cell_ids:
         if (
-            neighborqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+            neighborqp.get_left_lateral_or_medial(
+                neighbor.get_sim().get_root_midpointx()
+            )
             == "lateral"
         ):
             length = neighborqp.get_left_memlen()
         elif (
-            neighborqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+            neighborqp.get_right_lateral_or_medial(
+                neighbor.get_sim().get_root_midpointx()
+            )
             == "lateral"
         ):
             length = neighborqp.get_right_memlen()
 
     elif neighbor.get_c_id() in rootcap_cell_ids:
-        if cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
+        if (
+            cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+            == "lateral"
+        ):
             length = cellqp.get_left_memlen()
         elif (
-            cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral"
+            cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+            == "lateral"
         ):
             length = cellqp.get_right_memlen()
 
@@ -572,7 +595,9 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
         length = cell.get_quad_perimeter().get_basal_memlen()
 
     if length == 0:
-        raise ValueError("Neighbor list is incorrect, neighbor does not share membrane with cell")
+        raise ValueError(
+            "Neighbor list is incorrect, neighbor does not share membrane with cell"
+        )
     return length
 
 

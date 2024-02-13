@@ -101,9 +101,9 @@ class Input:
                         .replace("]", "")
                         .split(",")
                     )
-            init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
-                init_vals_dict[cell_num]["arr_hist"]
-            )
+            init_vals_dict[cell_num]["arr_hist"] = [
+                init_vals_dict[cell_num]["arr"]
+            ] * len(init_vals_dict[cell_num]["arr_hist"])
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
 
