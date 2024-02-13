@@ -556,13 +556,13 @@ class Cell(Sprite):
                 == "lateral"
             ):
                 neighbor_direction = "l"
-            if (
+            elif (
                 self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
 
-        if (
+        elif (
             self.get_quad_perimeter().get_top_right()
             == neighbor.get_quad_perimeter().get_top_left()
         ):
@@ -571,13 +571,13 @@ class Cell(Sprite):
                 == "lateral"
             ):
                 neighbor_direction = "l"
-            if (
+            elif (
                 self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
 
-        if (
+        elif (
             self.get_quad_perimeter().get_bottom_left()
             == neighbor.get_quad_perimeter().get_bottom_right()
         ):
@@ -586,13 +586,13 @@ class Cell(Sprite):
                 == "lateral"
             ):
                 neighbor_direction = "l"
-            if (
+            elif (
                 self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
 
-        if (
+        elif (
             self.get_quad_perimeter().get_bottom_right()
             == neighbor.get_quad_perimeter().get_bottom_left()
         ):
@@ -601,27 +601,27 @@ class Cell(Sprite):
                 == "lateral"
             ):
                 neighbor_direction = "l"
-            if (
+            elif (
                 self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
-        if (
+        elif (
             self.get_quad_perimeter().get_top_left()
             == neighbor.get_quad_perimeter().get_bottom_left()
         ):
             neighbor_direction = "a"
-        if (
+        elif (
             self.get_quad_perimeter().get_top_right()
             == neighbor.get_quad_perimeter().get_bottom_right()
         ):
             neighbor_direction = "a"
-        if (
+        elif (
             self.get_quad_perimeter().get_bottom_left()
             == neighbor.get_quad_perimeter().get_top_left()
         ):
             neighbor_direction = "b"
-        if (
+        elif (
             self.get_quad_perimeter().get_bottom_right()
             == neighbor.get_quad_perimeter().get_top_right()
         ):
