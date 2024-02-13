@@ -5,7 +5,6 @@ from src.plantem.sim.simulation.sim import GrowingSim
 from src.plantem.agent.cell import Cell
 from src.plantem.loc.vertex.vertex import Vertex
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
-from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -298,7 +297,7 @@ class TestInput(unittest.TestCase):
         self.assertEqual(found_cell0.growing, False)
         self.assertTrue(isinstance(found_cell0.get_circ_mod(), BaseCirculateModuleCont))
 
-        # check that cell1 is nongrowing and has discrete circulator
+        # check that cell1 is nongrowing and has continuous circulator
         self.assertEqual(found_cell1.growing, False)
         self.assertTrue(isinstance(found_cell1.get_circ_mod(), BaseCirculateModuleCont))
 
