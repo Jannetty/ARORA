@@ -11,7 +11,7 @@ jobs:
     - name: Checkout the repo
       uses: actions/checkout@v2
 
-    - name: Set up Python 3.9
+    - name: Set up Python 3.11
       uses: actions/setup-python@v2
       with:
         python-version: 3.11
@@ -46,7 +46,7 @@ jobs:
 
     - name: Check with black
       run: |
-        black -l 100 --check src/ tests/
+        black -l 100 --diff src/ tests/
 
     - name: Check with mypy
       run: |
