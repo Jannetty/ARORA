@@ -1,3 +1,4 @@
+import os
 import unittest
 from src.plantem.sim.divider.divider import Divider
 from src.plantem.agent.cell import Cell
@@ -28,6 +29,16 @@ class TestDivider(unittest.TestCase):
         "growing": True,
         "circ_mod": "cont",
     }
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestDivider, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "true"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestDivider, cls).tearDownClass()
 
     def test_get_new_vs(self):
         timestep = 1

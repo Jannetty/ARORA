@@ -1,3 +1,4 @@
+import os
 import unittest
 from src.plantem.sim.simulation.sim import GrowingSim
 
@@ -10,6 +11,16 @@ class TestInitializationSymmetry(unittest.TestCase):
     """
     Tests the symmetry of the default simulation initialization.
     """
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestInitializationSymmetry, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "true"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestInitializationSymmetry, cls).tearDownClass()
 
     def test_initial_symmetry(self):
         timestep = 1
