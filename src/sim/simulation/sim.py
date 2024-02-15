@@ -7,11 +7,11 @@ from arcade import SpriteList
 from arcade import set_background_color
 from arcade import close_window
 import time
-from src.plantem.sim.circulator.circulator import Circulator
-from src.plantem.sim.divider.divider import Divider
-from src.plantem.sim.mover.vertex_mover import VertexMover
-from src.plantem.sim.input.input import Input
-from src.plantem.sim.output.output import Output
+from src.sim.circulator.circulator import Circulator
+from src.sim.divider.divider import Divider
+from src.sim.mover.vertex_mover import VertexMover
+from src.sim.input.input import Input
+from src.sim.output.output import Output
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -284,8 +284,8 @@ def main(
     print("Making GrowingSim")
     geometry = None
     if cell_val_file == "default" and v_file == "default":
-        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
-        v_file = "src/plantem/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.csv"
+        v_file = "src/sim/input/default_vs.csv"
         geometry = "default"
     simulation = GrowingSim(
         SCREEN_WIDTH,

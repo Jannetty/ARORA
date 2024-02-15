@@ -1,9 +1,9 @@
 import os
 import unittest
-from src.plantem.sim.divider.divider import Divider
-from src.plantem.agent.cell import Cell
-from src.plantem.sim.simulation.sim import GrowingSim
-from src.plantem.loc.vertex.vertex import Vertex
+from src.sim.divider.divider import Divider
+from src.agent.cell import Cell
+from src.sim.simulation.sim import GrowingSim
+from src.loc.vertex.vertex import Vertex
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600

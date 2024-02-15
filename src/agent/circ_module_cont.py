@@ -1,11 +1,11 @@
 import numpy as np
 from typing import TYPE_CHECKING, cast
 from scipy.integrate import odeint
-from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
-from src.plantem.sim.util.math_helpers import round_to_sf
+from src.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
+from src.sim.util.math_helpers import round_to_sf
 
 if TYPE_CHECKING:
-    from src.plantem.agent.cell import Cell
+    from src.agent.cell import Cell
 
 
 class BaseCirculateModuleCont:

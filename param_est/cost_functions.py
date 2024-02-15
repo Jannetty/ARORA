@@ -1,5 +1,5 @@
-from src.plantem.sim.simulation.sim import GrowingSim
-from src.plantem.agent.cell import Cell
+from src.sim.simulation.sim import GrowingSim
+from src.agent.cell import Cell
 
 
 def auxin_peak_at_root_tip(sim: GrowingSim) -> float:

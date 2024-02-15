@@ -1,11 +1,11 @@
 import os
 import unittest
 import pandas
-from src.plantem.sim.input.input import Input
-from src.plantem.sim.simulation.sim import GrowingSim
-from src.plantem.agent.cell import Cell
-from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
+from src.sim.input.input import Input
+from src.sim.simulation.sim import GrowingSim
+from src.agent.cell import Cell
+from src.loc.vertex.vertex import Vertex
+from src.agent.circ_module_cont import BaseCirculateModuleCont
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -30,8 +30,8 @@ class TestInput(unittest.TestCase):
     def test_get_vertex(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         expected_vertex_list = {
@@ -50,8 +50,8 @@ class TestInput(unittest.TestCase):
     def test_get_init_vals(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         expected = {
@@ -112,8 +112,8 @@ class TestInput(unittest.TestCase):
     def test_set_arr_hist(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         dict = {
@@ -225,8 +225,8 @@ class TestInput(unittest.TestCase):
     def test_get_vertex_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         expected = {"c0": ["0", "1", "2", "3"], "c1": ["1", "3", "4", "5"]}
@@ -238,8 +238,8 @@ class TestInput(unittest.TestCase):
     def test_get_neighbors_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         expected = {"c0": ["c1"], "c1": ["c0"]}
@@ -251,8 +251,8 @@ class TestInput(unittest.TestCase):
     def test_group_vertices(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         found_vertices = input.get_vertex()
@@ -270,8 +270,8 @@ class TestInput(unittest.TestCase):
     def test_create_cells(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -315,8 +315,8 @@ class TestInput(unittest.TestCase):
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         v0 = Vertex(10, 300)
@@ -347,8 +347,8 @@ class TestInput(unittest.TestCase):
     def test_update_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -379,8 +379,8 @@ class TestInput(unittest.TestCase):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/plantem/test_csv/init_vals.csv",
-            "tests/unit/plantem/test_csv/vertex.csv",
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -408,7 +408,7 @@ class TestInput(unittest.TestCase):
             )
 
     def test_replace_default_to_gparam(self):
-        gparam_file = "src/plantem/sim/input/default_input_gparam.csv"
+        gparam_file = "src/sim/input/default_input_gparam.csv"
         full_gparam_df = pandas.read_csv(gparam_file)
         for index, row in full_gparam_df.iterrows():
             this_sim_gparam_series = row
@@ -419,13 +419,13 @@ class TestInput(unittest.TestCase):
                 1,
                 400,
                 False,
-                cell_val_file="tests/unit/plantem/test_csv/init_vals.csv",
-                v_file="tests/unit/plantem/test_csv/vertex.csv",
+                cell_val_file="tests/unit/test_csv/init_vals.csv",
+                v_file="tests/unit/test_csv/vertex.csv",
             )
             # check to make sure that cells have gparams instead of cell_val_file params
             # this_input = Input(
-            #    "tests/unit/plantem/test_csv/init_vals.csv",
-            #    "tests/unit/plantem/test_csv/vertex.csv",
+            #    "tests/unit/test_csv/init_vals.csv",
+            #    "tests/unit/test_csv/vertex.csv",
             #    this_sim
             # )
             this_input = this_sim.input

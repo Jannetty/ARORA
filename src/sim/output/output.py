@@ -2,8 +2,8 @@ import csv
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.plantem.sim import Sim
-    from src.plantem.agent.cell import Cell
+    from src.sim import Sim
+    from src.agent.cell import Cell
 
 
 class Output:

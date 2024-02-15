@@ -1,12 +1,12 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
 from typing import TYPE_CHECKING
-from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
-from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
-from src.plantem.agent.default_geo_neighbor_helpers import NeighborHelpers
+from src.agent.circ_module_cont import BaseCirculateModuleCont
+from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
+from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 
 if TYPE_CHECKING:
-    from src.plantem.sim import Simulation
+    from src.sim import Simulation
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
 MERISTEMATIC_GROWTH_RATE = -0.0179

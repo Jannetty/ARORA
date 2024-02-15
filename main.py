@@ -1,5 +1,5 @@
 import time
-from src.plantem.sim.simulation import sim
+from src.sim.simulation import sim
 
 """
 File to run simulation

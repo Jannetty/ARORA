@@ -1,5 +1,5 @@
-from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import Cell
+from src.loc.vertex.vertex import Vertex
+from src.agent.cell import Cell
 
 
 class Divider:

@@ -1,10 +1,10 @@
 import os
 import unittest
-from src.plantem.sim.mover.vertex_mover import VertexMover
-from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
-from src.plantem.agent.cell import Cell
-from src.plantem.sim.simulation.sim import GrowingSim
+from src.sim.mover.vertex_mover import VertexMover
+from src.loc.vertex.vertex import Vertex
+from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
+from src.agent.cell import Cell
+from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600

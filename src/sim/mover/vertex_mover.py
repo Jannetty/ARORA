@@ -1,6 +1,6 @@
-from src.plantem.agent.cell import Cell
-from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
-from src.plantem.loc.vertex.vertex import Vertex
+from src.agent.cell import Cell
+from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
+from src.loc.vertex.vertex import Vertex
 
 
 class VertexMover:

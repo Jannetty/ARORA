@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from src.plantem.agent.cell import Cell
+    from src.agent.cell import Cell
 
 
 class NeighborHelpers:

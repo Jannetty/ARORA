@@ -1,10 +1,10 @@
 import math
 from typing import TYPE_CHECKING
-from src.plantem.sim.util.math_helpers import round_to_sf
-from src.plantem.loc.vertex.vertex import Vertex
+from src.sim.util.math_helpers import round_to_sf
+from src.loc.vertex.vertex import Vertex
 
 if TYPE_CHECKING:
-    from src.plantem.agent.cell import Cell
+    from src.agent.cell import Cell
 
 
 def list_intersection(lst1: list, lst2: list) -> list:

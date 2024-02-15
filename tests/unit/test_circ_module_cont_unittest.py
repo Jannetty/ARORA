@@ -2,9 +2,9 @@ import os
 import unittest
 from scipy.integrate import odeint
 import numpy as np
-from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import Cell
-from src.plantem.sim.simulation.sim import GrowingSim
+from src.loc.vertex.vertex import Vertex
+from src.agent.cell import Cell
+from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
