@@ -1,3 +1,4 @@
+import os
 import unittest
 from src.plantem.loc.quad_perimeter.quad_perimeter import (
     QuadPerimeter,
@@ -34,6 +35,17 @@ init_vals = {
 
 
 class TestQuadPerimeter(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestQuadPerimeter, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "true"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestQuadPerimeter, cls).tearDownClass()
+
     def test_QuadPerimeter_get_apical(self):
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)

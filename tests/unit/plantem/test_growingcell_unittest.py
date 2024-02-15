@@ -1,3 +1,4 @@
+import os
 import unittest
 from src.plantem.agent.cell import Cell
 from src.plantem.loc.vertex.vertex import Vertex
@@ -28,6 +29,16 @@ class TestCell(unittest.TestCase):
         "growing": True,
         "circ_mod": "cont",
     }
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestCell, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "true"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestCell, cls).tearDownClass()
 
     def test_get_area(self):
         timestep = 1

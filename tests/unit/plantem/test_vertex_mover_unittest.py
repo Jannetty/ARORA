@@ -1,3 +1,4 @@
+import os
 import unittest
 from src.plantem.sim.mover.vertex_mover import VertexMover
 from src.plantem.loc.vertex.vertex import Vertex
@@ -29,6 +30,16 @@ class TestVertexMover(unittest.TestCase):
         "growing": True,
         "circ_mod": "cont",
     }
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestVertexMover, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "true"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestVertexMover, cls).tearDownClass()
 
     def test_add_cell_delta_val(self):
         timestep = 1

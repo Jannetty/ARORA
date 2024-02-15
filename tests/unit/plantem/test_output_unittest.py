@@ -1,3 +1,4 @@
+import os
 import unittest
 from src.plantem.sim.output.output import Output
 from src.plantem.loc.vertex.vertex import Vertex
@@ -81,6 +82,17 @@ CELL_LIST = [cell0, cell1]
 
 
 class TestOutput(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestOutput, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "true"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestOutput, cls).tearDownClass()
+
     def test_get_auxin(self):
         output = Output(sim, "ouput.csv")
         expected = 2
