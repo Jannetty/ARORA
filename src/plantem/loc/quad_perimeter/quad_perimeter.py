@@ -377,7 +377,7 @@ class QuadPerimeter:
         return round_to_sf(memfrac, 6)
 
 
-def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float | int:
+def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float:
     """
     Calculates the length of the common perimeter between two cells.
 
@@ -392,7 +392,7 @@ def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float | int:
         Exception: If the neighbor does not share a membrane with the cell.
     """
 
-    length = 0
+    length = 0.0
     rootcap_cell_ids = [
         60,
         90,
@@ -600,7 +600,6 @@ def get_apical(vertex_list: list["Vertex"]) -> list["Vertex"]:
     vs = vertex_list
     assert len(vs) == 4
     maxy = float("-inf")
-    apical_v = None
     apical_vs = []
     for v in vs:
         if v.get_y() > maxy:
@@ -644,7 +643,6 @@ def get_left_v(vertex_list: list["Vertex"]) -> Vertex:
         raise ValueError("get_left_v called on vertex list of length != 2")
     vs = vertex_list
     minx = float("inf")
-    left_v = None
     for v in vs:
         if v.get_x() < minx:
             minx = v.get_x()
@@ -665,7 +663,6 @@ def get_right_v(vertex_list: list["Vertex"]) -> Vertex:
     if len(vertex_list) != 2:
         raise ValueError("get_right_v called on vertex list of length != 2")
     left = get_left_v(vertex_list)
-    right = None
     for v in vertex_list:
         if v is not left:
             right = v
