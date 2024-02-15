@@ -1,7 +1,11 @@
 import numpy as np
+from typing import TYPE_CHECKING, cast
 from scipy.integrate import odeint
 from src.plantem.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 from src.plantem.sim.util.math_helpers import round_to_sf
+
+if TYPE_CHECKING:
+    from src.plantem.agent.cell import Cell
 
 
 class BaseCirculateModuleCont:
@@ -27,24 +31,7 @@ class BaseCirculateModuleCont:
         auxin_w (float): The weight of auxin synthesis.
     """
 
-    auxin = None
-    arr = None
-    al = None
-    pin = None
-    pina = None
-    pinb = None
-    pinl = None
-    pinm = None
-    cell = None
-    left = None
-    right = None
-    weighta = 0
-    weightb = 0
-    weightl = 0
-    weightm = 0
-    auxin_w = 0
-
-    def __init__(self, cell, init_vals: dict):
+    def __init__(self, cell: "Cell", init_vals: dict):
         """
         Initialize the BaseCirculateModuleCont object.
 
@@ -54,45 +41,45 @@ class BaseCirculateModuleCont:
         """
         self.cell = cell
 
-        self.init_auxin = init_vals.get("auxin")
+        self.init_auxin = cast(float, init_vals.get("auxin"))
         self.auxin = self.init_auxin
 
-        self.init_arr = init_vals.get("arr")
+        self.init_arr = cast(float, init_vals.get("arr"))
         self.arr = self.init_arr
 
-        self.init_al = init_vals.get("al")
+        self.init_al = cast(float, init_vals.get("al"))
         self.al = self.init_al
 
-        self.init_pin = init_vals.get("pin")
+        self.init_pin = cast(float, init_vals.get("pin"))
         self.pin = self.init_pin
 
-        self.init_pina = init_vals.get("pina")
+        self.init_pina = cast(float, init_vals.get("pina"))
         self.pina = self.init_pina
 
-        self.init_pinb = init_vals.get("pinb")
+        self.init_pinb = cast(float, init_vals.get("pinb"))
         self.pinb = self.init_pinb
 
-        self.init_pinl = init_vals.get("pinl")
+        self.init_pinl = cast(float, init_vals.get("pinl"))
         self.pinl = self.init_pinl
 
-        self.init_pinm = init_vals.get("pinm")
+        self.init_pinm = cast(float, init_vals.get("pinm"))
         self.pinm = self.init_pinm
 
-        self.growing = init_vals.get("growing")
+        self.growing = cast(bool, init_vals.get("growing"))
 
-        self.k_arr_arr = init_vals.get("k1")
-        self.k_auxin_auxlax = init_vals.get("k2")
-        self.k_auxin_pin = init_vals.get("k3")
-        self.k_arr_pin = init_vals.get("k4")
-        self.k_al = init_vals.get("k5")
-        self.k_pin = init_vals.get("k6")
+        self.k_arr_arr = cast(float, init_vals.get("k1"))
+        self.k_auxin_auxlax = cast(float, init_vals.get("k2"))
+        self.k_auxin_pin = cast(float, init_vals.get("k3"))
+        self.k_arr_pin = cast(float, init_vals.get("k4"))
+        self.k_al = cast(float, init_vals.get("k5"))
+        self.k_pin = cast(float, init_vals.get("k6"))
 
-        self.ks = init_vals.get("k_s")
-        self.kd = init_vals.get("k_d")
+        self.ks = cast(float, init_vals.get("k_s"))
+        self.kd = cast(float, init_vals.get("k_d"))
 
-        self.auxin_w = init_vals.get("auxin_w")
+        self.auxin_w = cast(float, init_vals.get("auxin_w"))
 
-        self.arr_hist = init_vals.get("arr_hist")
+        self.arr_hist = cast(list[float], init_vals.get("arr_hist"))
 
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
@@ -106,7 +93,7 @@ class BaseCirculateModuleCont:
 
         self.pin_weights = self.initialize_pin_weights()
 
-    def initialize_pin_weights(self):
+    def initialize_pin_weights(self) -> dict[str, float]:
         """
         Initialize the pin weights for each membrane
         given input-file specified initial PIN distribution
@@ -122,7 +109,7 @@ class BaseCirculateModuleCont:
             pin_weights_dict[direction] = val / pin_sum
         return pin_weights_dict
 
-    def f(self, y, t) -> list:
+    def f(self, y: list[float], t: float) -> list[float]:
         """
         Setup the model differential equations.
 
@@ -161,7 +148,7 @@ class BaseCirculateModuleCont:
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
-    def solve_equations(self):
+    def solve_equations(self) -> np.ndarray:
         """
         Solve the differential equations.
 
@@ -255,7 +242,7 @@ class BaseCirculateModuleCont:
         return pin
 
     def calculate_membrane_pin(
-        self, pini: float, pindi: float, direction: str, pin_weight: float
+        self, pini: float, pindi: float, direction: str, pin_weight: float | None
     ) -> float:
         """
         Calculate the PIN expression on one membrane.
@@ -301,7 +288,9 @@ class BaseCirculateModuleCont:
         memfrac = common_perimeter / cell_perimeter
         return round_to_sf(memfrac, 6)
 
-    def get_aux_exchange_across_membrane(self, al: float, pindi: float, neighbors: list) -> dict:
+    def get_aux_exchange_across_membrane(
+        self, al: float, pindi: float, neighbors: list
+    ) -> dict["Cell", float]:
         """
         Calculate the amount of auxin that will be transported across each membrane.
 
@@ -377,7 +366,7 @@ class BaseCirculateModuleCont:
             if i == (len(self.arr_hist) - 1):
                 self.arr_hist[i] = self.arr
 
-    def update_circ_contents(self, soln) -> None:
+    def update_circ_contents(self, soln: np.ndarray) -> None:
         """
         Update the circulation contents except auxin
 
@@ -418,7 +407,7 @@ class BaseCirculateModuleCont:
         neighborsm = self.cell.get_m_neighbors()
         return neighborsa, neighborsb, neighborsl, neighborsm
 
-    def update_auxin(self, soln) -> None:
+    def update_auxin(self, soln: np.ndarray) -> None:
         """
         Update the auxin of the current cell and its neighbors.
 
@@ -494,7 +483,7 @@ class BaseCirculateModuleCont:
         """
         return self.al
 
-    def get_arr_hist(self) -> list:
+    def get_arr_hist(self) -> list[float]:
         """
         Get the ARR history list.
 
@@ -579,7 +568,7 @@ class BaseCirculateModuleCont:
             return self.pinm
         return self.pinl
 
-    def get_state(self) -> dict:
+    def get_state(self) -> dict[str, float | list[float]]:
         """
         Get the state of the circulate module.
 

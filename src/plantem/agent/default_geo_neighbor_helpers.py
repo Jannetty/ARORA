@@ -23,7 +23,6 @@ class NeighborHelpers:
             str: The direction of the neighbor ('a', 'b', 'l', 'm')
                 or None if no direction is found.
         """
-        neighbor_direct = None
         if cell.get_c_id() == 10 and neighbor.get_c_id() == 20:
             neighbor_direct = "a"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 10:
@@ -161,7 +160,6 @@ class NeighborHelpers:
             str: The direction of the neighbor ('a', 'b', 'l', 'm')
                 or None if no direction is found.
         """
-        neighbor_direct = None
         if cell.get_c_id() == 17 and neighbor.get_c_id() == 20:
             neighbor_direct = "l"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 17:

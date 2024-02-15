@@ -16,7 +16,7 @@ pyglet = "^2.0.10"
 
 [tool.poetry.dev-dependencies]
 black = "^24.2.0"
-pylint = "^2.12.2"
+pylint = "^3.0.3"
 tox = "^3.24.5"
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
