@@ -1,8 +1,12 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
+from typing import TYPE_CHECKING
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.plantem.agent.default_geo_neighbor_helpers import NeighborHelpers
+
+if TYPE_CHECKING:
+    from src.plantem.sim import Simulation
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
 MERISTEMATIC_GROWTH_RATE = -0.0179
@@ -155,7 +159,7 @@ class Cell(Sprite):
         )
         return [r, g, b]
 
-    def get_quad_perimeter(self):
+    def get_quad_perimeter(self) -> "QuadPerimeter":
         """
         Returns the quad perimeter object defining the cell's location
 
@@ -164,7 +168,7 @@ class Cell(Sprite):
         """
         return self.quad_perimeter
 
-    def get_c_id(self):
+    def get_c_id(self) -> int:
         """
         Returns the ID of the cell.
 
@@ -173,7 +177,7 @@ class Cell(Sprite):
         """
         return self.c_id
 
-    def get_dev_zone(self):
+    def get_dev_zone(self) -> str:
         """
         Returns the development zone of the cell.
 
@@ -312,7 +316,7 @@ class Cell(Sprite):
             + self.get_l_neighbors()
         )
 
-    def get_sim(self):
+    def get_sim(self) -> "Simulation":
         """
         Returns the simulation object that calls this cell.
 

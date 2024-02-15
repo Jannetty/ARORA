@@ -1,9 +1,13 @@
 import math
+from typing import TYPE_CHECKING
 from src.plantem.sim.util.math_helpers import round_to_sf
 from src.plantem.loc.vertex.vertex import Vertex
 
+if TYPE_CHECKING:
+    from src.plantem.agent.cell import Cell
 
-def list_intersection(lst1, lst2):
+
+def list_intersection(lst1: list, lst2: list) -> list:
     """
     Returns a list containing the intersection of two input lists.
 
@@ -32,15 +36,7 @@ class QuadPerimeter:
         _init_area (float): The initial area of the cell.
     """
 
-    _perimeter_vs = None
-    _top_left = None
-    _top_right = None
-    _bottom_left = None
-    _bottom_right = None
-    _midpointx = None
-    _init_area = None
-
-    def __init__(self, vertex_list: list):
+    def __init__(self, vertex_list: list["Vertex"]):
         """
         Initializes a QuadPerimeter object with a list of vertices.
 
@@ -49,10 +45,10 @@ class QuadPerimeter:
         """
         self._perimeter_vs = vertex_list
         self.__assign_corners()
-        self.__calc_midpointx()
+        self._midpointx = self.__calc_midpointx()
         self._init_area = self.get_area()
 
-    def __calc_midpointx(self):
+    def __calc_midpointx(self) -> float:
         """
         Calculates the central x-coordinate of the perimeter.
 
@@ -60,9 +56,9 @@ class QuadPerimeter:
             float: The x-coordinate of the midpoint.
         """
         sumx = sum(corner.get_x() for corner in self._perimeter_vs)
-        self._midpointx = sumx / len(self._perimeter_vs)
+        return sumx / len(self._perimeter_vs)
 
-    def __calc_midpointy(self):
+    def __calc_midpointy(self) -> float:
         """
         Calculates the central y-coordinate of the perimeter.
 
@@ -72,7 +68,7 @@ class QuadPerimeter:
         sumy = sum(corner.get_y() for corner in self._perimeter_vs)
         return sumy / len(self._perimeter_vs)
 
-    def get_max_y(self):
+    def get_max_y(self) -> float:
         """
         Gets the maximum y-coordinate of the perimeter.
 
@@ -81,7 +77,7 @@ class QuadPerimeter:
         """
         return max(corner.get_y() for corner in self._perimeter_vs)
 
-    def get_min_y(self):
+    def get_min_y(self) -> float:
         """
         Gets the minimum y-coordinate of the perimeter.
 
@@ -90,7 +86,7 @@ class QuadPerimeter:
         """
         return min(corner.get_y() for corner in self._perimeter_vs)
 
-    def get_max_x(self):
+    def get_max_x(self) -> float:
         """
         Gets the maximum x-coordinate of the perimeter.
 
@@ -99,7 +95,7 @@ class QuadPerimeter:
         """
         return max(corner.get_x() for corner in self._perimeter_vs)
 
-    def get_min_x(self):
+    def get_min_x(self) -> float:
         """
         Gets the minimum x-coordinate of the perimeter.
 
@@ -217,7 +213,7 @@ class QuadPerimeter:
             self._top_right.get_xy(),
         ]
 
-    def set_corners(self, vertex_list: list) -> None:
+    def set_corners(self, vertex_list: list["Vertex"]) -> None:
         """
         Sets the corners of the perimeter.
 
@@ -263,7 +259,7 @@ class QuadPerimeter:
         """
         return self._bottom_right
 
-    def get_vs(self) -> list:
+    def get_vs(self) -> list["Vertex"]:
         """
         Returns the vertices of the perimeter.
 
@@ -310,7 +306,7 @@ class QuadPerimeter:
         """
         return self._top_left.get_y() - self._bottom_left.get_y()
 
-    def determine_left_right(self, root_mid: float) -> tuple:
+    def determine_left_right(self, root_mid: float) -> tuple[str, str]:
         """
         Determines if the cell is to the left or right of the root's midpoint.
 
@@ -328,7 +324,7 @@ class QuadPerimeter:
             return ("lateral", "lateral")
         return ("medial", "lateral")
 
-    def get_left_lateral_or_medial(self, root_mid) -> str:
+    def get_left_lateral_or_medial(self, root_mid: float) -> str:
         """
         Determines if "left" is lateral or medial for this perimeter.
 
@@ -340,7 +336,7 @@ class QuadPerimeter:
         """
         return self.determine_left_right(root_mid)[0]
 
-    def get_right_lateral_or_medial(self, root_mid) -> str:
+    def get_right_lateral_or_medial(self, root_mid: float) -> str:
         """
         Determines if "right" is lateral or medial for this perimeter.
 
@@ -381,7 +377,7 @@ class QuadPerimeter:
         return round_to_sf(memfrac, 6)
 
 
-def get_len_perimeter_in_common(cell, neighbor) -> float:
+def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float | int:
     """
     Calculates the length of the common perimeter between two cells.
 
@@ -591,7 +587,7 @@ def get_len_perimeter_in_common(cell, neighbor) -> float:
     return length
 
 
-def get_apical(vertex_list: list) -> list:
+def get_apical(vertex_list: list["Vertex"]) -> list["Vertex"]:
     """
     Returns two apical vertices from the given vertex list.
 
@@ -620,7 +616,7 @@ def get_apical(vertex_list: list) -> list:
     return apical_vs
 
 
-def get_basal(vertex_list: list) -> list:
+def get_basal(vertex_list: list["Vertex"]) -> list["Vertex"]:
     """
     Returns two basal vertices from the given vertex list.
 
@@ -634,7 +630,7 @@ def get_basal(vertex_list: list) -> list:
     return [v for v in vertex_list if v not in apical]
 
 
-def get_left_v(vertex_list: list) -> Vertex:
+def get_left_v(vertex_list: list["Vertex"]) -> Vertex:
     """
     Returns the left vertex from the given vertex list.
 
@@ -656,7 +652,7 @@ def get_left_v(vertex_list: list) -> Vertex:
     return left_v
 
 
-def get_right_v(vertex_list: list) -> Vertex:
+def get_right_v(vertex_list: list["Vertex"]) -> Vertex:
     """
     Returns the right vertex from the given vertex list.
 
