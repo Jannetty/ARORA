@@ -1,6 +1,6 @@
 import os
 import unittest
-from src.plantem.sim.simulation.sim import GrowingSim
+from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -26,8 +26,8 @@ class TestInitializationSymmetry(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
-        v_file = "src/plantem/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.csv"
+        v_file = "src/sim/input/default_vs.csv"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
@@ -886,8 +886,8 @@ class TestInitializationSymmetry(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
-        v_file = "src/plantem/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.csv"
+        v_file = "src/sim/input/default_vs.csv"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,

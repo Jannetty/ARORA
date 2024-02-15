@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
-from src.plantem.sim.util.math_helpers import round_to_sf
+from src.sim.util.math_helpers import round_to_sf
 
 if TYPE_CHECKING:
-    from src.plantem.sim import Sim
-    from src.plantem.agent.cell import Cell
+    from src.sim import Sim
+    from src.agent.cell import Cell
 
 
 class Circulator:

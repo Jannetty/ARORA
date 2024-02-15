@@ -1,6 +1,6 @@
 import os
 import unittest
-from src.plantem.loc.quad_perimeter.quad_perimeter import (
+from src.loc.quad_perimeter.quad_perimeter import (
     QuadPerimeter,
     get_apical,
     get_basal,
@@ -8,9 +8,9 @@ from src.plantem.loc.quad_perimeter.quad_perimeter import (
     get_right_v,
     get_len_perimeter_in_common,
 )
-from src.plantem.loc.vertex.vertex import Vertex
-from src.plantem.agent.cell import Cell
-from src.plantem.sim.simulation.sim import GrowingSim
+from src.loc.vertex.vertex import Vertex
+from src.agent.cell import Cell
+from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
