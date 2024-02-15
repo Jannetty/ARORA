@@ -50,4 +50,4 @@ jobs:
 
     - name: Check with mypy
       run: |
-        mypy --config-file mypy.ini src
+        mypy --config-file mypy.ini -p src
