@@ -11,10 +11,10 @@ jobs:
     - name: Checkout the repo
       uses: actions/checkout@v2
 
-    - name: Set up Python 3.11
+    - name: Set up Python 3.12
       uses: actions/setup-python@v2
       with:
-        python-version: 3.11
+        python-version: 3.12
 
     - name: Install poetry
       uses: snok/install-poetry@v1
@@ -42,11 +42,11 @@ jobs:
     - name: Lint with pylint
       run: |
         source .venv/bin/activate
-        pylint --ignore-patterns=test.*?py src/ tests/ --fail-under=7.0
+        pylint --ignore-patterns=test.*?py src/ tests/ --fail-under=9.0
 
     - name: Check with black
       run: |
-        black -l 90 --check src/ tests/
+        black -l 100 --diff src/ tests/
 
     - name: Check with mypy
       run: |
