@@ -15,7 +15,7 @@ class TestInitializationSymmetry(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestInitializationSymmetry, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "true"
+        os.environ["ARCADE_HEADLESS"] = "True"
 
     @classmethod
     def teadDownClass(cls):

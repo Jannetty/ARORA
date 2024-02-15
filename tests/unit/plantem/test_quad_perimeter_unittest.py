@@ -39,7 +39,7 @@ class TestQuadPerimeter(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super(TestQuadPerimeter, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "true"
+        os.environ["ARCADE_HEADLESS"] = "True"
 
     @classmethod
     def teadDownClass(cls):
