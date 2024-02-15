@@ -1,4 +1,9 @@
 import csv
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.plantem.sim import Sim
+    from src.plantem.agent.cell import Cell
 
 
 class Output:
@@ -6,7 +11,7 @@ class Output:
     Summary of simulation output
     """
 
-    def __init__(self, sim, filename: str):
+    def __init__(self, sim: "Sim", filename: str):
         self.sim = sim
         self.filename = filename
         with open(self.filename, "w", newline="") as file:
@@ -60,19 +65,19 @@ class Output:
             writer.writerows(output)
 
     # Helper functions
-    def get_auxin(self, cell) -> float:
+    def get_auxin(self, cell: "Cell") -> float:
         """
         Get auxin concentration for each cell
         """
         return cell.get_circ_mod().get_auxin()
 
-    def get_location(self, cell) -> list:
+    def get_location(self, cell: "Cell") -> list[float]:
         """
         Get location (x, y corners) for each cell
         """
         return cell.quad_perimeter.get_corners_for_disp()
 
-    def get_circ_contents(self, summary: dict, cell) -> dict:
+    def get_circ_contents(self, summary: dict, cell: "Cell") -> dict:
         """
         Get circulation results for each cell
         """
@@ -87,7 +92,7 @@ class Output:
         summary["auxin_w"] = cell.get_circ_mod().get_auxin_w()
         return summary
 
-    def get_division_number(self, cell) -> float:
+    def get_division_number(self, cell: "Cell") -> float:
         """
         Get number of cell divisions
         """

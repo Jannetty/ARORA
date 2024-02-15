@@ -9,17 +9,13 @@ class Vertex:
         v_id (optional): An optional identifier for the vertex.
     """
 
-    x = None
-    y = None
-    xy = None
-
-    def __init__(self, x: float, y: float, v_id=None):
+    def __init__(self, x: float, y: float, v_id: int | None = None):
         self.x = x
         self.y = y
         self.xy = [x, y]
         self.v_id = v_id
 
-    def get_xy(self) -> list:
+    def get_xy(self) -> list[float]:
         """
         Get the x and y coordinates of the vertex.
 
@@ -66,7 +62,7 @@ class Vertex:
         self.y = newy
         self.xy[1] = self.y
 
-    def get_vid(self) -> int:
+    def get_vid(self) -> int | None:
         """
         Get the identifier of the vertex.
 

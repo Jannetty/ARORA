@@ -1,4 +1,9 @@
+from typing import TYPE_CHECKING
 from src.plantem.sim.util.math_helpers import round_to_sf
+
+if TYPE_CHECKING:
+    from src.plantem.sim import Sim
+    from src.plantem.agent.cell import Cell
 
 
 class Circulator:
@@ -11,9 +16,7 @@ class Circulator:
         sim: The simulation that this circulator is part of.
     """
 
-    delta_auxins = None
-
-    def __init__(self, sim):
+    def __init__(self, sim: "Sim"):
         """
         Constructs a new Circulator instance.
 
@@ -33,7 +36,7 @@ class Circulator:
         """
         return self.delta_auxins
 
-    def add_delta(self, cell, delta: float) -> None:
+    def add_delta(self, cell: "Cell", delta: float) -> None:
         """
         Adds a delta auxin to the circulator for a given cell. If the cell is already in the circulator,
         the delta auxin is added to the existing delta auxin. If the cell is not in the circulator, the

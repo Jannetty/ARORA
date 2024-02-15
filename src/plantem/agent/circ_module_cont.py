@@ -118,7 +118,7 @@ class BaseCirculateModuleCont:
         pinm = self.get_medial_pin()
         pin_vals = [pina, pinb, pinl, pinm]
         pin_sum = pina + pinb + pinl + pinm
-        for (val, direction) in zip(pin_vals, ["a", "b", "l", "m"]):
+        for val, direction in zip(pin_vals, ["a", "b", "l", "m"]):
             pin_weights_dict[direction] = val / pin_sum
         return pin_weights_dict
 

@@ -1,3 +1,9 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from src.plantem.agent.cell import Cell
+
+
 class NeighborHelpers:
     """
     Helper functions to determine the direction of a neighbor cell relative to a cell
@@ -5,7 +11,7 @@ class NeighborHelpers:
     """
 
     @staticmethod
-    def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor) -> str:
+    def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
         Determines the direction of the neighbor based on the cell IDs.
 
@@ -143,7 +149,7 @@ class NeighborHelpers:
         return neighbor_direct
 
     @staticmethod
-    def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell, neighbor) -> str:
+    def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
         Determines the direction of the neighbor based on the cell IDs.
 
