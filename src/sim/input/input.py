@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING
 import pandas
 import csv
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
+
+if TYPE_CHECKING:
+    from src.sim.simulation.sim import GrowingSim
 
 
 class Input:
@@ -9,11 +13,17 @@ class Input:
     Process input init_vals and vertex information
     """
 
-    def __init__(self, init_vals_file: str, vertex_file: str, sim):
+    def __init__(self, init_vals_file: str, vertex_file: str, sim: "GrowingSim"):
         self.init_vals_input = pandas.read_csv(init_vals_file)
         self.vertex_input = pandas.read_csv(vertex_file)
         self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
+
+    def get_initial_v_miny(self) -> float:
+        """
+        Returns the minimum y-coordinate of the root tip
+        """
+        return self.initial_v_miny
 
     def make_cells_from_input_files(self) -> None:
         """
@@ -43,7 +53,7 @@ class Input:
         for v_num, vertex in vertex_dict.items():
             x = vertex["x"]
             y = vertex["y"]
-            new_vertex_dict[v_num] = Vertex(x, y, v_num)
+            new_vertex_dict[v_num] = Vertex(x, y, int(v_num))
         return new_vertex_dict
 
     def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
@@ -166,7 +176,7 @@ class Input:
         new_cells = {}
         for cell_num, vertices in vertex_grouping.items():
             new_cells[cell_num] = Cell(
-                self.sim, vertices, init_vals[cell_num], self.sim.get_next_cell_id()
+                self.sim, [v for v in vertices], init_vals[cell_num], self.sim.get_next_cell_id()
             )
         return new_cells
 

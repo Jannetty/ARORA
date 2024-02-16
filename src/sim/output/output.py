@@ -1,8 +1,8 @@
 import csv
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from src.sim import Sim
+    from src.sim.simulation.sim import GrowingSim
     from src.agent.cell import Cell
 
 
@@ -11,7 +11,7 @@ class Output:
     Summary of simulation output
     """
 
-    def __init__(self, sim: "Sim", filename: str):
+    def __init__(self, sim: "GrowingSim", filename: str):
         self.sim = sim
         self.filename = filename
         with open(self.filename, "w", newline="") as file:
@@ -48,7 +48,7 @@ class Output:
         output = []
         cell_list = list(self.sim.get_cell_list())
         for cell in cell_list:
-            summary = {}
+            summary: dict[str, Any] = {}
             summary["tick"] = self.sim.get_tick()
             summary["cell"] = cell.get_c_id()
             summary["auxin"] = self.get_auxin(cell)
@@ -77,7 +77,7 @@ class Output:
         """
         return cell.quad_perimeter.get_corners_for_disp()
 
-    def get_circ_contents(self, summary: dict, cell: "Cell") -> dict:
+    def get_circ_contents(self, summary: dict[str, Any], cell: "Cell") -> dict[str, Any]:
         """
         Get circulation results for each cell
         """
@@ -92,8 +92,9 @@ class Output:
         summary["auxin_w"] = cell.get_circ_mod().get_auxin_w()
         return summary
 
-    def get_division_number(self, cell: "Cell") -> float:
+    def get_division_number(self, cell: "Cell") -> int:
         """
         Get number of cell divisions
         """
-        pass
+        raise NotImplementedError
+        return 0
