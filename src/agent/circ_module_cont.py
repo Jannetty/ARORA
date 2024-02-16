@@ -1,5 +1,5 @@
 import numpy as np
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, Any
 from scipy.integrate import odeint
 from src.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 from src.sim.util.math_helpers import round_to_sf
@@ -15,6 +15,8 @@ class BaseCirculateModuleCont:
     Attributes:
         auxin (float): The auxin concentration in the cell.
         arr (float): The ARR concentration in the cell.
+        arr_hist (list): The history of ARR concentrations in the cell for last
+                          len(arr_hist) time points.
         al (float): The AUX/LAX expression in the cell.
         pin (float): The unlocalized PIN expression in the cell.
         pina (float): The PIN localized in the apical direction.
@@ -24,12 +26,48 @@ class BaseCirculateModuleCont:
         cell (Cell): The cell associated with the circulation module.
         left (str): Whether the cell's left membrane is lateral or medial.
         right (str): Whether the cell's right membrane is lateral or medial.
-        weighta (float): The proportion of localized PIN in the apical direction.
-        weightb (float): The proportion of localized PIN in the basal direction.
-        weightl (float): The proportion of localized PIN in the lateral direction.
-        weightm (float): The proportion of localized PIN in the medial direction.
+        pin_weights (dict): The weights of the PIN localized in each membrane.
+                            Keys are "a", "b", "l", "m" and values are the weights.
+        k_arr_arr (float): The concentration of ARR at which the rate of ARR
+                           synthesis is half its maximum. ARR negatively regulates
+                            its own synthesis.
+        k_auxin_auxlax (float): The concentration of auxin at which the rate of
+                                AUX/LAX synthesis is half its maximum. Auxin positively
+                                regulates AUX/LAX synthesis.
+        k_auxin_pin (float): The concentration of auxin at which the rate of PIN
+                            synthesis is half its maximum. Auxin positively regulates
+                            PIN synthesis.
+        k_arr_pin (float): The concentration of ARR at which the rate of PIN synthesis
+                            is half its maximum. ARR negatively regulates PIN synthesis.
+        k_al (float): The rate of auxin import through AUX/LAX proteins.
+        k_pin (float): The rate of auxin export through PIN proteins.
+        ks (float): The rate of synthesis of the species.
+        kd (float): The rate of degradation of the species.
         auxin_w (float): The weight of auxin synthesis.
     """
+
+    auxin: float
+    arr: float
+    al: float
+    pin: float
+    pina: float
+    pinb: float
+    pinl: float
+    pinm: float
+    cell: "Cell"
+    left: str
+    right: str
+    pin_weights: dict[str, float]
+    k_arr_arr: float
+    k_auxin_auxlax: float
+    k_auxin_pin: float
+    k_arr_pin: float
+    k_al: float
+    k_pin: float
+    ks: float
+    kd: float
+    auxin_w: float
+    arr_hist: list[float]
 
     def __init__(self, cell: "Cell", init_vals: dict):
         """
@@ -141,10 +179,10 @@ class BaseCirculateModuleCont:
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_membrane_pin(pini, pinai, "a", self.pin_weights.get("a"))
-        f5 = self.calculate_membrane_pin(pini, pinbi, "b", self.pin_weights.get("b"))
-        f6 = self.calculate_membrane_pin(pini, pinli, "l", self.pin_weights.get("l"))
-        f7 = self.calculate_membrane_pin(pini, pinmi, "m", self.pin_weights.get("m"))
+        f4 = self.calculate_membrane_pin(pini, pinai, "a", cast(float, self.pin_weights.get("a")))
+        f5 = self.calculate_membrane_pin(pini, pinbi, "b", cast(float, self.pin_weights.get("b")))
+        f6 = self.calculate_membrane_pin(pini, pinli, "l", cast(float, self.pin_weights.get("l")))
+        f7 = self.calculate_membrane_pin(pini, pinmi, "m", cast(float, self.pin_weights.get("m")))
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
@@ -242,7 +280,7 @@ class BaseCirculateModuleCont:
         return pin
 
     def calculate_membrane_pin(
-        self, pini: float, pindi: float, direction: str, pin_weight: float | None
+        self, pini: float, pindi: float, direction: str, pin_weight: float
     ) -> float:
         """
         Calculate the PIN expression on one membrane.
@@ -263,7 +301,7 @@ class BaseCirculateModuleCont:
         membrane_pin = pin_weight * pini - (self.kd * pindi)
         return membrane_pin
 
-    def calculate_neighbor_memfrac(self, neighbor) -> float:
+    def calculate_neighbor_memfrac(self, neighbor: "Cell") -> float:
         """
         Calculate the fraction of total cell membrane that is shared
         with a specified neighbor.
@@ -568,7 +606,7 @@ class BaseCirculateModuleCont:
             return self.pinm
         return self.pinl
 
-    def get_state(self) -> dict[str, float | list[float]]:
+    def get_state(self) -> dict[str, Any]:
         """
         Get the state of the circulate module.
 

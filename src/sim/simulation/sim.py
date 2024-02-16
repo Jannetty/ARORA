@@ -54,16 +54,16 @@ class GrowingSim(Window):
 
     def __init__(
         self,
-        width,
-        height,
-        title,
-        timestep,
-        root_midpoint_x,
+        width: int,
+        height: int,
+        title: str,
+        timestep: float,
+        root_midpoint_x: float,
         vis: bool,
-        cell_val_file=None,
-        v_file=None,
-        gparam_series=None,
-        geometry=None,
+        cell_val_file: str = None,
+        v_file: str = None,
+        gparam_series: str = None,
+        geometry: str = None,
     ):
         """
         Constructs a new Simulation instance.
@@ -91,7 +91,7 @@ class GrowingSim(Window):
         if cell_val_file is not None and v_file is not None:
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
-            self.root_tip_y = self.input.initial_v_miny
+            self.root_tip_y: float = self.input.get_initial_v_miny()
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
         self.root_midpointx = root_midpoint_x
@@ -109,7 +109,7 @@ class GrowingSim(Window):
         """
         return self.root_midpointx
 
-    def get_cell_by_ID(self, ID):
+    def get_cell_by_ID(self, ID: int) -> "Cell":
         """
         Returns Cell object in cell_list with the given ID.
 
@@ -148,11 +148,11 @@ class GrowingSim(Window):
         """Returns the list of all cells in the simulation."""
         return self.cell_list
 
-    def get_next_cell_id(self) -> None:
+    def get_next_cell_id(self) -> int:
         """Returns the next ID to assign to a cell."""
         return self.next_cell_id
 
-    def get_root_tip_y(self) -> None:
+    def get_root_tip_y(self) -> float:
         """Returns the y-coordinate of the tip of the root."""
         return self.root_tip_y
 
@@ -160,11 +160,11 @@ class GrowingSim(Window):
         """Increments the next ID to assign to a cell."""
         self.next_cell_id += 1
 
-    def add_to_cell_list(self, cell) -> None:
+    def add_to_cell_list(self, cell: "Cell") -> None:
         """Adds a cell to the cell_list."""
         self.cell_list.append(cell)
 
-    def remove_from_cell_list(self, cell) -> None:
+    def remove_from_cell_list(self, cell: "Cell") -> None:
         """Removes a cell from the cell_list."""
         if cell not in self.cell_list:
             raise ValueError("Cell not in cell_list being removed from cell_list")
@@ -236,7 +236,7 @@ class GrowingSim(Window):
         )
         self.window_offset = self.root_tip_y - 2
 
-    def on_update(self, delta_time):
+    def on_update(self, delta_time: float):
         """
         Update cells, vertexes, circulator, and divider
 
@@ -278,7 +278,12 @@ class GrowingSim(Window):
 
 
 def main(
-    timestep, root_midpoint_x, vis, cell_val_file=None, v_file=None, gparam_series=None
+    timestep: float,
+    root_midpoint_x: float,
+    vis: bool,
+    cell_val_file: str = None,
+    v_file: str = None,
+    gparam_series: str = None,
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")

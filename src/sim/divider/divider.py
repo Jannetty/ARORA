@@ -1,5 +1,9 @@
+from typing import TYPE_CHECKING
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
+
+if TYPE_CHECKING:
+    from src.sim.simulation.sim import GrowingSim
 
 
 class Divider:
@@ -13,9 +17,9 @@ class Divider:
         sim: The simulation that this divider is part of.
     """
 
-    cells_to_divide = []
+    cells_to_divide: list["Cell"] = []
 
-    def __init__(self, sim):
+    def __init__(self, sim: "GrowingSim"):
         """
         Constructs a new Divider instance.
 
@@ -25,7 +29,7 @@ class Divider:
         self.sim = sim
         self.cells_to_divide = []
 
-    def add_cell(self, cell) -> None:
+    def add_cell(self, cell: "Cell") -> None:
         """
         Adds a cell to the list of cells that are ready to divide.
 
@@ -34,7 +38,7 @@ class Divider:
         """
         self.cells_to_divide.append(cell)
 
-    def get_cells_to_divide(self) -> None:
+    def get_cells_to_divide(self) -> list["Cell"]:
         """
         Returns the list of cells that are ready to divide.
 
@@ -60,13 +64,13 @@ class Divider:
                 right_v = self.check_neighbors_for_v_existence(cell, new_vs[1])
 
                 # make new cell qp lists
-                new_upper_vs = [
+                new_upper_vs: list["Vertex"] = [
                     cell.get_quad_perimeter().get_top_left(),
                     cell.get_quad_perimeter().get_top_right(),
                     right_v,
                     left_v,
                 ]
-                new_lower_vs = [
+                new_lower_vs: list["Vertex"] = [
                     left_v,
                     right_v,
                     cell.get_quad_perimeter().get_bottom_right(),
@@ -101,7 +105,7 @@ class Divider:
                 self.sim.get_cell_list().remove(cell)
             self.cells_to_divide = []
 
-    def get_new_vs(self, cell) -> list:
+    def get_new_vs(self, cell: "Cell") -> list["Vertex"]:
         """
         Gets the new vertices for the new cells that will be created by dividing
         the input cell.
@@ -121,7 +125,7 @@ class Divider:
         new_right = Vertex(topright.get_x(), (topright.get_y() + bottomright.get_y()) / 2)
         return [new_left, new_right]
 
-    def check_neighbors_for_v_existence(self, cell, new_vertex: Vertex):
+    def check_neighbors_for_v_existence(self, cell: "Cell", new_vertex: Vertex) -> Vertex:
         """
         Checks if a vertex exists in the neighbor cells of a cell.
 
@@ -139,7 +143,9 @@ class Divider:
                     return neighbor_vertex
         return new_vertex
 
-    def update_neighbor_lists(self, new_top_cell, new_bottom_cell, cell):
+    def update_neighbor_lists(
+        self, new_top_cell: "Cell", new_bottom_cell: "Cell", cell: "Cell"
+    ) -> None:
         """
         Updates the neighbor lists of the new cells to include the appropriate
         neighbors of the old cell.
@@ -158,7 +164,13 @@ class Divider:
         self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
         self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
 
-    def set_one_side_neighbors(self, new_top_cell, new_bottom_cell, neighbor_list, cell):
+    def set_one_side_neighbors(
+        self,
+        new_top_cell: "Cell",
+        new_bottom_cell: "Cell",
+        neighbor_list: list["Cell"],
+        cell: "Cell",
+    ) -> None:
         """
         Sets new cells' neighbors to the neighbors of the old cell that each
         neighbors
@@ -190,7 +202,7 @@ class Divider:
             ):
                 self.swap_neighbors(new_bottom_cell, neighbor, cell)
 
-    def swap_neighbors(self, new_cell, old_n, old_cell):
+    def swap_neighbors(self, new_cell: "Cell", old_n: "Cell", old_cell: "Cell") -> None:
         """
         Swaps a neighbor from an old cell to a new cell
 

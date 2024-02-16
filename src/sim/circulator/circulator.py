@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from src.sim.util.math_helpers import round_to_sf
 
 if TYPE_CHECKING:
-    from src.sim import Sim
+    from src.sim.simulation.sim import GrowingSim
     from src.agent.cell import Cell
 
 
@@ -16,17 +16,17 @@ class Circulator:
         sim: The simulation that this circulator is part of.
     """
 
-    def __init__(self, sim: "Sim"):
+    def __init__(self, sim: "GrowingSim"):
         """
         Constructs a new Circulator instance.
 
         Args:
             sim: The simulation that this circulator is part of.
         """
-        self.delta_auxins = dict()
+        self.delta_auxins: dict["Cell", float] = dict()
         self.sim = sim
 
-    def get_delta_auxins(self) -> dict:
+    def get_delta_auxins(self) -> dict["Cell", float]:
         """
         Returns the dictionary of delta auxins that the circulator is managing.
         Keys are cells, values are delta auxins.
