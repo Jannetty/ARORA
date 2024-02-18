@@ -1,3 +1,4 @@
+from typing import TYPE_CHECKING
 import os
 import pyglet
 import pandas
@@ -16,6 +17,9 @@ from src.sim.output.output import Output
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "ARORA"
+
+if TYPE_CHECKING:
+    from src.agent.cell import Cell
 
 
 class GrowingSim(Window):
@@ -38,32 +42,31 @@ class GrowingSim(Window):
         v_file: The file containing the vertex values.
     """
 
-    timestep = None
-    circulator = None
-    vertex_mover = None
-    divider = None
-    root_midpointx = None
-    cell_list = None
-    vis = None
-    next_cell_id = None
-    root_tip_y = 0
-    cell_val_file = None
-    v_file = None
-    input_from_file = False
-    geometry = None
+    timestep: int
+    circulator: "Circulator"
+    vertex_mover: "VertexMover"
+    divider: "Divider"
+    root_midpointx: float
+    cell_list: SpriteList
+    vis: bool
+    next_cell_id: int
+    root_tip_y: float = 0
+    cell_val_file: str
+    v_file: str
+    input_from_file: bool = False
 
     def __init__(
         self,
         width: int,
         height: int,
         title: str,
-        timestep: float,
+        timestep: int,
         root_midpoint_x: float,
         vis: bool,
-        cell_val_file: str = None,
-        v_file: str = None,
-        gparam_series: str = None,
-        geometry: str = None,
+        cell_val_file: str = "",
+        v_file: str = "",
+        gparam_series: str = "",
+        geometry: str = "",
     ):
         """
         Constructs a new Simulation instance.
@@ -87,8 +90,8 @@ class GrowingSim(Window):
             super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        set_background_color(color=[250, 250, 250])
-        if cell_val_file is not None and v_file is not None:
+        set_background_color(color=(250, 250, 250, 250))
+        if cell_val_file is not "" and v_file is not "":
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
             self.root_tip_y: float = self.input.get_initial_v_miny()
@@ -170,7 +173,7 @@ class GrowingSim(Window):
             raise ValueError("Cell not in cell_list being removed from cell_list")
         self.cell_list.remove(cell)
 
-    def setup(self):
+    def setup(self) -> None:
         """Set up the Simulation. Call to re-start the Simulation."""
         # find midpoint x of root basd on vertices that exist
         # I think function will be (max_x - min_x) / 2
@@ -236,7 +239,7 @@ class GrowingSim(Window):
         )
         self.window_offset = self.root_tip_y - 2
 
-    def on_update(self, delta_time: float):
+    def on_update(self, delta_time: float) -> None:
         """
         Update cells, vertexes, circulator, and divider
 
@@ -278,16 +281,16 @@ class GrowingSim(Window):
 
 
 def main(
-    timestep: float,
+    timestep: int,
     root_midpoint_x: float,
     vis: bool,
-    cell_val_file: str = None,
-    v_file: str = None,
-    gparam_series: str = None,
+    cell_val_file: str = "",
+    v_file: str = "",
+    gparam_series: str = "",
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
-    geometry = None
+    geometry = ""
     if cell_val_file == "default" and v_file == "default":
         cell_val_file = "src/sim/input/default_init_vals.csv"
         v_file = "src/sim/input/default_vs.csv"
