@@ -124,7 +124,7 @@ class Input:
         """
         vertex_assign = {}
         for index, row in self.init_vals_input[["vertices"]].iterrows():
-            row = row[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
+            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
             vertex_assign[f"c{index}"] = row
         return vertex_assign
 
@@ -135,7 +135,7 @@ class Input:
         """
         neighbors = {}
         for index, row in self.init_vals_input[["neighbors"]].iterrows():
-            row = row[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
+            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
             neighbors[f"c{index}"] = row
         return neighbors
 
