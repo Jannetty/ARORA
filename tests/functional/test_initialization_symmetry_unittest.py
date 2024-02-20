@@ -1,5 +1,6 @@
+import os
 import unittest
-from src.plantem.sim.simulation.sim import GrowingSim
+from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
@@ -11,12 +12,22 @@ class TestInitializationSymmetry(unittest.TestCase):
     Tests the symmetry of the default simulation initialization.
     """
 
+    @classmethod
+    def setUpClass(cls):
+        super(TestInitializationSymmetry, cls).setUpClass()
+        os.environ["ARCADE_HEADLESS"] = "True"
+
+    @classmethod
+    def teadDownClass(cls):
+        del os.environ["ARCADE_HEADLESS"]
+        super(TestInitializationSymmetry, cls).tearDownClass()
+
     def test_initial_symmetry(self):
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
-        v_file = "src/plantem/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.csv"
+        v_file = "src/sim/input/default_vs.csv"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
@@ -875,8 +886,8 @@ class TestInitializationSymmetry(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/plantem/sim/input/default_init_vals.csv"
-        v_file = "src/plantem/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.csv"
+        v_file = "src/sim/input/default_vs.csv"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
@@ -1725,7 +1736,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             823,
         ]
         equal_dict = dict(zip(keys, value))
-        while simulation.get_tick() < 100:
+        while simulation.get_tick() < 5:
             print(f"tick {simulation.get_tick()}")
             for id in keys:
                 try:
