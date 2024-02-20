@@ -1,5 +1,6 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled
+from arcade import draw_polygon_outline
 from src.plantem.agent.circ_module_cont import BaseCirculateModuleCont
 from src.plantem.agent.circ_module_disc import BaseCirculateModuleDisc
 from src.plantem.loc.quad_perimeter.quad_perimeter import QuadPerimeter
