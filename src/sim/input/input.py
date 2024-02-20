@@ -97,6 +97,8 @@ class Input:
             "vertices",
             "neighbors",
         ]
+        # make changes: ser.iloc[pos]
+        # task for this week!
         for index, row in self.init_vals_input[init_vals_names].iterrows():
             cell_num = f"c{index}"
             init_vals_dict[cell_num] = row.to_dict()
@@ -132,7 +134,7 @@ class Input:
         """
         vertex_assign = {}
         for index, row in self.init_vals_input[["vertices"]].iterrows():
-            row = row[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
+            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
             vertex_assign[f"c{index}"] = row
         return vertex_assign
 
@@ -143,7 +145,7 @@ class Input:
         """
         neighbors = {}
         for index, row in self.init_vals_input[["neighbors"]].iterrows():
-            row = row[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
+            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
             neighbors[f"c{index}"] = row
         return neighbors
 
