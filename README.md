@@ -2,8 +2,8 @@
 
 [![Build Status](https://github.com/Jannetty/PythonRootDevModel/workflows/build/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions?query=workflow%3Abuild)
 [![Codecov](https://codecov.io/gh/Jannetty/PythonRootDevModel/branch/main/graph/badge.svg?token=SRGlpwpsbr)](https://codecov.io/gh/Jannetty/PythonRootDevModel)
-[![Lint Status](https://github.com/Jannetty/PythonRootDevModel/workflows/lint.yml/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions/workflows/lint.yml)
-[![Documentation](https://github.com/Jannetty/PythonRootDevModel/workflows/documentation.yml/badge.svg)](https://jannetty.github.io/PythonRootDevModel/actions/workflows/documentation.yml)
+![Lint Status](https://github.com/Jannetty/PythonRootDevModel/actions/workflows/lint.yml/badge.svg)
+![Documentation](https://github.com/Jannetty/PythonRootDevModel/actions/workflows/documentation.yml/badge.svg)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This repository is a template for Python projects that uses the GitHub Actions and the following tools:
