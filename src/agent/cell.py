@@ -466,8 +466,8 @@ class Cell(Sprite):
         return self.quad_perimeter.get_area()
 
     def draw(
-            self, *, filter: Any = None, pixelated: Any = None, blend_function: Any = None
-        ) -> None:
+        self, *, filter: Any = None, pixelated: Any = None, blend_function: Any = None
+    ) -> None:
         """
         Draws the cell on the screen.
 

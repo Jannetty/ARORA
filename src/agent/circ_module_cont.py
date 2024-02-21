@@ -12,38 +12,52 @@ class BaseCirculateModuleCont:
     """
     Base class for the circulation module controller.
 
-    Attributes:
-        auxin (float): The auxin concentration in the cell.
-        arr (float): The ARR concentration in the cell.
-        arr_hist (list): The history of ARR concentrations in the cell for last
-                         len(arr_hist) time points.
-        al (float): The AUX/LAX expression in the cell.
-        pin (float): The unlocalized PIN expression in the cell.
-        pina (float): The PIN localized in the apical direction.
-        pinb (float): The PIN localized in the basal direction.
-        pinl (float): The PIN localized in the lateral direction.
-        pinm (float): The PIN localized in the medial direction.
-        cell (Cell): The cell associated with the circulation module.
-        left (str): Whether the cell's left membrane is lateral or medial.
-        right (str): Whether the cell's right membrane is lateral or medial.
-        pin_weights (dict): The weights of the PIN localized in each membrane.
-                            Keys are "a", "b", "l", "m" and values are the weights.
-        k_arr_arr (float): The concentration of ARR at which the rate of ARR
-                           synthesis is half its maximum. ARR negatively regulates
-                           its own synthesis.
-        k_auxin_auxlax (float): The concentration of auxin at which the rate of
-                                AUX/LAX synthesis is half its maximum. Auxin positively
-                                regulates AUX/LAX synthesis.
-        k_auxin_pin (float): The concentration of auxin at which the rate of PIN
-                            synthesis is half its maximum. Auxin positively regulates
-                            PIN synthesis.
-        k_arr_pin (float): The concentration of ARR at which the rate of PIN synthesis
-                            is half its maximum. ARR negatively regulates PIN synthesis.
-        k_al (float): The rate of auxin import through AUX/LAX proteins.
-        k_pin (float): The rate of auxin export through PIN proteins.
-        ks (float): The rate of synthesis of the species.
-        kd (float): The rate of degradation of the species.
-        auxin_w (float): The weight of auxin synthesis.
+    Attributes
+    ----------
+    auxin : float
+        The auxin concentration in the cell.
+    arr : float
+        The ARR concentration in the cell.
+    arr_hist : list
+        The history of ARR concentrations in the cell for last len(arr_hist) time points.
+    al : float
+        The AUX/LAX expression in the cell.
+    pin : float
+        The unlocalized PIN expression in the cell.
+    pina : float
+        The PIN localized in the apical direction.
+    pinb : float
+        The PIN localized in the basal direction.
+    pinl : float
+        The PIN localized in the lateral direction.
+    pinm : float
+        The PIN localized in the medial direction.
+    cell : Cell
+        The cell associated with the circulation module.
+    left : str
+        Whether the cell's left membrane is lateral or medial.
+    right : str
+        Whether the cell's right membrane is lateral or medial.
+    pin_weights : dict
+        The weights of the PIN localized in each membrane. Keys are "a", "b", "l", "m" and values are the weights.
+    k_arr_arr : float
+        The concentration of ARR at which the rate of ARR synthesis is half its maximum. ARR negatively regulates its own synthesis.
+    k_auxin_auxlax : float
+        The concentration of auxin at which the rate of AUX/LAX synthesis is half its maximum. Auxin positively regulates AUX/LAX synthesis.
+    k_auxin_pin : float
+        The concentration of auxin at which the rate of PIN synthesis is half its maximum. Auxin positively regulates PIN synthesis.
+    k_arr_pin : float
+        The concentration of ARR at which the rate of PIN synthesis is half its maximum. ARR negatively regulates PIN synthesis.
+    k_al : float
+        The rate of auxin import through AUX/LAX proteins.
+    k_pin : float
+        The rate of auxin export through PIN proteins.
+    ks : float
+        The rate of synthesis of the species.
+    kd : float
+        The rate of degradation of the species.
+    auxin_w : float
+        The weight of auxin synthesis.
     """
 
     auxin: float
@@ -69,14 +83,18 @@ class BaseCirculateModuleCont:
     auxin_w: float
     arr_hist: list[float]
 
-    def __init__(self, cell: "Cell", init_vals: dict):
+    def __init__(self, cell: "Cell", init_vals: dict[str, Any]):
         """
         Initialize the BaseCirculateModuleCont object.
 
-        Args:
-            cell (Cell): The cell associated with the circulation module.
-            init_vals (dict): The initial values for the attributes.
+        Parameters
+        ----------
+        cell : Cell
+            The cell associated with the circulation module.
+        init_vals : dict
+            The initial values for the attributes.
         """
+
         self.cell = cell
 
         self.init_auxin = cast(float, init_vals.get("auxin"))
@@ -133,8 +151,15 @@ class BaseCirculateModuleCont:
 
     def initialize_pin_weights(self) -> dict[str, float]:
         """
-        Initialize the pin weights for each membrane
-        given input-file specified initial PIN distribution
+        Initialize the PIN weights for each membrane based on the specified initial
+        PIN distribution in the input file.
+
+        Returns
+        -------
+        dict[str, float]
+            A dictionary with membrane identifiers as keys ('a' for apical, 'b' for
+            basal, 'l' for lateral, 'm' for medial) and the initial PIN weights as
+            values.
         """
         pin_weights_dict = {}
         pina = self.get_apical_pin()
@@ -151,12 +176,17 @@ class BaseCirculateModuleCont:
         """
         Setup the model differential equations.
 
-        Args:
-            y (list): The current values of the variables.
-            t (float): The current time.
+        Parameters
+        ----------
+        y : list[float]
+            The current values of the variables.
+        t : float
+            The current time.
 
-        Returns:
-            list: The derivative equations of the variables.
+        Returns
+        -------
+        list[float]
+            The derivative equations of the variables.
         """
 
         # setup species
@@ -190,8 +220,10 @@ class BaseCirculateModuleCont:
         """
         Solve the differential equations.
 
-        Returns:
-            ndarray: The solution of the differential equations.
+        Returns
+        -------
+        ndarray
+            The solution of the differential equations.
         """
         y0 = [
             self.auxin,
@@ -210,6 +242,11 @@ class BaseCirculateModuleCont:
     def update(self) -> None:
         """
         Update the circulation contents of the circulator.
+
+        This method updates the circulation contents by first obtaining the current
+        PIN weights from the cell, ensuring they sum to 1.0, solving the differential
+        equations to obtain the new solutions, and then updating auxin levels and
+        circulation contents based on these solutions.
         """
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0
@@ -221,55 +258,78 @@ class BaseCirculateModuleCont:
         """
         Calculate the auxin synthesis and degradation of the current cell.
 
-        Args:
-            auxini (float): The initial (current) auxin concentration of the
-                            current cell in au/um^2.
+        Parameters
+        ----------
+        auxini : float
+            The initial (current) auxin concentration of the current cell in au/um^2.
 
-        Returns:
-            float: The calculated auxin concentration.
+        Returns
+        -------
+        float
+            The calculated auxin concentration after accounting for synthesis and
+            degradation.
         """
         auxin = (self.ks * self.auxin_w) - (self.kd * auxini)
         return auxin
 
     def calculate_arr(self, arri: float) -> float:
         """
-        Calculate the ARR concentration of the current cell.
+        Calculate the ARR concentration of the current cell based on initial
+        concentration and historical data.
 
-        Args:
-            arri (float): The initial (current) ARR concentration in au/um^2.
+        Parameters
+        ----------
+        arri : float
+            The initial (current) ARR concentration in au/um^2.
 
-        Returns:
-            float: The calculated ARR concentration.
+        Returns
+        -------
+        float
+            The calculated ARR concentration after accounting for synthesis and
+            degradation dynamics.
         """
         arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (self.kd * arri)
         return arr
 
     def calculate_al(self, auxini: float, ali: float) -> float:
         """
-        Calculate the AUX/LAX expression of the current cell.
+        Calculate the AUX/LAX expression of the current cell based on initial
+        auxin concentration and AUX/LAX expression.
 
-        Args:
-            auxini (float): The initial (current) auxin concentration of the
-                            current cell in au/um^2.
-            ali (float): The initial (current) AUX/LAX expression in au/um^2.
+        Parameters
+        ----------
+        auxini : float
+            The initial (current) auxin concentration of the current cell in
+            au/um^2.
+        ali : float
+            The initial (current) AUX/LAX expression in au/um^2.
 
-        Returns:
-            float: The calculated AUX/LAX expression.
+        Returns
+        -------
+        float
+            The calculated AUX/LAX expression after synthesis and degradation.
         """
         al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali
         return al
 
     def calculate_pin(self, auxini: float, arri: float) -> float:
         """
-        Calculate the PIN expression of the current cell.
+        Calculate the PIN expression of the current cell based on initial auxin
+        and ARR concentrations.
 
-        Args:
-            auxini (float): The initial (current) auxin concentration of the
-                            current cell in au/um^2.
-            arri (float): The initial (current) ARR expression in au/um^2.
+        Parameters
+        ----------
+        auxini : float
+            The initial (current) auxin concentration of the current cell in
+            au/um^2.
+        arri : float
+            The initial (current) ARR expression in au/um^2.
 
-        Returns:
-            float: The calculated PIN expression.
+        Returns
+        -------
+        float
+            The calculated PIN expression considering both synthesis and
+            degradation factors.
         """
         pin = (
             self.ks
@@ -283,18 +343,26 @@ class BaseCirculateModuleCont:
         self, pini: float, pindi: float, direction: str, pin_weight: float
     ) -> float:
         """
-        Calculate the PIN expression on one membrane.
+        Calculate the PIN expression on one membrane based on the current cell's
+        unlocalized and localized PIN expressions, the membrane direction, and
+        the proportion of membrane-localized PIN in this membrane.
 
-        Args:
-            pini (float): The current cell's unlocalized PIN expression.
-            pindi (float): The current cell's localized PIN expression
-                           in the specified direction.
-            direction (str): The direction of the membrane.
-            pin_weight (float): The proportion of membrane localized pin
-                                in this membrane
+        Parameters
+        ----------
+        pini : float
+            The current cell's unlocalized PIN expression.
+        pindi : float
+            The current cell's localized PIN expression in the specified direction.
+        direction : str
+            The direction of the membrane.
+        pin_weight : float
+            The proportion of membrane-localized PIN in this membrane.
 
-        Returns:
-            float: The calculated PIN expression on the membrane.
+        Returns
+        -------
+        float
+            The calculated PIN expression on the membrane, taking into account
+            localization and degradation.
         """
         weight = pin_weight
         memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
@@ -303,14 +371,19 @@ class BaseCirculateModuleCont:
 
     def calculate_neighbor_memfrac(self, neighbor: "Cell") -> float:
         """
-        Calculate the fraction of total cell membrane that is shared
-        with a specified neighbor.
+        Calculate the fraction of the total cell membrane that is shared with a
+        specified neighbor cell.
 
-        Args:
-            neighbor: The neighbor cell.
+        Parameters
+        ----------
+        neighbor : Cell
+            The neighbor cell.
 
-        Returns:
-            float: The fraction of total cell membrane shared with the neighbor.
+        Returns
+        -------
+        float
+            The fraction of the total cell membrane shared with the neighbor,
+            rounded to six significant figures.
         """
         cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
         try:
@@ -330,17 +403,26 @@ class BaseCirculateModuleCont:
         self, al: float, pindi: float, neighbors: list
     ) -> dict["Cell", float]:
         """
-        Calculate the amount of auxin that will be transported across each membrane.
+        Calculate the amount of auxin that will be transported across each
+        membrane to or from neighboring cells. This calculation takes into
+        account the AUX/LAX concentration, localized PIN expression, and the
+        fraction of membrane shared with each neighbor.
 
-        Args:
-            al (float): The AUX/LAX concentration of the current cell.
-            pindi (float): The localized PIN expression in the specified direction
-                           of the current cell.
-            neighbors (list): The list of neighbor cells.
+        Parameters
+        ----------
+        al : float
+            The AUX/LAX concentration of the current cell.
+        pindi : float
+            The localized PIN expression in the specified direction of the current cell.
+        neighbors : list
+            The list of neighbor cells.
 
-        Returns:
-            dict: A dictionary containing the amount of auxin transported across each membrane.
-                  Keys are neighbor cells, values are the amount of auxin transported.
+        Returns
+        -------
+        dict[Cell, float]
+            A dictionary containing the amount of auxin transported across each
+            membrane. Keys are neighbor cells, and values are the amounts of
+            auxin transported.
         """
         neighbor_dict = {}
         for neighbor in neighbors:
@@ -368,17 +450,22 @@ class BaseCirculateModuleCont:
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
         """
-        Calculate the total amount of change in auxin for the current cell.
+        Calculate the total amount of change in auxin concentration for the current
+        cell, considering both synthesized/degraded auxin and auxin exchanged with
+        neighbors.
 
-        Args:
-            syn_deg_auxin (float): The amount of auxin synthesized and degraded
-                                   in the current cell.
-            neighbors_auxin (list): The list of dictionaries containing the amount of
-                                    auxin transported across each membrane for each
-                                    neighbor cell.
+        Parameters
+        ----------
+        syn_deg_auxin : float
+            The amount of auxin synthesized and degraded in the current cell.
+        neighbors_auxin : list
+            The list of dictionaries containing the amount of auxin transported
+            across each membrane for each neighbor cell.
 
-        Returns:
-            float: The total amount of change in auxin for the current cell.
+        Returns
+        -------
+        float
+            The total amount of change in auxin concentration for the current cell.
         """
         total_auxin = syn_deg_auxin
         for neighbors in neighbors_auxin:
@@ -396,7 +483,10 @@ class BaseCirculateModuleCont:
 
     def update_arr_hist(self) -> None:
         """
-        Update the ARR history list
+        Update the history of ARR concentrations in the cell. This method shifts
+        each element in the ARR history list one position to the left and updates
+        the last element with the current ARR concentration, effectively recording
+        the most recent state of ARR concentration.
         """
         for i, elem in enumerate(self.arr_hist):
             if i != 0:
@@ -406,10 +496,16 @@ class BaseCirculateModuleCont:
 
     def update_circ_contents(self, soln: np.ndarray) -> None:
         """
-        Update the circulation contents except auxin
+        Update the circulation contents of the cell, except for auxin, based on the
+        solution of the differential equations. This includes updating the concentrations
+        of ARR, AUX/LAX, unlocalized PIN and membrane bound PINs.
 
-        Args:
-            soln (ndarray): The solution of the differential equations.
+        Parameters
+        ----------
+        soln : ndarray
+            The solution of the differential equations, where each row represents a
+            different time point and columns represent the concentrations of different
+            substances at that time point.
         """
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
@@ -420,13 +516,18 @@ class BaseCirculateModuleCont:
         self.pinm = round_to_sf(soln[1, 7], 5)
         self.update_arr_hist()
 
-    def update_neighbor_auxin(self, neighbors_auxin: list) -> None:
+    def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
         """
-        Update the change in auxin of neighbor cells in the circulator
+        Update the change in auxin concentrations for neighbor cells in the circulator.
+        This method processes each directional exchange of auxin with neighbors and
+        applies the changes to the respective neighbor cells.
 
-        Args:
-            neighbors_auxin (list): The list of dictionaries containing the amount of auxin
-                                    transported across each membrane for each neighbor cell.
+        Parameters
+        ----------
+        neighbors_auxin : list[dict]
+            The list of dictionaries containing the amount of auxin transported across
+            each membrane for each neighbor cell. Each dictionary corresponds to auxin
+            exchanges in one direction.
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
