@@ -16,7 +16,7 @@ class BaseCirculateModuleCont:
         auxin (float): The auxin concentration in the cell.
         arr (float): The ARR concentration in the cell.
         arr_hist (list): The history of ARR concentrations in the cell for last
-                          len(arr_hist) time points.
+                         len(arr_hist) time points.
         al (float): The AUX/LAX expression in the cell.
         pin (float): The unlocalized PIN expression in the cell.
         pina (float): The PIN localized in the apical direction.
@@ -30,7 +30,7 @@ class BaseCirculateModuleCont:
                             Keys are "a", "b", "l", "m" and values are the weights.
         k_arr_arr (float): The concentration of ARR at which the rate of ARR
                            synthesis is half its maximum. ARR negatively regulates
-                            its own synthesis.
+                           its own synthesis.
         k_auxin_auxlax (float): The concentration of auxin at which the rate of
                                 AUX/LAX synthesis is half its maximum. Auxin positively
                                 regulates AUX/LAX synthesis.
