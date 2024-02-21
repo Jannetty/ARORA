@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.sim.output.output &mdash; ARORA VERSION NUMBER 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=bdfe92e1"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ARORA
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../index.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">Package modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ARORA</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.sim.output.output</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.sim.output.output</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">src.sim.simulation.sim</span> <span class="kn">import</span> <span class="n">GrowingSim</span>
+    <span class="kn">from</span> <span class="nn">src.agent.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
+
+
+<div class="viewcode-block" id="Output">
+<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output">[docs]</a>
+<span class="k">class</span> <span class="nc">Output</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Summary of simulation output</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s2">&quot;tick&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;cell&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;auxin&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;ARR&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;AUX/LAX&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PIN_unlocalized&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PIN_apical&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PIN_basal&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PIN_left&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;PIN_right&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;arr_hist&quot;</span><span class="p">,</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Output.output_cells">
+<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.output_cells">[docs]</a>
+    <span class="k">def</span> <span class="nf">output_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate output spreadsheet for simulation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># generates spreadsheet under name filename with contents of all cells</span>
+        <span class="c1"># gets cell_list from sim</span>
+        <span class="c1"># - for cell in self.sim.cell_list:</span>
+        <span class="c1"># gets contents of each cell including</span>
+        <span class="c1"># - Auxin concentration</span>
+        <span class="c1"># - Location (x,y of corners retrieved from vertex class)</span>
+        <span class="c1"># - all circ contents (PINs in relation to left right instead of lateral/medial)</span>
+        <span class="c1"># - number of cell divisions</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_cell_list</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cell_list</span><span class="p">:</span>
+            <span class="n">summary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;tick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_tick</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;auxin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_auxin</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">summary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_circ_contents</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
+            <span class="c1"># summary[&quot;num_divisions&quot;] = self.get_division_number(cell)</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+
+        <span class="c1"># generate spreadsheet</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            <span class="c1"># writer.writeheader()</span>
+            <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Helper functions</span>
+<div class="viewcode-block" id="Output.get_auxin">
+<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_auxin">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_auxin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get auxin concentration for each cell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_auxin</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Output.get_location">
+<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_location">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get location (x, y corners) for each cell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_corners_for_disp</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Output.get_circ_contents">
+<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_circ_contents">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_circ_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get circulation results for each cell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;ARR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_arr</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;AUX/LAX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_al</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_unlocalized&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_pin</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_apical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_apical_pin</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_basal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_basal_pin</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_left&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_left_pin</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_right_pin</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;arr_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_arr_hist</span><span class="p">()</span>
+        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;auxin_w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_auxin_w</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">summary</span></div>
+
+
+<div class="viewcode-block" id="Output.get_division_number">
+<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_division_number">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_division_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get number of cell divisions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SOPHIA_JANNETTY.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
