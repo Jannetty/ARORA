@@ -400,7 +400,7 @@ class Cell(Sprite):
         self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
         draw_polygon_filled(point_list=point_list, color=self.color)
-        draw_polygon_outline(point_list=point_list, color=(0, 0, 0, 0))
+        draw_polygon_outline(point_list=point_list, color=(0, 0, 0, 255), line_width=1)
 
     def grow(self) -> None:
         """
