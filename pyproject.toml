@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "PythonRootDev"
-version = "0.0.0"
+version = "1.0.0"
 description = ""
 authors = ["author <author@email.com>"]
 
