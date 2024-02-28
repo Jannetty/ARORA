@@ -22,7 +22,7 @@ def round_to_sf(number: float, sf: int) -> float:
     -----
     - If `number` is NaN, the function prints "number is nan" and returns NaN.
     - If `number` is zero, the function returns 0.0 directly, as zero has no significant figures.
-    """    
+    """
     if np.isnan(number):
         print(f"number is nan")
     if number == 0:
