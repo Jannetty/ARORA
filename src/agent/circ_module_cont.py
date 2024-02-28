@@ -296,14 +296,13 @@ class BaseCirculateModuleCont:
         # Retrieve current PIN weights
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
-        
+
         # Solve the differential equations for the current state
         soln = self.solve_equations()
-        
+
         # Update model states based on the solutions
         self.update_auxin(soln)
         self.update_circ_contents(soln)
-
 
     def calculate_auxin(self, auxini: float) -> float:
         """
@@ -590,7 +589,7 @@ class BaseCirculateModuleCont:
 
         Returns
         -------
-        tuple: 
+        tuple:
             A tuple containing the list of neighbors for each membrane.
         """
         neighborsa = self.cell.get_a_neighbors()
@@ -629,7 +628,12 @@ class BaseCirculateModuleCont:
         auxinb_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinb, neighborsb)
         auxinl_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinl, neighborsl)
         auxinm_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinm, neighborsm)
-        neighbors_auxin_exchange = [auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange]
+        neighbors_auxin_exchange = [
+            auxina_exchange,
+            auxinb_exchange,
+            auxinl_exchange,
+            auxinm_exchange,
+        ]
 
         # Compute net auxin synthesized and degraded at this time step
         auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
@@ -639,17 +643,20 @@ class BaseCirculateModuleCont:
 
         # Ensure auxin levels do not become negative
         if (soln[1, 0] + total_aux_exchange) < 0:
-            raise ValueError(f"Negative auxin for cell {self.cell.get_c_id()}: auxin {soln[1, 0]}, total exchange {total_aux_exchange}")
+            raise ValueError(
+                f"Negative auxin for cell {self.cell.get_c_id()}: auxin {soln[1, 0]}, total exchange {total_aux_exchange}"
+            )
 
         # Calculate delta auxin for the current cell
-        delta_auxin = self.calculate_delta_auxin(auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange)
+        delta_auxin = self.calculate_delta_auxin(
+            auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
+        )
 
         # Update current cell auxin
         curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin, 5))
 
         # Update auxin levels in neighbor cells
         self.update_neighbor_auxin(neighbors_auxin_exchange)
-
 
     # getter functions
     def get_auxin(self) -> float:

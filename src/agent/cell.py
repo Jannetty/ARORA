@@ -483,8 +483,14 @@ class Cell(Sprite):
         super().draw(filter=filter, pixelated=pixelated, blend_function=blend_function)
         self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
-        draw_polygon_filled(point_list=point_list, color=self.color)
-        draw_polygon_outline(point_list=point_list, color=(0, 0, 0, 255), line_width=1)
+        point_list_for_draw_functions = []
+        for point in point_list:
+            pt_tuple = (point[0], point[1])
+            point_list_for_draw_functions.append(pt_tuple)
+        draw_polygon_filled(point_list=point_list_for_draw_functions, color=self.color)
+        draw_polygon_outline(
+            point_list=point_list_for_draw_functions, color=(0, 0, 0, 255), line_width=1
+        )
 
     def grow(self) -> None:
         """
