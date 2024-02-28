@@ -36,6 +36,11 @@ class Vertex:
         v_id : int, optional
             An optional identifier for the vertex. Useful for tracking vertices or referencing them
             in complex structures. Defaults to None if not provided.
+
+        Notes
+        -----
+        The input module will automatically assign v_id to be the row number of
+        each vertex, so if vertices are read from a file v_ids will be assigned.
         """
         self.x = x
         self.y = y
