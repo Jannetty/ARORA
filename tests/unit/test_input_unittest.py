@@ -42,7 +42,7 @@ class TestInput(unittest.TestCase):
             "4": [10, 36],
             "5": [30, 36],
         }
-        found_vertex_input = input.get_vertex()
+        found_vertex_input = input.get_vertices_from_input_file()
         for each in found_vertex_input:
             found_vertex_list = found_vertex_input[each].get_xy()
             self.assertEqual(expected_vertex_list[each], found_vertex_list)
@@ -255,7 +255,7 @@ class TestInput(unittest.TestCase):
             "tests/unit/test_csv/vertex.csv",
             sim,
         )
-        found_vertices = input.get_vertex()
+        found_vertices = input.get_vertices_from_input_file()
         found_vertex_assignment = input.get_vertex_assignment()
         expected_vertex_cell0 = [[10, 30], [10, 33], [30, 30], [30, 33]]
         expected_vertex_cell1 = [[10, 33], [30, 33], [10, 36], [30, 36]]
