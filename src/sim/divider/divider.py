@@ -8,23 +8,34 @@ if TYPE_CHECKING:
 
 class Divider:
     """
-    Divider manages the division of cells in a simulation. Each time step cells
-    that are ready to divide are added to the divider. At the end of the time
-    step, the divider divides the cells and adds the new cells to the simulation.
+    Manages cell division within a simulation.
 
-    Attributes:
-        cells_to_divide: A list of cells that are ready to divide.
-        sim: The simulation that this divider is part of.
+    This class is responsible for tracking cells that are ready to divide and performing
+    the division process, creating new cells and updating the simulation cell list accordingly.
+
+    Attributes
+    ----------
+    cells_to_divide : list[Cell]
+        A list of cells that are ready to divide.
+    sim : GrowingSim
+        The simulation instance this Divider is part of.
+
+    Parameters
+    ----------
+    sim : GrowingSim
+        The simulation instance to which the Divider belongs.
     """
 
     cells_to_divide: list["Cell"] = []
 
     def __init__(self, sim: "GrowingSim"):
         """
-        Constructs a new Divider instance.
+        Initializes a new Divider instance.
 
-        Args:
-            sim: The simulation that this divider is part of.
+        Parameters
+        ----------
+        sim : GrowingSim
+            The simulation instance to which the Divider belongs.
         """
         self.sim = sim
         self.cells_to_divide = []
@@ -33,24 +44,31 @@ class Divider:
         """
         Adds a cell to the list of cells that are ready to divide.
 
-        Args:
-            cell: The cell to add to the list of cells that are ready to divide.
+        Parameters
+        ----------
+        cell : Cell
+            The cell to be added to the division queue.
         """
+
         self.cells_to_divide.append(cell)
 
     def get_cells_to_divide(self) -> list["Cell"]:
         """
-        Returns the list of cells that are ready to divide.
+        Retrieves the list of cells that are ready to divide.
 
-        Returns:
-            The list of cells that are ready to divide.
+        Returns
+        -------
+        list[Cell]
+            The list of cells queued for division.
         """
         return self.cells_to_divide
 
     def update(self) -> None:
         """
-        Divides all cells that are ready to divide and adds the new cells to the
-        simulation.
+        Divides all queued cells, creating new cells, and updates the simulation cell list.
+
+        This method iterates over cells that are ready to divide, divides them to create
+        new cells, and then updates the simulation's cell list accordingly.
         """
         if len(self.cells_to_divide) != 0:
             meristematic_cells_to_divide = [
@@ -107,15 +125,17 @@ class Divider:
 
     def get_new_vs(self, cell: "Cell") -> list["Vertex"]:
         """
-        Gets the new vertices for the new cells that will be created by dividing
-        the input cell.
+        Calculates locations of new vertices needed to dividide a given cell.
 
-        Args:
-            cell: The cell to divide.
+        Parameters
+        ----------
+        cell : Cell
+            The cell to be divided.
 
-        Returns:
-            A list of the two new vertices for the new cells that will be created
-            by dividing the input cell.
+        Returns
+        -------
+        list[Vertex]
+            A list containing two new vertices at necessary locations to divide 'cell'.
         """
         topleft = cell.get_quad_perimeter().get_top_left()
         topright = cell.get_quad_perimeter().get_top_right()
@@ -127,14 +147,19 @@ class Divider:
 
     def check_neighbors_for_v_existence(self, cell: "Cell", new_vertex: Vertex) -> Vertex:
         """
-        Checks if a vertex exists in the neighbor cells of a cell.
+        Checks the neighboring cells for the existence of a given vertex.
 
-        Args:
-            cell: The cell whose neighbors to check.
-            v: The vertex to check for existence.
+        Parameters
+        ----------
+        cell : Cell
+            The cell whose neighbors are to be checked.
+        new_vertex : Vertex
+            The vertex to check for in the neighbors.
 
-        Returns:
-            The vertex if it exists in a neighbor cell, otherwise the input vertex.
+        Returns
+        -------
+        Vertex
+            The existing vertex from neighbors if found; otherwise, the input new_vertex.
         """
         for neighbor in cell.get_all_neighbors():
             neighbor_quad_p = neighbor.get_quad_perimeter()
@@ -147,13 +172,17 @@ class Divider:
         self, new_top_cell: "Cell", new_bottom_cell: "Cell", cell: "Cell"
     ) -> None:
         """
-        Updates the neighbor lists of the new cells to include the appropriate
-        neighbors of the old cell.
+        Updates neighbor lists of new cells and old cell neighbors to account
+        for division.
 
-        Args:
-            new_top_cell: The new cell comprising the top half of the old cell.
-            new_bottom_cell: The new cell comprising the bottom half of the old cell.
-            cell: The old cell.
+        Parameters
+        ----------
+        new_top_cell : Cell
+            The new cell forming in location of the top part of the divided cell.
+        new_bottom_cell : Cell
+            The new cell forming in location of the bottom part of the divided cell.
+        cell : Cell
+            The original cell that was divided.
         """
         new_top_cell.add_neighbor(new_bottom_cell)
         new_bottom_cell.add_neighbor(new_top_cell)
@@ -172,21 +201,27 @@ class Divider:
         cell: "Cell",
     ) -> None:
         """
-        Sets new cells' neighbors to the neighbors of the old cell that each
-        neighbors
+        Assigns neighbors to one side of divided cells based on the old cell's neighbors.
 
-        Args:
-            new_top_cell: The new cell comprising the top half of the old cell.
-            new_bottom_cell: The new cell comprising the bottom half of the old cell.
-            neighbor_list: The list of lateral or medial neighbors of the old cell.
-            cell: The old cell.
+        Parameters
+        ----------
+        new_top_cell : Cell
+            The new cell forming the top part of the divided cell.
+        new_bottom_cell : Cell
+            The new cell forming the bottom part of the divided cell.
+        neighbor_list : list[Cell]
+            The list of neighbors (lateral or medial) of the original cell.
+        cell : Cell
+            The original cell that was divided.
+
+        Notes
+        -----
+        This method is used for assigning lateral or medial neighbors to new cells.
         """
         if len(neighbor_list) == 0:
             return
         if len(neighbor_list) == 1:
-            print("Here 4 ------------------")
             self.swap_neighbors(new_top_cell, neighbor_list[0], cell)
-            print("Here after swap neighbors ------------------")
             self.swap_neighbors(new_bottom_cell, neighbor_list[0], cell)
             return
 
@@ -204,22 +239,18 @@ class Divider:
 
     def swap_neighbors(self, new_cell: "Cell", old_n: "Cell", old_cell: "Cell") -> None:
         """
-        Swaps a neighbor from an old cell to a new cell
+        Replaces an old cell with a new cell in the neighbor list of an old neighbor.
 
-        Args:
-            new_cell: The new cell to add the neighbor to.
-            old_n: The neighbor to add to the new cell.
-            old_cell: The old cell to remove the neighbor from.
+        Parameters
+        ----------
+        new_cell : Cell
+            The new cell to be added to the neighbor's list.
+        old_n : Cell
+            The neighbor cell whose neighbor list is to be updated.
+        old_cell : Cell
+            The old cell to be replaced by new_cell in the old_n's neighbor list
         """
-        print("Here 5 ------------------")
-        print(
-            f"new cell vertices {[vertex.get_xy() for vertex in new_cell.get_quad_perimeter().get_vs()]}"
-        )
-        print(
-            f"new neighbor vertices {[vertex.get_xy() for vertex in old_n.get_quad_perimeter().get_vs()]}"
-        )
         new_cell.add_neighbor(old_n)
-        print("Here 6 ------------------")
         old_n.add_neighbor(new_cell)
         if old_n.check_if_neighbor(old_cell):
             old_n.remove_neighbor(old_cell)
