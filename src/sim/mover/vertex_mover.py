@@ -11,14 +11,30 @@ class VertexMover:
     """
     Moves vertices based on the growth of cells
 
-    Attributes:
-        cell_deltas: dictionary, key is cell, value is amount bottom vertices should move
-        vertex_deltas: dictionary, key is vertex, value is total amount each vertex
-                       should move total
-        sim: The simulation object
+    Attributes
+    ----------
+    cell_deltas : dict[Cell, float]
+        A dictionary mapping cells to their growth delta values, indicating how much the bottom vertices should move.
+    vertex_deltas : dict[Vertex, float]
+        A dictionary mapping vertices to the total amount each vertex should move.
+    sim : GrowingSim
+        The simulation instance this VertexMover is associated with.
+
+    Parameters
+    ----------
+    sim : GrowingSim
+        The simulation instance to which this VertexMover belongs.
     """
 
     def __init__(self, sim: "GrowingSim") -> None:
+        """
+        Initializes the VertexMover with a reference to the simulation.
+
+        Parameters
+        ----------
+        sim : GrowingSim
+            The simulation instance to which this VertexMover belongs.
+        """
         self.cell_deltas: dict["Cell", float] = {}
         self.vertex_deltas: dict["Vertex", float] = {}
         self.sim = sim
@@ -28,9 +44,17 @@ class VertexMover:
         Adds a delta value for a cell to the VertexMover.
         Delta values represent the amount a cell has grown this time point.
 
-        Args:
-            cell (Cell): The cell for which the delta value is being added.
-            deltaX (float): The delta value to be added.
+        Parameters
+        ----------
+        cell : Cell
+            The cell for which the growth delta value is specified.
+        deltaX : float
+            The amount by which the cell has grown, to be reflected in vertex adjustment.
+
+        Raises
+        ------
+        ValueError
+            If multiple delta values are added for the same cell within a single update cycle.
         """
         if cell in self.cell_deltas:
             raise ValueError(
@@ -41,30 +65,42 @@ class VertexMover:
 
     def get_cell_delta_val(self, cell: Cell) -> float:
         """
-        Returns the delta value for a cell.
+        Retrieves the registered growth delta value for a specified cell.
 
-        Args:
-            cell (Cell): The cell for which the delta value is being returned.
+        Parameters
+        ----------
+        cell : Cell
+            The cell whose growth delta value is requested.
 
-        Returns:
-            float: The delta value for the cell.
+        Returns
+        -------
+        float
+            The growth delta value for the specified cell.
         """
         return self.cell_deltas[cell]
 
     def get_vertex_delta_val(self, vertex: Vertex) -> float:
         """
-        Returns the delta value for a vertex.
+        Retrieves the total movement delta value for a specified vertex.
 
-        Args:
-            vertex (Vertex): The vertex for which the delta value is being returned.
-        Returns:
-            float: The delta value for the vertex.
+        Parameters
+        ----------
+        vertex : Vertex
+            The vertex whose movement delta value is requested.
+
+        Returns
+        -------
+        float
+            The total movement delta value for the specified vertex.
         """
         return self.vertex_deltas[vertex]
 
     def update(self) -> None:
         """
-        Moves the vertices based on the growth of the cells at this time point.
+        Executes the vertex movement based on accumulated cell growth deltas.
+
+        This method applies the registered growth deltas to adjust vertex positions,
+        reflecting the growth of cells in the simulation geometry.
         """
         if self.cell_deltas:
             top_row = self.get_top_row()
@@ -80,8 +116,10 @@ class VertexMover:
         """
         Returns the maximum delta value in the vertex_deltas dictionary.
 
-        Returns:
-            float: The maximum delta value.
+        Returns
+        -------
+        float
+            The maximum delta value.
         """
         max_delta = -float("inf")
         max_abs_delta = -float("inf")
@@ -97,8 +135,10 @@ class VertexMover:
         Returns the top row of cells managed by this VertexMover.
         The top row is defined as the row of cells with the highest y locations.
 
-        Returns:
-            list: The top row of cells in the root tip.
+        Returns
+        -------
+        list
+            The top row of cells in the root tip.
         """
         top_ys = []
         for cell in self.cell_deltas:
@@ -116,11 +156,15 @@ class VertexMover:
         """
         Sorts the top row of cells by their x locations.
 
-        Args:
-            top_row (list): The top row of cells in the root tip.
+        Parameters
+        ----------
+        top_row: list[Cell]
+            The top row of cells in the root tip.
 
-        Returns:
-            list: The sorted top row of cells.
+        Returns
+        -------
+        list[Cell]
+            The sorted top row of cells.
         """
         left_xs = []
         for cell in top_row:
@@ -132,8 +176,10 @@ class VertexMover:
         Propogates delta values to all basal neighbors of the top row of cells
         and adds the delta values to the bottom vertices of the cells.
 
-        Args:
-            top_row (list): The top row of cells in the root tip.
+        Parameters
+        ----------
+        top_row: list[Cell]
+            The top row of cells in the root tip.
         """
         for cell in top_row:
             this_delta = self.cell_deltas[cell]
@@ -144,9 +190,12 @@ class VertexMover:
         """
         Adds the delta value to the bottom vertices of a cell to the vertex_deltas dictionary.
 
-        Args:
-            cell (Cell): The cell for which the delta value is being added.
-            delta (float): The delta value to be added.
+        Parameters
+        ----------
+        cell: Cell
+            The cell for which the delta value is being added.
+        delta: float
+            The delta value to be added.
         """
         bottom_left_v = cell.get_quad_perimeter().get_bottom_left()
         bottom_right_v = cell.get_quad_perimeter().get_bottom_right()
@@ -163,9 +212,12 @@ class VertexMover:
         """
         Propogates the delta value to all basal neighbor cells.
 
-        Args:
-            cell (Cell): The cell for which the delta value is being propogated.
-            delta (float): The delta value to be propogated.
+        Parameters
+        ----------
+        cell: Cell
+            The cell for which the delta value is being propogated.
+        delta: float
+            The delta value to be propogated.
         """
         stack = [(cell, delta)]
         while stack:
@@ -183,8 +235,10 @@ class VertexMover:
         """
         Moves the vertices based on the delta values in the vertex_deltas dictionary.
 
-        Args:
-            max_delta (int): The maximum delta value in the vertex_deltas dictionary.
+        Parameters
+        ----------
+        max_delta: float
+            The maximum delta value calculated across all vertices, used for adjusting non-growing cells.
         """
         for vertex in self.vertex_deltas:
             vertex.set_y(vertex.get_y() + self.vertex_deltas[vertex])
@@ -203,8 +257,9 @@ class VertexMover:
         Checks if growth executed by this VertexMover this time point
         should make any cells divide.
 
-        Args:
-            cells (list): The list of cells this VertexMover affected this time point.
+        Parameters
+        cells: list[Cell]
+            The list of cells this VertexMover affected this time point.
         """
         for cell in cells:
             if cell.get_quad_perimeter().get_area() >= (
