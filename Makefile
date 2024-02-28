@@ -21,5 +21,5 @@ build: # run tox tests and lint
 	tox
 
 docs: # generates documentation
-	sphinx-apidoc -o docs/ ./src/ -f -M -e
+	sphinx-apidoc -o docs/ ./src/
 	make -C docs html
