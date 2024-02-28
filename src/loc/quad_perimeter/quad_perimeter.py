@@ -29,33 +29,33 @@ def list_intersection(lst1: list, lst2: list) -> list:
 
 class QuadPerimeter:
     """
-        Represents the perimeter of a cell defined by its four corner vertices.
+    Represents the perimeter of a cell defined by its four corner vertices.
 
-        This class provides functionalities to calculate various geometric properties of a cell,
-        such as area, perimeter length, and membrane lengths, based on the vertices that define
-        the cell's perimeter. It facilitates spatial analyses within cellular models,
-        including the identification of cell boundaries and the determination of cell neighbor
-        relationships based on shared edges.
+    This class provides functionalities to calculate various geometric properties of a cell,
+    such as area, perimeter length, and membrane lengths, based on the vertices that define
+    the cell's perimeter. It facilitates spatial analyses within cellular models,
+    including the identification of cell boundaries and the determination of cell neighbor
+    relationships based on shared edges.
 
-        Attributes
-        ----------
-        _perimeter_vs : List[Vertex]
-            A list of four `Vertex` instances representing the cell's perimeter shape.
-        _top_left : Vertex
-            The top-left vertex of the cell's perimeter
-        _top_right : Vertex
-            The top-right vertex of the cell's perimeter
-        _bottom_left : Vertex
-            The bottom-left vertex of the cell's perimeter
-        _bottom_right : Vertex
-            The bottom-right vertex of the cell's perimeter
-        _midpointx : float
-            The x-coordinate of the midpoint of the cell's perimeter, calculated as the average
-            x-coordinate of all vertices.
-        _init_area : float
-            The initial area of the cell, calculated using the vertices of the perimeter. This
-            value is important for simulations that track cell growth or deformation over time.    
-        """
+    Attributes
+    ----------
+    _perimeter_vs : List[Vertex]
+        A list of four `Vertex` instances representing the cell's perimeter shape.
+    _top_left : Vertex
+        The top-left vertex of the cell's perimeter
+    _top_right : Vertex
+        The top-right vertex of the cell's perimeter
+    _bottom_left : Vertex
+        The bottom-left vertex of the cell's perimeter
+    _bottom_right : Vertex
+        The bottom-right vertex of the cell's perimeter
+    _midpointx : float
+        The x-coordinate of the midpoint of the cell's perimeter, calculated as the average
+        x-coordinate of all vertices.
+    _init_area : float
+        The initial area of the cell, calculated using the vertices of the perimeter. This
+        value is important for simulations that track cell growth or deformation over time.
+    """
 
     def __init__(self, vertex_list: list["Vertex"]):
         """
@@ -275,7 +275,7 @@ class QuadPerimeter:
 
         Parameters
         ----------
-        vertex_list: list[Vertex] 
+        vertex_list: list[Vertex]
             A list of vertices representing the perimeter's corners.
         """
         self._perimeter_vs = vertex_list

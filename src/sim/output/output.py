@@ -71,7 +71,7 @@ class Output:
         """
         return cell.get_circ_mod().get_auxin()
 
-    def get_location(self, cell: "Cell") -> list[float]:
+    def get_location(self, cell: "Cell") -> list[list[float]]:
         """
         Get location (x, y corners) for each cell
         """
