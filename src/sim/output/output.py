@@ -8,10 +8,38 @@ if TYPE_CHECKING:
 
 class Output:
     """
-    Summary of simulation output
+    Handles the generation and management of simulation output data.
+
+    This class is responsible for creating and writing simulation results to a CSV file,
+    including detailed information about each cell.
+
+    Attributes
+    ----------
+    sim : GrowingSim
+        The simulation instance from which to gather output data.
+    filename : str
+        The name of the file to which output data will be written.
+
+    Parameters
+    ----------
+    sim : GrowingSim
+        The simulation instance associated with this output.
+    filename : str
+        The filename for the output CSV file.
+
     """
 
     def __init__(self, sim: "GrowingSim", filename: str):
+        """
+        Initializes the Output object with a simulation instance and output filename.
+
+        Parameters
+        ----------
+        sim : GrowingSim
+            The simulation instance associated with this output.
+        filename : str
+            The filename for the output CSV file.
+        """
         self.sim = sim
         self.filename = filename
         with open(self.filename, "w", newline="") as file:
@@ -35,24 +63,20 @@ class Output:
 
     def output_cells(self) -> None:
         """
-        Generate output spreadsheet for simulation
+        Writes the current state of all cells to the output file.
+
+        This method gathers data from each cell within the simulation, including
+        concentrations, locations, and PIN distributions, and writes this information
+        to the specified output file.
         """
-        # generates spreadsheet under name filename with contents of all cells
-        # gets cell_list from sim
-        # - for cell in self.sim.cell_list:
-        # gets contents of each cell including
-        # - Auxin concentration
-        # - Location (x,y of corners retrieved from vertex class)
-        # - all circ contents (PINs in relation to left right instead of lateral/medial)
-        # - number of cell divisions
         output = []
         cell_list = list(self.sim.get_cell_list())
         for cell in cell_list:
             summary: dict[str, Any] = {}
             summary["tick"] = self.sim.get_tick()
             summary["cell"] = cell.get_c_id()
-            summary["auxin"] = self.get_auxin(cell)
-            summary["location"] = self.get_location(cell)
+            summary["auxin"] = cell.get_circ_mod().get_auxin()
+            summary["location"] = cell.quad_perimeter.get_corners_for_disp()
             summary = self.get_circ_contents(summary, cell)
             # summary["num_divisions"] = self.get_division_number(cell)
             output.append(summary)
@@ -64,22 +88,21 @@ class Output:
             # writer.writeheader()
             writer.writerows(output)
 
-    # Helper functions
-    def get_auxin(self, cell: "Cell") -> float:
-        """
-        Get auxin concentration for each cell
-        """
-        return cell.get_circ_mod().get_auxin()
-
-    def get_location(self, cell: "Cell") -> list[list[float]]:
-        """
-        Get location (x, y corners) for each cell
-        """
-        return cell.quad_perimeter.get_corners_for_disp()
-
     def get_circ_contents(self, summary: dict[str, Any], cell: "Cell") -> dict[str, Any]:
         """
-        Get circulation results for each cell
+        Populates the summary dictionary with circulation content information for a given cell.
+
+        Parameters
+        ----------
+        summary : dict[str, Any]
+            The summary dictionary to be populated with cell circulation data.
+        cell : Cell
+            The cell from which to retrieve circulation content information.
+
+        Returns
+        -------
+        dict[str, Any]
+            The updated summary dictionary containing circulation content information for the cell.
         """
         summary["ARR"] = cell.get_circ_mod().get_arr()
         summary["AUX/LAX"] = cell.get_circ_mod().get_al()
@@ -94,7 +117,24 @@ class Output:
 
     def get_division_number(self, cell: "Cell") -> int:
         """
-        Get number of cell divisions
+        Retrieves the number of divisions a cell has undergone.
+
+        This method is a placeholder and is not implemented.
+
+        Parameters
+        ----------
+        cell : Cell
+            The cell from which to retrieve the division count.
+
+        Returns
+        -------
+        int
+            The number of divisions the cell has undergone.
+
+        Raises
+        ------
+        NotImplementedError
+            Indicates that the method is not yet implemented.
         """
         raise NotImplementedError
         return 0
