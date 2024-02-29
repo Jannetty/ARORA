@@ -146,14 +146,14 @@ class Cell(Sprite):
         if cell_type is None:
             raise ValueError("Cell type not recognized")
         return cell_type
-    
+
     def get_cell_type(self) -> str:
         """
         Returns the type of cell.
 
         Returns
         -------
-        str 
+        str
             The type of cell.
         """
         return self.cell_type
