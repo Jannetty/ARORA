@@ -65,7 +65,7 @@ class GrowingSim(Window):
         vis: bool,
         cell_val_file: str = "",
         v_file: str = "",
-        gparam_series: str = "",
+        gparam_series: pandas.core.series.Series | None = None,
         geometry: str = "",
     ):
         """
@@ -279,6 +279,9 @@ class GrowingSim(Window):
     #         if cell.get_quad_perimeter().point_inside(x, y):
     #             print(f"Cell {cell.get_c_id()}, growing = {cell.growing}")
 
+    def run_sim(self):
+        pyglet.app.run(0)
+
 
 def main(
     timestep: int,
@@ -308,6 +311,6 @@ def main(
         geometry,
     )
     print("Running Simulation")
-    pyglet.app.run(0)
+    simulation.run_sim()
 
     return simulation.get_tick()
