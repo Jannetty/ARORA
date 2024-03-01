@@ -1,3 +1,5 @@
+import os
+os.environ["ARCADE_HEADLESS"] = "True"
 from param_est.run_ga import ARORAGeneticAlg
 import unittest
 

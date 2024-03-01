@@ -1,4 +1,5 @@
 import os
+os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.loc.vertex.vertex import Vertex
 from src.agent.circ_module_cont import BaseCirculateModuleCont
@@ -40,16 +41,6 @@ class TestCirculator(unittest.TestCase):
     """
     Test Circulator Class
     """
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestCirculator, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestCirculator, cls).tearDownClass()
 
     def test_add_delta(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
