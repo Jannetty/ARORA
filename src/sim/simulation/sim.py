@@ -65,7 +65,7 @@ class GrowingSim(Window):
         vis: bool,
         cell_val_file: str = "",
         v_file: str = "",
-        gparam_series: pandas.core.series.Series | None = None,
+        gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
     ):
         """
@@ -91,7 +91,7 @@ class GrowingSim(Window):
         if vis is True:
             super().__init__(width, height, title)
         set_background_color(color=(250, 250, 250, 250))
-        if cell_val_file is not "" and v_file is not "":
+        if cell_val_file != "" and v_file != "":
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
             self.root_tip_y: float = self.input.get_initial_v_miny()
@@ -248,7 +248,7 @@ class GrowingSim(Window):
         """
         print("--------------------")
         self.tick += 1
-        max_tick = 200
+        max_tick = 20
         # max_tick = 2592
         try:
             if self.tick < max_tick:
@@ -269,6 +269,7 @@ class GrowingSim(Window):
             print(e)
             print("Ending Simulation")
             close_window()
+            raise e
 
     # def on_mouse_press(self, x, y, button, modifiers):
     #     print("Mouse press!")
@@ -279,7 +280,7 @@ class GrowingSim(Window):
     #         if cell.get_quad_perimeter().point_inside(x, y):
     #             print(f"Cell {cell.get_c_id()}, growing = {cell.growing}")
 
-    def run_sim(self):
+    def run_sim(self) -> None:
         pyglet.app.run(0)
 
 
