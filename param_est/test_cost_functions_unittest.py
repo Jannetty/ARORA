@@ -1,10 +1,12 @@
+import os
+os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 import numpy as np
 from unittest.mock import MagicMock, patch
 from param_est.cost_functions import auxin_peak_at_root_tip, auxin_greater_in_larger_cells 
 
 class TestCostFunctions(unittest.TestCase):
-    
+
     def test_correlation_coefficient(self):
         from param_est.cost_functions import correlation_coefficient
         list_x = [1, 2, 3, 4, 5]

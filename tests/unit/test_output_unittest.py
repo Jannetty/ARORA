@@ -1,4 +1,5 @@
 import os
+os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.sim.output.output import Output
 from src.loc.vertex.vertex import Vertex
@@ -82,16 +83,6 @@ CELL_LIST = [cell0, cell1]
 
 
 class TestOutput(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestOutput, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestOutput, cls).tearDownClass()
 
     def test_get_auxin(self):
         output = Output(sim, "ouput.csv")

@@ -1,4 +1,5 @@
 import os
+os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.loc.quad_perimeter.quad_perimeter import (
     QuadPerimeter,
@@ -35,16 +36,6 @@ init_vals = {
 
 
 class TestQuadPerimeter(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestQuadPerimeter, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestQuadPerimeter, cls).tearDownClass()
 
     def test_QuadPerimeter_get_apical(self):
         v1 = Vertex(10, 10)
