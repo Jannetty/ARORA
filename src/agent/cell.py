@@ -64,29 +64,45 @@ EPIDERMIS_CELL_DIST_FROM_ROOT_MIDPOINTX: int = 45
 
 class Cell(Sprite):
     """
-    Represents a cell in the simulation.
+    A class to represent a cell in the simulation.
 
-    Args:
-        simulation (GrowingSim): The simulation object.
-        corners (list): The Vertex corners of the cell.
-        init_vals (dict): Initial values for cell Circ Mod.
-        id (int): The ID of the cell.
+    Parameters
+    ----------
+    simulation : GrowingSim
+        The simulation object.
+    corners : list of Vertex
+        The Vertex corners of the cell.
+    init_vals : dict of str to Any
+        Initial values for cell Circ Mod.
+    id : int
+        The ID of the cell.
 
-    Attributes:
-        c_id (int): The ID of the cell.
-        a_neighbors (list): List of apical neighbors.
-        b_neighbors (list): List of basal neighbors.
-        l_neighbors (list): List of lateral neighbors.
-        m_neighbors (list): List of medial neighbors.
-        sim (GrowingSim): The simulation object that calls this cell.
-        quad_perimeter (QuadPerimeter): The quad perimeter object defining
-                                        this cell's location.
-        circ_mod (BaseCirculateModule): The circ module object that will manage
-                                        hormone circulation for this cell.
-        growing (bool): Indicates if the cell is growing.
-        dev_zone (float): The development zone of the cell.
-        cell_type (str): The type of the cell.
-        color (str): The color of the cell.
+    Attributes
+    ----------
+    c_id : int
+        The ID of the cell.
+    a_neighbors : list
+        List of apical neighbors.
+    b_neighbors : list
+        List of basal neighbors.
+    l_neighbors : list
+        List of lateral neighbors.
+    m_neighbors : list
+        List of medial neighbors.
+    sim : GrowingSim
+        The simulation object that calls this cell.
+    quad_perimeter : QuadPerimeter
+        The quad perimeter object defining this cell's location.
+    circ_mod : BaseCirculateModule
+        The circ module object that will manage hormone circulation for this cell.
+    growing : bool
+        Indicates if the cell is growing.
+    dev_zone : float
+        The development zone of the cell.
+    cell_type : str
+        The type of the cell.
+    color : str
+        The color of the cell.
     """
 
     def __init__(
@@ -98,6 +114,17 @@ class Cell(Sprite):
     ):
         """
         Initializes a new instance of the Cell class.
+
+        Parameters
+        ----------
+        simulation : GrowingSim
+            The simulation object.
+        corners : list of Vertex
+            The Vertex corners of the cell.
+        init_vals : dict of str to Any
+            Initial values for cell Circ Mod.
+        id : int
+            The ID of the cell.
         """
         self.c_id = c_id
         super().__init__()
@@ -124,8 +151,10 @@ class Cell(Sprite):
         Calculates the type of cell based on its x location in relation to center of root.
         Note: This only works for the default geometry.
 
-        Returns:
-            Type of cell (str)
+        Returns
+        -------
+        str
+            Type of cell.
         """
         root_tip_midpoint_x = self.sim.get_root_midpointx()
         cell_midpoint_x = self.quad_perimeter.get_midpointx()
@@ -151,8 +180,10 @@ class Cell(Sprite):
         """
         Calculates the color of the cell based on the auxin concentration and sim's cmap.
 
-        Returns:
-            list: A list containing the RGB values of the calculated color.
+        Returns
+        -------
+        tuple[int, int, int, int]
+            A tuple containing the RGBA values of the calculated color.
         """
         auxin = self.circ_mod.get_auxin()
         max_auxin = 2000  # TODO make this not hard coded
@@ -169,10 +200,12 @@ class Cell(Sprite):
 
     def get_quad_perimeter(self) -> "QuadPerimeter":
         """
-        Returns the quad perimeter object defining the cell's location
+        Returns the quad perimeter object defining the cell's location.
 
-        Returns:
-            float: The quad perimeter object defining the cell's location.
+        Returns
+        -------
+        QuadPerimeter
+            The quad perimeter object defining the cell's location.
         """
         return self.quad_perimeter
 
@@ -180,8 +213,10 @@ class Cell(Sprite):
         """
         Returns the ID of the cell.
 
-        Returns:
-            int: The ID of the cell.
+        Returns
+        -------
+        int
+            The ID of the cell.
         """
         return self.c_id
 
@@ -189,8 +224,10 @@ class Cell(Sprite):
         """
         Returns the development zone of the cell.
 
-        Returns:
-            string: The development zone of the cell.
+        Returns
+        -------
+        str
+            The development zone of the cell.
         """
         return self.dev_zone
 
@@ -198,8 +235,10 @@ class Cell(Sprite):
         """
         Sets the development zone of the cell.
 
-        Args:
-            zone (string): The development zone to set for the cell.
+        Parameters
+        ----------
+        zone : str
+            The development zone to set for the cell.
         """
         self.dev_zone = zone
 
@@ -207,8 +246,10 @@ class Cell(Sprite):
         """
         Sets the growing status of the cell.
 
-        Args:
-            growing (bool): The growing status to set for the cell.
+        Parameters
+        ----------
+        growing : bool
+            The growing status to set for the cell.
         """
         self.growing = growing
 
@@ -216,8 +257,10 @@ class Cell(Sprite):
         """
         Returns the growing status of the cell.
 
-        Returns:
-            bool: The growing status of the cell.
+        Returns
+        -------
+        bool
+            The growing status of the cell.
         """
         return self.growing
 
@@ -225,8 +268,10 @@ class Cell(Sprite):
         """
         Adds a neighbor to the cell's correct neighbor list.
 
-        Args:
-            neighbor (Cell): The neighbor to add to the cell's neighbor list.
+        Parameters
+        ----------
+        neighbor : Cell
+            The neighbor to add to the cell's neighbor list.
         """
         if not self.check_if_neighbor(neighbor):
             neighbor_location = self.find_new_neighbor_relative_location(neighbor)
@@ -252,11 +297,20 @@ class Cell(Sprite):
         """
         Finds the relative location of a new neighbor to the cell.
 
-        Args:
-            neighbor (Cell): The neighbor to find the relative location of.
+        Parameters
+        ----------
+        neighbor : Cell
+            The neighbor to find the relative location of.
 
-        Returns:
-            string: The relative location of the neighbor to the cell.
+        Returns
+        -------
+        str
+            The relative location of the neighbor to the cell.
+
+        Raises
+        ------
+        ValueError
+            If the neighbor is not recognized.
         """
         self_vs = self.get_quad_perimeter().get_vs()
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
@@ -278,8 +332,10 @@ class Cell(Sprite):
         """
         Returns the list of apical neighbors.
 
-        Returns:
-            list: The list of apical neighbors.
+        Returns
+        -------
+        list
+            The list of apical neighbors.
         """
         return self.a_neighbors
 
@@ -287,8 +343,10 @@ class Cell(Sprite):
         """
         Returns the list of basal neighbors.
 
-        Returns:
-            list: The list of basal neighbors.
+        Returns
+        -------
+        list
+            The list of basal neighbors.
         """
         return self.b_neighbors
 
@@ -296,8 +354,10 @@ class Cell(Sprite):
         """
         Returns the list of medial neighbors.
 
-        Returns:
-            list: The list of medial neighbors.
+        Returns
+        -------
+        list
+            The list of medial neighbors.
         """
         return self.m_neighbors
 
@@ -305,8 +365,10 @@ class Cell(Sprite):
         """
         Returns the list of lateral neighbors.
 
-        Returns:
-            list: The list of lateral neighbors.
+        Returns
+        -------
+        list
+            The list of lateral neighbors.
         """
         return self.l_neighbors
 
@@ -314,8 +376,10 @@ class Cell(Sprite):
         """
         Returns the list of all neighbors.
 
-        Returns:
-            list: The list of all neighbors.
+        Returns
+        -------
+        list of Cell
+            The list of all neighbors.
         """
         return (
             self.get_a_neighbors()
@@ -328,18 +392,21 @@ class Cell(Sprite):
         """
         Returns the simulation object that calls this cell.
 
-        Returns:
-            Simulation: The simulation object that calls this cell.
+        Returns
+        -------
+        GrowingSim
+            The simulation object that calls this cell.
         """
         return self.sim
 
     def get_circ_mod(self) -> "BaseCirculateModuleCont":
         """
-        Returns the circ module object that will manage hormone circulation for this cell.
+        Returns the circ module object that manages hormone circulation for this cell.
 
-        Returns:
-            BaseCirculateModule: The circ module object that will manage
-                                 hormone circulation for this cell.
+        Returns
+        -------
+        BaseCirculateModule
+            The circ module object that manages hormone circulation for this cell.
         """
         return self.circ_mod
 
@@ -347,8 +414,10 @@ class Cell(Sprite):
         """
         Removes a neighbor from the cell's neighbor list.
 
-        Args:
-            cell (Cell): The neighbor to remove from the cell's neighbor list.
+        Parameters
+        ----------
+        cell : Cell
+            The neighbor to remove from the cell's neighbor list.
         """
         if cell in self.a_neighbors:
             self.a_neighbors.remove(cell)
@@ -363,13 +432,17 @@ class Cell(Sprite):
 
     def check_if_neighbor(self, cell: "Cell") -> bool:
         """
-        Checks if a cell is a neighbor of the cell.
+        Check if a cell is a neighbor of the current cell.
 
-        Args:
-            cell (Cell): The cell to check if it is a neighbor.
+        Parameters
+        ----------
+        cell : Cell
+            The cell to check if it is a neighbor.
 
-        Returns:
-            bool: True if the cell is a neighbor (in the neighbor lists), False if not.
+        Returns
+        -------
+        bool
+            True if the cell is a neighbor (in the neighbor lists), False if not.
         """
         if cell in self.a_neighbors:
             return True
@@ -385,8 +458,10 @@ class Cell(Sprite):
         """
         Returns the area of the cell.
 
-        Returns:
-            float: The area of the cell.
+        Returns
+        -------
+        float
+            The area of the cell.
         """
         return self.quad_perimeter.get_area()
 
@@ -395,12 +470,27 @@ class Cell(Sprite):
     ) -> None:
         """
         Draws the cell on the screen.
+
+        Parameters
+        ----------
+        filter : Any, optional
+            The filter to be applied during drawing, by default None.
+        pixelated : Any, optional
+            The pixelation level to be applied during drawing, by default None.
+        blend_function : Any, optional
+            The blend function to be used during drawing, by default None.
         """
         super().draw(filter=filter, pixelated=pixelated, blend_function=blend_function)
         self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
-        draw_polygon_filled(point_list=point_list, color=self.color)
-        draw_polygon_outline(point_list=point_list, color=(0, 0, 0, 255), line_width=1)
+        point_list_for_draw_functions = []
+        for point in point_list:
+            pt_tuple = (point[0], point[1])
+            point_list_for_draw_functions.append(pt_tuple)
+        draw_polygon_filled(point_list=point_list_for_draw_functions, color=self.color)
+        draw_polygon_outline(
+            point_list=point_list_for_draw_functions, color=(0, 0, 0, 255), line_width=1
+        )
 
     def grow(self) -> None:
         """
@@ -412,8 +502,10 @@ class Cell(Sprite):
         """
         Returns the distance of the cell from the root tip.
 
-        Returns:
-            float: The distance of the cell from the root tip.
+        Returns
+        -------
+        float
+            The distance of the cell from the root tip.
         """
         root_tip_y = self.sim.get_root_tip_y()
         self_y = self.quad_perimeter.get_midpointy()
@@ -422,13 +514,27 @@ class Cell(Sprite):
     def calculate_dev_zone(self, dist_to_root_tip: float) -> str:
         """
         Calculates the development zone of the cell based on its distance from the root tip.
-        Note: This only works for the default geometry.
 
-        Args:
-            dist_to_root_tip (float): The distance of the cell from the root tip.
+        Parameters
+        ----------
+        dist_to_root_tip : float
+            The distance of the cell from the root tip.
 
-        Returns:
-            string: The development zone of the cell.
+        Returns
+        -------
+        str
+            The development zone of the cell.
+
+        Notes
+        -----
+        This method only works for the default geometry.
+
+        The development zones are defined as follows:
+        - 'roottip': If the cell ID is in the root_cap_cells list or the distance to the root tip is less than ROOT_TIP_DIST_FROM_TIP.
+        - 'meristematic': If the distance to the root tip is less than MERISTEMATIC_MAX_DIST_FROM_TIP.
+        - 'transition': If the distance to the root tip is less than TRANSITION_MAX_DIST_FROM_TIP.
+        - 'elongation': If the distance to the root tip is less than ELONGATION_MAX_DIST_FROM_TIP.
+        - 'differentiation': Otherwise.
         """
         root_cap_cells = [
             60,
@@ -461,10 +567,16 @@ class Cell(Sprite):
     def get_growth_rate(self) -> float:
         """
         Returns the growth rate of the cell based on its development zone.
-        Note: This only works for the default geometry.
 
         Returns:
-            float: The growth rate of the cell.
+        ----------
+        float:
+            The growth rate of the cell.
+
+        Raises:
+        ----------
+        ValueError:
+            If the cell has no recognizable development zone.
         """
         if self.get_quad_perimeter().get_height() >= 250:
             print(f"cell {self.c_id} has reached max height")
@@ -485,11 +597,16 @@ class Cell(Sprite):
 
     def calculate_delta(self) -> float:
         """
-        Calculates the growth delta of the cell.
-        Note: This only works for the default geometry.
+        Calculate the growth delta of the cell.
 
-        Returns:
-            float: The growth delta of the cell.
+        Returns
+        -------
+        float
+            The growth delta of the cell.
+
+        Note
+        ----
+        This method only works for the default geometry.
         """
         dist_to_root_tip = self.get_distance_from_tip()
         self.dev_zone = self.calculate_dev_zone(dist_to_root_tip)
@@ -497,11 +614,14 @@ class Cell(Sprite):
 
     def calculate_pin_weights(self) -> dict:
         """
-        Calculates the pin weights of each membrane the cell.
+        Calculates the pin weights of each membrane of the cell.
 
-        Returns:
-            dict{str: float}: The pin weights for each membrane of the cell.
-                              Keys are "a", "b", "l", and "m".
+        Returns
+        -------
+        dict
+            The pin weights for each membrane of the cell.
+            Keys are "a", "b", "l", and "m".
+
         """
         return self.circ_mod.pin_weights
 
@@ -509,9 +629,11 @@ class Cell(Sprite):
         """
         Returns the pin weights of each membrane the cell.
 
-        Returns:
-            dict{str: float}: The pin weights for each membrane of the cell.
-                              Keys are "a", "b", "l", and "m".
+        Returns
+        -------
+        dict
+            The pin weights for each membrane of the cell.
+            Keys are "a", "b", "l", and "m".
         """
         return self.pin_weights
 
@@ -529,11 +651,15 @@ class Cell(Sprite):
         Returns the direction of a neighbor when the neighbor shares two vertices with the cell
         assuming regular geometry.
 
-        Args:
-            neighbor (Cell): The neighbor to find the direction of.
+        Parameters
+        ----------
+        neighbor : Cell
+            The neighbor to find the direction of.
 
-        Returns:
-            string: The direction of the neighbor.
+        Returns
+        -------
+        str
+            The direction of the neighbor.
         """
         # standard case, check which vertices neighbor shares with self
         # if neighbor shares top left and bottom left, neighbor is to the left
@@ -573,11 +699,15 @@ class Cell(Sprite):
         Returns the direction of a neighbor when the neighbor shares one vertex with the cell
         assuming regular geometry.
 
-        Args:
-            neighbor (Cell): The neighbor to find the direction of.
+        Parameters
+        ----------
+        neighbor : Cell
+            The neighbor to find the direction of.
 
-        Returns:
-            string: The direction of the neighbor.
+        Returns
+        -------
+        str
+            The direction of the neighbor.
         """
         if (
             self.get_quad_perimeter().get_top_left()

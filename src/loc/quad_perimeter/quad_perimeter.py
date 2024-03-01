@@ -9,14 +9,19 @@ if TYPE_CHECKING:
 
 def list_intersection(lst1: list, lst2: list) -> list:
     """
-    Returns a list containing the intersection of two input lists.
+    Compute the intersection of two lists.
 
-    Args:
-        lst1 (list): The first input list.
-        lst2 (list): The second input list.
+    Parameters
+    ----------
+    lst1 : List[Any]
+        The first input list.
+    lst2 : List[Any]
+        The second input list.
 
-    Returns:
-        list: A new list containing the common elements between lst1 and lst2.
+    Returns
+    -------
+    List[Any]
+        A new list containing the common elements between `lst1` and `lst2`.
     """
     intersection = [value for value in lst1 if value in lst2]
     return intersection
@@ -24,24 +29,42 @@ def list_intersection(lst1: list, lst2: list) -> list:
 
 class QuadPerimeter:
     """
-    A class to represent a cell's perimeter.
+    Represents the perimeter of a cell defined by its four corner vertices.
 
-    Attributes:
-        _perimeter_vs (list): A list of vertices representing the cell's perimeter.
-        _top_left (Vertex): The top left vertex of the cell.
-        _top_right (Vertex): The top right vertex of the cell.
-        _bottom_left (Vertex): The bottom left vertex of the cell.
-        _bottom_right (Vertex): The bottom right vertex of the cell.
-        _midpointx (float): The x-coordinate of the cell's midpoint.
-        _init_area (float): The initial area of the cell.
+    This class provides functionalities to calculate various geometric properties of a cell,
+    such as area, perimeter length, and membrane lengths, based on the vertices that define
+    the cell's perimeter. It facilitates spatial analyses within cellular models,
+    including the identification of cell boundaries and the determination of cell neighbor
+    relationships based on shared edges.
+
+    Attributes
+    ----------
+    _perimeter_vs : List[Vertex]
+        A list of four `Vertex` instances representing the cell's perimeter shape.
+    _top_left : Vertex
+        The top-left vertex of the cell's perimeter
+    _top_right : Vertex
+        The top-right vertex of the cell's perimeter
+    _bottom_left : Vertex
+        The bottom-left vertex of the cell's perimeter
+    _bottom_right : Vertex
+        The bottom-right vertex of the cell's perimeter
+    _midpointx : float
+        The x-coordinate of the midpoint of the cell's perimeter, calculated as the average
+        x-coordinate of all vertices.
+    _init_area : float
+        The initial area of the cell, calculated using the vertices of the perimeter. This
+        value is important for simulations that track cell growth or deformation over time.
     """
 
     def __init__(self, vertex_list: list["Vertex"]):
         """
         Initializes a QuadPerimeter object with a list of vertices.
 
-        Args:
-            vertex_list (list): A list of vertices representing the quad perimeter.
+        Parameters
+        ----------
+        vertex_list: list[Vertex]
+            A list of vertices representing the quad perimeter.
         """
         self._perimeter_vs = vertex_list
         self.__assign_corners()
@@ -52,8 +75,10 @@ class QuadPerimeter:
         """
         Calculates the central x-coordinate of the perimeter.
 
-        Returns:
-            float: The x-coordinate of the midpoint.
+        Returns
+        -------
+        float
+            The x-coordinate of the midpoint.
         """
         sumx = sum(corner.get_x() for corner in self._perimeter_vs)
         return sumx / len(self._perimeter_vs)
@@ -62,8 +87,10 @@ class QuadPerimeter:
         """
         Calculates the central y-coordinate of the perimeter.
 
-        Returns:
-            float: The y-coordinate of the midpoint.
+        Returns
+        -------
+        float
+            The y-coordinate of the midpoint.
         """
         sumy = sum(corner.get_y() for corner in self._perimeter_vs)
         return sumy / len(self._perimeter_vs)
@@ -72,8 +99,10 @@ class QuadPerimeter:
         """
         Gets the maximum y-coordinate of the perimeter.
 
-        Returns:
-            float: The maximum y-coordinate of the perimeter.
+        Returns
+        -------
+        float
+            The maximum y-coordinate of the perimeter.
         """
         return max(corner.get_y() for corner in self._perimeter_vs)
 
@@ -81,8 +110,10 @@ class QuadPerimeter:
         """
         Gets the minimum y-coordinate of the perimeter.
 
-        Returns:
-            float: The minimum y-coordinate of the perimeter.
+        Returns
+        -------
+        float
+            The minimum y-coordinate of the perimeter.
         """
         return min(corner.get_y() for corner in self._perimeter_vs)
 
@@ -90,8 +121,10 @@ class QuadPerimeter:
         """
         Gets the maximum x-coordinate of the perimeter.
 
-        Returns:
-            float: The maximum x-coordinate of the perimeter.
+        Returns
+        -------
+        float
+            The maximum x-coordinate of the perimeter.
         """
         return max(corner.get_x() for corner in self._perimeter_vs)
 
@@ -99,8 +132,10 @@ class QuadPerimeter:
         """
         Gets the minimum x-coordinate of the perimeter.
 
-        Returns:
-            float: The minimum x-coordinate of the perimeter.
+        Returns
+        -------
+        float
+            The minimum x-coordinate of the perimeter.
         """
         return min(corner.get_x() for corner in self._perimeter_vs)
 
@@ -108,8 +143,10 @@ class QuadPerimeter:
         """
         Gets the x-coordinate of the perimeter's midpoint.
 
-        Returns:
-            float: The x-coordinate of the perimeter's midpoint.
+        Returns
+        -------
+        float
+            The x-coordinate of the perimeter's midpoint.
         """
         return self._midpointx
 
@@ -117,8 +154,10 @@ class QuadPerimeter:
         """
         Gets the y-coordinate of the perimeter's midpoint.
 
-        Returns:
-            float: The y-coordinate of the perimeter's midpoint.
+        Returns
+        -------
+        float
+            The y-coordinate of the perimeter's midpoint.
         """
         return self.__calc_midpointy()
 
@@ -126,12 +165,17 @@ class QuadPerimeter:
         """
         Determines if a point is inside the perimeter.
 
-        Args:
-            x (int): The x-coordinate of the point.
-            y (int): The y-coordinate of the point.
+        Parameters
+        ----------
+        x: int
+            The x-coordinate of the point.
+        y: int
+            The y-coordinate of the point.
 
-        Returns:
-            bool: True if the point is inside the perimeter, False otherwise.
+        Returns
+        -------
+        bool
+            True if the point is inside the perimeter, False otherwise.
         """
         if self.get_min_x() < x < self.get_max_x():
             if self.get_min_y() < y < self.get_max_y():
@@ -142,8 +186,10 @@ class QuadPerimeter:
         """
         Calculates the full length of the perimeter.
 
-        Returns:
-            float: The length of the perimeter.
+        Returns
+        -------
+        float
+            The length of the perimeter.
         """
         return (
             self.get_left_memlen()
@@ -156,8 +202,10 @@ class QuadPerimeter:
         """
         Returns the length of the left membrane of the quadrilateral.
 
-        Returns:
-            float: The length of the left membrane.
+        Returns
+        -------
+        float
+            The length of the left membrane.
         """
         return math.dist(self._top_left.get_xy(), self._bottom_left.get_xy())
 
@@ -165,8 +213,10 @@ class QuadPerimeter:
         """
         Returns the length of the right membrane of the quadrilateral.
 
-        Returns:
-            float: The length of the right membrane.
+        Returns
+        -------
+        float
+            The length of the right membrane.
         """
         return math.dist(self._top_right.get_xy(), self._bottom_right.get_xy())
 
@@ -174,8 +224,10 @@ class QuadPerimeter:
         """
         Returns the length of the apical membrane of the quadrilateral.
 
-        Returns:
-            float: The length of the apical membrane.
+        Returns
+        -------
+        float
+            The length of the apical membrane.
         """
         return math.dist(self._top_left.get_xy(), self._top_right.get_xy())
 
@@ -183,8 +235,10 @@ class QuadPerimeter:
         """
         Returns the length of the basal membrane of the quadrilateral.
 
-        Returns:
-            float: The length of the basal membrane.
+        Returns
+        -------
+        float
+            The length of the basal membrane.
         """
         return math.dist(self._bottom_left.get_xy(), self._bottom_right.get_xy())
 
@@ -199,12 +253,14 @@ class QuadPerimeter:
         self._bottom_left = get_left_v(bottom_row)
         self._bottom_right = get_right_v(bottom_row)
 
-    def get_corners_for_disp(self) -> list:
+    def get_corners_for_disp(self) -> list[list[float]]:
         """
         Returns the (x,y) positions of the perimeter's vertices for display purposes.
 
-        Returns:
-            list: A list of the (x,y) coordinates of the perimeter's vertices.
+        Returns
+        -------
+        list[list[float]]
+            A list of the (x,y) coordinates of the perimeter's vertices.
         """
         return [
             self._bottom_right.get_xy(),
@@ -217,8 +273,10 @@ class QuadPerimeter:
         """
         Sets the corners of the perimeter.
 
-        Args:
-            vertex_list (list): A list of vertices representing the perimeter's corners.
+        Parameters
+        ----------
+        vertex_list: list[Vertex]
+            A list of vertices representing the perimeter's corners.
         """
         self._perimeter_vs = vertex_list
         self.__assign_corners()
@@ -227,8 +285,10 @@ class QuadPerimeter:
         """
         Returns the top left vertex of the perimeter.
 
-        Returns:
-            Vertex: The top left vertex of the perimeter.
+        Returns
+        -------
+        Vertex
+            The top left vertex of the perimeter.
         """
         return self._top_left
 
@@ -236,8 +296,10 @@ class QuadPerimeter:
         """
         Returns the top right vertex of the perimeter.
 
-        Returns:
-            Vertex: The top right vertex of the perimeter.
+        Returns
+        -------
+        Vertex
+            The top right vertex of the perimeter.
         """
         return self._top_right
 
@@ -245,8 +307,10 @@ class QuadPerimeter:
         """
         Returns the bottom left vertex of the perimeter.
 
-        Returns:
-            Vertex: The bottom left vertex of the perimeter.
+        Returns
+        -------
+        Vertex
+            The bottom left vertex of the perimeter.
         """
         return self._bottom_left
 
@@ -254,8 +318,10 @@ class QuadPerimeter:
         """
         Returns the bottom right vertex of the perimeter.
 
-        Returns:
-            Vertex: The bottom right vertex of the perimeter.
+        Returns
+        -------
+        Vertex
+            The bottom right vertex of the perimeter.
         """
         return self._bottom_right
 
@@ -263,8 +329,10 @@ class QuadPerimeter:
         """
         Returns the vertices of the perimeter.
 
-        Returns:
-            list: A list of the perimeter's vertices.
+        Returns
+        -------
+        list[Vertex]
+            A list of the perimeter's vertices.
         """
         return [
             self.get_top_left(),
@@ -277,8 +345,10 @@ class QuadPerimeter:
         """
         Calculates the area of the quadrilateral using Brahmagupta's formula.
 
-        Returns:
-            float: The area of the quadrilateral.
+        Returns
+        -------
+        float
+            The area of the quadrilateral.
         """
         s = self.get_perimeter_len() / 2
         a = math.dist(self._top_left.get_xy(), self._bottom_left.get_xy())
@@ -292,8 +362,10 @@ class QuadPerimeter:
         """
         Returns the initial area of the cell.
 
-        Returns:
-            float: The initial area of the cell.
+        Returns
+        -------
+        float
+            The initial area of the cell.
         """
         return self._init_area
 
@@ -301,8 +373,10 @@ class QuadPerimeter:
         """
         Returns the height of the quadrilateral.
 
-        Returns:
-            float: The height of the quadrilateral.
+        Returns
+        -------
+        float
+            The height of the quadrilateral.
         """
         return self._top_left.get_y() - self._bottom_left.get_y()
 
@@ -310,12 +384,16 @@ class QuadPerimeter:
         """
         Determines if the cell is to the left or right of the root's midpoint.
 
-        Args:
-            root_mid (float): The x-coordinate of the root's midpoint.
+        Parameters
+        ----------
+        root_mid: float
+            The x-coordinate of the root's midpoint.
 
-        Returns:
-            tuple: A tuple describing how "left" and "right" are defined for the cell.
-                   The first tuple element is the left direction, the second is the right direction.
+        Returns
+        -------
+        tuple
+            A tuple describing how "left" and "right" are defined for the cell.
+            The first tuple element is the left direction, the second is the right direction.
         """
         cell_mid = self.get_midpointx()
         if cell_mid < root_mid:
@@ -328,11 +406,15 @@ class QuadPerimeter:
         """
         Determines if "left" is lateral or medial for this perimeter.
 
-        Args:
-            root_mid int: The x-coordinate of the root's midpoint.
+        Parameters
+        ----------
+        root_mid: int
+            The x-coordinate of the root's midpoint.
 
-        Returns:
-            str: The direction of the left side of the cell.
+        Returns
+        -------
+        str
+            The direction of the left side of the cell.
         """
         return self.determine_left_right(root_mid)[0]
 
@@ -340,11 +422,15 @@ class QuadPerimeter:
         """
         Determines if "right" is lateral or medial for this perimeter.
 
-        Args:
-            root_mid int: The x-coordinate of the root's midpoint.
+        Parameters
+        ----------
+        root_mid: int
+            The x-coordinate of the root's midpoint.
 
-        Returns:
-            str: The direction of the right side of the cell.
+        Returns
+        -------
+        str
+            The direction of the right side of the cell.
         """
         return self.determine_left_right(root_mid)[1]
 
@@ -352,12 +438,17 @@ class QuadPerimeter:
         """
         Calculate fraction of total membrane one direction's membrane represents
 
-        Args:
-            direction (str): The direction of the membrane.
-            left (str): The side of the cell.
+        Parameters
+        ----------
+        direction: str
+            The direction of the membrane.
+        left: str
+            The side of the cell.
 
-        Returns:
-            float: The fraction of the total membrane that the direction's membrane represents.
+        Returns
+        -------
+        float
+            The fraction of the total membrane that the direction's membrane represents.
         """
         cell_perimeter = self.get_perimeter_len()
         if direction == "a":
@@ -381,15 +472,24 @@ def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float:
     """
     Calculates the length of the common perimeter between two cells.
 
-    Args:
-        cell (Cell): The first cell.
-        neighbor (Cell): The neighboring cell.
+    Parameters
+    ----------
+    cell: Cell
+        The reference cell from which the common perimeter length is calculated
+    neighbor: Cell
+        The neighboring cell adjacemt to the 'cell'.
 
-    Returns:
-        float: The length of the common perimeter between the two cells.
+    Returns
+    -------
+    float
+        The length of the perimeter shared by the `cell` and its `neighbor`.
 
-    Raises:
-        Exception: If the neighbor does not share a membrane with the cell.
+    Raises
+    ------
+    ValueError
+        If `cell` and `neighbor` do not share a direct boundary, indicating an
+        error in identifying neighboring cells or a potential issue with the cell
+        geometry configuration.
     """
 
     length = 0.0
@@ -591,11 +691,15 @@ def get_apical(vertex_list: list["Vertex"]) -> list["Vertex"]:
     """
     Returns two apical vertices from the given vertex list.
 
-    Parameters:
-    vertex_list (list): A list of four vertices.
+    Parameters
+    ----------
+    vertex_list: list[Vertex]
+        A list of four vertices.
 
-    Returns:
-    list: A list of two apical vertices.
+    Returns
+    -------
+    list[Vertex]
+        A list of the cell's two apical vertices.
     """
     vs = vertex_list
     assert len(vs) == 4
@@ -619,11 +723,15 @@ def get_basal(vertex_list: list["Vertex"]) -> list["Vertex"]:
     """
     Returns two basal vertices from the given vertex list.
 
-    Parameters:
-    vertex_list (list): A list of four vertices.
+    Parameters
+    ----------
+    vertex_list: list[Vertex]
+        A list of four vertices.
 
-    Returns:
-    list: A list of two basal vertices.
+    Returns
+    -------
+    list[Vertex]
+        A list of the cell's two basal vertices.
     """
     apical = get_apical(vertex_list)
     return [v for v in vertex_list if v not in apical]
@@ -631,13 +739,23 @@ def get_basal(vertex_list: list["Vertex"]) -> list["Vertex"]:
 
 def get_left_v(vertex_list: list["Vertex"]) -> Vertex:
     """
-    Returns the left vertex from the given vertex list.
+    Return the leftmost vertex from a specified list of two vertices.
 
-    Parameters:
-    vertex_list (list): A list of two vertices.
+    Parameters
+    ----------
+    vertex_list : list[Vertex]
+        A list containing exactly two `Vertex` instances.
 
-    Returns:
-    Vertex: The left vertex.
+    Returns
+    -------
+    Vertex
+        The leftmost vertex based on the x-coordinate.
+
+    Raises
+    ------
+    ValueError
+        If `vertex_list` does not contain exactly two vertices.
+
     """
     if len(vertex_list) != 2:
         raise ValueError("get_left_v called on vertex list of length != 2")
@@ -652,13 +770,27 @@ def get_left_v(vertex_list: list["Vertex"]) -> Vertex:
 
 def get_right_v(vertex_list: list["Vertex"]) -> Vertex:
     """
-    Returns the right vertex from the given vertex list.
+    Return the rightmost vertex from a specified list of two vertices.
 
-    Parameters:
-    vertex_list (list): A list of two vertices.
+    This function identifies and returns the vertex with the smallest x-coordinate,
+    effectively determining the leftmost vertex among a pair. This operation assumes
+    the vertex list contains exactly two vertices.
 
-    Returns:
-    Vertex: The right vertex.
+    Parameters
+    ----------
+    vertex_list : list[Vertex]
+        A list containing exactly two `Vertex` instances.
+
+    Returns
+    -------
+    Vertex
+        The rightmost vertex based on the x-coordinate.
+
+    Raises
+    ------
+    ValueError
+        If `vertex_list` does not contain exactly two vertices.
+
     """
     if len(vertex_list) != 2:
         raise ValueError("get_right_v called on vertex list of length != 2")

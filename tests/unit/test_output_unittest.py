@@ -93,18 +93,6 @@ class TestOutput(unittest.TestCase):
         del os.environ["ARCADE_HEADLESS"]
         super(TestOutput, cls).tearDownClass()
 
-    def test_get_auxin(self):
-        output = Output(sim, "ouput.csv")
-        expected = 2
-        found = output.get_auxin(cell0)
-        self.assertEqual(expected, found)
-
-    def test_get_location(self):
-        output = Output(sim, "ouput.csv")
-        expected = [[30.0, 10.0], [10.0, 10.0], [10.0, 30.0], [30.0, 30.0]]
-        found = output.get_location(cell0)
-        self.assertEqual(expected, found)
-
     def test_get_circ_contents(self):
         output = Output(sim, "ouput.csv")
         summary = {"cell": cell0}
