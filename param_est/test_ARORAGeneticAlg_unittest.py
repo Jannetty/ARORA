@@ -8,9 +8,8 @@ import unittest
 class TestARORAGeneticAlg(unittest.TestCase):
 
     def test_initialize(self):
-        initial_parent_gen_file = "param_est/test_first_gen.csv"
-        ga = ARORAGeneticAlg(initial_parent_gen_file)
-        self.assertEqual(ga.parameters_df.shape, (16, 9))
+        ga = ARORAGeneticAlg()
+        self.assertIsInstance(ga.ga_instance, type(None))
 
     # def test_run_ARORA(self):
     #     initial_parent_gen_file = "param_est/test_first_gen.csv"
