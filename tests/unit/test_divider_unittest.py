@@ -142,11 +142,9 @@ class TestDivider(unittest.TestCase):
         self.assertEqual([], new_bottom_cell.get_l_neighbors())
         self.assertEqual([l_neighbor], cell.get_l_neighbors())
         self.assertEqual([cell], l_neighbor.get_m_neighbors())
-        print("Here3----------")
         simulation.get_divider().set_one_side_neighbors(
             new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
         )
-        print("Here after set one side neighbors----------")
 
         self.assertEqual([l_neighbor], cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())

@@ -221,7 +221,6 @@ class GrowingSim(Window):
         """
         Renders the screen.
         """
-        print("Drawing")
         if self.vis:
             self.clear()
             for cell in self.cell_list:

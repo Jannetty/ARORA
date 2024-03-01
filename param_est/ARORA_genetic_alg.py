@@ -15,13 +15,15 @@ SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "ARORA"
 
+PARAM_NAMES = ["k_s","k_d","k1","k2","k3","k4","k5","k6","tau"]
+
 class ARORAGeneticAlg:
-    def __init__(self, initial_parent_gen_file):
-        self.parameters_df = pd.read_csv(initial_parent_gen_file)
+    def __init__(self):
         self.ga_instance = None
 
     def fitness_function(self, ga_instance, solution, solution_idx):
-        params = self.parameters_df.iloc[solution_idx]
+        params = pd.Series(solution, index=PARAM_NAMES)
+        print(f"params: \n {params}")
         cost = self._run_ARORA(params)
         fitness = -cost
         return fitness
@@ -75,14 +77,18 @@ class ARORAGeneticAlg:
     def run_genetic_alg(self):
         genespace = self.make_paramspace()
         self.ga_instance = pygad.GA(num_generations=1,
-                                    num_parents_mating=10,
+                                    num_parents_mating=4,
                                     fitness_func=self.fitness_function,
-                                    sol_per_pop=len(self.parameters_df),
-                                    num_genes=len(self.parameters_df.columns),
+                                    sol_per_pop=10,
+                                    num_genes=len(genespace),
                                     gene_space=genespace,
                                     mutation_percent_genes=50)
 
         self.ga_instance.run()
+
+    def on_gen(self, ga_instance):
+        print("Generation : ", ga_instance.generations_completed)
+        print("Fitness of the best solution :", ga_instance.best_solution()[1])
 
     def analyze_results(self):
         solution, solution_fitness, solution_idx = self.ga_instance.best_solution()
@@ -90,4 +96,4 @@ class ARORAGeneticAlg:
         print("Fitness value of the best solution = {solution_fitness}".format(solution_fitness=solution_fitness))
         print("Index of the best solution : {solution_idx}".format(solution_idx=solution_idx))
         # plot the fitness evolution
-        pygad.plot_fitness(self.ga_instance)
+        self.ga_instance.plot_fitness(label='Fitness')

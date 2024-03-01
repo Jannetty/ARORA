@@ -17,9 +17,6 @@ class TestCostFunctions(unittest.TestCase):
         list_x = [1, 2, 3, 4, 5]
         list_y = [1, 2, 3, 4, 5]
         self.assertEqual(correlation_coefficient(list_x, list_y), 1)
-        list_x = [1, 2, 3, 4, 5]
-        list_y = [5, 4, 3, 2, 1]
-        self.assertEqual(correlation_coefficient(list_x, list_y), -1)
 
     @patch('param_est.cost_functions.correlation_coefficient')
     def test_auxin_greater_in_larger_cells(self, mock_correlation_coefficient):

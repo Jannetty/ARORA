@@ -57,7 +57,6 @@ class Divider:
                 cell for cell in self.cells_to_divide if cell.get_dev_zone() == "meristematic"
             ]
             for cell in meristematic_cells_to_divide:
-                # print(f"Dividing cell {cell.get_c_id()}")
                 new_vs = self.get_new_vs(cell)
                 # check if those vertices exist by iterating through all vs in all neighbor cells' qps
                 left_v = self.check_neighbors_for_v_existence(cell, new_vs[0])
@@ -184,9 +183,7 @@ class Divider:
         if len(neighbor_list) == 0:
             return
         if len(neighbor_list) == 1:
-            print("Here 4 ------------------")
             self.swap_neighbors(new_top_cell, neighbor_list[0], cell)
-            print("Here after swap neighbors ------------------")
             self.swap_neighbors(new_bottom_cell, neighbor_list[0], cell)
             return
 
@@ -211,15 +208,7 @@ class Divider:
             old_n: The neighbor to add to the new cell.
             old_cell: The old cell to remove the neighbor from.
         """
-        print("Here 5 ------------------")
-        print(
-            f"new cell vertices {[vertex.get_xy() for vertex in new_cell.get_quad_perimeter().get_vs()]}"
-        )
-        print(
-            f"new neighbor vertices {[vertex.get_xy() for vertex in old_n.get_quad_perimeter().get_vs()]}"
-        )
         new_cell.add_neighbor(old_n)
-        print("Here 6 ------------------")
         old_n.add_neighbor(new_cell)
         if old_n.check_if_neighbor(old_cell):
             old_n.remove_neighbor(old_cell)
