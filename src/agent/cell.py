@@ -142,7 +142,10 @@ class Cell(Sprite):
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.pin_weights: dict[str, float] = self.calculate_pin_weights()
         self.growing: bool = cast(bool, init_vals.get("growing"))
-        self.dev_zone: str = self.calculate_dev_zone(self.get_distance_from_tip())
+        if self.sim.geometry != "default": 
+            self.dev_zone: str = "None"
+        else: 
+            self.dev_zone: str = self.calculate_dev_zone(self.get_distance_from_tip())
         self.cell_type: str = self.calculate_cell_type()
         self.color: tuple[int, int, int, int] = self.calculate_color()
 
@@ -642,7 +645,10 @@ class Cell(Sprite):
         Updates the cell by growing, calculating pin weights, and updating the circ module.
         """
         if self.growing:
-            self.grow()
+            if self.sim.geometry == "default":
+                self.grow()
+            else:
+                raise ValueError("Cannot grow cells initialized to non-default geometry")
         self.pin_weights = self.calculate_pin_weights()
         self.circ_mod.update()
 
