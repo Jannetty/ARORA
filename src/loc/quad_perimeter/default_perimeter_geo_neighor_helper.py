@@ -4,6 +4,7 @@ if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
+@staticmethod
 class PerimeterNeighborHelpers:
     """
     Helper functions to determine the perimeter of neighbors when initializing model to default geometry.
