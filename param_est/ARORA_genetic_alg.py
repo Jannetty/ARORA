@@ -1,5 +1,8 @@
 import os
-os.environ["ARCADE_HEADLESS"] = "True"
+import platform
+
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import numpy as np
 import pandas as pd
 # use PyGAD to estimate the parameters

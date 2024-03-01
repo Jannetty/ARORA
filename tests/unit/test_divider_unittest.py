@@ -1,6 +1,8 @@
 import os
+import platform
 
-os.environ["ARCADE_HEADLESS"] = "True"
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.sim.divider.divider import Divider
 from src.agent.cell import Cell

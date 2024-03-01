@@ -1,5 +1,7 @@
 import os
-os.environ["ARCADE_HEADLESS"] = "True"
+import platform
+if platform.system() == 'Linux':
+    os.environ["ARCADE_HEADLESS"] = "True"
 from param_est.ARORA_genetic_alg import ARORAGeneticAlg
 import unittest
 
