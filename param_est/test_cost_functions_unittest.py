@@ -1,5 +1,7 @@
 import os
-os.environ["ARCADE_HEADLESS"] = "True"
+import platform
+if platform.system() == 'Linux':
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 import numpy as np
 from unittest.mock import MagicMock, patch

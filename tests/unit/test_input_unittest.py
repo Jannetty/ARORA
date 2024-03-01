@@ -1,6 +1,8 @@
 import os
+import platform
 
-os.environ["ARCADE_HEADLESS"] = "True"
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 import pandas
 from src.sim.input.input import Input
