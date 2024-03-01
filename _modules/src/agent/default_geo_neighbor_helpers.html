@@ -91,16 +91,27 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_neighbor_dir_neighbor_shares_one_v_default_geo</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determines the direction of the neighbor based on the cell IDs.</span>
+<span class="sd">        Determine the direction of a neighbor cell sharing one vertex in default geometry.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            cell (Cell): The current cell.</span>
-<span class="sd">            neighbor (Cell): The neighboring cell.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cell : Cell</span>
+<span class="sd">            The reference cell.</span>
+<span class="sd">        neighbor : Cell</span>
+<span class="sd">            The neighboring cell being considered.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            str: The direction of the neighbor (&#39;a&#39;, &#39;b&#39;, &#39;l&#39;, &#39;m&#39;)</span>
-<span class="sd">                or None if no direction is found.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The direction of the neighbor relative to the cell (&#39;a&#39;, &#39;b&#39;, &#39;l&#39;, &#39;m&#39;),</span>
+<span class="sd">            or an empty string if no direction is applicable.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The direction is determined by comparing cell IDs. These directions will</span>
+<span class="sd">        only be correct if model is initialized to default geometry.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">neighbor_direct</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
             <span class="n">neighbor_direct</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
         <span class="k">elif</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">20</span> <span class="ow">and</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
@@ -231,15 +242,26 @@
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_neighbor_dir_neighbor_shares_no_vs_default_geo</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determines the direction of the neighbor based on the cell IDs.</span>
+<span class="sd">        Determine the direction of a neighbor cell without shared vertices in default geometry.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            cell (Cell): The current cell.</span>
-<span class="sd">            neighbor (Cell): The neighboring cell.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cell : Cell</span>
+<span class="sd">            The reference cell.</span>
+<span class="sd">        neighbor : Cell</span>
+<span class="sd">            The neighboring cell being considered.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            str: The direction of the neighbor (&#39;a&#39;, &#39;b&#39;, &#39;l&#39;, &#39;m&#39;)</span>
-<span class="sd">                or None if no direction is found.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The direction of the neighbor relative to the cell (&#39;a&#39;, &#39;b&#39;, &#39;l&#39;, &#39;m&#39;),</span>
+<span class="sd">            or an appropriate message if no standard direction is found.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method accounts for special cases where neighboring cells do not share</span>
+<span class="sd">        a common vertex. These assignments will only be true if model is initialized</span>
+<span class="sd">        to default geometry.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">17</span> <span class="ow">and</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
             <span class="n">neighbor_direct</span> <span class="o">=</span> <span class="s2">&quot;l&quot;</span>

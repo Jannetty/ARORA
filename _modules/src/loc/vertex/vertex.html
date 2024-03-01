@@ -76,16 +76,48 @@
 <a class="viewcode-back" href="../../../../src.loc.vertex.vertex.html#src.loc.vertex.vertex.Vertex">[docs]</a>
 <span></span><span class="k">class</span> <span class="nc">Vertex</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Represents a vertex, or corner of a cell</span>
+<span class="sd">    Represents a vertex, or a point in 2D space, typically a corner of a geometric shape.</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        x (float): The x-coordinate of the vertex.</span>
-<span class="sd">        y (float): The y-coordinate of the vertex.</span>
-<span class="sd">        xy (list): A list containing the x and y coordinates of the vertex.</span>
-<span class="sd">        v_id (optional): An optional identifier for the vertex.</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        The x-coordinate of the vertex.</span>
+<span class="sd">    y : float</span>
+<span class="sd">        The y-coordinate of the vertex.</span>
+<span class="sd">    xy : list[float]</span>
+<span class="sd">        A list containing the x and y coordinates of the vertex.</span>
+<span class="sd">    v_id : int, optional</span>
+<span class="sd">        An optional identifier for the vertex.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : float</span>
+<span class="sd">        The x-coordinate of the vertex upon initialization.</span>
+<span class="sd">    y : float</span>
+<span class="sd">        The y-coordinate of the vertex upon initialization.</span>
+<span class="sd">    v_id : int or None, optional</span>
+<span class="sd">        An optional identifier for the vertex, by default None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">v_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a new Vertex instance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x-coordinate of the vertex.</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y-coordinate of the vertex.</span>
+<span class="sd">        v_id : int, optional</span>
+<span class="sd">            An optional identifier for the vertex. Useful for tracking vertices or referencing them</span>
+<span class="sd">            in complex structures. Defaults to None if not provided.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The input module will automatically assign v_id to be the row number of</span>
+<span class="sd">        each vertex, so if vertices are read from a file v_ids will be assigned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xy</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
@@ -97,8 +129,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the x and y coordinates of the vertex.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            list: A list containing the x and y coordinates of the vertex.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[float]</span>
+<span class="sd">            A list containing the x and y coordinates of the vertex.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">xy</span></div>
 
@@ -109,8 +143,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the y-coordinate of the vertex.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            float: The y-coordinate of the vertex.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The y-coordinate of the vertex.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span></div>
 
@@ -121,8 +157,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the x-coordinate of the vertex.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            float: The x-coordinate of the vertex.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The x-coordinate of the vertex.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span></div>
 
@@ -133,8 +171,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the x-coordinate of the vertex.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            newx (float): The new x-coordinate of the vertex.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        newx : float</span>
+<span class="sd">            The new x-coordinate to be set for the vertex.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">newx</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span></div>
@@ -146,8 +186,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the y-coordinate of the vertex.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            newy (float): The new y-coordinate of the vertex.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        newy : float</span>
+<span class="sd">            The new y-coordinate to be set for the vertex.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">newy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span></div>
@@ -157,10 +199,12 @@
 <a class="viewcode-back" href="../../../../src.loc.vertex.vertex.html#src.loc.vertex.vertex.Vertex.get_vid">[docs]</a>
     <span class="k">def</span> <span class="nf">get_vid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the identifier of the vertex.</span>
+<span class="sd">        Retrieve the identifier of the vertex, if it exists.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            int: The identifier of the vertex.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int or None</span>
+<span class="sd">            The identifier of the vertex, or None if not set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_id</span></div>
 </div>

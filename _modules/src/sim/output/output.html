@@ -84,10 +84,38 @@
 <a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output">[docs]</a>
 <span class="k">class</span> <span class="nc">Output</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Summary of simulation output</span>
+<span class="sd">    Handles the generation and management of simulation output data.</span>
+
+<span class="sd">    This class is responsible for creating and writing simulation results to a CSV file,</span>
+<span class="sd">    including detailed information about each cell.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sim : GrowingSim</span>
+<span class="sd">        The simulation instance from which to gather output data.</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The name of the file to which output data will be written.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sim : GrowingSim</span>
+<span class="sd">        The simulation instance associated with this output.</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The filename for the output CSV file.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the Output object with a simulation instance and output filename.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sim : GrowingSim</span>
+<span class="sd">            The simulation instance associated with this output.</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            The filename for the output CSV file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
@@ -113,24 +141,20 @@
 <a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.output_cells">[docs]</a>
     <span class="k">def</span> <span class="nf">output_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate output spreadsheet for simulation</span>
+<span class="sd">        Writes the current state of all cells to the output file.</span>
+
+<span class="sd">        This method gathers data from each cell within the simulation, including</span>
+<span class="sd">        concentrations, locations, and PIN distributions, and writes this information</span>
+<span class="sd">        to the specified output file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># generates spreadsheet under name filename with contents of all cells</span>
-        <span class="c1"># gets cell_list from sim</span>
-        <span class="c1"># - for cell in self.sim.cell_list:</span>
-        <span class="c1"># gets contents of each cell including</span>
-        <span class="c1"># - Auxin concentration</span>
-        <span class="c1"># - Location (x,y of corners retrieved from vertex class)</span>
-        <span class="c1"># - all circ contents (PINs in relation to left right instead of lateral/medial)</span>
-        <span class="c1"># - number of cell divisions</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">cell_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_cell_list</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cell_list</span><span class="p">:</span>
             <span class="n">summary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;tick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_tick</span><span class="p">()</span>
             <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span>
-            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;auxin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_auxin</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
-            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_location</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;auxin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_auxin</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_corners_for_disp</span><span class="p">()</span>
             <span class="n">summary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_circ_contents</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
             <span class="c1"># summary[&quot;num_divisions&quot;] = self.get_division_number(cell)</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
@@ -143,30 +167,23 @@
             <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
 
-    <span class="c1"># Helper functions</span>
-<div class="viewcode-block" id="Output.get_auxin">
-<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_auxin">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_auxin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get auxin concentration for each cell</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_auxin</span><span class="p">()</span></div>
-
-
-<div class="viewcode-block" id="Output.get_location">
-<a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_location">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get location (x, y corners) for each cell</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_corners_for_disp</span><span class="p">()</span></div>
-
-
 <div class="viewcode-block" id="Output.get_circ_contents">
 <a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_circ_contents">[docs]</a>
     <span class="k">def</span> <span class="nf">get_circ_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get circulation results for each cell</span>
+<span class="sd">        Populates the summary dictionary with circulation content information for a given cell.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        summary : dict[str, Any]</span>
+<span class="sd">            The summary dictionary to be populated with cell circulation data.</span>
+<span class="sd">        cell : Cell</span>
+<span class="sd">            The cell from which to retrieve circulation content information.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, Any]</span>
+<span class="sd">            The updated summary dictionary containing circulation content information for the cell.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;ARR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_arr</span><span class="p">()</span>
         <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;AUX/LAX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_al</span><span class="p">()</span>
@@ -184,7 +201,24 @@
 <a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.get_division_number">[docs]</a>
     <span class="k">def</span> <span class="nf">get_division_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get number of cell divisions</span>
+<span class="sd">        Retrieves the number of divisions a cell has undergone.</span>
+
+<span class="sd">        This method is a placeholder and is not implemented.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cell : Cell</span>
+<span class="sd">            The cell from which to retrieve the division count.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of divisions the cell has undergone.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            Indicates that the method is not yet implemented.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="k">return</span> <span class="mi">0</span></div>
