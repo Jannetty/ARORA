@@ -142,9 +142,9 @@ class Cell(Sprite):
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.pin_weights: dict[str, float] = self.calculate_pin_weights()
         self.growing: bool = cast(bool, init_vals.get("growing"))
-        if self.sim.geometry != "default": 
+        if self.sim.geometry != "default":
             self.dev_zone: str = "None"
-        else: 
+        else:
             self.dev_zone: str = self.calculate_dev_zone(self.get_distance_from_tip())
         self.cell_type: str = self.calculate_cell_type()
         self.color: tuple[int, int, int, int] = self.calculate_color()
