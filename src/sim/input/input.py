@@ -65,7 +65,7 @@ class Input:
                 if index_s != "tau":
                     self.init_vals_input.at[index_df, index_s] = value
                 else:
-                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * value
+                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(value)
 
     def get_init_vals(self) -> dict:
         """
@@ -104,7 +104,10 @@ class Input:
             init_vals_dict[cell_num] = row.to_dict()
             for val in init_vals_dict[cell_num]:
                 if val in ["arr_hist", "vertices"]:
-                    init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    if type(init_vals_dict[cell_num][val]) == str:
+                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    elif type(init_vals_dict[cell_num][val]) == list:
+                        init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
                 if val == "neighbors":
                     init_vals_dict[cell_num][val] = (
                         init_vals_dict[cell_num][val]

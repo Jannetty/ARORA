@@ -1,3 +1,6 @@
+import os
+os.environ["ARCADE_HEADLESS"] = "True"
+import numpy as np
 import pandas as pd
 # use PyGAD to estimate the parameters
 import pygad
@@ -41,8 +44,12 @@ class ARORAGeneticAlg:
                                 geometry,
                             )
         simulation.setup()
-        simulation.run_sim()
-        cost = self.calculate_cost(simulation)
+        try:
+            simulation.run_sim()
+            cost = self.calculate_cost(simulation)
+        except Exception as e:
+            print("Cost set to infinity")
+            cost = np.inf
         return cost
     
     def calculate_cost(self, simulation):
@@ -68,8 +75,3 @@ class ARORAGeneticAlg:
         print("Index of the best solution : {solution_idx}".format(solution_idx=solution_idx))
         # plot the fitness evolution
         pygad.plot_fitness(self.ga_instance)
-
-
-if __name__ == "__main__":
-    init_parent_file = None
-    exit(0)
