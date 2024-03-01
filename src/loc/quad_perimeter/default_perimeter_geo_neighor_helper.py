@@ -4,7 +4,6 @@ if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
-@staticmethod
 class PerimeterNeighborHelpers:
     """
     Helper functions to determine the perimeter of neighbors when initializing model to default geometry.
@@ -12,6 +11,21 @@ class PerimeterNeighborHelpers:
 
     @staticmethod
     def get_default_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float:
+        """
+        Calculate the length of the common perimeter between two cells in default geometry.
+
+        Parameters
+        ----------
+        cell: Cell
+            The reference cell from which the common perimeter length is calculated
+        neighbor: Cell
+            The neighboring cell adjacemt to the 'cell'.
+
+        Returns
+        -------
+        float
+            The length of the perimeter shared by the `cell` and its `neighbor`.
+        """
         length = 0.0
         rootcap_cell_ids = [
             60,
