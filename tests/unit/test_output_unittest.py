@@ -1,4 +1,5 @@
 import os
+
 os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.sim.output.output import Output
