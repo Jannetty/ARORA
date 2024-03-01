@@ -651,10 +651,7 @@ class Cell(Sprite):
         Updates the cell by growing, calculating pin weights, and updating the circ module.
         """
         if self.growing:
-            if self.sim.geometry == "default":
-                self.grow()
-            else:
-                raise ValueError("Cannot grow cells initialized to non-default geometry")
+            self.grow()
         self.pin_weights = self.calculate_pin_weights()
         self.circ_mod.update()
 
