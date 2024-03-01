@@ -106,6 +106,8 @@ class Cell(Sprite):
     """
 
     dev_zone: str
+    cell_type: str
+    growing: bool
 
     def __init__(
         self,
@@ -143,12 +145,14 @@ class Cell(Sprite):
             print("Circ mod not recognized, using continuous circ mod")
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         self.pin_weights: dict[str, float] = self.calculate_pin_weights()
-        self.growing: bool = cast(bool, init_vals.get("growing"))
         if self.sim.geometry != "default":
-            self.dev_zone = "None"
+            self.dev_zone = ""
+            self.cell_type = ""
+            self.growing = False
         else:
             self.dev_zone = self.calculate_dev_zone(self.get_distance_from_tip())
-            self.cell_type: str = self.calculate_cell_type()
+            self.cell_type = self.calculate_cell_type()
+            self.growing = cast(bool, init_vals.get("growing"))
         self.color: tuple[int, int, int, int] = self.calculate_color()
 
     def calculate_cell_type(self) -> str:
