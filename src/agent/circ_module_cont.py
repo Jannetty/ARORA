@@ -345,15 +345,17 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
+            neighbor_memfrac = neighbor.get_circ_mod().calculate_neighbor_memfrac(self.cell)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            # added memfrac to export al term
-            # TODO: change memfrac below multiplied by neighbor_aux to be neighbor memfrac
-            auxin_influx = (neighbor_aux * (memfrac)) * (al * memfrac) * self.k_al
-            # added memfrac to export term
-            # TODO: Make pin_activity a sigmoidal variable that ranges from 0 to 1
-            pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
-            accessible_pin = self.auxin * memfrac
-            auxin_efflux = accessible_pin * pin_activity
+            auxin_influx = (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
+            pin_activity = pindi * self.k_pin
+            if pin_activity > 1:
+                print(f"pin activity {pin_activity}")
+            #pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
+            accessible_auxin = self.auxin * memfrac
+            #print(f"accessible auxin {accessible_auxin}")
+            auxin_efflux = accessible_auxin * pin_activity
+            #print(f"auxin efflux {auxin_efflux}")
             if (
                 auxin_influx == float("inf")
                 or auxin_influx == float("-inf")
@@ -413,11 +415,11 @@ class BaseCirculateModuleCont:
         """
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
-        self.pin = round_to_sf(soln[1, 3], 5)
-        self.pina = round_to_sf(soln[1, 4], 5)
-        self.pinb = round_to_sf(soln[1, 5], 5)
-        self.pinl = round_to_sf(soln[1, 6], 5)
-        self.pinm = round_to_sf(soln[1, 7], 5)
+        #self.pin = round_to_sf(soln[1, 3], 5)
+        #self.pina = round_to_sf(soln[1, 4], 5)
+        #self.pinb = round_to_sf(soln[1, 5], 5)
+        #self.pinl = round_to_sf(soln[1, 6], 5)
+        #self.pinm = round_to_sf(soln[1, 7], 5)
         self.update_arr_hist()
 
     def update_neighbor_auxin(self, neighbors_auxin: list) -> None:
