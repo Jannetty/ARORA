@@ -467,7 +467,7 @@ class BaseCirculateModuleCont:
             auxinm_exchange,
         ]
 
-        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin         
+        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
 
         total_aux_exchange = (
             sum(auxina_exchange.values())
@@ -477,10 +477,8 @@ class BaseCirculateModuleCont:
         )
 
         if (soln[1, 0] + total_aux_exchange) < 0:
-            print("-------------------")
             print(f"cell {self.cell.get_c_id()} auxin {soln[1, 0]}")
             print(f"total aux exchange {total_aux_exchange}")
-            print("-------------------")
             raise ValueError("Negative auxin")
 
         delta_auxin = self.calculate_delta_auxin(

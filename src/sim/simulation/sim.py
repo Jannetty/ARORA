@@ -245,7 +245,7 @@ class GrowingSim(Window):
         Args:
             delta_time: The time step.
         """
-        print("--------------------")
+        print("----")
         self.tick += 1
         max_tick = 20
         # max_tick = 2592
