@@ -1805,3 +1805,16 @@ class TestInitializationSymmetry(unittest.TestCase):
             simulation.divider.update()
             simulation.root_tip_y = simulation.get_root_tip_y()
             simulation.tick += 1
+        # Spot test a few auxin weights
+        assert(
+            simulation.get_cell_by_ID(55).get_circ_mod().get_auxin_w()
+            > simulation.get_cell_by_ID(6).get_circ_mod().get_auxin_w()
+        )
+        assert(
+            simulation.get_cell_by_ID(6).get_circ_mod().get_auxin_w()
+            > simulation.get_cell_by_ID(0).get_circ_mod().get_auxin_w()
+        )
+        assert(
+            simulation.get_cell_by_ID(0).get_circ_mod().get_auxin_w()
+            > simulation.get_cell_by_ID(828).get_circ_mod().get_auxin_w()
+        )
