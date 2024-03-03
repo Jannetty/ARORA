@@ -47,6 +47,8 @@ def auxin_greater_in_larger_cells(sim: GrowingSim) -> float:
     corr_coeff = correlation_coefficient(areas, auxins)
     if corr_coeff < 0:
         print("Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Cost set to infinity.")
+        print(f"Areas = {areas}")
+        print(f"Auxins = {auxins}")
         return np.inf
     return corr_coeff
 

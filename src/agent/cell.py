@@ -478,7 +478,6 @@ class Cell(Sprite):
             float: The growth rate of the cell.
         """
         if self.get_quad_perimeter().get_height() >= 250:
-            print(f"cell {self.c_id} has reached max height")
             self.growing = False
             return 0
         if self.dev_zone == "roottip":

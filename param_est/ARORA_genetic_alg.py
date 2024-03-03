@@ -22,10 +22,12 @@ class ARORAGeneticAlg:
         self.ga_instance = None
     
     def fitness_function(self, ga_instance, solution, solution_idx):
+        print("--------------------------------------------------")
+        print(f"Chromosome {solution_idx} : {solution}")
         params = pd.Series(solution, index=PARAM_NAMES)
         if not self._check_constraints(params):
             print("Invalid solution")
-            fitness = -np.inf
+            cost = np.inf
         else:
             cost = self._run_ARORA(params)
         fitness = -cost
@@ -76,27 +78,27 @@ class ARORAGeneticAlg:
         return cost
 
     def make_paramspace(self):
-        ks_range = np.linspace(0.001, 0.3, 10)
-        kd_range = np.linspace(0.0001, 0.03, 10)
-        k1_range = np.round(np.linspace(10, 160, 10)).astype(int)
-        k2_range = np.round(np.linspace(50, 100, 10)).astype(int)
-        k3_range = np.round(np.linspace(10, 75, 10)).astype(int)
-        k4_range = np.round(np.linspace(50, 100, 10)).astype(int)
-        k5_range = np.linspace(0.07, 20, 10) # kal
-        k6_range = np.linspace(0.2, 20, 10) # kpin
-        tau_range = np.round(np.linspace(60, 7200, 10)).astype(int)
+        ks_range = np.linspace(0.001, 0.3, 100).astype(float)
+        kd_range = np.linspace(0.0001, 0.03, 100).astype(float)
+        k1_range = np.round(np.linspace(10, 160, 100)).astype(int)
+        k2_range = np.round(np.linspace(50, 100, 100)).astype(int)
+        k3_range = np.round(np.linspace(10, 75, 100)).astype(int)
+        k4_range = np.round(np.linspace(50, 100, 100)).astype(int)
+        k5_range = np.linspace(0.07, 20, 100).astype(float) # kal
+        k6_range = np.linspace(0.2, 20, 100).astype(float) # kpin
+        tau_range = np.round(np.linspace(60, 7200, 100)).astype(int)
         return [ks_range, kd_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
 
     def run_genetic_alg(self):
         genespace = self.make_paramspace()
         self.ga_instance = pygad.GA(num_generations=1,
-                                    num_parents_mating=4,
+                                    num_parents_mating=5,
                                     fitness_func=self.fitness_function,
-                                    sol_per_pop=10,
+                                    sol_per_pop=15,
                                     num_genes=len(genespace),
                                     gene_space=genespace,
                                     mutation_percent_genes=50,
-                                    save_best_solutions=True,
+                                    save_best_solutions=False,
                                     )
 
         self.ga_instance.run()
