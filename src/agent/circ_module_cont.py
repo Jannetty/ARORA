@@ -467,7 +467,7 @@ class BaseCirculateModuleCont:
             auxinm_exchange,
         ]
 
-        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
+        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin         
 
         total_aux_exchange = (
             sum(auxina_exchange.values())

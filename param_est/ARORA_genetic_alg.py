@@ -20,13 +20,26 @@ PARAM_NAMES = ["k_s","k_d","k1","k2","k3","k4","k5","k6","tau"]
 class ARORAGeneticAlg:
     def __init__(self):
         self.ga_instance = None
-
+    
     def fitness_function(self, ga_instance, solution, solution_idx):
         params = pd.Series(solution, index=PARAM_NAMES)
-        print(f"params: \n {params}")
-        cost = self._run_ARORA(params)
+        if not self._check_constraints(params):
+            print("Invalid solution")
+            fitness = -np.inf
+        else:
+            cost = self._run_ARORA(params)
         fitness = -cost
         return fitness
+    
+    def _check_constraints(self, params):
+        # Check constraints here
+        ks = params['k_s']
+        kd = params['k_d']
+        # Add more constraints as needed
+        if ks <= kd:
+            print("k_s must be greater than k_d")
+            return False
+        return True
     
     def _run_ARORA(self, params):
         timestep = 1
@@ -82,7 +95,9 @@ class ARORAGeneticAlg:
                                     sol_per_pop=10,
                                     num_genes=len(genespace),
                                     gene_space=genespace,
-                                    mutation_percent_genes=50)
+                                    mutation_percent_genes=50,
+                                    save_best_solutions=True,
+                                    )
 
         self.ga_instance.run()
 
