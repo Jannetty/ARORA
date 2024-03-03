@@ -1,4 +1,8 @@
 import os
+import platform
+
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.sim.simulation.sim import GrowingSim
 
@@ -11,16 +15,6 @@ class TestInitializationSymmetry(unittest.TestCase):
     """
     Tests the symmetry of the default simulation initialization.
     """
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestInitializationSymmetry, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestInitializationSymmetry, cls).tearDownClass()
 
     def test_initial_symmetry(self):
         timestep = 1
@@ -881,6 +875,58 @@ class TestInitializationSymmetry(unittest.TestCase):
                 simulation.get_cell_by_ID(id).get_circ_mod().get_state()
                 == simulation.get_cell_by_ID(equal_dict[id]).get_circ_mod().get_state()
             )
+        qc_ids = [55, 56]
+        col_ids = [6, 7, 8, 9, 12, 13, 14, 15, 21, 22, 23, 24, 29, 30, 31, 32, 39, 40, 41, 42]
+        lrc_ids = [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            10,
+            11,
+            16,
+            17,
+            18,
+            19,
+            20,
+            25,
+            36,
+            37,
+            60,
+            75,
+            90,
+            105,
+            120,
+            135,
+            136,
+            151,
+            166,
+            181,
+            210,
+            225,
+            296,
+            311,
+        ]
+
+        # Check that Auxin production weights are assigned correctly.
+        # These are consistent with Van den Berg et al. 2021
+        for id in qc_ids:
+            assert simulation.get_cell_by_ID(id).get_circ_mod().get_auxin_w() == 50
+
+        for id in col_ids:
+            assert simulation.get_cell_by_ID(id).get_circ_mod().get_auxin_w() == 15
+
+        for id in lrc_ids:
+            assert simulation.get_cell_by_ID(id).get_circ_mod().get_auxin_w() == 10
+
+        for cell in [
+            cell
+            for cell in simulation.get_cell_list()
+            if cell.get_c_id() not in (qc_ids + col_ids + lrc_ids)
+        ]:
+            assert cell.get_circ_mod().get_auxin_w() == 1
 
     def test_symmetry_after_updates(self):
         timestep = 1
