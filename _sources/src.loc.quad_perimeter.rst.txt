@@ -12,4 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   src.loc.quad_perimeter.default_perimeter_geo_neighor_helper
    src.loc.quad_perimeter.quad_perimeter

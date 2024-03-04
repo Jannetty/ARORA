@@ -1,0 +1,7 @@
+src.loc.quad\_perimeter.default\_perimeter\_geo\_neighor\_helper module
+=======================================================================
+
+.. automodule:: src.loc.quad_perimeter.default_perimeter_geo_neighor_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
