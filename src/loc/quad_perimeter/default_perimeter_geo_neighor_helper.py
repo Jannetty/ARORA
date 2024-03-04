@@ -6,7 +6,8 @@ if TYPE_CHECKING:
 
 class PerimeterNeighborHelpers:
     """
-    Helper functions to determine the perimeter of neighbors when initializing model to default geometry.
+    Provides utility functions for calculating the shared perimeter lengths between neighboring cells
+    in the default geometry that share a common edge but do not share two vertices.
     """
 
     @staticmethod
@@ -59,10 +60,14 @@ class PerimeterNeighborHelpers:
                 length = neighborqp.get_right_memlen()
 
         elif neighbor.get_c_id() in rootcap_cell_ids:
-            if cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral":
+            if (
+                cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+                == "lateral"
+            ):
                 length = cellqp.get_left_memlen()
             elif (
-                cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx()) == "lateral"
+                cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
+                == "lateral"
             ):
                 length = cellqp.get_right_memlen()
 
