@@ -213,7 +213,9 @@ class BaseCirculateModuleCont:
         """
         if self.cell.get_c_id() == 92:
             print(f"cell {self.cell.get_c_id()} auxin {self.auxin}")
-            print(f"pin {self.pin}, pina {self.pina}, pinb {self.pinb}, pinl {self.pinl}, pinm {self.pinm}")
+            print(
+                f"pin {self.pin}, pina {self.pina}, pinb {self.pinb}, pinl {self.pinl}, pinm {self.pinm}"
+            )
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0
         soln = self.solve_equations()
@@ -352,11 +354,11 @@ class BaseCirculateModuleCont:
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             auxin_influx = (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
             pin_activity = pindi * self.k_pin
-            #pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
+            # pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
             accessible_auxin = self.auxin * memfrac
-            #print(f"accessible auxin {accessible_auxin}")
+            # print(f"accessible auxin {accessible_auxin}")
             auxin_efflux = accessible_auxin * pin_activity
-            #print(f"auxin efflux {auxin_efflux}")
+            # print(f"auxin efflux {auxin_efflux}")
             if (
                 auxin_influx == float("inf")
                 or auxin_influx == float("-inf")

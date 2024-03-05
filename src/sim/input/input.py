@@ -20,9 +20,9 @@ class Input:
     def __init__(self, init_vals_file: str, vertex_file: str, sim: "GrowingSim"):
         self.init_vals_input = pandas.read_csv(init_vals_file)
         for col in self.int_params:
-            self.init_vals_input[col] = self.init_vals_input[col].astype('int')
+            self.init_vals_input[col] = self.init_vals_input[col].astype("int")
         for col in self.float_params:
-            self.init_vals_input[col] = self.init_vals_input[col].astype('float')
+            self.init_vals_input[col] = self.init_vals_input[col].astype("float")
         self.vertex_input = pandas.read_csv(vertex_file)
         self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
@@ -71,12 +71,12 @@ class Input:
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
                 if index_s in ["k1", "k2", "k3", "k4"]:
-                    #print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
-                    #print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
+                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
+                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = int(value)
                 if index_s in ["k5", "k6", "k_s", "k_d"]:
-                    #print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
-                    #print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
+                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
+                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = float(value)
                 if index_s == "tau":
                     self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(value)
