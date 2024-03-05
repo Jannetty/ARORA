@@ -20,6 +20,7 @@ SCREEN_TITLE = "ARORA"
 
 if TYPE_CHECKING:
     from src.agent.cell import Cell
+    from pandas import Series
 
 
 class GrowingSim(Window):
@@ -260,6 +261,11 @@ class GrowingSim(Window):
                 self.circulator.update()
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
+                total_aux = sum([cell.get_circ_mod().get_auxin() for cell in self.cell_list])
+                total_area = sum([cell.get_quad_perimeter().get_area() for cell in self.cell_list])
+                print(f"Total auxin: {total_aux}")
+                print(f"Total area: {total_area}")
+                print(f"Total auxin/area = {total_aux/total_area}")
 
             else:
                 print("Simulation Complete")
@@ -289,7 +295,7 @@ def main(
     vis: bool,
     cell_val_file: str = "",
     v_file: str = "",
-    gparam_series: str = "",
+    gparam_series: any = "",
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
