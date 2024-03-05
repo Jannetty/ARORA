@@ -68,6 +68,7 @@ class ARORAGeneticAlg:
             simulation.run_sim()
             cost = self._calculate_cost(simulation)
         except Exception as e:
+            print(e)
             print("Cost set to infinity")
             cost = np.inf
         return cost
@@ -79,13 +80,13 @@ class ARORAGeneticAlg:
 
     def make_paramspace(self):
         ks_range = [.3] #np.linspace(0.001, 0.3, 100).astype(float)
-        kd_range = [.03] #np.linspace(0.0001, 0.03, 100).astype(float)
-        k1_range = np.round(np.linspace(10, 160, 100)).astype(int)
-        k2_range = np.round(np.linspace(50, 100, 100)).astype(int)
-        k3_range = np.round(np.linspace(10, 75, 100)).astype(int)
-        k4_range = np.round(np.linspace(50, 100, 100)).astype(int)
-        k5_range = [.07]#np.linspace(0.07, 1, 100).astype(float)#np.linspace(0.07, 20, 100).astype(float) # kal
-        k6_range = [.2]#np.linspace(0.2, 1, 100).astype(float)#np.linspace(0.2, 20, 100).astype(float) # kpin
+        kd_range = [.003] #np.linspace(0.0001, 0.03, 100).astype(float)
+        k1_range = [10]#np.round(np.linspace(10, 160, 100)).astype(int)
+        k2_range = [50]#np.round(np.linspace(50, 100, 100)).astype(int)
+        k3_range = [10]#np.round(np.linspace(10, 75, 100)).astype(int)
+        k4_range = [50]#np.round(np.linspace(50, 100, 100)).astype(int)
+        k5_range = [.08]#np.linspace(0.07, 1, 100).astype(float)#np.linspace(0.07, 20, 100).astype(float) # kal
+        k6_range = [.3]#np.linspace(0.2, 1, 100).astype(float)#np.linspace(0.2, 20, 100).astype(float) # kpin
         tau_range = np.round(np.linspace(60, 7200, 100)).astype(int)
         return [ks_range, kd_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
 

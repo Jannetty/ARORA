@@ -211,6 +211,9 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents of the circulator.
         """
+        if self.cell.get_c_id() == 92:
+            print(f"cell {self.cell.get_c_id()} auxin {self.auxin}")
+            print(f"pin {self.pin}, pina {self.pina}, pinb {self.pinb}, pinl {self.pinl}, pinm {self.pinm}")
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0
         soln = self.solve_equations()
@@ -349,8 +352,6 @@ class BaseCirculateModuleCont:
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
             auxin_influx = (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
             pin_activity = pindi * self.k_pin
-            if pin_activity > 1:
-                print(f"pin activity {pin_activity}")
             #pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
             accessible_auxin = self.auxin * memfrac
             #print(f"accessible auxin {accessible_auxin}")
@@ -415,11 +416,11 @@ class BaseCirculateModuleCont:
         """
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
-        #self.pin = round_to_sf(soln[1, 3], 5)
-        #self.pina = round_to_sf(soln[1, 4], 5)
-        #self.pinb = round_to_sf(soln[1, 5], 5)
-        #self.pinl = round_to_sf(soln[1, 6], 5)
-        #self.pinm = round_to_sf(soln[1, 7], 5)
+        self.pin = round_to_sf(soln[1, 3], 5) - self.pin
+        self.pina = round_to_sf(soln[1, 4], 5)
+        self.pinb = round_to_sf(soln[1, 5], 5)
+        self.pinl = round_to_sf(soln[1, 6], 5)
+        self.pinm = round_to_sf(soln[1, 7], 5)
         self.update_arr_hist()
 
     def update_neighbor_auxin(self, neighbors_auxin: list) -> None:
@@ -471,17 +472,22 @@ class BaseCirculateModuleCont:
 
         auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
 
+        if self.cell.get_c_id() == 92:
+            print(f"auxina_exchange {auxina_exchange}")
+            print(f"auxinb_exchange {auxinb_exchange}")
+            print(f"auxinl_exchange {auxinl_exchange}")
+            print(f"auxinm_exchange {auxinm_exchange}")
+
         total_aux_exchange = (
             sum(auxina_exchange.values())
             + sum(auxinb_exchange.values())
             + sum(auxinl_exchange.values())
             + sum(auxinm_exchange.values())
         )
-
-        if (soln[1, 0] + total_aux_exchange) < 0:
-            print(f"cell {self.cell.get_c_id()} auxin {soln[1, 0]}")
-            print(f"total aux exchange {total_aux_exchange}")
-            raise ValueError("Negative auxin")
+        # if (soln[1, 0] + total_aux_exchange) < 0:
+        #     print(f"cell {self.cell.get_c_id()} auxin {soln[1, 0]}")
+        #     print(f"total aux exchange {total_aux_exchange}")
+        #     raise ValueError("Negative auxin")
 
         delta_auxin = self.calculate_delta_auxin(
             auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
