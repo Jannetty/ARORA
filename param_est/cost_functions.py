@@ -4,7 +4,7 @@ from src.sim.simulation.sim import GrowingSim
 from src.agent.cell import Cell
 
 
-def auxin_peak_at_root_tip(sim: GrowingSim) -> float:
+def auxin_peak_at_root_tip(sim: GrowingSim, chromosome: dict) -> float:
     """
     Returns the ratio of the average auxin concentration in non-root tip cells 
     to the average auxin concentration in root tip cells.
@@ -13,6 +13,8 @@ def auxin_peak_at_root_tip(sim: GrowingSim) -> float:
     ----------
     sim : GrowingSim
         The simulation object containing the cells.
+    chromosome: Dict
+        The dictionary being populated with information about this simulation's run
 
     Returns
     -------
@@ -25,7 +27,7 @@ def auxin_peak_at_root_tip(sim: GrowingSim) -> float:
     avg_root_tip_auxins = sum(root_tip_auxins)/len(root_tip_auxins)
     return avg_non_root_tip_auxins/avg_root_tip_auxins
 
-def auxin_greater_in_larger_cells(sim: GrowingSim) -> float:
+def auxin_greater_in_larger_cells(sim: GrowingSim, chromosome: dict) -> float:
     """
     Returns the correlation coefficient between cell size and auxin concentration in meristematic and transition cells.
 
@@ -33,6 +35,8 @@ def auxin_greater_in_larger_cells(sim: GrowingSim) -> float:
     ----------
     sim : GrowingSim
         The simulation object containing the cells.
+    chromosome: Dict
+        The dictionary being populated with information about this simulation's run
 
     Returns
     -------
@@ -46,11 +50,12 @@ def auxin_greater_in_larger_cells(sim: GrowingSim) -> float:
     auxins = [cell.get_circ_mod().get_auxin() for cell in xpp_meri_and_trans_cells]
     corr_coeff = correlation_coefficient(areas, auxins)
     if corr_coeff < 0:
-        print("Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Cost set to infinity.")
+        print("Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Cost set to corr for now to loosen requirements.")
         print(f"corr_coef = {corr_coeff}")
         print(f"Areas = {areas}")
         print(f"Auxins = {auxins}")
-        return np.inf
+        chromosome["notes"] = "Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Cost set to corr for now to loosen requirements."
+        return corr_coeff#np.inf
     return corr_coeff
 
 

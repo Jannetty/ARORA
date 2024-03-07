@@ -271,19 +271,22 @@ class Cell(Sprite):
         """
         self_vs = self.get_quad_perimeter().get_vs()
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
+        neighbor_dir = ""
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and self.sim.geometry == "default":
-            return NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
                 self, neighbor
             )
         if len(set(self_vs).intersection(set(neighbor_vs))) == 0 and self.sim.geometry == "default":
-            return NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
                 self, neighbor
             )
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
-            return self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
-            return self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
-        raise ValueError("Neighbor not recognized")
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 2 and neighbor_dir == "":
+            neighbor_dir = self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and neighbor_dir == "":
+            neighbor_dir = self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
+        if neighbor_dir not in ['a', 'b', 'l', 'm', 'cell no longer root cap cell neighbor']:
+            raise ValueError("Neighbor not recognized")
+        return neighbor_dir
 
     def get_a_neighbors(self) -> list["Cell"]:
         """
@@ -529,10 +532,13 @@ class Cell(Sprite):
         """
         Updates the cell by growing, calculating pin weights, and updating the circ module.
         """
+        if self.get_c_id() == 90:
+            print(f"cell {self.get_c_id()} len(self.m_neighbors = {len(self.m_neighbors)}")
+            print(f"neighbors = {[cell.get_c_id() for cell in self.get_m_neighbors()]}")
         if self.growing:
             self.grow()
-        self.pin_weights = self.calculate_pin_weights()
-        self.circ_mod.update()
+        #self.pin_weights = self.calculate_pin_weights()
+        #self.circ_mod.update()
 
     def get_neighbor_di_neighbor_shares_two_vs_std(self, neighbor: "Cell") -> str:
         """
