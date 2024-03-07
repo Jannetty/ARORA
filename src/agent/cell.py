@@ -364,6 +364,8 @@ class Cell(Sprite):
         Args:
             cell (Cell): The neighbor to remove from the cell's neighbor list.
         """
+        if cell.get_c_id() == 135:
+            print(f"================ Removing cell {cell.get_c_id()} from cell {self.get_c_id()}'s neighbor list")
         if cell in self.a_neighbors:
             self.a_neighbors.remove(cell)
         elif cell in self.b_neighbors:
@@ -372,6 +374,10 @@ class Cell(Sprite):
             self.l_neighbors.remove(cell)
         elif cell in self.m_neighbors:
             self.m_neighbors.remove(cell)
+        elif cell.get_c_id() in [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]:
+            pass
+        elif self.get_c_id() in [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]:
+            pass
         else:
             raise ValueError("Non neighbor cell being removed from neighbor list")
 
@@ -532,7 +538,7 @@ class Cell(Sprite):
         """
         Updates the cell by growing, calculating pin weights, and updating the circ module.
         """
-        if self.get_c_id() == 90:
+        if self.get_c_id() == 135:
             print(f"cell {self.get_c_id()} len(self.m_neighbors = {len(self.m_neighbors)}")
             print(f"neighbors = {[cell.get_c_id() for cell in self.get_m_neighbors()]}")
         if self.growing:

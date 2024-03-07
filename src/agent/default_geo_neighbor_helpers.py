@@ -151,7 +151,7 @@ class NeighborHelpers:
 
 
     @staticmethod
-    def check_if_neighbor_is_next_root_cap_cell(cell: "Cell", neighbor: "Cell") -> str:
+    def check_if_now_neighbors_with_new_root_cap_cell(cell: "Cell", neighbor: "Cell") -> str:
         """
         Checks if the neighbor is the next root cap cell.
 
@@ -163,14 +163,23 @@ class NeighborHelpers:
             str: The direction of the neighbor ('a', 'b', 'l', 'm')
                 or None if no direction is found.
         """
-        neighbors_apical_neighbor = neighbor.get_a_neighbors()
-        if len(neighbors_apical_neighbor) == 1:
-            apical_neighbor = neighbors_apical_neighbor[0]
-            cell.add_neighbor(apical_neighbor)
-        elif len(neighbors_apical_neighbor) == 0:
-                neighbor_direct = "cell grown past all root cap cells"
+        self_midpointx = cell.get_quad_perimeter().get_midpointx()
+        yval = cell.get_quad_perimeter().get_midpointy()
+        all_lrc_cells = [lrc_cell for lrc_cell in cell.get_sim().get_cell_list() if lrc_cell.get_c_id() in ROOTCAP_CELL_IDs]
+        non_neighbor_lrc_cells = [lrc_cell for lrc_cell in all_lrc_cells if lrc_cell not in cell.get_l_neighbors()]
+        # if left is lateral
+        if cell.get_quad_perimeter().get_left_lateral_or_medial(cell.get_sim().get_root_midpointx()) == "lateral":
+            # distance to lateral neighbor is negative
+            x_dist_to_lateral_neighbor = -((cell.get_quad_perimeter().get_apical_memlen()/2) + 1)
         else:
-            raise ValueError("Root cap cell has more than one apical neighbor")
+            # distance to medial neighbor is positive
+            x_dist_to_lateral_neighbor = ((cell.get_quad_perimeter().get_apical_memlen()/2) + 1)
+        for lrc_cell in non_neighbor_lrc_cells:
+            if lrc_cell.get_quad_perimeter().point_inside(self_midpointx + x_dist_to_lateral_neighbor, yval):
+                cell.add_neighbor(lrc_cell)
+                lrc_cell.add_neighbor(cell)
+
+        
 
     @staticmethod
     def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell: "Cell", neighbor: "Cell") -> str:
@@ -199,7 +208,6 @@ class NeighborHelpers:
         # This catches assignment of neighbor of root cap cells
         rootcap_cell_ids = ROOTCAP_CELL_IDs
         if cell.get_c_id() in rootcap_cell_ids:
-            print("Cell is a root cap cell")
             neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
             if (
                 cell.get_quad_perimeter().get_min_y()
@@ -210,7 +218,6 @@ class NeighborHelpers:
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
         if neighbor.get_c_id() in rootcap_cell_ids:
-            print("Neighbor is a root cap cell")
             self_midpointy = cell.get_quad_perimeter().get_midpointy()
             if (
                 neighbor.get_quad_perimeter().get_min_y()
@@ -220,5 +227,31 @@ class NeighborHelpers:
                 neighbor_direct = "l"
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
-                NeighborHelpers.check_if_neighbor_is_next_root_cap_cell(cell, neighbor)
+                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(cell, neighbor)
         return neighbor_direct
+    
+    @staticmethod #This relies on the assumption that only cells that were previously neighbors with root cap cells will ever be neighbors with root cap cells
+    def fix_lrc_neighbors_after_growth(sim):
+        for cell in [cell for cell in sim.get_cell_list() if cell.get_cell_type() != 'roottip']:
+            for neighbor in cell.get_l_neighbors():
+                if neighbor.get_c_id() in ROOTCAP_CELL_IDs:
+                    NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(cell, neighbor)
+                    NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell(cell, neighbor)
+
+    @staticmethod
+    def check_if_no_longer_neighbors_with_root_cap_cell(cell, neighbor):
+        self_midpointy = cell.get_quad_perimeter().get_midpointy()
+        if cell.get_c_id() == 134:
+            print(f"Cell {cell.get_c_id()} midpointy: {self_midpointy}")
+            print(f"Neighbor {neighbor.get_c_id()} miny: {neighbor.get_quad_perimeter().get_min_y()}, maxy: {neighbor.get_quad_perimeter().get_max_y()}")
+        if (
+            neighbor.get_quad_perimeter().get_min_y()
+            < self_midpointy
+            < neighbor.get_quad_perimeter().get_max_y()
+            ):
+            pass
+        else:
+            if cell.get_c_id() == 134:
+                print("=============== removing neighbor ==================")
+            cell.remove_neighbor(neighbor)
+            neighbor.remove_neighbor(cell)
