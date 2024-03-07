@@ -29,15 +29,25 @@ class NeighborHelpers:
     @staticmethod
     def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
-        Determines the direction of the neighbor based on the cell IDs.
+        Determine the direction of a neighbor cell sharing one vertex in default geometry.
 
-        Args:
-            cell (Cell): The current cell.
-            neighbor (Cell): The neighboring cell.
+        Parameters
+        ----------
+        cell : Cell
+            The reference cell.
+        neighbor : Cell
+            The neighboring cell being considered.
 
-        Returns:
-            str: The direction of the neighbor ('a', 'b', 'l', 'm')
-                or None if no direction is found.
+        Returns
+        -------
+        str
+            The direction of the neighbor relative to the cell ('a', 'b', 'l', 'm'),
+            or an empty string if no direction is applicable.
+
+        Notes
+        -----
+        The direction is determined by comparing cell IDs. These directions will
+        only be correct if model is initialized to default geometry.
         """
         neighbor_direct = ""
         if cell.get_c_id() == 10 and neighbor.get_c_id() == 20:
@@ -184,15 +194,26 @@ class NeighborHelpers:
     @staticmethod
     def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
-        Determines the direction of the neighbor based on the cell IDs.
+        Determine the direction of a neighbor cell without shared vertices in default geometry.
 
-        Args:
-            cell (Cell): The current cell.
-            neighbor (Cell): The neighboring cell.
+        Parameters
+        ----------
+        cell : Cell
+            The reference cell.
+        neighbor : Cell
+            The neighboring cell being considered.
 
-        Returns:
-            str: The direction of the neighbor ('a', 'b', 'l', 'm')
-                or None if no direction is found.
+        Returns
+        -------
+        str
+            The direction of the neighbor relative to the cell ('a', 'b', 'l', 'm'),
+            or an appropriate message if no standard direction is found.
+
+        Notes
+        -----
+        This method accounts for special cases where neighboring cells do not share
+        a common vertex. These assignments will only be true if model is initialized
+        to default geometry.
         """
         neighbor_direct = ""
 

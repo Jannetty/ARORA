@@ -25,22 +25,62 @@ if TYPE_CHECKING:
 
 class GrowingSim(Window):
     """
-    Simulation class. Manages the simulation and all of its components.
+    Manages the simulation process, including cell growth, division, and vertex movement.
 
-    Attributes:
-        timestep: The sizee of the timestep of the simulation (in seconds).
-        circulator: The circulator that manages the circulation of auxin in the
-            simulation.
-        vertex_mover: The vertex mover that manages the movement of vertices in
-            the simulation.
-        divider: The divider that manages the division of cells in the simulation.
-        root_midpointx: The x-coordinate of the midpoint of the root.
-        cell_list: The list of cells in the simulation.
-        vis: Whether or not to visualize the simulation.
-        next_cell_id: The next ID to assign to a cell.
-        root_tip_y: The y-coordinate of the tip of the root.
-        cell_val_file: The file containing the cell values.
-        v_file: The file containing the vertex values.
+    This class extends the `Window` class from the `arcade` library to visualize the simulation process. It handles
+    the initialization of the simulation environment, the execution of simulation steps, and the rendering of simulation
+    results. It also manages simulation components such as the circulator, divider, and vertex mover.
+
+    Attributes
+    ----------
+    timestep : int
+        The size of the timestep of the simulation, in seconds.
+    circulator : Circulator
+        Manages the circulation of auxin within the simulation.
+    vertex_mover : VertexMover
+        Manages the movement of vertices as cells grow or divide.
+    divider : Divider
+        Manages the division of cells when they reach a certain size.
+    root_midpointx : float
+        The x-coordinate of the midpoint of the root, used for positioning.
+    cell_list : SpriteList
+        A list of cells currently present in the simulation.
+    vis : bool
+        Indicates whether the simulation should be visualized.
+    next_cell_id : int
+        The ID to be assigned to the next new cell.
+    root_tip_y : float
+        The y-coordinate of the tip of the root, updated as the simulation progresses.
+    cell_val_file : str
+        Path to the file containing initial cell values.
+    v_file : str
+        Path to the file containing vertex information.
+    input_from_file : bool, optional
+        Specifies whether initial values for the simulation are being loaded from files.
+
+    Parameters
+    ----------
+    width : int
+        The width of the simulation window.
+    height : int
+        The height of the simulation window.
+    title : str
+        The title of the simulation window.
+    timestep : int
+        The timestep size for the simulation, in seconds.
+    root_midpoint_x : float
+        The x-coordinate of the midpoint of the root.
+    vis : bool
+        Flag to indicate whether the simulation should be visualized.
+    cell_val_file : str, optional
+        The filename containing cell values to initialize the simulation.
+    v_file : str, optional
+        The filename containing vertex information to initialize the simulation.
+    gparam_series : pandas.Series, optional
+        Series containing global parameters for the simulation.
+    geometry : str, optional
+        Indicates the geometric configuration of the simulation.
+
     """
 
     timestep: int
@@ -70,17 +110,7 @@ class GrowingSim(Window):
         geometry: str = "",
     ):
         """
-        Constructs a new Simulation instance.
-
-        Args:
-            width: The width of the simulation window.
-            height: The height of the simulation window.
-            title: The title of the simulation window.
-            timestep: The size of the timestep of the simulation (in hours).
-            root_midpoint_x: The x-coordinate of the midpoint of the root.
-            vis: Whether or not to visualize the simulation.
-            cell_val_file: The file containing the cell values.
-            v_file: The file containing the vertex values.
+        Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
         """
         if vis is False:
             print("Running headless")
@@ -108,20 +138,33 @@ class GrowingSim(Window):
 
     def get_root_midpointx(self) -> float:
         """
-        Returns:
+        Retrieves the x-coordinate of the midpoint of the root.
+
+        Returns
+        -------
+        float
             The x-coordinate of the midpoint of the root.
         """
         return self.root_midpointx
 
     def get_cell_by_ID(self, ID: int) -> "Cell":
         """
-        Returns Cell object in cell_list with the given ID.
+        Retrieves a cell object from the simulation's cell list by its ID.
 
-        Args:
-            ID: The ID of the cell to return.
+        Parameters
+        ----------
+        ID : int
+            The ID of the cell to retrieve.
 
-        Returns:
-            The cell with the given ID.
+        Returns
+        -------
+        Cell
+            The cell object with the specified ID.
+
+        Raises
+        ------
+        ValueError
+            If no cell with the given ID is found in the cell list.
         """
         for cell in self.cell_list:
             if cell.get_c_id() == ID:
@@ -175,7 +218,12 @@ class GrowingSim(Window):
         self.cell_list.remove(cell)
 
     def setup(self) -> None:
-        """Set up the Simulation. Call to re-start the Simulation."""
+        """
+        Sets up the simulation, initializing its components and loading initial conditions.
+
+        This method is called to (re)start the simulation, setting up initial cell configurations,
+        and preparing the simulation environment.
+        """
         # find midpoint x of root basd on vertices that exist
         # I think function will be (max_x - min_x) / 2
         self.tick = 0
