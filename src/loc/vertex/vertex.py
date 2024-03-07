@@ -1,15 +1,47 @@
 class Vertex:
     """
-    Represents a vertex, or corner of a cell
+    Represents a vertex, or a point in 2D space, typically a corner of a geometric shape.
 
-    Attributes:
-        x (float): The x-coordinate of the vertex.
-        y (float): The y-coordinate of the vertex.
-        xy (list): A list containing the x and y coordinates of the vertex.
-        v_id (optional): An optional identifier for the vertex.
+    Attributes
+    ----------
+    x : float
+        The x-coordinate of the vertex.
+    y : float
+        The y-coordinate of the vertex.
+    xy : list[float]
+        A list containing the x and y coordinates of the vertex.
+    v_id : int, optional
+        An optional identifier for the vertex.
+
+    Parameters
+    ----------
+    x : float
+        The x-coordinate of the vertex upon initialization.
+    y : float
+        The y-coordinate of the vertex upon initialization.
+    v_id : int or None, optional
+        An optional identifier for the vertex, by default None.
     """
 
     def __init__(self, x: float, y: float, v_id: int | None = None):
+        """
+        Initialize a new Vertex instance.
+
+        Parameters
+        ----------
+        x : float
+            The x-coordinate of the vertex.
+        y : float
+            The y-coordinate of the vertex.
+        v_id : int, optional
+            An optional identifier for the vertex. Useful for tracking vertices or referencing them
+            in complex structures. Defaults to None if not provided.
+
+        Notes
+        -----
+        The input module will automatically assign v_id to be the row number of
+        each vertex, so if vertices are read from a file v_ids will be assigned.
+        """
         self.x = x
         self.y = y
         self.xy = [x, y]
@@ -19,8 +51,10 @@ class Vertex:
         """
         Get the x and y coordinates of the vertex.
 
-        Returns:
-            list: A list containing the x and y coordinates of the vertex.
+        Returns
+        -------
+        list[float]
+            A list containing the x and y coordinates of the vertex.
         """
         return self.xy
 
@@ -28,8 +62,10 @@ class Vertex:
         """
         Get the y-coordinate of the vertex.
 
-        Returns:
-            float: The y-coordinate of the vertex.
+        Returns
+        -------
+        float
+            The y-coordinate of the vertex.
         """
         return self.y
 
@@ -37,8 +73,10 @@ class Vertex:
         """
         Get the x-coordinate of the vertex.
 
-        Returns:
-            float: The x-coordinate of the vertex.
+        Returns
+        -------
+        float
+            The x-coordinate of the vertex.
         """
         return self.x
 
@@ -46,8 +84,10 @@ class Vertex:
         """
         Set the x-coordinate of the vertex.
 
-        Args:
-            newx (float): The new x-coordinate of the vertex.
+        Parameters
+        ----------
+        newx : float
+            The new x-coordinate to be set for the vertex.
         """
         self.x = newx
         self.xy[0] = self.x
@@ -56,17 +96,21 @@ class Vertex:
         """
         Set the y-coordinate of the vertex.
 
-        Args:
-            newy (float): The new y-coordinate of the vertex.
+        Parameters
+        ----------
+        newy : float
+            The new y-coordinate to be set for the vertex.
         """
         self.y = newy
         self.xy[1] = self.y
 
     def get_vid(self) -> int | None:
         """
-        Get the identifier of the vertex.
+        Retrieve the identifier of the vertex, if it exists.
 
-        Returns:
-            int: The identifier of the vertex.
+        Returns
+        -------
+        int or None
+            The identifier of the vertex, or None if not set.
         """
         return self.v_id

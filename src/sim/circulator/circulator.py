@@ -8,46 +8,68 @@ if TYPE_CHECKING:
 
 class Circulator:
     """
-    Circulator manages the delta auxins in a simulation. Each time step cells save their delta auxin to the circulator
-    and delta auxins of that cell's neighbors are updated. At the end of the time step, the circulator updates the auxin
+    Manages the delta auxins in a simulation to update cells' auxin levels.
 
-    Attributes:
-        delta_auxins: A dictionary to store the delta auxins for each cell. Keys are cells, values are delta auxins.
-        sim: The simulation that this circulator is part of.
+    This class is responsible for tracking and updating the changes (delta) in auxin levels
+    for each cell during a simulation. Cells report their auxin changes to the Circulator, which
+    aggregates these changes and applies them at the end of each time step.
+
+    Attributes
+    ----------
+    delta_auxins : dict[Cell, float]
+        A dictionary to store the delta auxins for each cell, where keys are `Cell` instances
+        and values are the delta auxins.
+    sim : GrowingSim
+        The simulation instance that this Circulator is a part of.
+
+    Parameters
+    ----------
+    sim : GrowingSim
+        The simulation instance to which this Circulator belongs.
     """
 
     def __init__(self, sim: "GrowingSim"):
         """
-        Constructs a new Circulator instance.
+        Initializes a new Circulator instance for managing delta auxins within a simulation.
 
-        Args:
-            sim: The simulation that this circulator is part of.
+        Parameters
+        ----------
+        sim : GrowingSim
+            The simulation instance to which this Circulator belongs.
         """
         self.delta_auxins: dict["Cell", float] = dict()
         self.sim = sim
 
     def get_delta_auxins(self) -> dict["Cell", float]:
         """
-        Returns the dictionary of delta auxins that the circulator is managing.
-        Keys are cells, values are delta auxins.
+        Retrieve the current delta auxins managed by the Circulator.
 
-        Returns:
-            dict: The dictionary of delta auxins.
+        Returns
+        -------
+        dict[Cell, float]
+            A dictionary of delta auxins, where keys are `Cell` instances and values
+            are the delta auxins.
         """
         return self.delta_auxins
 
     def add_delta(self, cell: "Cell", delta: float) -> None:
         """
-        Adds a delta auxin to the circulator for a given cell. If the cell is already in the circulator,
-        the delta auxin is added to the existing delta auxin. If the cell is not in the circulator, the
-        delta auxin is added to the circulator.
+        Adds a delta auxin value for a specified cell.
 
-        Args:
-            cell: The cell that the delta auxin is for.
-            delta: The delta auxin to add.
+        If the cell already exists in the Circulator, the new delta is added to the existing value.
+        If the cell does not exist, it is added with the specified delta auxin value. Values are
+        rounded to significant figures for precision management.
 
-        Returns:
-            None
+        Parameters
+        ----------
+        cell : Cell
+            The cell for which the delta auxin is being reported.
+        delta : float
+            The delta auxin value to add.
+
+        Notes
+        -----
+        Infinites are checked and logged, and values are rounded to 10 significant figures.
         """
         if cell in self.delta_auxins:
             if delta == float("inf") or delta == float("-inf"):
@@ -63,11 +85,10 @@ class Circulator:
 
     def update(self) -> None:
         """
-        Updates the auxin of each cell in the circulator by adding the delta auxin to each cell's
-        existing auxin.
+        Apply the accumulated delta auxins to each cell's current auxin level.
 
-        Returns:
-            None
+        This method iterates over all cells with recorded delta auxins, updates their
+        auxin levels accordingly, and then resets the delta auxins for the next time step.
         """
         for cell in self.delta_auxins:
             old_aux = cell.get_circ_mod().get_auxin()
