@@ -3,13 +3,29 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.agent.cell import Cell
 
+ROOTCAP_CELL_IDs = [
+        60,
+        90,
+        120,
+        136,
+        166,
+        210,
+        296,
+        75,
+        105,
+        135,
+        151,
+        181,
+        225,
+        311,
+    ]
 
 class NeighborHelpers:
     """
     Helper functions to determine the direction of a neighbor cell relative to a cell
     when initializing model to default geometry.
     """
-
+    
     @staticmethod
     def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
@@ -23,6 +39,7 @@ class NeighborHelpers:
             str: The direction of the neighbor ('a', 'b', 'l', 'm')
                 or None if no direction is found.
         """
+        neighbor_direct = ""
         if cell.get_c_id() == 10 and neighbor.get_c_id() == 20:
             neighbor_direct = "a"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 10:
@@ -124,28 +141,36 @@ class NeighborHelpers:
             neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cell_ids = [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        rootcap_cell_ids = ROOTCAP_CELL_IDs
         if cell.get_c_id() in rootcap_cell_ids:
             neighbor_direct = "m"
         if neighbor.get_c_id() in rootcap_cell_ids:
             neighbor_direct = "l"
 
         return neighbor_direct
+
+
+    @staticmethod
+    def check_if_neighbor_is_next_root_cap_cell(cell: "Cell", neighbor: "Cell") -> str:
+        """
+        Checks if the neighbor is the next root cap cell.
+
+        Args:
+            cell (Cell): The current cell.
+            neighbor (Cell): The neighboring cell.
+
+        Returns:
+            str: The direction of the neighbor ('a', 'b', 'l', 'm')
+                or None if no direction is found.
+        """
+        neighbors_apical_neighbor = neighbor.get_a_neighbors()
+        if len(neighbors_apical_neighbor) == 1:
+            apical_neighbor = neighbors_apical_neighbor[0]
+            cell.add_neighbor(apical_neighbor)
+        elif len(neighbors_apical_neighbor) == 0:
+                neighbor_direct = "cell grown past all root cap cells"
+        else:
+            raise ValueError("Root cap cell has more than one apical neighbor")
 
     @staticmethod
     def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell: "Cell", neighbor: "Cell") -> str:
@@ -160,6 +185,8 @@ class NeighborHelpers:
             str: The direction of the neighbor ('a', 'b', 'l', 'm')
                 or None if no direction is found.
         """
+        neighbor_direct = ""
+
         if cell.get_c_id() == 17 and neighbor.get_c_id() == 20:
             neighbor_direct = "l"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 17:
@@ -170,23 +197,9 @@ class NeighborHelpers:
             neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cell_ids = [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        rootcap_cell_ids = ROOTCAP_CELL_IDs
         if cell.get_c_id() in rootcap_cell_ids:
+            print("Cell is a root cap cell")
             neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
             if (
                 cell.get_quad_perimeter().get_min_y()
@@ -197,6 +210,7 @@ class NeighborHelpers:
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
         if neighbor.get_c_id() in rootcap_cell_ids:
+            print("Neighbor is a root cap cell")
             self_midpointy = cell.get_quad_perimeter().get_midpointy()
             if (
                 neighbor.get_quad_perimeter().get_min_y()
@@ -206,4 +220,5 @@ class NeighborHelpers:
                 neighbor_direct = "l"
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
+                NeighborHelpers.check_if_neighbor_is_next_root_cap_cell(cell, neighbor)
         return neighbor_direct

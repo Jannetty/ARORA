@@ -211,11 +211,6 @@ class BaseCirculateModuleCont:
         """
         Update the circulation contents of the circulator.
         """
-        if self.cell.get_c_id() == 92:
-            print(f"cell {self.cell.get_c_id()} auxin {self.auxin}")
-            print(
-                f"pin {self.pin}, pina {self.pina}, pinb {self.pinb}, pinl {self.pinl}, pinm {self.pinm}"
-            )
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0
         soln = self.solve_equations()
@@ -474,23 +469,6 @@ class BaseCirculateModuleCont:
 
         auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
 
-        if self.cell.get_c_id() == 92:
-            print(f"auxina_exchange {auxina_exchange}")
-            print(f"auxinb_exchange {auxinb_exchange}")
-            print(f"auxinl_exchange {auxinl_exchange}")
-            print(f"auxinm_exchange {auxinm_exchange}")
-
-        total_aux_exchange = (
-            sum(auxina_exchange.values())
-            + sum(auxinb_exchange.values())
-            + sum(auxinl_exchange.values())
-            + sum(auxinm_exchange.values())
-        )
-        # if (soln[1, 0] + total_aux_exchange) < 0:
-        #     print(f"cell {self.cell.get_c_id()} auxin {soln[1, 0]}")
-        #     print(f"total aux exchange {total_aux_exchange}")
-        #     raise ValueError("Negative auxin")
-
         delta_auxin = self.calculate_delta_auxin(
             auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
         )
@@ -640,6 +618,7 @@ class BaseCirculateModuleCont:
             "k_d": self.kd,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
+            "circ_mod": "cont"
         }
         return state
 

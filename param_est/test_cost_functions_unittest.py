@@ -64,15 +64,16 @@ class TestCostFunctions(unittest.TestCase):
         sim.cell_list[8].get_circ_mod().get_auxin.return_value = 9
         sim.cell_list[9].get_circ_mod().get_auxin.return_value = 10
         mock_correlation_coefficient.return_value = 0.5
-        self.assertEqual(auxin_greater_in_larger_cells(sim), 0.5)
+        chromosome = {}
+        self.assertEqual(auxin_greater_in_larger_cells(sim, chromosome), 0.5)
         mock_correlation_coefficient.return_value = -0.5
-        self.assertEqual(auxin_greater_in_larger_cells(sim), np.inf)
+        self.assertEqual(auxin_greater_in_larger_cells(sim, chromosome), -.5)
         mock_correlation_coefficient.return_value = 0
-        self.assertEqual(auxin_greater_in_larger_cells(sim), 0)
+        self.assertEqual(auxin_greater_in_larger_cells(sim, chromosome), 0)
         mock_correlation_coefficient.return_value = 1
-        self.assertEqual(auxin_greater_in_larger_cells(sim), 1)
+        self.assertEqual(auxin_greater_in_larger_cells(sim, chromosome), 1)
         mock_correlation_coefficient.return_value = -1
-        self.assertEqual(auxin_greater_in_larger_cells(sim), np.inf)
+        self.assertEqual(auxin_greater_in_larger_cells(sim, chromosome), -1)
 
     def test_auxin_peak_at_root_tip(self):
         from param_est.cost_functions import auxin_peak_at_root_tip
@@ -100,5 +101,6 @@ class TestCostFunctions(unittest.TestCase):
         sim.cell_list[9].get_circ_mod().get_auxin.return_value = 10
         avg_non_root_tip_auxins = sum([1, 2, 3, 4, 5, 6, 7, 8, 9])/9
         avg_root_tip_auxins = 10
-        result = auxin_peak_at_root_tip(sim)
+        chromosome = {}
+        result = auxin_peak_at_root_tip(sim, chromosome)
         self.assertEqual(result, (avg_non_root_tip_auxins/avg_root_tip_auxins))
