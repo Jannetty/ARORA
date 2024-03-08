@@ -347,7 +347,7 @@ class Cell(Sprite):
             neighbor_dir = self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and neighbor_dir == "":
             neighbor_dir = self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
-        if neighbor_dir not in ['a', 'b', 'l', 'm', 'cell no longer root cap cell neighbor']:
+        if neighbor_dir not in ["a", "b", "l", "m", "cell no longer root cap cell neighbor"]:
             raise ValueError("Neighbor not recognized")
         return neighbor_dir
 
@@ -433,6 +433,130 @@ class Cell(Sprite):
         """
         return self.circ_mod
 
+    def add_l_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Adds a lateral neighbor to the cell's lateral neighbor list.
+
+        Note this is ONLY used to directly add LRC cells to the medial neighbor list of growing cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbor : Cell
+            The lateral neighbor to add to the cell's lateral neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert neighbor.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.l_neighbors.append(neighbor)
+
+    def add_m_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Adds a medial neighbor to the cell's medial neighbor list.
+
+        Note this is ONLY used to directly add growing cells to the lateral neighbor list of LRC cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbor : Cell
+            The medial neighbor to add to the cell's medial neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert self.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.m_neighbors.append(neighbor)
+
+    def remove_m_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Removes a medial neighbor from the cell's medial neighbor list.
+
+        Note this is ONLY used to directly remove growing cells from the lateral neighbor list of LRC cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbr : Cell
+            The medial neighbor to remove from the cell's medial neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert self.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.m_neighbors.remove(neighbor)
+
+    def remove_l_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Removes a lateral neighbor from the cell's lateral neighbor list.
+
+        Note this is ONLY used to directly remove LRC cells from the medial neighbor list of growing cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbor : Cell
+            The lateral neighbor to remove from the cell's lateral neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert neighbor.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.l_neighbors.remove(neighbor)
+
     def remove_neighbor(self, cell: "Cell") -> None:
         """
         Removes a neighbor from the cell's neighbor list.
@@ -442,8 +566,6 @@ class Cell(Sprite):
         cell : Cell
             The neighbor to remove from the cell's neighbor list.
         """
-        if cell.get_c_id() == 135:
-            print(f"================ Removing cell {cell.get_c_id()} from cell {self.get_c_id()}'s neighbor list")
         if cell in self.a_neighbors:
             self.a_neighbors.remove(cell)
         elif cell in self.b_neighbors:
@@ -452,10 +574,6 @@ class Cell(Sprite):
             self.l_neighbors.remove(cell)
         elif cell in self.m_neighbors:
             self.m_neighbors.remove(cell)
-        elif cell.get_c_id() in [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]:
-            pass
-        elif self.get_c_id() in [60, 90, 120, 136, 166, 210, 296, 75, 105, 135, 151, 181, 225, 311]:
-            pass
         else:
             raise ValueError("Non neighbor cell being removed from neighbor list")
 
@@ -526,6 +644,7 @@ class Cell(Sprite):
         Grows the cell by adding the cell and calculated delta to the sim's vertex mover.
         """
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
+
 
     def get_distance_from_tip(self) -> float:
         """
@@ -669,13 +788,10 @@ class Cell(Sprite):
         """
         Updates the cell by growing, calculating pin weights, and updating the circ module.
         """
-        if self.get_c_id() == 135:
-            print(f"cell {self.get_c_id()} len(self.m_neighbors = {len(self.m_neighbors)}")
-            print(f"neighbors = {[cell.get_c_id() for cell in self.get_m_neighbors()]}")
         if self.growing:
             self.grow()
-        #self.pin_weights = self.calculate_pin_weights()
-        #self.circ_mod.update()
+        self.pin_weights = self.calculate_pin_weights()
+        self.circ_mod.update()
 
     def get_neighbor_di_neighbor_shares_two_vs_std(self, neighbor: "Cell") -> str:
         """
