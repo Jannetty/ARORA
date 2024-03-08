@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
+from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 
 if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
@@ -225,7 +226,13 @@ class Divider:
             return
 
         for neighbor in neighbor_list:
-            if (
+
+            if self.sim.geometry == 'default' and neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs:
+                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(new_top_cell, self.sim)
+                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(new_bottom_cell, self.sim)
+                neighbor.remove_neighbor(cell)
+
+            elif (
                 neighbor.get_quad_perimeter().get_top_left().get_y()
                 == new_top_cell.get_quad_perimeter().get_top_left().get_y()
             ):

@@ -821,7 +821,7 @@ class BaseCirculateModuleCont:
             "k_d": self.kd,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
-            "circ_mod": "cont"
+            "circ_mod": "cont",
         }
         return state
 

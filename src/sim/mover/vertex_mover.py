@@ -112,6 +112,7 @@ class VertexMover:
             self.check_if_divide([cell for cell in self.cell_deltas.keys()])
             self.cell_deltas.clear()
             self.vertex_deltas.clear()
+
             if self.sim.geometry == "default":
                 NeighborHelpers.fix_lrc_neighbors_after_growth(self.sim)
 

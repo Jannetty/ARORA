@@ -178,8 +178,8 @@ class QuadPerimeter:
         bool
             True if the point is inside the perimeter, False otherwise.
         """
-        if self.get_min_x() < x < self.get_max_x():
-            if self.get_min_y() < y < self.get_max_y():
+        if self.get_min_x() <= x <= self.get_max_x():
+            if self.get_min_y() <= y <= self.get_max_y():
                 return True
         return False
 
