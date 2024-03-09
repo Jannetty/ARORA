@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 import os
 import pyglet
 import pandas
+from pandas import Series
 import matplotlib.pyplot as plt
 from arcade import Window
 from arcade import SpriteList
@@ -324,15 +325,6 @@ class GrowingSim(Window):
             close_window()
             raise e
 
-    # def on_mouse_press(self, x, y, button, modifiers):
-    #     print("Mouse press!")
-    #     print(f"X: {x}, Y: {y}")
-    #     y = self.window_offset + y
-    #     print(f"with, windowoffset, X: {x}, Y: {y}")
-    #     for cell in self.cell_list:
-    #         if cell.get_quad_perimeter().point_inside(x, y):
-    #             print(f"Cell {cell.get_c_id()}, growing = {cell.growing}")
-
     def run_sim(self) -> None:
         pyglet.app.run(0)
 
@@ -343,7 +335,7 @@ def main(
     vis: bool,
     cell_val_file: str = "",
     v_file: str = "",
-    gparam_series: any = "",
+    gparam_series: Series | str = "",
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")

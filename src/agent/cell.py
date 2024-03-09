@@ -645,7 +645,6 @@ class Cell(Sprite):
         """
         self.sim.get_vertex_mover().add_cell_delta_val(self, self.calculate_delta())
 
-
     def get_distance_from_tip(self) -> float:
         """
         Returns the distance of the cell from the root tip.
