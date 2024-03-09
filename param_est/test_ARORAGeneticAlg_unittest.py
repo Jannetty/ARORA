@@ -8,7 +8,7 @@ import unittest
 class TestARORAGeneticAlg(unittest.TestCase):
 
     def test_initialize(self):
-        ga = ARORAGeneticAlg()
+        ga = ARORAGeneticAlg("filename.json")
         self.assertIsInstance(ga.ga_instance, type(None))
 
     # def test_run_ARORA(self):

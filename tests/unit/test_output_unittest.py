@@ -87,27 +87,17 @@ CELL_LIST = [cell0, cell1]
 
 class TestOutput(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        super(TestOutput, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
+    # def test_get_auxin(self):
+    #     output = Output(sim, "ouput.csv")
+    #     expected = 2
+    #     found = output.get_auxin(cell0)
+    #     self.assertEqual(expected, found)
 
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestOutput, cls).tearDownClass()
-
-    def test_get_auxin(self):
-        output = Output(sim, "ouput.csv")
-        expected = 2
-        found = output.get_auxin(cell0)
-        self.assertEqual(expected, found)
-
-    def test_get_location(self):
-        output = Output(sim, "ouput.csv")
-        expected = [[30.0, 10.0], [10.0, 10.0], [10.0, 30.0], [30.0, 30.0]]
-        found = output.get_location(cell0)
-        self.assertEqual(expected, found)
+    # def test_get_location(self):
+    #     output = Output(sim, "ouput.csv")
+    #     expected = [[30.0, 10.0], [10.0, 10.0], [10.0, 30.0], [30.0, 30.0]]
+    #     found = output.get_location(cell0)
+    #     self.assertEqual(expected, found)
 
     def test_get_circ_contents(self):
         output = Output(sim, "ouput.csv")

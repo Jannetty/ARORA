@@ -227,9 +227,16 @@ class Divider:
 
         for neighbor in neighbor_list:
 
-            if self.sim.geometry == 'default' and neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs:
-                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(new_top_cell, self.sim)
-                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(new_bottom_cell, self.sim)
+            if (
+                self.sim.geometry == "default"
+                and neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
+            ):
+                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(
+                    new_top_cell, self.sim
+                )
+                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(
+                    new_bottom_cell, self.sim
+                )
                 neighbor.remove_neighbor(cell)
 
             elif (
