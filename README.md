@@ -1,4 +1,4 @@
-clearcealr# Python project template repository
+# Python project template repository
 
 [![Build Status](https://github.com/Jannetty/PythonRootDevModel/workflows/build/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions?query=workflow%3Abuild)
 [![Codecov](https://codecov.io/gh/Jannetty/PythonRootDevModel/branch/main/graph/badge.svg?token=SRGlpwpsbr)](https://codecov.io/gh/Jannetty/PythonRootDevModel)
