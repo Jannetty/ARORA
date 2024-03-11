@@ -30,7 +30,7 @@ def make_param_series():
 if __name__ == '__main__':
     timestep = 1
     root_midpoint_x = 71
-    vis = False
+    vis = True
     start_time = time.time()
     sim.main(timestep, root_midpoint_x, vis, cell_val_file="default", v_file="default", gparam_series=make_param_series())
     end_time = time.time()
