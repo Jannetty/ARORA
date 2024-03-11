@@ -162,7 +162,7 @@ class NeighborHelpers:
         return neighbor_direct
 
     @staticmethod
-    def check_if_now_neighbors_with_new_root_cap_cell(cell: "Cell", sim: "GrowingSim") -> None:
+    def check_if_neighbors_with_new_root_cap_cell(cell: "Cell", sim: "GrowingSim") -> None:
         """
         Checks if the neighbor is the next root cap cell.
 
@@ -244,7 +244,7 @@ class NeighborHelpers:
                 neighbor_direct = "l"
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
-                NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(cell, cell.get_sim())
+                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(cell, cell.get_sim())
         return neighbor_direct
 
     @staticmethod  # This relies on the assumption that only cells that were previously neighbors with root cap cells will ever be neighbors with root cap cells
@@ -255,7 +255,7 @@ class NeighborHelpers:
         for non_root_tip_cell in non_root_tip_cells:
             for l_neighbor in non_root_tip_cell.get_l_neighbors():
                 if l_neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs:
-                    NeighborHelpers.check_if_now_neighbors_with_new_root_cap_cell(
+                    NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(
                         non_root_tip_cell, sim
                     )
                     NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell(
