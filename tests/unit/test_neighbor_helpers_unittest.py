@@ -16,18 +16,20 @@ class TestNeighborHelpers(unittest.TestCase):
         # Mocking Cell instances
         cell = MagicMock()
         neighbor = MagicMock()
-        
-        cell_id_vals = [10,11,16,19,20,25,54,54,57,57]
-        neighbor_id_vals = [20,25,36,37,36,37,65,66,69,70]
-        
+
+        cell_id_vals = [10, 11, 16, 19, 20, 25, 54, 54, 57, 57]
+        neighbor_id_vals = [20, 25, 36, 37, 36, 37, 65, 66, 69, 70]
+
         # Expected outcome
         expected_direction = "a"
-        
+
         # Run the function and assert the outcome for each pair
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                cell, neighbor
+            )
             # Assert the outcome
             self.assertEqual(direction, expected_direction)
 
@@ -35,36 +37,40 @@ class TestNeighborHelpers(unittest.TestCase):
         # Mocking Cell instances
         cell = MagicMock()
         neighbor = MagicMock()
-        
-        cell_id_vals = [20,25,36,37,36,37,65,66,69,70]
-        neighbor_id_vals = [10,11,16,19,20,25,54,54,57,57]
-        
+
+        cell_id_vals = [20, 25, 36, 37, 36, 37, 65, 66, 69, 70]
+        neighbor_id_vals = [10, 11, 16, 19, 20, 25, 54, 54, 57, 57]
+
         # Expected outcome
         expected_direction = "b"
-        
+
         # Run the function and assert the outcome for each pair
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                cell, neighbor
+            )
             self.assertEqual(direction, expected_direction)
 
     def test_neighbor_direction_one_v_l(self):
         # Mocking Cell instances
         cell = MagicMock()
         neighbor = MagicMock()
-        
+
         cell_id_vals = [26, 27, 39, 39, 42, 42, 50, 51, 50, 51]
         neighbor_id_vals = [20, 25, 38, 46, 43, 47, 44, 45, 52, 59]
-        
+
         # Expected outcome
         expected_direction = "l"
-        
+
         # Run the function and assert the outcome for each pair
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                cell, neighbor
+            )
             self.assertEqual(direction, expected_direction)
 
         # Check case that neighbor is rootcap cell
@@ -75,25 +81,29 @@ class TestNeighborHelpers(unittest.TestCase):
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                cell, neighbor
+            )
             self.assertEqual(direction, expected_direction)
 
     def test_neighbor_direction_one_v_m(self):
         # Mocking Cell instances
         cell = MagicMock()
         neighbor = MagicMock()
-        
+
         cell_id_vals = [38, 46, 43, 47, 44, 45, 52, 59]
         neighbor_id_vals = [39, 39, 42, 42, 50, 51, 50, 51]
-        
+
         # Expected outcome
         expected_direction = "m"
-        
+
         # Run the function and assert the outcome for each pair
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                cell, neighbor
+            )
             self.assertEqual(direction, expected_direction)
 
         # Check case that cell is rootcap cell
@@ -104,14 +114,16 @@ class TestNeighborHelpers(unittest.TestCase):
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                cell, neighbor
+            )
             self.assertEqual(direction, expected_direction)
 
     def test_check_if_neighbors_with_root_cap_cell_adds_new_root_cap_neighbors_correctly(self):
         # Mocking Cell instances and sim
         mock_cell = MagicMock()
         mock_sim = MagicMock()
-        
+
         root_cap_cell_ids = NeighborHelpers.ROOTCAP_CELL_IDs
         mock_root_cap_cells = [MagicMock() for _ in root_cap_cell_ids]
         for cell, cell_id in zip(mock_root_cap_cells, root_cap_cell_ids):
@@ -124,7 +136,10 @@ class TestNeighborHelpers(unittest.TestCase):
         mock_cell.get_l_neighbors.return_value = []
 
         # Assume NeighborHelpers.cell_and_lrc_cell_are_neighbors would return True in this scenario
-        with patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors', return_value=True):
+        with patch(
+            "src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors",
+            return_value=True,
+        ):
             # Execute the function under test
             NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(mock_cell, mock_sim)
 
@@ -133,11 +148,13 @@ class TestNeighborHelpers(unittest.TestCase):
             for cell in mock_root_cap_cells:
                 cell.add_m_neighbor.assert_called_once_with(mock_cell)
 
-    def test_check_if_neighbors_with_root_cap_cell_does_not_add_new_root_cap_neighbors_when_already_added(self):
+    def test_check_if_neighbors_with_root_cap_cell_does_not_add_new_root_cap_neighbors_when_already_added(
+        self,
+    ):
         # Mocking Cell instances and sim
         mock_cell = MagicMock()
         mock_sim = MagicMock()
-        
+
         root_cap_cell_ids = NeighborHelpers.ROOTCAP_CELL_IDs
         mock_root_cap_cells = [MagicMock() for _ in root_cap_cell_ids]
         for cell, cell_id in zip(mock_root_cap_cells, root_cap_cell_ids):
@@ -150,7 +167,10 @@ class TestNeighborHelpers(unittest.TestCase):
         mock_cell.get_l_neighbors.return_value = mock_root_cap_cells
 
         # Assume NeighborHelpers.cell_and_lrc_cell_are_neighbors would return True in this scenario
-        with patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors', return_value=True):
+        with patch(
+            "src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors",
+            return_value=True,
+        ):
             # Execute the function under test
             NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(mock_cell, mock_sim)
 
@@ -158,12 +178,14 @@ class TestNeighborHelpers(unittest.TestCase):
             mock_cell.add_l_neighbor.assert_not_called()
             for cell in mock_root_cap_cells:
                 cell.add_m_neighbor.assert_not_called()
-    
-    def test_check_if_neighbors_with_root_cap_cell_does_not_add_new_root_cap_neighbors_when_not_neighbors(self):
+
+    def test_check_if_neighbors_with_root_cap_cell_does_not_add_new_root_cap_neighbors_when_not_neighbors(
+        self,
+    ):
         # Mocking Cell instances and sim
         mock_cell = MagicMock()
         mock_sim = MagicMock()
-        
+
         root_cap_cell_ids = NeighborHelpers.ROOTCAP_CELL_IDs
         mock_root_cap_cells = [MagicMock() for _ in root_cap_cell_ids]
         for cell, cell_id in zip(mock_root_cap_cells, root_cap_cell_ids):
@@ -176,7 +198,10 @@ class TestNeighborHelpers(unittest.TestCase):
         mock_cell.get_l_neighbors.return_value = []
 
         # Assume NeighborHelpers.cell_and_lrc_cell_are_neighbors would return False in this scenario
-        with patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors', return_value=False):
+        with patch(
+            "src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors",
+            return_value=False,
+        ):
             # Execute the function under test
             NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(mock_cell, mock_sim)
 
@@ -189,18 +214,20 @@ class TestNeighborHelpers(unittest.TestCase):
         # Mocking Cell instances
         cell = MagicMock()
         neighbor = MagicMock()
-        
-        cell_id_vals = [17,20,18,25]
-        neighbor_id_vals = [20,17,25,18]
-        
+
+        cell_id_vals = [17, 20, 18, 25]
+        neighbor_id_vals = [20, 17, 25, 18]
+
         # Expected outcome
         expected_direction = ["l", "b", "l", "b"]
-        
+
         # Run the function and assert the outcome for each pair
         for idx, cell_id_val in enumerate(cell_id_vals):
             cell.get_c_id.return_value = cell_id_val
             neighbor.get_c_id.return_value = neighbor_id_vals[idx]
-            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell, neighbor)
+            direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+                cell, neighbor
+            )
             # Assert the outcome
             self.assertEqual(direction, expected_direction[idx])
 
@@ -209,13 +236,15 @@ class TestNeighborHelpers(unittest.TestCase):
         neighbor = MagicMock()
         cell.get_c_id.return_value = 60  # this ID is in ROOTCAP_CELL_IDs
         neighbor.get_c_id.return_value = 100  # Arbitrary ID not in ROOTCAP_CELL_IDs
-        
+
         # Mock get_quad_perimeter to simulate geometry
         cell.get_quad_perimeter().get_min_y.return_value = 0
         cell.get_quad_perimeter().get_max_y.return_value = 10
         neighbor.get_quad_perimeter().get_min_y.return_value = 5
-        
-        direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell, neighbor)
+
+        direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+            cell, neighbor
+        )
         self.assertEqual(direction, "m")
 
     def test_no_vs_root_cap_neighbor_direction_l(self):
@@ -223,13 +252,15 @@ class TestNeighborHelpers(unittest.TestCase):
         neighbor = MagicMock()
         cell.get_c_id.return_value = 100  # Arbitrary ID not in ROOTCAP_CELL_IDs
         neighbor.get_c_id.return_value = 60  # this ID is in ROOTCAP_CELL_IDs
-        
+
         # Mock get_quad_perimeter to simulate geometry
         neighbor.get_quad_perimeter().get_min_y.return_value = 0
         neighbor.get_quad_perimeter().get_max_y.return_value = 10
         cell.get_quad_perimeter().get_min_y.return_value = 5
-        
-        direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell, neighbor)
+
+        direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+            cell, neighbor
+        )
         self.assertEqual(direction, "l")
 
     def test_no_vs_root_cap_neighbor_no_longer_neighbor(self):
@@ -237,18 +268,26 @@ class TestNeighborHelpers(unittest.TestCase):
         neighbor = MagicMock()
         neighbor.get_c_id.return_value = 60  # this ID is in ROOTCAP_CELL_IDs
         cell.get_c_id.return_value = 100  # Arbitrary ID not in ROOTCAP_CELL_IDs
-        
+
         # Mock get_quad_perimeter to simulate geometry where they are no longer neighbors
         cell.get_quad_perimeter().get_min_y.return_value = 0
         cell.get_quad_perimeter().get_max_y.return_value = 10
         neighbor.get_quad_perimeter().get_min_y.return_value = 11  # Outside cell's y-range
-        
-        direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell, neighbor)
+
+        direction = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+            cell, neighbor
+        )
         self.assertEqual(direction, "cell no longer root cap cell neighbor")
 
-    @patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell')
-    @patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.check_if_neighbors_with_new_root_cap_cell')
-    def test_fix_lrc_neighbors_after_growth(self, mock_check_new_neighbors, mock_check_no_longer_neighbors):
+    @patch(
+        "src.agent.default_geo_neighbor_helpers.NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell"
+    )
+    @patch(
+        "src.agent.default_geo_neighbor_helpers.NeighborHelpers.check_if_neighbors_with_new_root_cap_cell"
+    )
+    def test_fix_lrc_neighbors_after_growth(
+        self, mock_check_new_neighbors, mock_check_no_longer_neighbors
+    ):
         # Mocking GrowingSim
         sim = MagicMock()
         # Mock cells with different types
@@ -256,16 +295,19 @@ class TestNeighborHelpers(unittest.TestCase):
         l_neighbor_root_cap_cell = MagicMock()
         l_neighbor_non_root_cap_cell = MagicMock()
 
-        non_root_tip_cell.get_cell_type.return_value = 'vasc'
-        l_neighbor_root_cap_cell.get_cell_type.return_value = 'roottip'
-        l_neighbor_non_root_cap_cell.get_cell_type.return_value = 'vasc'
+        non_root_tip_cell.get_cell_type.return_value = "vasc"
+        l_neighbor_root_cap_cell.get_cell_type.return_value = "roottip"
+        l_neighbor_non_root_cap_cell.get_cell_type.return_value = "vasc"
 
         # Set cell IDs for root cap and non-root cap mock cells
         l_neighbor_root_cap_cell.get_c_id.return_value = NeighborHelpers.ROOTCAP_CELL_IDs[0]
         l_neighbor_non_root_cap_cell.get_c_id.return_value = 100
 
         # Setup cell relationships
-        non_root_tip_cell.get_l_neighbors.return_value = [l_neighbor_root_cap_cell, l_neighbor_non_root_cap_cell]
+        non_root_tip_cell.get_l_neighbors.return_value = [
+            l_neighbor_root_cap_cell,
+            l_neighbor_non_root_cap_cell,
+        ]
 
         # Setup the sim to return non-root tip cells
         sim.get_cell_list.return_value = [non_root_tip_cell]
@@ -276,21 +318,29 @@ class TestNeighborHelpers(unittest.TestCase):
         # Assertions to ensure the appropriate methods were called
         mock_check_new_neighbors.assert_called_with(non_root_tip_cell, sim)
         mock_check_new_neighbors.assert_called_once()
-        mock_check_no_longer_neighbors.assert_called_with(non_root_tip_cell, l_neighbor_root_cap_cell)
+        mock_check_no_longer_neighbors.assert_called_with(
+            non_root_tip_cell, l_neighbor_root_cap_cell
+        )
         mock_check_no_longer_neighbors.assert_called_once()
 
     def test_check_if_no_longer_neighbors_with_root_cap_cell(self):
         # Mocking Cell instances
         cell = MagicMock()
         neighbor = MagicMock()
-        with patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors', return_value=False):
+        with patch(
+            "src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors",
+            return_value=False,
+        ):
             NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell(cell, neighbor)
             cell.remove_l_neighbor.assert_called_once_with(neighbor)
             neighbor.remove_m_neighbor.assert_called_once_with(cell)
 
         cell = MagicMock()
         neighbor = MagicMock()
-        with patch('src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors', return_value=True):
+        with patch(
+            "src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors",
+            return_value=True,
+        ):
             NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell(cell, neighbor)
             cell.remove_l_neighbor.assert_not_called()
             neighbor.remove_m_neighbor.assert_not_called()
@@ -306,10 +356,10 @@ class TestNeighborHelpers(unittest.TestCase):
         cell.get_c_id.return_value = 100
         lrc_cell.get_c_id.return_value = NeighborHelpers.ROOTCAP_CELL_IDs[0]
 
-        cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = 'lateral'
-        lrc_cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = 'medial'
+        cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = "lateral"
+        lrc_cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = "medial"
 
-        #Call function under test
+        # Call function under test
         are_neighbors = NeighborHelpers.cell_and_lrc_cell_are_neighbors(cell, lrc_cell)
         self.assertFalse(are_neighbors)
 
@@ -326,14 +376,14 @@ class TestNeighborHelpers(unittest.TestCase):
         lrc_cell.get_c_id.return_value = NeighborHelpers.ROOTCAP_CELL_IDs[0]
 
         # Configure cells to be on the same side and share lateral membrane
-        cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = 'lateral'
-        lrc_cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = 'lateral'
+        cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = "lateral"
+        lrc_cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = "lateral"
         cell.get_quad_perimeter().get_min_x.return_value = 20
         cell.get_quad_perimeter().get_max_x.return_value = 30
         lrc_cell.get_quad_perimeter().get_min_x.return_value = 10  # Adjacent to cell
         lrc_cell.get_quad_perimeter().get_max_x.return_value = 20
 
-         # Mock Y-coordinate logic
+        # Mock Y-coordinate logic
         cell.get_quad_perimeter().get_min_y.return_value = 10
         cell.get_quad_perimeter().get_max_y.return_value = 20
         lrc_cell.get_quad_perimeter().get_min_y.return_value = 15
@@ -355,14 +405,14 @@ class TestNeighborHelpers(unittest.TestCase):
         lrc_cell.get_c_id.return_value = NeighborHelpers.ROOTCAP_CELL_IDs[0]
 
         # Configure cells to be on the same side and share medial membrane
-        cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = 'medial'
-        lrc_cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = 'medial'
+        cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = "medial"
+        lrc_cell.get_quad_perimeter().get_left_lateral_or_medial.return_value = "medial"
         cell.get_quad_perimeter().get_min_x.return_value = 10
         cell.get_quad_perimeter().get_max_x.return_value = 20
         lrc_cell.get_quad_perimeter().get_min_x.return_value = 20  # Adjacent to cell
         lrc_cell.get_quad_perimeter().get_max_x.return_value = 30
 
-         # Mock Y-coordinate logic
+        # Mock Y-coordinate logic
         cell.get_quad_perimeter().get_min_y.return_value = 10
         cell.get_quad_perimeter().get_max_y.return_value = 20
         lrc_cell.get_quad_perimeter().get_min_y.return_value = 15
