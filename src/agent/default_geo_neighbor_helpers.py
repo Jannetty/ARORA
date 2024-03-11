@@ -265,11 +265,6 @@ class NeighborHelpers:
     @staticmethod
     def check_if_no_longer_neighbors_with_root_cap_cell(cell: "Cell", lrc_neighbor: "Cell") -> None:
         if not NeighborHelpers.cell_and_lrc_cell_are_neighbors(cell, lrc_neighbor):
-            if cell.get_c_id() in [119, 134]:
-                cell_miny = cell.get_quad_perimeter().get_min_y()
-                cell_maxy = cell.get_quad_perimeter().get_max_y()
-                lrc_cell_miny = lrc_neighbor.get_quad_perimeter().get_min_y()
-                lrc_cell_maxy = lrc_neighbor.get_quad_perimeter().get_max_y()
             cell.remove_l_neighbor(lrc_neighbor)
             lrc_neighbor.remove_m_neighbor(cell)
 
@@ -284,6 +279,17 @@ class NeighborHelpers:
         # If cells are on opposite sides of the root
         if cell_left_l_or_m != lrc_cell_left_l_or_m:
             return False
+
+        # Cells must share a membrane (x-coordinates of adjacent membrane don't match)
+        if cell_left_l_or_m == "lateral":
+            assert (
+                cell.get_quad_perimeter().get_min_x() == lrc_cell.get_quad_perimeter().get_max_x()
+            )
+        else:
+            assert (
+                cell.get_quad_perimeter().get_max_x() == lrc_cell.get_quad_perimeter().get_min_x()
+            )
+
         cell_miny = cell.get_quad_perimeter().get_min_y()
         cell_maxy = cell.get_quad_perimeter().get_max_y()
         lrc_cell_miny = lrc_cell.get_quad_perimeter().get_min_y()
