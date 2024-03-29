@@ -1,4 +1,8 @@
 import os
+import platform
+
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from scipy.integrate import odeint
 import numpy as np
@@ -23,16 +27,6 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     """
     Tests BaseCirculateModuleCont Class
     """
-
-    @classmethod
-    def setUpClass(cls):
-        super(BaseCirculateModuleContTests, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(BaseCirculateModuleContTests, cls).tearDownClass()
 
     def test_calculate_cont_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
