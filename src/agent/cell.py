@@ -185,6 +185,17 @@ class Cell(Sprite):
             raise ValueError("Cell type not recognized")
         return cell_type
 
+    def get_cell_type(self) -> str:
+        """
+        Returns the type of cell.
+
+        Returns
+        -------
+        str
+            The type of cell.
+        """
+        return self.cell_type
+
     def calculate_color(self) -> tuple[int, int, int, int]:
         """
         Calculates the color of the cell based on the auxin concentration and sim's cmap.
@@ -323,19 +334,22 @@ class Cell(Sprite):
         """
         self_vs = self.get_quad_perimeter().get_vs()
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
+        neighbor_dir = ""
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and self.sim.geometry == "default":
-            return NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
                 self, neighbor
             )
         if len(set(self_vs).intersection(set(neighbor_vs))) == 0 and self.sim.geometry == "default":
-            return NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
                 self, neighbor
             )
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 2:
-            return self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 1:
-            return self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
-        raise ValueError("Neighbor not recognized")
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 2 and neighbor_dir == "":
+            neighbor_dir = self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and neighbor_dir == "":
+            neighbor_dir = self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
+        if neighbor_dir not in ["a", "b", "l", "m", "cell no longer root cap cell neighbor"]:
+            raise ValueError("Neighbor not recognized")
+        return neighbor_dir
 
     def get_a_neighbors(self) -> list["Cell"]:
         """
@@ -418,6 +432,130 @@ class Cell(Sprite):
             The circ module object that manages hormone circulation for this cell.
         """
         return self.circ_mod
+
+    def add_l_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Adds a lateral neighbor to the cell's lateral neighbor list.
+
+        Note this is ONLY used to directly add LRC cells to the medial neighbor list of growing cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbor : Cell
+            The lateral neighbor to add to the cell's lateral neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert neighbor.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.l_neighbors.append(neighbor)
+
+    def add_m_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Adds a medial neighbor to the cell's medial neighbor list.
+
+        Note this is ONLY used to directly add growing cells to the lateral neighbor list of LRC cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbor : Cell
+            The medial neighbor to add to the cell's medial neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert self.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.m_neighbors.append(neighbor)
+
+    def remove_m_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Removes a medial neighbor from the cell's medial neighbor list.
+
+        Note this is ONLY used to directly remove growing cells from the lateral neighbor list of LRC cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbr : Cell
+            The medial neighbor to remove from the cell's medial neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert self.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.m_neighbors.remove(neighbor)
+
+    def remove_l_neighbor(self, neighbor: "Cell") -> None:
+        """
+        Removes a lateral neighbor from the cell's lateral neighbor list.
+
+        Note this is ONLY used to directly remove LRC cells from the medial neighbor list of growing cells
+        when running under default conditions.
+
+        Parameters
+        ----------
+        neighbor : Cell
+            The lateral neighbor to remove from the cell's lateral neighbor list.
+        """
+        assert self.get_sim().geometry == "default"
+        assert neighbor.get_c_id() in [
+            60,
+            90,
+            120,
+            136,
+            166,
+            210,
+            296,
+            75,
+            105,
+            135,
+            151,
+            181,
+            225,
+            311,
+        ]
+        self.l_neighbors.remove(neighbor)
 
     def remove_neighbor(self, cell: "Cell") -> None:
         """
@@ -588,7 +726,6 @@ class Cell(Sprite):
             If the cell has no recognizable development zone.
         """
         if self.get_quad_perimeter().get_height() >= 250:
-            print(f"cell {self.c_id} has reached max height")
             self.growing = False
             return 0
         if self.dev_zone == "roottip":

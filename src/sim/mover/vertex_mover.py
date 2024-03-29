@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 from src.agent.cell import Cell
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.loc.vertex.vertex import Vertex
+from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 
 if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
@@ -111,6 +112,9 @@ class VertexMover:
             self.check_if_divide([cell for cell in self.cell_deltas.keys()])
             self.cell_deltas.clear()
             self.vertex_deltas.clear()
+
+            if self.sim.geometry == "default":
+                NeighborHelpers.fix_lrc_neighbors_after_growth(self.sim)
 
     def get_max_delta(self) -> float:
         """
