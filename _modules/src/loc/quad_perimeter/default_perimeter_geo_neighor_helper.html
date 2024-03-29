@@ -76,6 +76,7 @@
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">src.agent.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
+    <span class="kn">from</span> <span class="nn">src.loc.vertex.vertex</span> <span class="kn">import</span> <span class="n">Vertex</span>
 
 
 <div class="viewcode-block" id="PerimeterNeighborHelpers">
@@ -130,24 +131,52 @@
                 <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_left_lateral_or_medial</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">get_sim</span><span class="p">()</span><span class="o">.</span><span class="n">get_root_midpointx</span><span class="p">())</span>
                 <span class="o">==</span> <span class="s2">&quot;lateral&quot;</span>
             <span class="p">):</span>
-                <span class="n">length</span> <span class="o">=</span> <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_left_memlen</span><span class="p">()</span>
+                <span class="n">neighbor_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_bottom_left</span><span class="p">(),</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_top_left</span><span class="p">(),</span>
+                <span class="p">]</span>
+                <span class="n">cell_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span><span class="n">cellqp</span><span class="o">.</span><span class="n">get_bottom_right</span><span class="p">(),</span> <span class="n">cellqp</span><span class="o">.</span><span class="n">get_top_right</span><span class="p">()]</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="n">PerimeterNeighborHelpers</span><span class="o">.</span><span class="n">get_overlap</span><span class="p">(</span>
+                    <span class="n">neighbor_vs_on_shared_edge</span><span class="p">,</span> <span class="n">cell_vs_on_shared_edge</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="p">(</span>
                 <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_right_lateral_or_medial</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">get_sim</span><span class="p">()</span><span class="o">.</span><span class="n">get_root_midpointx</span><span class="p">())</span>
                 <span class="o">==</span> <span class="s2">&quot;lateral&quot;</span>
             <span class="p">):</span>
-                <span class="n">length</span> <span class="o">=</span> <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_right_memlen</span><span class="p">()</span>
+                <span class="n">neighbor_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_bottom_right</span><span class="p">(),</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_top_right</span><span class="p">(),</span>
+                <span class="p">]</span>
+                <span class="n">cell_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span><span class="n">cellqp</span><span class="o">.</span><span class="n">get_bottom_left</span><span class="p">(),</span> <span class="n">cellqp</span><span class="o">.</span><span class="n">get_top_left</span><span class="p">()]</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="n">PerimeterNeighborHelpers</span><span class="o">.</span><span class="n">get_overlap</span><span class="p">(</span>
+                    <span class="n">neighbor_vs_on_shared_edge</span><span class="p">,</span> <span class="n">cell_vs_on_shared_edge</span>
+                <span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="ow">in</span> <span class="n">rootcap_cell_ids</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
                 <span class="n">cellqp</span><span class="o">.</span><span class="n">get_left_lateral_or_medial</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">get_sim</span><span class="p">()</span><span class="o">.</span><span class="n">get_root_midpointx</span><span class="p">())</span>
                 <span class="o">==</span> <span class="s2">&quot;lateral&quot;</span>
             <span class="p">):</span>
-                <span class="n">length</span> <span class="o">=</span> <span class="n">cellqp</span><span class="o">.</span><span class="n">get_left_memlen</span><span class="p">()</span>
+                <span class="n">cell_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span><span class="n">cellqp</span><span class="o">.</span><span class="n">get_bottom_left</span><span class="p">(),</span> <span class="n">cellqp</span><span class="o">.</span><span class="n">get_top_left</span><span class="p">()]</span>
+                <span class="n">neighbor_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_bottom_right</span><span class="p">(),</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_top_right</span><span class="p">(),</span>
+                <span class="p">]</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="n">PerimeterNeighborHelpers</span><span class="o">.</span><span class="n">get_overlap</span><span class="p">(</span>
+                    <span class="n">cell_vs_on_shared_edge</span><span class="p">,</span> <span class="n">neighbor_vs_on_shared_edge</span>
+                <span class="p">)</span>
             <span class="k">elif</span> <span class="p">(</span>
                 <span class="n">cellqp</span><span class="o">.</span><span class="n">get_right_lateral_or_medial</span><span class="p">(</span><span class="n">neighbor</span><span class="o">.</span><span class="n">get_sim</span><span class="p">()</span><span class="o">.</span><span class="n">get_root_midpointx</span><span class="p">())</span>
                 <span class="o">==</span> <span class="s2">&quot;lateral&quot;</span>
             <span class="p">):</span>
-                <span class="n">length</span> <span class="o">=</span> <span class="n">cellqp</span><span class="o">.</span><span class="n">get_right_memlen</span><span class="p">()</span>
+                <span class="n">cell_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span><span class="n">cellqp</span><span class="o">.</span><span class="n">get_bottom_right</span><span class="p">(),</span> <span class="n">cellqp</span><span class="o">.</span><span class="n">get_top_right</span><span class="p">()]</span>
+                <span class="n">neighbor_vs_on_shared_edge</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_bottom_left</span><span class="p">(),</span>
+                    <span class="n">neighborqp</span><span class="o">.</span><span class="n">get_top_left</span><span class="p">(),</span>
+                <span class="p">]</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="n">PerimeterNeighborHelpers</span><span class="o">.</span><span class="n">get_overlap</span><span class="p">(</span>
+                    <span class="n">cell_vs_on_shared_edge</span><span class="p">,</span> <span class="n">neighbor_vs_on_shared_edge</span>
+                <span class="p">)</span>
 
         <span class="c1"># cases for unusual geometry in roottip</span>
         <span class="k">elif</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">10</span> <span class="ow">and</span> <span class="n">neighbor</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span> <span class="o">==</span> <span class="mi">20</span><span class="p">:</span>
@@ -293,6 +322,45 @@
             <span class="n">length</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_quad_perimeter</span><span class="p">()</span><span class="o">.</span><span class="n">get_basal_memlen</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">length</span></div>
+
+
+<div class="viewcode-block" id="PerimeterNeighborHelpers.get_overlap">
+<a class="viewcode-back" href="../../../../src.loc.quad_perimeter.default_perimeter_geo_neighor_helper.html#src.loc.quad_perimeter.default_perimeter_geo_neighor_helper.PerimeterNeighborHelpers.get_overlap">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_overlap</span><span class="p">(</span>
+        <span class="n">cell_vs_on_shared_edge</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Vertex&quot;</span><span class="p">],</span> <span class="n">neighbor_vs_on_shared_edge</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="s2">&quot;Vertex&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the length of the overlap between two segments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cell_vs_on_shared_edge: list</span>
+<span class="sd">            The vertices of the cell on the shared edge.</span>
+<span class="sd">        neighbor_vs_on_shared_edge: list</span>
+<span class="sd">            The vertices of the neighbor on the shared edge.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            The length of the overlap between the two segments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vertex_xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cell_vs_on_shared_edge</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">get_x</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">neighbor_vs_on_shared_edge</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">vertex_xs</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;In PerimeterNeighborHelpers.get_overlap, the vertices of the shared membrane do not share an x value.&quot;</span>
+        <span class="n">cell_v_ys_on_shared_edge</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">get_y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">cell_vs_on_shared_edge</span><span class="p">])</span>
+        <span class="n">neighbor_v_ys_on_shared_edge</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="n">v</span><span class="o">.</span><span class="n">get_y</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">neighbor_vs_on_shared_edge</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">cell_v_ys_on_shared_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">neighbor_v_ys_on_shared_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;In PerimeterNeighborHelpers.get_overlap, the vertices of the shared membrane do not overlap.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">cell_v_ys_on_shared_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">neighbor_v_ys_on_shared_edge</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span>
+                <span class="n">cell_v_ys_on_shared_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">neighbor_v_ys_on_shared_edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span></div>
 </div>
 
 </pre></div>
