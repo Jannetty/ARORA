@@ -25,9 +25,10 @@ class ARORAGeneticAlg:
         self.population = []
     
     def fitness_function(self, ga_instance, solution, solution_idx):
-        print("--------------------------------------------------")
+        print(f"-----------------------{solution_idx}---------------------------")
         print(f"Chromosome {solution_idx} : {solution}")
         chromosome = {}
+        chromosome['sol_idx'] = solution_idx
         params = pd.Series(solution, index=PARAM_NAMES)
         for param in PARAM_NAMES:
             chromosome[param] = params[param]
@@ -40,6 +41,8 @@ class ARORAGeneticAlg:
         chromosome['fitness'] = fitness
         self.population.append(chromosome)
         print(f"Chromosome entry: {chromosome}")
+        with open(self.filename, 'w') as f:
+            json.dump(self.population, f, indent=4)
         return fitness
     
     def _check_constraints(self, params, chromosome):
@@ -107,21 +110,18 @@ class ARORAGeneticAlg:
     def run_genetic_alg(self):
         genespace = self.make_paramspace()
 
-        self.ga_instance = pygad.GA(num_generations=100,
+        self.ga_instance = pygad.GA(num_generations=15,
                                     num_parents_mating=25,
                                     fitness_func=self.fitness_function,
-                                    sol_per_pop=100,
+                                    sol_per_pop=50,
                                     num_genes=len(genespace),
                                     gene_space=genespace,
                                     mutation_percent_genes=50,
                                     save_best_solutions=False,
+                                    parent_selection_type="sss",
                                     )
 
         self.ga_instance.run()
-        print("PRINTING POPULATION")
-        print(self.population)
-        with open(self.filename, 'w') as f:
-            json.dump(self.population, f, indent=4)
 
     def on_gen(self, ga_instance):
         print("Generation : ", ga_instance.generations_completed)
