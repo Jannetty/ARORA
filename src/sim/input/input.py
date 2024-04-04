@@ -51,6 +51,11 @@ class Input:
             The simulation instance to which this Input class belongs.
         """
         self.init_vals_input = pandas.read_csv(init_vals_file)
+        # self.make_arr_hist_to_list()
+        # self.make_vertices_to_list()
+        # self.make_neighbors_to_list()
+        # self.make_param_to_int()
+        # self.make_param_to_float()
         self.vertex_input = pandas.read_csv(vertex_file)
         self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
@@ -98,11 +103,12 @@ class Input:
         vertex_dict = {}
         for index, row in self.vertex_input.iterrows():
             vertex_dict[f"{index}"] = row.to_dict()
+            # vertex_dict[index] = row.to_dict()
         # update the vertex_dict to store vertcies in Vertex format
         new_vertex_dict = {}
         for v_num, vertex in vertex_dict.items():
-            x = vertex["x"]
-            y = vertex["y"]
+            x = vertex["x"].astype("float")
+            y = vertex["y"].astype("float")
             new_vertex_dict[v_num] = Vertex(x, y, int(v_num))
         return new_vertex_dict
 
@@ -316,3 +322,43 @@ class Input:
         for cell in neighbors:
             for neighbor in neighbors[cell]:
                 new_cells[cell].add_neighbor(neighbor)
+
+    def make_arr_hist_to_list(self) -> None:
+        """
+        Change arr_hist in init_vals from string to list after reading in.
+        """
+        for val in self.init_vals_input["arr_hist"]:
+            if type(val) is str:
+                val = eval(val)
+
+    def make_vertices_to_list(self) -> None:
+        """
+        Change vertices in init_vals from string to list after reading in.
+        """
+        for val in self.init_vals_input["vertices"]:
+            if type(val) is str:
+                val = eval(val)
+
+    def make_neighbors_to_list(self) -> None:
+        """
+        Change neighbors in init_vals from string to list after reading in.
+        """
+        for val in self.init_vals_input["neighbors"]:
+            if type(val) is str:
+                val = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
+
+    def make_param_to_int(self) -> None:
+        """
+        Change the integer paramters to integer type.
+        """
+        int_params = ["k1", "k2", "k3", "k4"]
+        for param in int_params:
+            self.init_vals_input[param] = self.init_vals_input[param].astype("int")
+
+    def make_param_to_float(self) -> None:
+        """
+        Change the float parameters to float type.
+        """
+        float_params = ["k5", "k6", "k_s", "k_d"]
+        for param in float_params:
+            self.init_vals_input[param] = self.init_vals_input[param].astype("float")
