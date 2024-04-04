@@ -1,4 +1,8 @@
 import os
+import platform
+
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.agent.cell import Cell
 from src.loc.vertex.vertex import Vertex
@@ -29,16 +33,6 @@ class TestCell(unittest.TestCase):
         "growing": True,
         "circ_mod": "cont",
     }
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestCell, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestCell, cls).tearDownClass()
 
     def test_get_area(self):
         timestep = 1

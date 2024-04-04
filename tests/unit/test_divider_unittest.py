@@ -1,4 +1,8 @@
 import os
+import platform
+
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.sim.divider.divider import Divider
 from src.agent.cell import Cell
@@ -29,16 +33,6 @@ class TestDivider(unittest.TestCase):
         "growing": True,
         "circ_mod": "cont",
     }
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestDivider, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestDivider, cls).tearDownClass()
 
     def test_get_new_vs(self):
         timestep = 1
@@ -148,11 +142,9 @@ class TestDivider(unittest.TestCase):
         self.assertEqual([], new_bottom_cell.get_l_neighbors())
         self.assertEqual([l_neighbor], cell.get_l_neighbors())
         self.assertEqual([cell], l_neighbor.get_m_neighbors())
-        print("Here3----------")
         simulation.get_divider().set_one_side_neighbors(
             new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
         )
-        print("Here after set one side neighbors----------")
 
         self.assertEqual([l_neighbor], cell.get_l_neighbors())
         self.assertEqual([l_neighbor], new_top_cell.get_l_neighbors())

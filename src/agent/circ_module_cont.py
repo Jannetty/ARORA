@@ -477,15 +477,15 @@ class BaseCirculateModuleCont:
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
+            neighbor_memfrac = neighbor.get_circ_mod().calculate_neighbor_memfrac(self.cell)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            # added memfrac to export al term
-            # TODO: change memfrac below multiplied by neighbor_aux to be neighbor memfrac
-            auxin_influx = (neighbor_aux * (memfrac)) * (al * memfrac) * self.k_al
-            # added memfrac to export term
-            # TODO: Make pin_activity a sigmoidal variable that ranges from 0 to 1
-            pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
-            accessible_pin = self.auxin * memfrac
-            auxin_efflux = accessible_pin * pin_activity
+            auxin_influx = (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
+            pin_activity = pindi * self.k_pin
+            # pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
+            accessible_auxin = self.auxin * memfrac
+            # print(f"accessible auxin {accessible_auxin}")
+            auxin_efflux = accessible_auxin * pin_activity
+            # print(f"auxin efflux {auxin_efflux}")
             if (
                 auxin_influx == float("inf")
                 or auxin_influx == float("-inf")
@@ -559,7 +559,7 @@ class BaseCirculateModuleCont:
         """
         self.arr = round_to_sf(soln[1, 1], 5)
         self.al = round_to_sf(soln[1, 2], 5)
-        self.pin = round_to_sf(soln[1, 3], 5)
+        self.pin = round_to_sf(soln[1, 3], 5) - self.pin
         self.pina = round_to_sf(soln[1, 4], 5)
         self.pinb = round_to_sf(soln[1, 5], 5)
         self.pinl = round_to_sf(soln[1, 6], 5)
@@ -638,16 +638,6 @@ class BaseCirculateModuleCont:
         # Compute net auxin synthesized and degraded at this time step
         auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
 
-        # Calculate total auxin exchange
-        total_aux_exchange = sum([sum(exchange.values()) for exchange in neighbors_auxin_exchange])
-
-        # Ensure auxin levels do not become negative
-        if (soln[1, 0] + total_aux_exchange) < 0:
-            raise ValueError(
-                f"Negative auxin for cell {self.cell.get_c_id()}: auxin {soln[1, 0]}, total exchange {total_aux_exchange}"
-            )
-
-        # Calculate delta auxin for the current cell
         delta_auxin = self.calculate_delta_auxin(
             auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
         )
@@ -831,6 +821,7 @@ class BaseCirculateModuleCont:
             "k_d": self.kd,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
+            "circ_mod": "cont",
         }
         return state
 
