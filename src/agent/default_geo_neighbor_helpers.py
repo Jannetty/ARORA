@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.agent.cell import Cell
+    from src.sim.simulation.sim import GrowingSim
 
 
 class NeighborHelpers:
@@ -9,6 +10,23 @@ class NeighborHelpers:
     Helper functions to determine the direction of a neighbor cell relative to a cell
     when initializing model to default geometry.
     """
+
+    ROOTCAP_CELL_IDs = [
+        60,
+        90,
+        120,
+        136,
+        166,
+        210,
+        296,
+        75,
+        105,
+        135,
+        151,
+        181,
+        225,
+        311,
+    ]
 
     @staticmethod
     def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell: "Cell", neighbor: "Cell") -> str:
@@ -135,28 +153,39 @@ class NeighborHelpers:
             neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cell_ids = [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        rootcap_cell_ids = NeighborHelpers.ROOTCAP_CELL_IDs
         if cell.get_c_id() in rootcap_cell_ids:
             neighbor_direct = "m"
         if neighbor.get_c_id() in rootcap_cell_ids:
             neighbor_direct = "l"
 
         return neighbor_direct
+
+    @staticmethod
+    def check_if_neighbors_with_new_root_cap_cell(cell: "Cell", sim: "GrowingSim") -> None:
+        """
+        Checks if the neighbor is the next root cap cell.
+
+        Args:
+            cell (Cell): The current cell.
+            neighbor (Cell): The neighboring cell.
+
+        Returns:
+            str: The direction of the neighbor ('a', 'b', 'l', 'm')
+                or None if no direction is found.
+        """
+        all_lrc_cells = [
+            cell
+            for cell in sim.get_cell_list()
+            if cell.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
+        ]
+        non_current_neighbor_lrc_cells = [
+            lrc_cell for lrc_cell in all_lrc_cells if lrc_cell not in cell.get_l_neighbors()
+        ]
+        for lrc_cell in non_current_neighbor_lrc_cells:
+            if NeighborHelpers.cell_and_lrc_cell_are_neighbors(cell, lrc_cell):
+                cell.add_l_neighbor(lrc_cell)
+                lrc_cell.add_m_neighbor(cell)
 
     @staticmethod
     def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell: "Cell", neighbor: "Cell") -> str:
@@ -182,6 +211,8 @@ class NeighborHelpers:
         a common vertex. These assignments will only be true if model is initialized
         to default geometry.
         """
+        neighbor_direct = ""
+
         if cell.get_c_id() == 17 and neighbor.get_c_id() == 20:
             neighbor_direct = "l"
         elif cell.get_c_id() == 20 and neighbor.get_c_id() == 17:
@@ -192,40 +223,82 @@ class NeighborHelpers:
             neighbor_direct = "b"
 
         # This catches assignment of neighbor of root cap cells
-        rootcap_cell_ids = [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        rootcap_cell_ids = NeighborHelpers.ROOTCAP_CELL_IDs
         if cell.get_c_id() in rootcap_cell_ids:
-            neighbor_midpointy = neighbor.get_quad_perimeter().get_midpointy()
+            neighbor_miny = neighbor.get_quad_perimeter().get_min_y()
             if (
                 cell.get_quad_perimeter().get_min_y()
-                < neighbor_midpointy
+                <= neighbor_miny
                 < cell.get_quad_perimeter().get_max_y()
             ):
                 neighbor_direct = "m"
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
         if neighbor.get_c_id() in rootcap_cell_ids:
-            self_midpointy = cell.get_quad_perimeter().get_midpointy()
+            cell_miny = cell.get_quad_perimeter().get_min_y()
             if (
                 neighbor.get_quad_perimeter().get_min_y()
-                < self_midpointy
+                <= cell_miny
                 < neighbor.get_quad_perimeter().get_max_y()
             ):
                 neighbor_direct = "l"
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
+                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(cell, cell.get_sim())
         return neighbor_direct
+
+    @staticmethod  # This relies on the assumption that only cells that were previously neighbors with root cap cells will ever be neighbors with root cap cells
+    def fix_lrc_neighbors_after_growth(sim: "GrowingSim") -> None:
+        non_root_tip_cells = [
+            cell for cell in sim.get_cell_list() if cell.get_cell_type() != "roottip"
+        ]
+        for non_root_tip_cell in non_root_tip_cells:
+            for l_neighbor in non_root_tip_cell.get_l_neighbors():
+                if l_neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs:
+                    NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(
+                        non_root_tip_cell, sim
+                    )
+                    NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell(
+                        non_root_tip_cell, l_neighbor
+                    )
+
+    @staticmethod
+    def check_if_no_longer_neighbors_with_root_cap_cell(cell: "Cell", lrc_neighbor: "Cell") -> None:
+        if not NeighborHelpers.cell_and_lrc_cell_are_neighbors(cell, lrc_neighbor):
+            cell.remove_l_neighbor(lrc_neighbor)
+            lrc_neighbor.remove_m_neighbor(cell)
+
+    @staticmethod
+    def cell_and_lrc_cell_are_neighbors(cell: "Cell", lrc_cell: "Cell") -> bool:
+        cell_left_l_or_m = cell.get_quad_perimeter().get_left_lateral_or_medial(
+            cell.get_sim().get_root_midpointx()
+        )
+        lrc_cell_left_l_or_m = lrc_cell.get_quad_perimeter().get_left_lateral_or_medial(
+            lrc_cell.get_sim().get_root_midpointx()
+        )
+        # If cells are on opposite sides of the root
+        if cell_left_l_or_m != lrc_cell_left_l_or_m:
+            return False
+
+        # Cells must share a membrane (x-coordinates of adjacent membrane don't match)
+        if cell_left_l_or_m == "lateral":
+            assert (
+                cell.get_quad_perimeter().get_min_x() == lrc_cell.get_quad_perimeter().get_max_x()
+            )
+        else:
+            assert (
+                cell.get_quad_perimeter().get_max_x() == lrc_cell.get_quad_perimeter().get_min_x()
+            )
+
+        cell_miny = cell.get_quad_perimeter().get_min_y()
+        cell_maxy = cell.get_quad_perimeter().get_max_y()
+        lrc_cell_miny = lrc_cell.get_quad_perimeter().get_min_y()
+        lrc_cell_maxy = lrc_cell.get_quad_perimeter().get_max_y()
+        if (
+            lrc_cell_miny <= cell_miny <= lrc_cell_maxy
+            or lrc_cell_miny <= cell_maxy <= lrc_cell_maxy
+            or (cell_miny <= lrc_cell_miny <= cell_maxy and cell_miny <= lrc_cell_maxy <= cell_maxy)
+        ):
+            return True
+        else:
+            return False

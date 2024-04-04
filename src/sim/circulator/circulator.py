@@ -93,5 +93,8 @@ class Circulator:
         for cell in self.delta_auxins:
             old_aux = cell.get_circ_mod().get_auxin()
             new_aux = round_to_sf(old_aux + self.delta_auxins[cell], 6)
+            if new_aux < 0:
+                print(f"cell {cell.get_c_id()} new_aux = {new_aux}")
+                raise ValueError(f"Negative Auxin")
             cell.get_circ_mod().set_auxin(new_aux)
         self.delta_auxins = dict()

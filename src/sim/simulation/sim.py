@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 import os
 import pyglet
 import pandas
+from pandas import Series
 import matplotlib.pyplot as plt
 from arcade import Window
 from arcade import SpriteList
@@ -20,6 +21,7 @@ SCREEN_TITLE = "ARORA"
 
 if TYPE_CHECKING:
     from src.agent.cell import Cell
+    from pandas import Series
 
 
 class GrowingSim(Window):
@@ -105,7 +107,7 @@ class GrowingSim(Window):
         vis: bool,
         cell_val_file: str = "",
         v_file: str = "",
-        gparam_series: str = "",
+        gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
     ):
         """
@@ -121,7 +123,7 @@ class GrowingSim(Window):
         if vis is True:
             super().__init__(width, height, title)
         set_background_color(color=(250, 250, 250, 250))
-        if cell_val_file is not "" and v_file is not "":
+        if cell_val_file != "" and v_file != "":
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
             self.root_tip_y: float = self.input.get_initial_v_miny()
@@ -269,7 +271,6 @@ class GrowingSim(Window):
         """
         Renders the screen.
         """
-        print("Drawing")
         if self.vis:
             self.clear()
             for cell in self.cell_list:
@@ -294,10 +295,10 @@ class GrowingSim(Window):
         Args:
             delta_time: The time step.
         """
-        print("--------------------")
+        print("----")
         self.tick += 1
-        max_tick = 200
-        # max_tick = 2592
+        # max_tick = 20
+        max_tick = 2592
         try:
             if self.tick < max_tick:
                 # self.output.output_cells()
@@ -309,6 +310,11 @@ class GrowingSim(Window):
                 self.circulator.update()
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
+                total_aux = sum([cell.get_circ_mod().get_auxin() for cell in self.cell_list])
+                total_area = sum([cell.get_quad_perimeter().get_area() for cell in self.cell_list])
+                print(f"Total auxin: {total_aux}")
+                print(f"Total area: {total_area}")
+                print(f"Total auxin/area = {total_aux/total_area}")
 
             else:
                 print("Simulation Complete")
@@ -317,15 +323,10 @@ class GrowingSim(Window):
             print(e)
             print("Ending Simulation")
             close_window()
+            raise e
 
-    # def on_mouse_press(self, x, y, button, modifiers):
-    #     print("Mouse press!")
-    #     print(f"X: {x}, Y: {y}")
-    #     y = self.window_offset + y
-    #     print(f"with, windowoffset, X: {x}, Y: {y}")
-    #     for cell in self.cell_list:
-    #         if cell.get_quad_perimeter().point_inside(x, y):
-    #             print(f"Cell {cell.get_c_id()}, growing = {cell.growing}")
+    def run_sim(self) -> None:
+        pyglet.app.run(0)
 
 
 def main(
@@ -334,7 +335,7 @@ def main(
     vis: bool,
     cell_val_file: str = "",
     v_file: str = "",
-    gparam_series: str = "",
+    gparam_series: Series | str = "",
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
@@ -356,6 +357,6 @@ def main(
         geometry,
     )
     print("Running Simulation")
-    pyglet.app.run(0)
+    simulation.run_sim()
 
     return simulation.get_tick()

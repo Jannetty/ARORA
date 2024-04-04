@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "PythonRootDev"
-version = "0.0.0"
+version = "1.0.0"
 description = ""
 authors = ["author <author@email.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 click = "^8.1"
 arcade = "^2.6.17"
 scipy = "^1.11.0"
@@ -14,6 +14,7 @@ numpy = "^1.26.1"
 matplotlib = "^3.8.0"
 pyglet = "^2.0.10"
 pandas-stubs = "^2.1.4.231227"
+pygad = "^3.3.1"
 
 [tool.poetry.dev-dependencies]
 black = "^24.2.0"

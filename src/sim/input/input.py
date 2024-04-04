@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 import pandas
+import numpy as np
 import csv
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
@@ -37,6 +38,9 @@ class Input:
         The simulation instance to which this Input class belongs.
     """
 
+    int_params: list = ["k1", "k2", "k3", "k4"]
+    float_params: list = ["k5", "k6", "k_s", "k_d"]
+
     def __init__(self, init_vals_file: str, vertex_file: str, sim: "GrowingSim"):
         """
         Initializes the Input class by loading initial values and vertex information from CSV files.
@@ -51,6 +55,10 @@ class Input:
             The simulation instance to which this Input class belongs.
         """
         self.init_vals_input = pandas.read_csv(init_vals_file)
+        for col in self.int_params:
+            self.init_vals_input[col] = self.init_vals_input[col].astype("int")
+        for col in self.float_params:
+            self.init_vals_input[col] = self.init_vals_input[col].astype("float")
         # self.make_arr_hist_to_list()
         # self.make_vertices_to_list()
         # self.make_neighbors_to_list()
@@ -123,10 +131,16 @@ class Input:
         """
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
-                if index_s != "tau":
-                    self.init_vals_input.at[index_df, index_s] = value
-                else:
-                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * value
+                if index_s in ["k1", "k2", "k3", "k4"]:
+                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
+                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
+                    self.init_vals_input.at[index_df, index_s] = int(value)
+                if index_s in ["k5", "k6", "k_s", "k_d"]:
+                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
+                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
+                    self.init_vals_input.at[index_df, index_s] = float(value)
+                if index_s == "tau":
+                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(value)
 
     def get_init_vals(self) -> dict:
         """
@@ -169,7 +183,10 @@ class Input:
             init_vals_dict[cell_num] = row.to_dict()
             for val in init_vals_dict[cell_num]:
                 if val in ["arr_hist", "vertices"]:
-                    init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    if type(init_vals_dict[cell_num][val]) == str:
+                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    elif type(init_vals_dict[cell_num][val]) == list:
+                        init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
                 if val == "neighbors":
                     init_vals_dict[cell_num][val] = (
                         init_vals_dict[cell_num][val]

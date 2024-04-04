@@ -1,4 +1,8 @@
 import os
+import platform
+
+if platform.system() == "Linux":
+    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 import pandas
 from src.sim.input.input import Input
@@ -16,16 +20,6 @@ class TestInput(unittest.TestCase):
     """
     Tests Input Class
     """
-
-    @classmethod
-    def setUpClass(cls):
-        super(TestInput, cls).setUpClass()
-        os.environ["ARCADE_HEADLESS"] = "True"
-
-    @classmethod
-    def teadDownClass(cls):
-        del os.environ["ARCADE_HEADLESS"]
-        super(TestInput, cls).tearDownClass()
 
     def test_get_vertex(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
