@@ -224,7 +224,6 @@ class TestInput(unittest.TestCase):
             "tests/unit/test_csv/vertex.csv",
             sim,
         )
-        # expected = {"c0": ["0", "1", "2", "3"], "c1": ["1", "3", "4", "5"]}
         expected = {"c0": [0, 1, 2, 3], "c1": [1, 3, 4, 5]}
         found = input.get_vertex_assignment()
         for cell in expected:
