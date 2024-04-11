@@ -238,7 +238,6 @@ class Input:
         for cell in cell_vIDlist_mapping:
             vertex_list = []
             for vertex in cell_vIDlist_mapping[cell]:
-                # if vertex in vertices:
                 vertex_list.append(vertices[vertex])
             grouping[cell] = vertex_list
         return grouping
@@ -315,35 +314,39 @@ class Input:
         """
         Change arr_hist in init_vals from string to list after reading in.
         """
-        newlist = []
-        for val in self.init_vals_input["arr_hist"]:
-            hist = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
-            for index in range(len(hist)):
-                hist[index] = float(hist[index])
-            newlist.append(hist)
-        self.init_vals_input["arr_hist"] = newlist
+        all_cells_arr_hist_lists = []
+        for arr_hist_list in self.init_vals_input["arr_hist"]:
+            one_cell_arr_hist_list = (
+                arr_hist_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            )
+            for index, arr_val in enumerate(one_cell_arr_hist_list):
+                one_cell_arr_hist_list[index] = float(arr_val)
+            all_cells_arr_hist_lists.append(one_cell_arr_hist_list)
+        self.init_vals_input["arr_hist"] = pd.Series(all_cells_arr_hist_lists)
 
     def make_cell_vertices_to_list(self) -> None:
         """
         Change vertices in init_vals from string to list after reading in.
         """
-        newlist = []
-        for val in self.init_vals_input["vertices"]:
-            vs = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
-            for index in range(len(vs)):
-                vs[index] = int(vs[index])
-            newlist.append(vs)
-        self.init_vals_input["vertices"] = pd.Series(newlist)
+        all_cells_v_lists = []
+        for v_list in self.init_vals_input["vertices"]:
+            one_cell_v_list = v_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            for index, v in enumerate(one_cell_v_list):
+                one_cell_v_list[index] = int(v)
+            all_cells_v_lists.append(one_cell_v_list)
+        self.init_vals_input["vertices"] = pd.Series(all_cells_v_lists)
 
     def make_neighbors_to_list(self) -> None:
         """
         Change neighbors in init_vals from string to list after reading in.
         """
-        newlist = []
-        for val in self.init_vals_input["neighbors"]:
-            val = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
-            newlist.append(val)
-        self.init_vals_input["neighbors"] = pd.Series(newlist)
+        all_cells_neighbors_lists = []
+        for neighbor_list in self.init_vals_input["neighbors"]:
+            one_cell_neighbors_list = (
+                neighbor_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            )
+            all_cells_neighbors_lists.append(one_cell_neighbors_list)
+        self.init_vals_input["neighbors"] = pd.Series(all_cells_neighbors_lists)
 
     def make_param_to_int(self) -> None:
         """
