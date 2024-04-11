@@ -1,5 +1,6 @@
 import os
 import platform
+import numpy
 
 if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
@@ -223,7 +224,8 @@ class TestInput(unittest.TestCase):
             "tests/unit/test_csv/vertex.csv",
             sim,
         )
-        expected = {"c0": ["0", "1", "2", "3"], "c1": ["1", "3", "4", "5"]}
+        # expected = {"c0": ["0", "1", "2", "3"], "c1": ["1", "3", "4", "5"]}
+        expected = {"c0": [0, 1, 2, 3], "c1": [1, 3, 4, 5]}
         found = input.get_vertex_assignment()
         for cell in expected:
             for i in range(len(expected[cell])):
@@ -430,6 +432,57 @@ class TestInput(unittest.TestCase):
                         self.assertEqual(row_df[index_s], value)
                     else:
                         self.assertEqual(len(row_df["arr_hist"]), value)
+
+    def test_make_arr_hist_to_list(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        input = Input(
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
+            sim,
+        )
+        found_arr_hist = input.init_vals_input["arr_hist"]
+        for each in found_arr_hist:
+            self.assertEqual(type(each), type([]))
+            for val in each:
+                self.assertEqual(type(val), type(0.1))
+
+    def test_make_vertices_to_list(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        input = Input(
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
+            sim,
+        )
+        found_vs = input.init_vals_input["vertices"]
+        for each in found_vs:
+            self.assertEqual(type(each), type([]))
+            for val in each:
+                self.assertEqual(type(val), type(1))
+
+    def test_make_neighbors_to_list(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        input = Input(
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
+            sim,
+        )
+        found_vs = input.init_vals_input["neighbors"]
+        for each in found_vs:
+            self.assertEqual(type(each), type([]))
+            for val in each:
+                self.assertEqual(type(val), type(""))
+
+    def test_make_param_to_int(self):
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        input = Input(
+            "tests/unit/test_csv/init_vals.csv",
+            "tests/unit/test_csv/vertex.csv",
+            sim,
+        )
+        int_params = ["k1", "k2", "k3", "k4"]
+        for param in int_params:
+            for index in range(len(param)):
+                self.assertTrue(isinstance(input.init_vals_input[param][index], numpy.int64))
 
 
 def make_init_vals():

@@ -55,15 +55,10 @@ class Input:
             The simulation instance to which this Input class belongs.
         """
         self.init_vals_input = pandas.read_csv(init_vals_file)
-        for col in self.int_params:
-            self.init_vals_input[col] = self.init_vals_input[col].astype("int")
-        for col in self.float_params:
-            self.init_vals_input[col] = self.init_vals_input[col].astype("float")
-        # self.make_arr_hist_to_list()
-        # self.make_vertices_to_list()
-        # self.make_neighbors_to_list()
-        # self.make_param_to_int()
-        # self.make_param_to_float()
+        self.make_arr_hist_to_list()
+        self.make_vertices_to_list()
+        self.make_neighbors_to_list()
+        self.make_param_to_int()
         self.vertex_input = pandas.read_csv(vertex_file)
         self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
@@ -115,8 +110,8 @@ class Input:
         # update the vertex_dict to store vertcies in Vertex format
         new_vertex_dict = {}
         for v_num, vertex in vertex_dict.items():
-            x = vertex["x"].astype("float")
-            y = vertex["y"].astype("float")
+            x = float(vertex["x"])
+            y = float(vertex["y"])
             new_vertex_dict[v_num] = Vertex(x, y, int(v_num))
         return new_vertex_dict
 
@@ -176,25 +171,11 @@ class Input:
             "vertices",
             "neighbors",
         ]
-        # make changes: ser.iloc[pos]
-        # task for this week!
         for index, row in self.init_vals_input[init_vals_names].iterrows():
             cell_num = f"c{index}"
             init_vals_dict[cell_num] = row.to_dict()
             for val in init_vals_dict[cell_num]:
-                if val in ["arr_hist", "vertices"]:
-                    if type(init_vals_dict[cell_num][val]) == str:
-                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
-                    elif type(init_vals_dict[cell_num][val]) == list:
-                        init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
-                if val == "neighbors":
-                    init_vals_dict[cell_num][val] = (
-                        init_vals_dict[cell_num][val]
-                        .replace(" ", "")
-                        .replace("[", "")
-                        .replace("]", "")
-                        .split(",")
-                    )
+                init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
             init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
                 init_vals_dict[cell_num]["arr_hist"]
             )
@@ -224,9 +205,8 @@ class Input:
             A dictionary with cell indices as keys and lists of assigned vertex identifiers as values.
         """
         vertex_assign = {}
-        for index, row in self.init_vals_input[["vertices"]].iterrows():
-            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
-            vertex_assign[f"c{index}"] = row
+        for index in range(len(self.init_vals_input["vertices"])):
+            vertex_assign[f"c{index}"] = self.init_vals_input["vertices"][index]
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
@@ -239,9 +219,8 @@ class Input:
             A dictionary with cell indices as keys and lists of neighbor cell indices as values.
         """
         neighbors = {}
-        for index, row in self.init_vals_input[["neighbors"]].iterrows():
-            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
-            neighbors[f"c{index}"] = row
+        for index in range(len(self.init_vals_input["neighbors"])):
+            neighbors[f"c{index}"] = self.init_vals_input["neighbors"][index]
         return neighbors
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
@@ -344,25 +323,35 @@ class Input:
         """
         Change arr_hist in init_vals from string to list after reading in.
         """
+        newlist = []
         for val in self.init_vals_input["arr_hist"]:
-            if type(val) is str:
-                val = eval(val)
+            hist = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            for index in range(len(hist)):
+                hist[index] = float(hist[index])
+            newlist.append(hist)
+        self.init_vals_input["arr_hist"] = newlist
 
     def make_vertices_to_list(self) -> None:
         """
         Change vertices in init_vals from string to list after reading in.
         """
+        newlist = []
         for val in self.init_vals_input["vertices"]:
-            if type(val) is str:
-                val = eval(val)
+            vs = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            for index in range(len(vs)):
+                vs[index] = int(vs[index])
+            newlist.append(vs)
+        self.init_vals_input["vertices"] = newlist
 
     def make_neighbors_to_list(self) -> None:
         """
         Change neighbors in init_vals from string to list after reading in.
         """
+        newlist = []
         for val in self.init_vals_input["neighbors"]:
-            if type(val) is str:
-                val = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            val = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            newlist.append(val)
+        self.init_vals_input["neighbors"] = newlist
 
     def make_param_to_int(self) -> None:
         """
@@ -370,12 +359,5 @@ class Input:
         """
         int_params = ["k1", "k2", "k3", "k4"]
         for param in int_params:
-            self.init_vals_input[param] = self.init_vals_input[param].astype("int")
-
-    def make_param_to_float(self) -> None:
-        """
-        Change the float parameters to float type.
-        """
-        float_params = ["k5", "k6", "k_s", "k_d"]
-        for param in float_params:
-            self.init_vals_input[param] = self.init_vals_input[param].astype("float")
+            for index in range(len(param)):
+                self.init_vals_input.loc[index, param] = int(self.init_vals_input[param][index])
