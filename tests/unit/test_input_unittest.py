@@ -30,12 +30,12 @@ class TestInput(unittest.TestCase):
             sim,
         )
         expected_vertex_list = {
-            "0": [10, 30],
-            "1": [10, 33],
-            "2": [30, 30],
-            "3": [30, 33],
-            "4": [10, 36],
-            "5": [30, 36],
+            0: [10, 30],
+            1: [10, 33],
+            2: [30, 30],
+            3: [30, 33],
+            4: [10, 36],
+            5: [30, 36],
         }
         found_vertex_input = input.get_vertices_from_input_file()
         for each in found_vertex_input:

@@ -1,9 +1,11 @@
-from typing import TYPE_CHECKING
+import csv
 import pandas
 import numpy as np
-import csv
+import pandas as pd
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
+from typing import TYPE_CHECKING
+import typing
 
 if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
@@ -56,11 +58,11 @@ class Input:
         """
         self.init_vals_input = pandas.read_csv(init_vals_file)
         self.make_arr_hist_to_list()
-        self.make_vertices_to_list()
+        self.make_cell_vertices_to_list()
         self.make_neighbors_to_list()
         self.make_param_to_int()
-        self.vertex_input = pandas.read_csv(vertex_file)
-        self.initial_v_miny = min(self.vertex_input["y"])
+        self.vertex_file_input = pandas.read_csv(vertex_file)
+        self.initial_v_miny = min(self.vertex_file_input["y"])
         self.sim = sim
 
     def get_initial_v_miny(self) -> float:
@@ -94,7 +96,7 @@ class Input:
         self.update_neighbors(cell_neigbors, new_cells)
 
     # Helper functions
-    def get_vertices_from_input_file(self) -> dict[str, "Vertex"]:
+    def get_vertices_from_input_file(self) -> dict[int, "Vertex"]:
         """
         Extracts vertices from the input file and returns them as a dictionary.
 
@@ -104,16 +106,10 @@ class Input:
             A dictionary where keys are vertex identifiers (ints as strings) and values are Vertex objects.
         """
         vertex_dict = {}
-        for index, row in self.vertex_input.iterrows():
-            vertex_dict[f"{index}"] = row.to_dict()
-            # vertex_dict[index] = row.to_dict()
-        # update the vertex_dict to store vertcies in Vertex format
-        new_vertex_dict = {}
-        for v_num, vertex in vertex_dict.items():
-            x = float(vertex["x"])
-            y = float(vertex["y"])
-            new_vertex_dict[v_num] = Vertex(x, y, int(v_num))
-        return new_vertex_dict
+        for index, row in self.vertex_file_input.iterrows():
+            v_id = typing.cast(int, index)
+            vertex_dict[v_id] = Vertex(row["x"], row["y"], v_id)
+        return vertex_dict
 
     def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
         """
@@ -127,12 +123,8 @@ class Input:
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
                 if index_s in ["k1", "k2", "k3", "k4"]:
-                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
-                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = int(value)
                 if index_s in ["k5", "k6", "k_s", "k_d"]:
-                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
-                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = float(value)
                 if index_s == "tau":
                     self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(value)
@@ -223,7 +215,7 @@ class Input:
             neighbors[f"c{index}"] = self.init_vals_input["neighbors"][index]
         return neighbors
 
-    def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
+    def group_vertices(self, vertices: dict, cell_vIDlist_mapping: dict) -> dict:
         """
         Groups vertices by cell index based on vertex assignments.
 
@@ -243,11 +235,11 @@ class Input:
             A dictionary with cell indices as keys and lists of Vertex objects (four per cell) as values.
         """
         grouping = {}
-        for cell in vertex_assignment:
+        for cell in cell_vIDlist_mapping:
             vertex_list = []
-            for vertex in vertex_assignment[cell]:
-                if vertex in vertices:
-                    vertex_list.append(vertices[vertex])
+            for vertex in cell_vIDlist_mapping[cell]:
+                # if vertex in vertices:
+                vertex_list.append(vertices[vertex])
             grouping[cell] = vertex_list
         return grouping
 
@@ -264,9 +256,9 @@ class Input:
             A dictionary with int cell indices as keys and the corresponding newly created Cell objects as values.
         """
         all_vs = self.get_vertices_from_input_file()
-        vertex_assignment = self.get_vertex_assignment()
+        cell_vIDlist_mapping = self.get_vertex_assignment()
 
-        vertex_grouping = self.group_vertices(all_vs, vertex_assignment)
+        vertex_grouping = self.group_vertices(all_vs, cell_vIDlist_mapping)
         init_vals = self.get_init_vals()
 
         # generate new cells
@@ -331,7 +323,7 @@ class Input:
             newlist.append(hist)
         self.init_vals_input["arr_hist"] = newlist
 
-    def make_vertices_to_list(self) -> None:
+    def make_cell_vertices_to_list(self) -> None:
         """
         Change vertices in init_vals from string to list after reading in.
         """
@@ -341,7 +333,7 @@ class Input:
             for index in range(len(vs)):
                 vs[index] = int(vs[index])
             newlist.append(vs)
-        self.init_vals_input["vertices"] = newlist
+        self.init_vals_input["vertices"] = pd.Series(newlist)
 
     def make_neighbors_to_list(self) -> None:
         """
@@ -351,7 +343,7 @@ class Input:
         for val in self.init_vals_input["neighbors"]:
             val = val.replace(" ", "").replace("[", "").replace("]", "").split(",")
             newlist.append(val)
-        self.init_vals_input["neighbors"] = newlist
+        self.init_vals_input["neighbors"] = pd.Series(newlist)
 
     def make_param_to_int(self) -> None:
         """
