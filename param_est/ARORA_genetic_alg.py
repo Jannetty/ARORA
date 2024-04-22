@@ -9,7 +9,7 @@ import pandas as pd
 # use PyGAD to estimate the parameters
 import pygad
 from pygad import GA
-from param_est.cost_functions import correlation_coefficient, auxin_greater_in_larger_cells, auxin_peak_at_root_tip
+from param_est.cost_functions import auxin_greater_in_larger_cells, auxin_peak_at_root_tip
 from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
@@ -36,8 +36,7 @@ class ARORAGeneticAlg:
             print("Invalid solution")
             cost = np.inf
         else:
-            cost = self._run_ARORA(params, chromosome)
-        fitness = -cost
+            fitness = self._run_ARORA(params, chromosome)
         chromosome['fitness'] = fitness
         self.population.append(chromosome)
         print(f"Chromosome entry: {chromosome}")
@@ -78,22 +77,27 @@ class ARORAGeneticAlg:
         simulation.setup()
         try:
             simulation.run_sim()
-            cost = self._calculate_cost(simulation, chromosome)
             chromosome['finished'] = True
+            fitness = self._calculate_fitness(simulation, chromosome)
         except Exception as e:
             print(e)
             chromosome['exception'] = str(e)
             chromosome['finished'] = False
             tick = simulation.get_tick()
             chromosome['tick'] = tick
-            print("Cost set to infinity")
-            cost = np.inf
-        return cost
+            print("Fitness set to -infinity")
+            fitness = - np.inf
+        return fitness
     
-    def _calculate_cost(self, simulation, chromosome):
-        # calculate cost
-        cost = auxin_greater_in_larger_cells(simulation, chromosome) + auxin_peak_at_root_tip(simulation, chromosome)
-        return cost
+    def _calculate_fitness(self, simulation, chromosome):
+        # calculate fitness
+        fitness = (100 * auxin_greater_in_larger_cells(simulation, chromosome)) + auxin_peak_at_root_tip(simulation, chromosome)
+        chromosome['auxin_corr_with_cell_size'] = (100 * auxin_greater_in_larger_cells(simulation, chromosome))
+        chromosome['auxin_peak_at_root_tip'] = auxin_peak_at_root_tip(simulation, chromosome)
+        print(f"auxin_corr_with_cell_size: {chromosome['auxin_corr_with_cell_size']}")
+        print(f"Auxin peak at root tip: {chromosome['auxin_peak_at_root_tip']}")
+        print(f"Fitness: {fitness}")
+        return fitness 
 
     def make_paramspace(self):
         ks_range = np.linspace(0.001, 0.3, 100).astype(float)
@@ -104,7 +108,7 @@ class ARORAGeneticAlg:
         k4_range = np.round(np.linspace(50, 100, 100)).astype(int)
         k5_range = np.linspace(0.07, 1, 100).astype(float)#np.linspace(0.07, 20, 100).astype(float) # kal
         k6_range = np.linspace(0.2, 1, 100).astype(float)#np.linspace(0.2, 20, 100).astype(float) # kpin
-        tau_range = np.round(np.linspace(60, 7200, 100)).astype(int)
+        tau_range = np.round(np.linspace(1, 24, 24)).astype(int)
         return [ks_range, kd_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
 
     def run_genetic_alg(self):
