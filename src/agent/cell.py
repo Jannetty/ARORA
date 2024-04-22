@@ -10,16 +10,19 @@ if TYPE_CHECKING:
     from src.loc.vertex.vertex import Vertex
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
-MERISTEMATIC_GROWTH_RATE: float = -0.0179
+# MERISTEMATIC_GROWTH_RATE: float = -0.0179
+MERISTEMATIC_GROWTH_RATE: float = -1.2 # trying to divide every 5 hours
 
 # Growth rate cells in transition zone in um per um per hour from Van den Berg et al. 2018
-TRANSITION_GROWTH_RATE: float = -0.0179
+#TRANSITION_GROWTH_RATE: float = -0.0179
+TRANSITION_GROWTH_RATE: float = -1.2 # same as Meristematic
 
 # Growth rate cells in elongation zone in um per um per hour from Van den Berg et al. 2018
-ELONGATION_GROWTH_RATE: float = -0.00112
-
+#ELONGATION_GROWTH_RATE: float = -0.00112
+ELONGATION_GROWTH_RATE: float = -0.075 # same ratio as van den berg
 # Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
-DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+#DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+DIFFERENTIATION_GROWTH_RATE: float = -0.075 # same ratio as van den berg
 
 # um Y distance from tip at which cells pass from root tip to meristematic zone
 # Inferred from Van dn Berg et al. 2018

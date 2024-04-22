@@ -50,6 +50,12 @@ class Output:
                     "cell",
                     "auxin",
                     "location",
+                    "apical_memlen",
+                    "basal_memlen",
+                    "left_memlen",
+                    "right_memlen",
+                    "dev_zone",
+                    "cell_type",
                     "ARR",
                     "AUX/LAX",
                     "PIN_unlocalized",
@@ -58,6 +64,7 @@ class Output:
                     "PIN_left",
                     "PIN_right",
                     "arr_hist",
+                    "auxin_w",
                 ]
             )
 
@@ -77,6 +84,12 @@ class Output:
             summary["cell"] = cell.get_c_id()
             summary["auxin"] = cell.get_circ_mod().get_auxin()
             summary["location"] = cell.quad_perimeter.get_corners_for_disp()
+            summary["apical_memlen"] = cell.quad_perimeter.get_apical_memlen()
+            summary["basal_memlen"] = cell.quad_perimeter.get_basal_memlen()
+            summary["left_memlen"] = cell.quad_perimeter.get_left_memlen()
+            summary["right_memlen"] = cell.quad_perimeter.get_right_memlen()
+            summary["dev_zone"] = cell.get_dev_zone()
+            summary["cell_type"] = cell.get_cell_type()
             summary = self.get_circ_contents(summary, cell)
             # summary["num_divisions"] = self.get_division_number(cell)
             output.append(summary)
