@@ -113,6 +113,7 @@ class GrowingSim(Window):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
         """
+        print("---here---")
         if vis is False:
             print("Running headless")
             # for mac
@@ -127,15 +128,19 @@ class GrowingSim(Window):
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
             self.root_tip_y: float = self.input.get_initial_v_miny()
+            self.root_midpointx = self.calculate_root_midpoint_x_from_input()
+            print("---here---")
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
-        self.root_midpointx = root_midpoint_x
+        print("---here2---")
         self.geometry = geometry
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
         # self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
+        # self.calculate_root_midpoint_x_from_cell()
+        # self.calculate_root_midpoint_x_from_input()
 
     def get_root_midpointx(self) -> float:
         """
@@ -236,6 +241,8 @@ class GrowingSim(Window):
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
+        self.root_midpointx = self.calculate_root_midpoint_x_from_cell()
+        print("-----setup-------")
 
     def set_dev_zones(self) -> None:
         """
@@ -255,13 +262,32 @@ class GrowingSim(Window):
             ys.append(y)
         return min(ys)
 
-    def calculate_root_midpoint_x(self) -> float:
+    def calculate_root_midpoint_x_from_cell(self) -> float:
+        """Calculates the midpoint of the x-coordinates from the cell list."""
+        print("-----midpoint from cell start-----")
         xs = []
         if len(self.cell_list) == 0:
             return 0
         for cell in self.cell_list:
-            x = cell.get_quad_perimeter().vertex_list
-            xs.append(x)
+            vertex_list = cell.get_quad_perimeter().vertex_list
+            for vertex in vertex_list:
+                x = vertex.get_x()
+                print(x)
+                xs.append(x)
+        min_x = min(xs)
+        max_x = max(xs)
+        mid_x = (min_x + max_x) / 2
+        print("-----midpointx from sim------")
+        print(mid_x)
+        return mid_x
+    
+    def calculate_root_midpoint_x_from_input(self) -> float:
+        """Calculates the midpoint of the x-coordinates from the input vertex file."""
+        vertex_input = self.input.vertex_file_input
+        # vertex_input = pandas.read_csv(self.v_file)
+        if len(vertex_input) == 0:
+            return 0
+        xs = vertex_input["x"].tolist()
         min_x = min(xs)
         max_x = max(xs)
         mid_x = (min_x + max_x) / 2
