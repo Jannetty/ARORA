@@ -114,6 +114,7 @@ class GrowingSim(Window):
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
         """
         print("---here---")
+        self.cell_list = SpriteList(use_spatial_hash=False)
         if vis is False:
             print("Running headless")
             # for mac
@@ -237,7 +238,6 @@ class GrowingSim(Window):
         self.circulator = Circulator(self)
         self.vertex_mover = VertexMover(self)
         self.divider = Divider(self)
-        self.cell_list = SpriteList(use_spatial_hash=False)
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
@@ -264,15 +264,13 @@ class GrowingSim(Window):
 
     def calculate_root_midpoint_x_from_cell(self) -> float:
         """Calculates the midpoint of the x-coordinates from the cell list."""
-        print("-----midpoint from cell start-----")
         xs = []
         if len(self.cell_list) == 0:
             return 0
         for cell in self.cell_list:
-            vertex_list = cell.get_quad_perimeter().vertex_list
+            vertex_list = cell.get_quad_perimeter().get_vs()
             for vertex in vertex_list:
                 x = vertex.get_x()
-                print(x)
                 xs.append(x)
         min_x = min(xs)
         max_x = max(xs)

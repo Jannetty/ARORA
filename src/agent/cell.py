@@ -154,6 +154,7 @@ class Cell(Sprite):
             self.cell_type = self.calculate_cell_type()
             self.growing = cast(bool, init_vals.get("growing"))
         self.color: tuple[int, int, int, int] = self.calculate_color()
+        self.sim.add_to_cell_list(self)
 
     def calculate_cell_type(self) -> str:
         """
