@@ -88,10 +88,6 @@ class Input:
         new_cells = self.create_cells()
         cell_neigbors = self.get_neighbors(new_cells)
 
-        # add new cells to the cell_list
-        for cell in new_cells.values():
-            cell_list.append(cell)
-
         # update neighbors
         self.update_neighbors(cell_neigbors, new_cells)
 
