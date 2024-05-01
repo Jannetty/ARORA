@@ -5,21 +5,12 @@ if platform.system() == 'Linux':
 import unittest
 import numpy as np
 from unittest.mock import MagicMock, patch
-from param_est.cost_functions import auxin_peak_at_root_tip, auxin_greater_in_larger_cells 
+from PythonRootDevModel.param_est.fitness_functions import auxin_peak_at_root_tip, auxin_greater_in_larger_cells 
 
-class TestCostFunctions(unittest.TestCase):
-
-    # def test_correlation_coefficient(self):
-    #     from param_est.cost_functions import spearman_correlation_coefficient
-    #     list_x = [1, 2, 3, 4, 5]
-    #     list_y = [5, 4, 3, 2, 1]
-    #     self.assertEqual(spearman_correlation_coefficient(list_x, list_y), -1)
-    #     list_x = [1, 2, 3, 4, 5]
-    #     list_y = [1, 2, 3, 4, 5]
-    #     self.assertEqual(spearman_correlation_coefficient(list_x, list_y), 1)
+class TestFitnessFunctions(unittest.TestCase):
 
     def test_auxin_greater_in_larger_cells(self):
-        from param_est.cost_functions import auxin_greater_in_larger_cells
+        from PythonRootDevModel.param_est.fitness_functions import auxin_greater_in_larger_cells
         sim = MagicMock()
         sim.cell_list = [MagicMock() for _ in range(10)]
         sim.cell_list[0].get_dev_zone.return_value = 'meristematic'
@@ -67,7 +58,7 @@ class TestCostFunctions(unittest.TestCase):
         # TODO: Add more tests here
 
     def test_auxin_peak_at_root_tip(self):
-        from param_est.cost_functions import auxin_peak_at_root_tip
+        from PythonRootDevModel.param_est.fitness_functions import auxin_peak_at_root_tip
         sim = MagicMock()
         sim.cell_list = [MagicMock() for _ in range(10)]
         sim.cell_list[0].get_dev_zone.return_value = 'meristematic'
