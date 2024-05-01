@@ -9,7 +9,7 @@ import pandas as pd
 # use PyGAD to estimate the parameters
 import pygad
 from pygad import GA
-from param_est.cost_functions import auxin_greater_in_larger_cells, auxin_peak_at_root_tip
+from param_est.fitness_functions import auxin_greater_in_larger_cells, auxin_peak_at_root_tip
 from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
@@ -102,27 +102,27 @@ class ARORAGeneticAlg:
     def make_paramspace(self):
         ks_range = np.linspace(0.001, 0.3, 100).astype(float)
         kd_range = np.linspace(0.0001, 0.03, 100).astype(float)
-        k1_range = np.round(np.linspace(10, 160, 100)).astype(int)
-        k2_range = np.round(np.linspace(50, 100, 100)).astype(int)
-        k3_range = np.round(np.linspace(10, 75, 100)).astype(int)
-        k4_range = np.round(np.linspace(50, 100, 100)).astype(int)
-        k5_range = np.linspace(0.07, 1, 100).astype(float)#np.linspace(0.07, 20, 100).astype(float) # kal
-        k6_range = np.linspace(0.2, 1, 100).astype(float)#np.linspace(0.2, 20, 100).astype(float) # kpin
-        tau_range = np.round(np.linspace(1, 24, 24)).astype(int)
+        k1_range = np.linspace(10, 160, 151).astype(int)
+        k2_range = np.linspace(50, 100, 51).astype(int)
+        k3_range = np.linspace(10, 75, 66).astype(int)
+        k4_range = np.linspace(50, 100, 51).astype(int)
+        k5_range = np.linspace(0.07, 1, 100).astype(float)
+        k6_range = np.linspace(0.2, 1, 100).astype(float)
+        tau_range = np.linspace(1, 24, 24).astype(int)
         return [ks_range, kd_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
 
     def run_genetic_alg(self):
         genespace = self.make_paramspace()
 
-        self.ga_instance = pygad.GA(num_generations=15,
-                                    num_parents_mating=25,
+        self.ga_instance = pygad.GA(num_generations=30,
+                                    num_parents_mating=10,
                                     fitness_func=self.fitness_function,
                                     sol_per_pop=50,
                                     num_genes=len(genespace),
                                     gene_space=genespace,
-                                    mutation_percent_genes=50,
+                                    mutation_percent_genes=10,
                                     save_best_solutions=False,
-                                    parent_selection_type="sss",
+                                    parent_selection_type="rank",
                                     )
 
         self.ga_instance.run()

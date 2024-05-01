@@ -134,7 +134,7 @@ class GrowingSim(Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        self.output = Output(self, "4.22.24_faster_growth.csv")
+        #self.output = Output(self, "4.22.24_faster_growth.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -300,7 +300,7 @@ class GrowingSim(Window):
         max_tick = 24
         try:
             if self.tick < max_tick:
-                self.output.output_cells()
+                #self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
