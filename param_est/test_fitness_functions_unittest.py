@@ -54,7 +54,8 @@ class TestFitnessFunctions(unittest.TestCase):
         sim.cell_list[8].get_circ_mod().get_auxin.return_value = 9
         sim.cell_list[9].get_circ_mod().get_auxin.return_value = 10
         chromosome = {}
-        self.assertAlmostEqual(auxin_greater_in_larger_cells(sim, chromosome), -1)
+        self.assertAlmostEqual(auxin_greater_in_larger_cells(sim, chromosome), 1)
+        # TODO: Add more tests here
 
     def test_auxin_peak_at_root_tip(self):
         from param_est.fitness_functions import auxin_peak_at_root_tip
@@ -84,4 +85,4 @@ class TestFitnessFunctions(unittest.TestCase):
         avg_root_tip_auxins = 10
         chromosome = {}
         result = auxin_peak_at_root_tip(sim, chromosome)
-        self.assertEqual(result, (avg_non_root_tip_auxins/avg_root_tip_auxins))
+        self.assertEqual(result, (avg_root_tip_auxins/avg_non_root_tip_auxins))

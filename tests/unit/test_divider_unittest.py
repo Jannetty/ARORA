@@ -108,6 +108,9 @@ class TestDivider(unittest.TestCase):
         simulation = GrowingSim(
             SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
         )
+        v12 = Vertex(110, 10)
+        v13 = Vertex(110, 30)
+        simulation.vertex_list.extend([v12, v13])
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -191,6 +194,10 @@ class TestDivider(unittest.TestCase):
         v9 = Vertex(60, 10)
         v10 = Vertex(60, 20)
         v11 = Vertex(60, 30)
+        v12 = Vertex(110, 10)
+        v13 = Vertex(110, 30)
+        simulation.vertex_list.extend([v12, v13])
+
         cell = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
         m_top_neighbor = Cell(
             simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
@@ -241,6 +248,9 @@ class TestDivider(unittest.TestCase):
         v9 = Vertex(60, 10)
         v10 = Vertex(60, 20)
         v11 = Vertex(60, 30)
+        v12 = Vertex(110, 10)
+        v13 = Vertex(110, 30)
+        simulation.vertex_list.extend([v12, v13])
         cell = Cell(simulation, [v1, v2, v3, v4], self.init_vals, simulation.get_next_cell_id())
         m_top_neighbor = Cell(
             simulation, [v3, v11, v6, v10], self.init_vals, simulation.get_next_cell_id()
@@ -258,8 +268,6 @@ class TestDivider(unittest.TestCase):
         m_top_neighbor.add_neighbor(cell)
         cell.add_neighbor(m_lower_neighbor)
         m_lower_neighbor.add_neighbor(cell)
-
-        simulation.get_cell_list().append(cell)
 
         simulation.get_divider().add_cell(cell)
 

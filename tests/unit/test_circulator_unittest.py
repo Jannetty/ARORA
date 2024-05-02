@@ -58,7 +58,6 @@ class TestCirculator(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        sim.add_to_cell_list(cell)
         sim.get_circulator().add_delta(cell, delta)
         self.assertEqual(sim.get_circulator().get_delta_auxins()[cell], delta)
 
@@ -75,7 +74,6 @@ class TestCirculator(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        sim.add_to_cell_list(cell)
         sim.get_circulator().add_delta(cell, delta)
         sim.get_circulator().update()
         self.assertEqual(cell.get_circ_mod().get_auxin(), delta + make_init_vals()["auxin"])

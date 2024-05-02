@@ -46,6 +46,8 @@ class GrowingSim(Window):
         The x-coordinate of the midpoint of the root, used for positioning.
     cell_list : SpriteList
         A list of cells currently present in the simulation.
+    vertex_list : list
+        A list of vertices currently present in the simulation.
     vis : bool
         Indicates whether the simulation should be visualized.
     next_cell_id : int
@@ -90,6 +92,7 @@ class GrowingSim(Window):
     divider: "Divider"
     root_midpointx: float
     cell_list: SpriteList
+    vertex_list: list
     vis: bool
     next_cell_id: int
     root_tip_y: float = 0
@@ -113,8 +116,8 @@ class GrowingSim(Window):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
         """
-        print("---here---")
         self.cell_list = SpriteList(use_spatial_hash=False)
+        self.vertex_list = []
         if vis is False:
             print("Running headless")
             # for mac
@@ -130,10 +133,8 @@ class GrowingSim(Window):
             self.input_from_file = True
             self.root_tip_y: float = self.input.get_initial_v_miny()
             self.root_midpointx = self.calculate_root_midpoint_x_from_input()
-            print("---here---")
         if isinstance(gparam_series, pandas.core.series.Series):
             self.input.replace_default_to_gparam(gparam_series)
-        print("---here2---")
         self.geometry = geometry
         self.timestep = timestep
         self.vis = vis
@@ -217,6 +218,11 @@ class GrowingSim(Window):
     def add_to_cell_list(self, cell: "Cell") -> None:
         """Adds a cell to the cell_list."""
         self.cell_list.append(cell)
+        new_vs = cell.get_quad_perimeter().get_vs()
+        self.vertex_list.extend(new_vs)
+        self.root_midpointx = self.calculate_root_midpoint_x_from_vertex_list()
+        cell.get_circ_mod().update_left_right()
+
 
     def remove_from_cell_list(self, cell: "Cell") -> None:
         """Removes a cell from the cell_list."""
@@ -241,8 +247,7 @@ class GrowingSim(Window):
         if self.input_from_file:
             self.input.make_cells_from_input_files()
         self.root_tip_y = self.calculate_root_tip_y()
-        self.root_midpointx = self.calculate_root_midpoint_x_from_cell()
-        print("-----setup-------")
+        self.root_midpointx = self.calculate_root_midpoint_x_from_vertex_list()
 
     def set_dev_zones(self) -> None:
         """
@@ -262,21 +267,17 @@ class GrowingSim(Window):
             ys.append(y)
         return min(ys)
 
-    def calculate_root_midpoint_x_from_cell(self) -> float:
-        """Calculates the midpoint of the x-coordinates from the cell list."""
+    def calculate_root_midpoint_x_from_vertex_list(self) -> float:
+        """Calculates the midpoint of the x-coordinates from the vertex list."""
         xs = []
-        if len(self.cell_list) == 0:
+        if len(self.vertex_list) == 0:
             return 0
-        for cell in self.cell_list:
-            vertex_list = cell.get_quad_perimeter().get_vs()
-            for vertex in vertex_list:
-                x = vertex.get_x()
-                xs.append(x)
+        for vertex in self.vertex_list:
+            x = vertex.get_x()
+            xs.append(x)
         min_x = min(xs)
         max_x = max(xs)
         mid_x = (min_x + max_x) / 2
-        print("-----midpointx from sim------")
-        print(mid_x)
         return mid_x
     
     def calculate_root_midpoint_x_from_input(self) -> float:

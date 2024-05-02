@@ -739,7 +739,6 @@ class Cell(Sprite):
             return ELONGATION_GROWTH_RATE
         if self.dev_zone == "differentiation":
             return DIFFERENTIATION_GROWTH_RATE
-        print(f"Cell {self.c_id} distance to root tip = {self.get_distance_from_tip()}")
         raise ValueError("Cell has no recognizable dev zone")
 
     def calculate_delta(self) -> float:
