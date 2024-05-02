@@ -9,7 +9,7 @@ import pandas as pd
 # use PyGAD to estimate the parameters
 import pygad
 from pygad import GA
-from param_est.cost_functions import correlation_coefficient, auxin_greater_in_larger_cells, auxin_peak_at_root_tip
+from param_est.fitness_functions import auxin_greater_in_larger_cells, auxin_peak_at_root_tip
 from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000

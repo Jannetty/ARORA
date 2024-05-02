@@ -115,7 +115,7 @@ class TestOutput(unittest.TestCase):
             "PIN_basal": 0.7,
             "PIN_left": 0.4,
             "PIN_right": 0.2,
-            "arr_hist": '[0.1, 0.2, 0.3]',
+            "arr_hist": [0.1, 0.2, 0.3],
             "auxin_w": 1,
         }
         found = output.get_circ_contents(summary, cell0)

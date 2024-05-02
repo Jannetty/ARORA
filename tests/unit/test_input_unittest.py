@@ -389,8 +389,6 @@ class TestInput(unittest.TestCase):
         expected_cell0 = Cell(sim2, [v0, v1, v2, v3], make_init_vals(), 0)
         expected_cell1 = Cell(sim2, [v1, v3, v4, v5], make_init_vals(), 1)
         expected_cell_list = sim2.get_cell_list()
-        expected_cell_list.append(expected_cell0)
-        expected_cell_list.append(expected_cell1)
         for i in range(len(expected_cell_list)):
             self.assertEqual(expected_cell_list[i].get_c_id(), found_cell_list[i].get_c_id())
             self.assertEqual(

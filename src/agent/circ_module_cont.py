@@ -181,14 +181,22 @@ class BaseCirculateModuleCont:
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
         # to self.cell.sim.root_midpointx
+
+        self.pin_weights = self.initialize_pin_weights()
+
+    def update_left_right(self) -> None:
+        """
+        Update the left and right attributes of the current cell.
+
+        This method updates the left and right attributes of the current cell based on the
+        current midpoint of the cell's perimeter relative to the root midpoint.
+        """
         self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
             self.cell.get_sim().get_root_midpointx()
         )
         self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(
             self.cell.get_sim().get_root_midpointx()
         )
-
-        self.pin_weights = self.initialize_pin_weights()
 
     def initialize_pin_weights(self) -> dict[str, float]:
         """
@@ -293,6 +301,8 @@ class BaseCirculateModuleCont:
 
         Ensures that the sum of PIN weights is 1.0 before proceeding with the updates.
         """
+
+
         # Retrieve current PIN weights
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
@@ -414,6 +424,7 @@ class BaseCirculateModuleCont:
             The calculated PIN expression on the membrane, taking into account
             localization and degradation.
         """
+        self.update_left_right()
         weight = pin_weight
         memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
         membrane_pin = pin_weight * pini - (self.kd * pindi)
@@ -768,6 +779,7 @@ class BaseCirculateModuleCont:
         float
             The PIN localized in the left direction.
         """
+        self.update_left_right()
         if self.left == "medial":
             return self.pinm
         return self.pinl
@@ -781,6 +793,7 @@ class BaseCirculateModuleCont:
         float
             The PIN localized in the right direction.
         """
+        self.update_left_right()
         if self.right == "medial":
             return self.pinm
         return self.pinl

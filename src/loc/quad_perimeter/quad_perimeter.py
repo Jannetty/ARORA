@@ -397,8 +397,6 @@ class QuadPerimeter:
             The first tuple element is the left direction, the second is the right direction.
         """
         cell_mid = self.get_midpointx()
-        print("------midpointx---------")
-        print(cell_mid)
         if cell_mid < root_mid:
             return ("lateral", "medial")
         if cell_mid == root_mid:
