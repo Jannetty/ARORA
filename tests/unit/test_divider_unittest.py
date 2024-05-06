@@ -36,9 +36,8 @@ class TestDivider(unittest.TestCase):
 
     def test_get_new_vs(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -51,9 +50,8 @@ class TestDivider(unittest.TestCase):
 
     def test_check_neighbors_for_v_existence(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -75,9 +73,8 @@ class TestDivider(unittest.TestCase):
 
     def test_swap_neighbors(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -104,9 +101,8 @@ class TestDivider(unittest.TestCase):
 
     def test_set_one_side_neighbors(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v12 = Vertex(110, 10)
         v13 = Vertex(110, 30)
@@ -179,9 +175,8 @@ class TestDivider(unittest.TestCase):
 
     def test_update_neighbor_lists(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -233,9 +228,8 @@ class TestDivider(unittest.TestCase):
 
     def test_update(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)

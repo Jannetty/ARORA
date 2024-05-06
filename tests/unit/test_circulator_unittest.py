@@ -46,7 +46,7 @@ class TestCirculator(unittest.TestCase):
     """
 
     def test_add_delta(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         cell = Cell(
             sim,
             [
@@ -62,7 +62,7 @@ class TestCirculator(unittest.TestCase):
         self.assertEqual(sim.get_circulator().get_delta_auxins()[cell], delta)
 
     def test_update(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         cell = Cell(
             sim,
             [

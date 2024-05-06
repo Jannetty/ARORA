@@ -114,9 +114,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_right_neighbor(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -133,9 +132,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_left_neighbor(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -152,9 +150,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -171,9 +168,8 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
         timestep = 1
-        root_midpoint_x = 100
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)

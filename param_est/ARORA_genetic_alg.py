@@ -54,7 +54,6 @@ class ARORAGeneticAlg:
     
     def _run_ARORA(self, params, chromosome):
         timestep = 1
-        root_midpoint_x = 71
         vis = False
         cell_val_file = "src/sim/input/default_init_vals.csv"
         v_file = "src/sim/input/default_vs.csv"
@@ -65,7 +64,6 @@ class ARORAGeneticAlg:
                                 SCREEN_HEIGHT,
                                 SCREEN_TITLE,
                                 timestep,
-                                root_midpoint_x,
                                 vis,
                                 cell_val_file,
                                 v_file,

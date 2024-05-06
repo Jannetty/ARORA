@@ -37,9 +37,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_add_cell_delta_val(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -52,9 +51,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_add_cell_b_vertices_to_vertex_deltas(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -68,9 +66,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_propogate_deltas(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -108,9 +105,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_execute_vertex_movement(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -147,9 +143,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_get_top_row(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis=False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, vis=False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -194,9 +189,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_update(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis=False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, vis=False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -241,9 +235,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_sort_top_row(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -283,9 +276,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_update_onecol(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v50 = Vertex(50, 10)
         simulation.vertex_list.append(v50)
@@ -322,9 +314,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_update_threecol(self):
         timestep = 1
-        root_midpoint_x = 40
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, vis=False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, vis=False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -392,9 +383,8 @@ class TestVertexMover(unittest.TestCase):
 
     def test_check_if_divide(self):
         timestep = 1
-        root_midpoint_x = 1000
         simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, root_midpoint_x, False
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
         )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
