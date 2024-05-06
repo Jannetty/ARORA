@@ -23,7 +23,7 @@ class TestInput(unittest.TestCase):
     """
 
     def test_get_vertex(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -43,7 +43,7 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected_vertex_list[each], found_vertex_list)
 
     def test_get_init_vals(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -105,7 +105,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][val], found[cell][val])
 
     def test_set_arr_hist(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -218,7 +218,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][val], found[cell][val])
 
     def test_get_vertex_assignment(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -231,7 +231,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][i], found[cell][i])
 
     def test_get_neighbors_assignment(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -244,7 +244,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][i], found[cell][i])
 
     def test_group_vertices(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -263,7 +263,7 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected_vertex_cell1[i], found["c1"][i].get_xy())
 
     def test_create_cells(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -308,7 +308,7 @@ class TestInput(unittest.TestCase):
         self.assertTrue(isinstance(found_cell1.get_circ_mod(), BaseCirculateModuleCont))
 
     def test_get_neighbors(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -340,7 +340,7 @@ class TestInput(unittest.TestCase):
             )
 
     def test_update_neighbors(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -371,8 +371,8 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected.get_c_id(), found.get_c_id())
 
     def test_input(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
-        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -410,7 +410,6 @@ class TestInput(unittest.TestCase):
                 SCREEN_HEIGHT,
                 SCREEN_TITLE,
                 1,
-                400,
                 False,
                 cell_val_file="tests/unit/test_csv/init_vals.csv",
                 v_file="tests/unit/test_csv/vertex.csv",
@@ -431,7 +430,7 @@ class TestInput(unittest.TestCase):
                         self.assertEqual(len(row_df["arr_hist"]), value)
 
     def test_make_arr_hist_to_list(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -444,7 +443,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(type(val), type(0.1))
 
     def test_make_vertices_to_list(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -457,7 +456,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(type(val), type(1))
 
     def test_make_neighbors_to_list(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",
@@ -470,7 +469,7 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(type(val), type(""))
 
     def test_make_param_to_int(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
             "tests/unit/test_csv/init_vals.csv",
             "tests/unit/test_csv/vertex.csv",

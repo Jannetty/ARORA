@@ -71,8 +71,6 @@ class GrowingSim(Window):
         The title of the simulation window.
     timestep : int
         The timestep size for the simulation, in seconds.
-    root_midpoint_x : float
-        The x-coordinate of the midpoint of the root.
     vis : bool
         Flag to indicate whether the simulation should be visualized.
     cell_val_file : str, optional
@@ -106,7 +104,6 @@ class GrowingSim(Window):
         height: int,
         title: str,
         timestep: int,
-        root_midpoint_x: float,
         vis: bool,
         cell_val_file: str = "",
         v_file: str = "",
@@ -141,8 +138,6 @@ class GrowingSim(Window):
         self.cmap = plt.get_cmap("coolwarm")
         # self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
-        # self.calculate_root_midpoint_x_from_cell()
-        # self.calculate_root_midpoint_x_from_input()
 
     def get_root_midpointx(self) -> float:
         """
@@ -283,7 +278,6 @@ class GrowingSim(Window):
     def calculate_root_midpoint_x_from_input(self) -> float:
         """Calculates the midpoint of the x-coordinates from the input vertex file."""
         vertex_input = self.input.vertex_file_input
-        # vertex_input = pandas.read_csv(self.v_file)
         if len(vertex_input) == 0:
             return 0
         xs = vertex_input["x"].tolist()
@@ -356,7 +350,6 @@ class GrowingSim(Window):
 
 def main(
     timestep: int,
-    root_midpoint_x: float,
     vis: bool,
     cell_val_file: str = "",
     v_file: str = "",
@@ -374,7 +367,6 @@ def main(
         SCREEN_HEIGHT,
         SCREEN_TITLE,
         timestep,
-        root_midpoint_x,
         vis,
         cell_val_file,
         v_file,
