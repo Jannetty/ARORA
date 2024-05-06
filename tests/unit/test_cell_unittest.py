@@ -36,9 +36,7 @@ class TestCell(unittest.TestCase):
 
     def test_get_area(self):
         timestep = 1
-        simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
-        )
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -48,9 +46,7 @@ class TestCell(unittest.TestCase):
 
     def test_add_neighbor(self):
         timestep = 1
-        simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
-        )
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
         init_id = simulation.get_next_cell_id()
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
@@ -95,9 +91,7 @@ class TestCell(unittest.TestCase):
 
     def test_remove_neighbor(self):
         timestep = 1
-        simulation = GrowingSim(
-            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False
-        )
+        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
