@@ -10,7 +10,7 @@ from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
 
 
-#CELL_LIST = sim.get_cell_list()
+# CELL_LIST = sim.get_cell_list()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"

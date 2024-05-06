@@ -302,7 +302,6 @@ class BaseCirculateModuleCont:
         Ensures that the sum of PIN weights is 1.0 before proceeding with the updates.
         """
 
-
         # Retrieve current PIN weights
         self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"

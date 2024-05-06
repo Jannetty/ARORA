@@ -218,7 +218,6 @@ class GrowingSim(Window):
         self.root_midpointx = self.calculate_root_midpoint_x_from_vertex_list()
         cell.get_circ_mod().update_left_right()
 
-
     def remove_from_cell_list(self, cell: "Cell") -> None:
         """Removes a cell from the cell_list."""
         if cell not in self.cell_list:
@@ -274,7 +273,7 @@ class GrowingSim(Window):
         max_x = max(xs)
         mid_x = (min_x + max_x) / 2
         return mid_x
-    
+
     def calculate_root_midpoint_x_from_input(self) -> float:
         """Calculates the midpoint of the x-coordinates from the input vertex file."""
         vertex_input = self.input.vertex_file_input
