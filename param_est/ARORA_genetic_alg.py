@@ -9,7 +9,7 @@ import pandas as pd
 # use PyGAD to estimate the parameters
 import pygad
 from pygad import GA
-from param_est.cost_functions import correlation_coefficient, auxin_greater_in_larger_cells, auxin_peak_at_root_tip
+from param_est.fitness_functions import auxin_greater_in_larger_cells, auxin_peak_at_root_tip
 from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
@@ -54,7 +54,6 @@ class ARORAGeneticAlg:
     
     def _run_ARORA(self, params, chromosome):
         timestep = 1
-        root_midpoint_x = 71
         vis = False
         cell_val_file = "src/sim/input/default_init_vals.csv"
         v_file = "src/sim/input/default_vs.csv"
@@ -65,7 +64,6 @@ class ARORAGeneticAlg:
                                 SCREEN_HEIGHT,
                                 SCREEN_TITLE,
                                 timestep,
-                                root_midpoint_x,
                                 vis,
                                 cell_val_file,
                                 v_file,

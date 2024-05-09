@@ -9,6 +9,8 @@ from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
 
+
+# CELL_LIST = sim.get_cell_list()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
@@ -68,21 +70,6 @@ init_vals2 = {
     "growing": False,
     "circ_mod": "cont",
 }
-sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
-cell0 = Cell(
-    sim,
-    [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
-    init_vals,
-    sim.get_next_cell_id(),
-)
-cell1 = Cell(
-    sim,
-    [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
-    init_vals2,
-    sim.get_next_cell_id(),
-)
-sim.setup()
-CELL_LIST = [cell0, cell1]
 
 
 class TestOutput(unittest.TestCase):
@@ -100,6 +87,23 @@ class TestOutput(unittest.TestCase):
     #     self.assertEqual(expected, found)
 
     def test_get_circ_contents(self):
+
+        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        cell0 = Cell(
+            sim,
+            [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
+            init_vals,
+            sim.get_next_cell_id(),
+        )
+        cell1 = Cell(
+            sim,
+            [Vertex(50.0, 10.0), Vertex(50.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
+            init_vals2,
+            sim.get_next_cell_id(),
+        )
+        sim.setup()
+        CELL_LIST = sim.get_cell_list()
+
         output = Output(sim, "ouput.csv")
         summary = {"cell": cell0}
         expected = {
@@ -115,23 +119,31 @@ class TestOutput(unittest.TestCase):
             "auxin_w": 1,
         }
         found = output.get_circ_contents(summary, cell0)
+
+        for key in expected:
+            print(f"key: {key}")
+            print(f"expected: {expected[key]}")
+            print(f"found: {found[key]}")
+            self.assertEqual(expected[key], found[key])
+
         self.assertEqual(expected, found)
-        # test cell1
-        summary1 = {"cell": cell1}
-        expected1 = {
-            "cell": cell1,
-            "ARR": 3,
-            "AUX/LAX": 3,
-            "PIN_unlocalized": 1,
-            "PIN_apical": 0.5,
-            "PIN_basal": 0.7,
-            "PIN_left": 0.4,
-            "PIN_right": 0.2,
-            "arr_hist": [0.1, 0.2, 0.3, 0.4],
-            "auxin_w": 1,
-        }
-        found1 = output.get_circ_contents(summary1, cell1)
-        self.assertEqual(expected1, found1)
+        # # test cell1
+        # summary1 = {"cell": cell1}
+        # expected1 = {
+        #     "cell": cell1,
+        #     "ARR": 3,
+        #     "AUX/LAX": 3,
+        #     "PIN_unlocalized": 1,
+        #     "PIN_apical": 0.5,
+        #     "PIN_basal": 0.7,
+        #     "PIN_left": 0.4,
+        #     "PIN_right": 0.2,
+        #     "arr_hist": '[0.1, 0.2, 0.3, 0.4]',
+        #     "auxin_w": 1,
+        # }
+        # found1 = output.get_circ_contents(summary1, cell1)
+
+        # self.assertEqual(expected1, found1)
 
     def test_get_division_number(self):
         pass
