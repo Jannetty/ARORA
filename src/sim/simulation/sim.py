@@ -299,10 +299,10 @@ class GrowingSim(Window):
         Updates the position of the viewport.
         """
         self.set_viewport(
-            0,
-            SCREEN_WIDTH,
-            self.root_tip_y - 2,
-            SCREEN_HEIGHT + self.root_tip_y - 2,
+            -800,
+            SCREEN_WIDTH - 70,
+            self.root_tip_y - 350,
+            SCREEN_HEIGHT + self.root_tip_y + 120,
         )
         self.window_offset = self.root_tip_y - 2
 
@@ -373,6 +373,7 @@ def main(
         geometry,
     )
     print("Running Simulation")
+    simulation.update_viewport_position()
     simulation.run_sim()
 
     return simulation.get_tick()
