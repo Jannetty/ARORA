@@ -15,8 +15,8 @@ from src.sim.mover.vertex_mover import VertexMover
 from src.sim.input.input import Input
 from src.sim.output.output import Output
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 800
 SCREEN_TITLE = "ARORA"
 
 if TYPE_CHECKING:
@@ -299,12 +299,11 @@ class GrowingSim(Window):
         Updates the position of the viewport.
         """
         self.set_viewport(
-            -800,
-            SCREEN_WIDTH - 70,
-            self.root_tip_y - 350,
-            SCREEN_HEIGHT + self.root_tip_y + 120,
+            self.root_midpointx - SCREEN_WIDTH / 2,
+            self.root_midpointx + SCREEN_WIDTH / 2,
+            self.root_tip_y - SCREEN_HEIGHT/8,
+            self.root_tip_y - SCREEN_HEIGHT/3 + SCREEN_HEIGHT,
         )
-        self.window_offset = self.root_tip_y - 2
 
     def on_update(self, delta_time: float) -> None:
         """
