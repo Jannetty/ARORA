@@ -301,8 +301,8 @@ class GrowingSim(Window):
         self.set_viewport(
             self.root_midpointx - SCREEN_WIDTH / 2,
             self.root_midpointx + SCREEN_WIDTH / 2,
-            self.root_tip_y - SCREEN_HEIGHT/8,
-            self.root_tip_y - SCREEN_HEIGHT/3 + SCREEN_HEIGHT,
+            self.root_tip_y - SCREEN_HEIGHT / 8,
+            self.root_tip_y - SCREEN_HEIGHT / 3 + SCREEN_HEIGHT,
         )
 
     def on_update(self, delta_time: float) -> None:
