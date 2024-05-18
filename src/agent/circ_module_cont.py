@@ -257,16 +257,22 @@ class BaseCirculateModuleCont:
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
-    def solve_equations(self) -> np.ndarray:
+    def solve_equations(self, time_step: float = 0.001, duration: float = 1.0) -> np.ndarray:
         """
-        Solve the model's differential equations over a given time span.
+        Solve the model's differential equations over a given time span with a specified time step.
+
+        Parameters
+        ----------
+        time_step : float
+            The time step for the ODE solver. Default is 0.1 hours.
+        duration : float
+            The total duration for the simulation. Default is 1.0 hours.
 
         Returns
         -------
         ndarray
-            An array containing the solution of the differential equations at each
-            time step. Each row corresponds to a time step, and each column corresponds
-            to one of the model variables.
+            An array containing the solution of the differential equations at each time step.
+            Each row corresponds to a time step, and each column corresponds to one of the model variables.
         """
         y0 = [
             self.auxin,
@@ -278,7 +284,7 @@ class BaseCirculateModuleCont:
             self.pinl,
             self.pinm,
         ]
-        t = np.array([0, 1])
+        t = np.linspace(0, duration, int(duration / time_step) + 1)
         soln = odeint(self.f, y0, t)
         return soln
 
