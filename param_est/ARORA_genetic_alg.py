@@ -6,7 +6,6 @@ if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
 import numpy as np
 import pandas as pd
-# use PyGAD to estimate the parameters
 import pygad
 from pygad import GA
 from param_est.fitness_functions import auxin_greater_in_larger_cells, auxin_peak_at_root_tip
@@ -113,17 +112,32 @@ class ARORAGeneticAlg:
 
     def run_genetic_alg(self):
         genespace = self.make_paramspace()
-
-        self.ga_instance = pygad.GA(num_generations=30,
-                                    num_parents_mating=10,
-                                    fitness_func=self.fitness_function,
-                                    sol_per_pop=50,
-                                    num_genes=len(genespace),
-                                    gene_space=genespace,
-                                    mutation_percent_genes=10,
-                                    save_best_solutions=False,
-                                    parent_selection_type="rank",
-                                    )
+        ga_parameters = {
+            "num_generations": 10,
+            "num_parents_mating": 10,
+            "fitness_func": self.fitness_function,
+            "sol_per_pop": 25,
+            "num_genes": len(genespace),
+            "gene_space": genespace,
+            "mutation_percent_genes": 5,
+            "save_best_solutions": False,
+            "parent_selection_type": "sss",
+        }
+        ga_parameters_for_saving = {
+            "num_generations": 10,
+            "num_parents_mating": 10,
+            "fitness_func": 'magnitude auxin corr with cell size (all cells) + auxin peak at root tip',
+            "sol_per_pop": 25,
+            "num_genes": len(genespace),
+            "gene_space": 'ks .001 to .3, kd .0001 to .03, k1 10 to 160, k2 50 to 100, k3 10 to 75, k4 50 to 100, k5 .07 to 1, k6 .2 to 1, tau 1 to 24',
+            "mutation_percent_genes": 5,
+            "save_best_solutions": False,
+            "parent_selection_type": "sss",
+        }
+        with open(self.filename, 'w') as f:
+            json.dump({'GA_parameters': ga_parameters_for_saving}, f, indent=4)
+        # Initialize the GA with the parameters
+        self.ga_instance = pygad.GA(**ga_parameters)
 
         self.ga_instance.run()
 

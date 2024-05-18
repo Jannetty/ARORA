@@ -5,7 +5,7 @@ if platform.system() == 'Linux':
 import unittest
 import numpy as np
 from unittest.mock import MagicMock, patch
-from PythonRootDevModel.param_est.fitness_functions import auxin_peak_at_root_tip, auxin_greater_in_larger_cells 
+from param_est.fitness_functions import auxin_peak_at_root_tip, auxin_greater_in_larger_cells 
 
 class TestFitnessFunctions(unittest.TestCase):
 
