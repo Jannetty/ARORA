@@ -60,3 +60,31 @@ def auxin_greater_in_larger_cells(sim: GrowingSim, chromosome: dict) -> float:
         chromosome["notes"] = f"Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Fitness set to {abs(corr_coeff)}."
         return abs(corr_coeff) #we want there to be a strong correlation, we don't really care in what direction
     return abs(corr_coeff)
+
+def auxin_oscillation_across_XPP_cells_in_OZ(sim: GrowingSim, chromosome: dict) -> float:
+    """
+    Performs a fourier transform on the auxin concentrations of the XPP cells in the oscillation zone.
+    Filters out high frequency noise and returns highest frequency peak.
+
+    Parameters
+    ----------
+    sim : GrowingSim
+        The simulation object containing the cells.
+    chromosome: Dict
+        The dictionary being populated with information about this simulation's run
+
+    Returns
+    -------
+    float
+        The highest frequency peak in the auxin concentration of the XPP cells in the oscillation zone.
+    """
+    # Get auxin concentrations of XPP cells in the oscillation zone
+    xpp_cells_in_oz = [cell for cell in sim.cell_list if cell.get_dev_zone() in ["meristematic", "transition", "elongation"] and cell.get_cell_type() == 'xpp']
+    auxins = [cell.get_circ_mod().get_auxin() for cell in xpp_cells_in_oz]
+    # Perform fourier transform
+    fourier = np.fft.fft(auxins)
+    freqs = np.fft.fftfreq(len(auxins))
+    # Filter out high frequency noise
+    fourier[freqs > 0.1] = 0
+    # Return highest frequency peak
+    return max(fourier) # maximizing this

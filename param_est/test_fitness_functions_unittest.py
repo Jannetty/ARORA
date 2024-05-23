@@ -86,3 +86,38 @@ class TestFitnessFunctions(unittest.TestCase):
         chromosome = {}
         result = auxin_peak_at_root_tip(sim, chromosome)
         self.assertEqual(result, (avg_non_root_tip_auxins/avg_root_tip_auxins))
+
+    # def test_auxin_oscillation_across_XPP_cells_in_Oz(self):
+    #     from PythonRootDevModel.param_est.fitness_functions import auxin_oscillation_across_XPP_cells_in_OZ
+    #     sim = MagicMock()
+    #     sim.cell_list = [MagicMock() for _ in range(10)]
+    #     sim.cell_list[0].get_dev_zone.return_value = 'meristematic'
+    #     sim.cell_list[1].get_dev_zone.return_value = 'transition'
+    #     sim.cell_list[2].get_dev_zone.return_value = 'meristematic'
+    #     sim.cell_list[3].get_dev_zone.return_value = 'transition'
+    #     sim.cell_list[4].get_dev_zone.return_value = 'meristematic'
+    #     sim.cell_list[5].get_dev_zone.return_value = 'transition'
+    #     sim.cell_list[6].get_dev_zone.return_value = 'meristematic'
+    #     sim.cell_list[7].get_dev_zone.return_value = 'transition'
+    #     sim.cell_list[8].get_dev_zone.return_value = 'meristematic'
+    #     sim.cell_list[9].get_dev_zone.return_value = 'transition'
+    #     sim.cell_list[0].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[1].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[2].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[3].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[4].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[5].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[6].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[7].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[8].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[9].get_cell_type.return_value = 'peri'
+    #     sim.cell_list[0].get_quad_perimeter().get_area.return_value = 1
+    #     sim.cell_list[1].get_quad_perimeter().get_area.return_value = 2
+    #     sim.cell_list[2].get_quad_perimeter().get_area.return_value = 3
+    #     sim.cell_list[3].get_quad_perimeter().get_area.return_value = 4
+    #     sim.cell_list[4].get_quad_perimeter().get_area.return_value = 5
+    #     sim.cell_list[5].get_quad_perimeter().get_area.return_value = 6
+        
+
+    #def test_auxin_oscillation_across_XPP_cells_in_Oz(self):
+         
