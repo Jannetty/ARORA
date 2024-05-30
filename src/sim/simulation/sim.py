@@ -15,8 +15,8 @@ from src.sim.mover.vertex_mover import VertexMover
 from src.sim.input.input import Input
 from src.sim.output.output import Output
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 800
 SCREEN_TITLE = "ARORA"
 
 if TYPE_CHECKING:
@@ -134,7 +134,7 @@ class GrowingSim(Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        # self.output = Output(self, "4.22.24_faster_growth.csv")
+        self.output = Output(self, "2024-05-23_output_to_test_fourier.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -283,10 +283,10 @@ class GrowingSim(Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            self.root_tip_y - 2,
-            SCREEN_HEIGHT + self.root_tip_y - 2,
+            self.root_tip_y -100,
+            SCREEN_HEIGHT + self.root_tip_y -100,
         )
-        self.window_offset = self.root_tip_y - 2
+        self.window_offset = self.root_tip_y -100
 
     def on_update(self, delta_time: float) -> None:
         """
@@ -297,10 +297,10 @@ class GrowingSim(Window):
         """
         print("----")
         self.tick += 1
-        max_tick = 24
+        max_tick = (24 * 8)
         try:
             if self.tick < max_tick:
-                # self.output.output_cells()
+                self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
