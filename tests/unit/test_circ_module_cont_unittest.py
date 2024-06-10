@@ -28,6 +28,9 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     Tests BaseCirculateModuleCont Class
     """
 
+    DURATION = 1.0
+    TIME_STEP = 0.001
+
     def test_calculate_cont_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = Cell(
@@ -52,7 +55,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             init_vals["pinl"],
             init_vals["pinm"],
         ]
-        t = np.array([0, 1])
+        t = np.linspace(0, self.DURATION, int(self.DURATION / self.TIME_STEP) + 1)
         expected_soln = odeint(f, y0, t)
         expected_auxin = expected_soln[1][0]
         found_soln = cell.get_circ_mod().solve_equations()
@@ -281,11 +284,10 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pinl,
             circ_module_cont.pinm,
         ]
-        t = np.array([0, 1])
+        t = np.linspace(0, self.DURATION, int(self.DURATION / self.TIME_STEP) + 1)
         expected_soln = odeint(f, y0, t)
         found_soln = circ_module_cont.solve_equations()
         for i in range(8):
-            print("expected: ", expected_soln[1, i], "found: ", found_soln[1, i])
             self.assertAlmostEqual(expected_soln[1, i], found_soln[1, i], places=3)
 
     def test_update_arr_hist(self):

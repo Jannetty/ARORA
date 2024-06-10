@@ -264,7 +264,7 @@ class BaseCirculateModuleCont:
         Parameters
         ----------
         time_step : float
-            The time step for the ODE solver. Default is 0.1 hours.
+            The time step for the ODE solver. Default is 0.001 hours.
         duration : float
             The total duration for the simulation. Default is 1.0 hours.
 
