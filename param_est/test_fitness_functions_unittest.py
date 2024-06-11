@@ -10,7 +10,7 @@ from param_est.fitness_functions import auxin_peak_at_root_tip, auxin_greater_in
 class TestFitnessFunctions(unittest.TestCase):
 
     def test_auxin_greater_in_larger_cells(self):
-        from PythonRootDevModel.param_est.fitness_functions import auxin_greater_in_larger_cells
+        from param_est.fitness_functions import auxin_greater_in_larger_cells
         sim = MagicMock()
         sim.cell_list = [MagicMock() for _ in range(10)]
         sim.cell_list[0].get_dev_zone.return_value = 'meristematic'
@@ -54,11 +54,11 @@ class TestFitnessFunctions(unittest.TestCase):
         sim.cell_list[8].get_circ_mod().get_auxin.return_value = 9
         sim.cell_list[9].get_circ_mod().get_auxin.return_value = 10
         chromosome = {}
-        self.assertAlmostEqual(auxin_greater_in_larger_cells(sim, chromosome), -1)
+        self.assertAlmostEqual(auxin_greater_in_larger_cells(sim, chromosome), 1)
         # TODO: Add more tests here
 
     def test_auxin_peak_at_root_tip(self):
-        from PythonRootDevModel.param_est.fitness_functions import auxin_peak_at_root_tip
+        from param_est.fitness_functions import auxin_peak_at_root_tip
         sim = MagicMock()
         sim.cell_list = [MagicMock() for _ in range(10)]
         sim.cell_list[0].get_dev_zone.return_value = 'meristematic'
@@ -85,7 +85,7 @@ class TestFitnessFunctions(unittest.TestCase):
         avg_root_tip_auxins = 10
         chromosome = {}
         result = auxin_peak_at_root_tip(sim, chromosome)
-        self.assertEqual(result, (avg_non_root_tip_auxins/avg_root_tip_auxins))
+        self.assertEqual(result, (avg_root_tip_auxins/avg_non_root_tip_auxins))
 
     # def test_auxin_oscillation_across_XPP_cells_in_Oz(self):
     #     from PythonRootDevModel.param_est.fitness_functions import auxin_oscillation_across_XPP_cells_in_OZ
@@ -120,4 +120,3 @@ class TestFitnessFunctions(unittest.TestCase):
         
 
     #def test_auxin_oscillation_across_XPP_cells_in_Oz(self):
-         
