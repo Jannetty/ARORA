@@ -134,7 +134,7 @@ class GrowingSim(Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        #self.output = Output(self, "2024-05-23_output_to_test_fourier.csv")
+        # self.output = Output(self, "2024-05-23_output_to_test_fourier.csv")
         self.setup()
 
     def get_root_midpointx(self) -> float:
@@ -297,10 +297,11 @@ class GrowingSim(Window):
         """
         print("----")
         self.tick += 1
-        max_tick = 24 * 8
+        # max_tick = 24 * 8
+        max_tick = 24
         try:
             if self.tick < max_tick:
-                #self.output.output_cells()
+                # self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
@@ -341,7 +342,7 @@ def main(
     geometry = ""
     if cell_val_file == "default" and v_file == "default":
         cell_val_file = "src/sim/input/default_init_vals_higher_auxinw_in_shootward_vasc.csv"
-        #cell_val_file = "src/sim/input/default_init_vals.csv"
+        # cell_val_file = "src/sim/input/default_init_vals.csv"
         v_file = "src/sim/input/default_vs.csv"
         geometry = "default"
     simulation = GrowingSim(

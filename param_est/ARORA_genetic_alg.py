@@ -126,16 +126,18 @@ class ARORAGeneticAlg:
         ga_parameters_for_saving = {
             "num_generations": 10,
             "num_parents_mating": 10,
-            "fitness_func": 'magnitude auxin corr with cell size (all cells) + auxin peak at root tip',
+            "fitness_func": 'magnitude auxin corr with cell size (xpp in transition and elongation zones) * 100 + auxin peak at root tip',
             "sol_per_pop": 25,
             "num_genes": len(genespace),
             "gene_space": 'ks .001 to .3, kd .0001 to .03, k1 10 to 160, k2 50 to 100, k3 10 to 75, k4 50 to 100, k5 .07 to 1, k6 .2 to 1, tau 1 to 24',
             "mutation_percent_genes": 5,
             "save_best_solutions": False,
             "parent_selection_type": "sss",
+            "initialization_file": "default_init_vals_higher_auxinw_in_shootward_vasc.csv"
         }
-        with open(self.filename, 'w') as f:
-            json.dump({'GA_parameters': ga_parameters_for_saving}, f, indent=4)
+        self.population.append(ga_parameters_for_saving)
+        #with open(self.filename, 'w') as f:
+        #    json.dump({'GA_parameters': ga_parameters_for_saving}, f, indent=4)
         # Initialize the GA with the parameters
         self.ga_instance = pygad.GA(**ga_parameters)
 

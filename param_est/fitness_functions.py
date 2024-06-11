@@ -44,20 +44,20 @@ def auxin_greater_in_larger_cells(sim: GrowingSim, chromosome: dict) -> float:
     float
         The correlation coefficient between cell size and auxin concentration in meristematic and transition cells.
     """
-    #meristematic_and_transition_cells = [cell for cell in sim.cell_list if (cell.get_dev_zone() == 'meristematic' or cell.get_dev_zone() == 'transition')]
-    #xpp_meri_and_trans_cells = [cell for cell in meristematic_and_transition_cells if (cell.get_cell_type() == 'peri')]
-    # get correlation coefficient between cell size and auxin concentration in xpp_meri_and_trans_cells
+    transition_and_elongation_cells = [cell for cell in sim.cell_list if (cell.get_dev_zone() == 'transition' or cell.get_dev_zone() == 'elongation')]
+    xpp_trans_and_elon_cells = [cell for cell in transition_and_elongation_cells if (cell.get_cell_type() == 'peri')]
+    # get correlation coefficient between cell size and auxin concentration in xpp_trans_and_elon_cells
     # Trying with all cells
-    areas = [cell.get_quad_perimeter().get_area() for cell in sim.cell_list]
-    auxins = [cell.get_circ_mod().get_auxin() for cell in sim.cell_list]
+    areas = [cell.get_quad_perimeter().get_area() for cell in xpp_trans_and_elon_cells]
+    auxins = [cell.get_circ_mod().get_auxin() for cell in xpp_trans_and_elon_cells]
     spearman_results = spearmanr(areas, auxins)
     corr_coeff = spearman_results.statistic
     if corr_coeff < 0:
-        print(f"Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Fitness set to {abs(corr_coeff)}.")
+        print(f"Inverse correlation between xpp cell size and auxin concentration in transition and elongation zone. Fitness set to {abs(corr_coeff)}.")
         print(f"corr_coef = {corr_coeff}")
         print(f"Areas = {areas}")
         print(f"Auxins = {auxins}")
-        chromosome["notes"] = f"Inverse correlation between cell size and auxin concentration in meristematic and transition cells. Fitness set to {abs(corr_coeff)}."
+        chromosome["notes"] = f"Inverse correlation between xpp cell size and auxin concentration in transition and elongation zone. Fitness set to {abs(corr_coeff)}."
         return abs(corr_coeff) #we want there to be a strong correlation, we don't really care in what direction
     return abs(corr_coeff)
 
