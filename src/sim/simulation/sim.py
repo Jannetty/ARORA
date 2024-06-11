@@ -283,10 +283,10 @@ class GrowingSim(Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            self.root_tip_y -100,
-            SCREEN_HEIGHT + self.root_tip_y -100,
+            self.root_tip_y - 100,
+            SCREEN_HEIGHT + self.root_tip_y - 100,
         )
-        self.window_offset = self.root_tip_y -100
+        self.window_offset = self.root_tip_y - 100
 
     def on_update(self, delta_time: float) -> None:
         """
@@ -297,7 +297,7 @@ class GrowingSim(Window):
         """
         print("----")
         self.tick += 1
-        max_tick = (24 * 8)
+        max_tick = 24 * 8
         try:
             if self.tick < max_tick:
                 self.output.output_cells()
