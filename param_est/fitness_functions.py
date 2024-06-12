@@ -58,7 +58,7 @@ def auxin_greater_in_larger_cells(sim: GrowingSim, chromosome: dict) -> float:
         print(f"Areas = {areas}")
         print(f"Auxins = {auxins}")
         chromosome["notes"] = f"Inverse correlation between xpp cell size and auxin concentration in transition and elongation zone. Fitness set to {abs(corr_coeff)}."
-        return abs(corr_coeff) #we want there to be a strong correlation, we don't really care in what direction
+        return abs(corr_coeff) #we want there to be a strong positive correlation
     return abs(corr_coeff)
 
 def auxin_oscillation_across_XPP_cells_in_OZ(sim: GrowingSim, chromosome: dict) -> float:
