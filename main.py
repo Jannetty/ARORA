@@ -15,15 +15,15 @@ File to run simulation
 PARAM_NAMES = ["k_s","k_d","k1","k2","k3","k4","k5","k6","tau"]
 
 def make_param_series():
-    ks_range = 0.013081
-    kd_range = 0.012483
-    k1_range = 57
-    k2_range = 72
-    k3_range = 54
-    k4_range = 71
-    k5_range = 0.257879
-    k6_range = 0.345455
-    tau_range = 16
+    ks_range = 0.0553636
+    kd_range = 0.0278859
+    k1_range = 60
+    k2_range = 64
+    k3_range = 35
+    k4_range = 61
+    k5_range = 0.464545
+    k6_range = 0.959596
+    tau_range = 18
     # ks_range = .3 #np.linspace(0.001, 0.3, 100).astype(float)
     # kd_range = .003 #np.linspace(0.0001, 0.03, 100).astype(float)
     # k1_range = 10 #np.round(np.linspace(10, 160, 100)).astype(int)

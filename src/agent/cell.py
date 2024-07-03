@@ -2,6 +2,7 @@ from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
 from typing import TYPE_CHECKING, Any, cast
 from src.agent.circ_module_cont import BaseCirculateModuleCont
+from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 
@@ -144,6 +145,8 @@ class Cell(Sprite):
         self.quad_perimeter = QuadPerimeter(corners)
         if init_vals.get("circ_mod") == "cont":
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
+        elif init_vals.get("circ_mod") == "indep_syn_deg":
+            self.circ_mod = BaseCirculateModuleIndepSynDeg(self, init_vals)
         else:
             print("Circ mod not recognized, using continuous circ mod")
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)

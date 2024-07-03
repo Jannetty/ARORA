@@ -32,9 +32,9 @@ class CirculateModuleIndSynDeg:
     kd_aux: float
     ks_arr: float
     kd_arr: float
-    ks_pinu: float # unlocalized pin
-    kd_pinu: float # unlocalized pin
-    kd_pinloc: float # localized pin
+    ks_pinu: float  # unlocalized pin
+    kd_pinu: float  # unlocalized pin
+    kd_pinloc: float  # localized pin
     ks_auxlax: float
     kd_auxlax: float
     auxin_w: float
@@ -303,7 +303,9 @@ class CirculateModuleIndSynDeg:
             The calculated ARR concentration after accounting for synthesis and
             degradation dynamics.
         """
-        arr = (self.ks_arr * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (self.kd_arr * arri)
+        arr = (self.ks_arr * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (
+            self.kd_arr * arri
+        )
         return arr
 
     def calculate_auxlax(self, auxini: float, ali: float) -> float:
@@ -764,7 +766,7 @@ class CirculateModuleIndSynDeg:
         dict[str, Any]
             A dictionary containing key-value pairs of attribute names and their
             current values. Includes concentrations (auxin, ARR, etc.), kinetic
-            parameters (`k1` to `k6`, ks_aux, kd_aux, ks_arr, kd_arr, ks_pinu, kd_pinu, kd_pinloc, ks_auxlax, kd_auxlax`), 
+            parameters (`k1` to `k6`, ks_aux, kd_aux, ks_arr, kd_arr, ks_pinu, kd_pinu, kd_pinloc, ks_auxlax, kd_auxlax`),
             auxin weight, and the history of ARR concentrations.
         """
         state = {

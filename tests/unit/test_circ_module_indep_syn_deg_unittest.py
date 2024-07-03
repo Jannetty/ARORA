@@ -9,15 +9,19 @@ from scipy.integrate import odeint
 import unittest
 from unittest.mock import MagicMock, patch
 from src.sim.util.math_helpers import round_to_sf
-from src.agent.circ_mod_indep_syn_deg import CirculateModuleIndSynDeg
+from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from typing import cast
 
 
 class TestCirculateModuleIndSynDeg(unittest.TestCase):
     def setUp(self):
         self.cell_mock = MagicMock()
-        self.cell_mock.get_quad_perimeter.return_value.get_left_lateral_or_medial.return_value = "lateral"
-        self.cell_mock.get_quad_perimeter.return_value.get_right_lateral_or_medial.return_value = "medial"
+        self.cell_mock.get_quad_perimeter.return_value.get_left_lateral_or_medial.return_value = (
+            "lateral"
+        )
+        self.cell_mock.get_quad_perimeter.return_value.get_right_lateral_or_medial.return_value = (
+            "medial"
+        )
         self.cell_mock.get_sim.return_value.get_root_midpointx.return_value = 0.5
         self.cell_mock.get_c_id.return_value = 1
         self.cell_mock.get_quad_perimeter.return_value.get_perimeter_len.return_value = 100.0
@@ -129,10 +133,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         arr_initial = 0.1
         expected_arr = (
             self.circ_mod.ks_arr
-            * (
-                self.circ_mod.k_arr_arr
-                / (self.circ_mod.arr_hist[0] + self.circ_mod.k_arr_arr)
-            )
+            * (self.circ_mod.k_arr_arr / (self.circ_mod.arr_hist[0] + self.circ_mod.k_arr_arr))
         ) - (self.circ_mod.kd_arr * arr_initial)
         calculated_arr = self.circ_mod.calculate_arr(arr_initial)
         self.assertAlmostEqual(calculated_arr, expected_arr, places=5)
@@ -143,9 +144,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         expected_auxlax = (self.circ_mod.ks_auxlax) * (
             auxin_initial / (auxin_initial + self.circ_mod.k_auxin_auxlax)
         ) - (self.circ_mod.kd_auxlax * auxlax_initial)
-        calculated_auxlax = self.circ_mod.calculate_auxlax(
-            auxin_initial, auxlax_initial
-        )
+        calculated_auxlax = self.circ_mod.calculate_auxlax(auxin_initial, auxlax_initial)
         self.assertAlmostEqual(calculated_auxlax, expected_auxlax, places=5)
 
     def test_calculate_pin(self):
@@ -166,16 +165,22 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         pin_weight = 0.3
         memfrac = 0.4
         expected_membrane_pin = pin_weight * pin_initial - (self.circ_mod.kd_pinloc * pind_initial)
-        calculated_membrane_pin = self.circ_mod.calculate_membrane_pin(pin_initial, pind_initial, direction, pin_weight)
+        calculated_membrane_pin = self.circ_mod.calculate_membrane_pin(
+            pin_initial, pind_initial, direction, pin_weight
+        )
         self.assertAlmostEqual(calculated_membrane_pin, expected_membrane_pin, places=5)
 
     def test_calculate_neighbor_memfrac(self):
         neighbor_mock = MagicMock()
         neighbor_mock.get_c_id.return_value = 2
         self.circ_mod.cell.quad_perimeter.get_perimeter_len.return_value = 100.0
-        with unittest.mock.patch('src.agent.circ_mod_indep_syn_deg.get_len_perimeter_in_common', return_value=25.0) as mock_get_len_perimeter_in_common:
+        with unittest.mock.patch(
+            "src.agent.circ_module_indep_syn_deg.get_len_perimeter_in_common", return_value=25.0
+        ) as mock_get_len_perimeter_in_common:
             memfrac = self.circ_mod.calculate_neighbor_memfrac(neighbor_mock)
-            mock_get_len_perimeter_in_common.assert_called_once_with(self.circ_mod.cell, neighbor_mock)
+            mock_get_len_perimeter_in_common.assert_called_once_with(
+                self.circ_mod.cell, neighbor_mock
+            )
             expected_memfrac = 25.0 / 100.0
             self.assertAlmostEqual(memfrac, expected_memfrac, places=6)
 
@@ -183,23 +188,26 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         auxlax = 0.3
         pindi = 0.4
         neighbors = [self.neighbor_mock]
-        
-        with unittest.mock.patch.object(self.circ_mod, 'calculate_neighbor_memfrac', return_value=0.2):
+
+        with unittest.mock.patch.object(
+            self.circ_mod, "calculate_neighbor_memfrac", return_value=0.2
+        ):
             expected_auxin_influx = (0.5 * 0.2) * (auxlax * 0.2) * self.circ_mod.k_al
             expected_pin_activity = pindi * self.circ_mod.k_pin
             expected_accessible_auxin = self.circ_mod.auxin * 0.2
             expected_auxin_efflux = expected_accessible_auxin * expected_pin_activity
-            expected_neighbor_aux_exchange = round_to_sf(expected_auxin_influx - expected_auxin_efflux, 5)
+            expected_neighbor_aux_exchange = round_to_sf(
+                expected_auxin_influx - expected_auxin_efflux, 5
+            )
             aux_exchange = self.circ_mod.get_aux_exchange_across_membrane(auxlax, pindi, neighbors)
             self.assertIn(self.neighbor_mock, aux_exchange)
-            self.assertAlmostEqual(aux_exchange[self.neighbor_mock], expected_neighbor_aux_exchange, places=5)
+            self.assertAlmostEqual(
+                aux_exchange[self.neighbor_mock], expected_neighbor_aux_exchange, places=5
+            )
 
     def test_calculate_delta_auxin(self):
         syn_deg_auxin = 0.5
-        neighbors_auxin = [
-            {self.neighbor_mock: 0.1},
-            {self.neighbor_mock: -0.05}
-        ]
+        neighbors_auxin = [{self.neighbor_mock: 0.1}, {self.neighbor_mock: -0.05}]
         expected_total_auxin = syn_deg_auxin + 0.1 + (-0.05)
         calculated_total_auxin = self.circ_mod.calculate_delta_auxin(syn_deg_auxin, neighbors_auxin)
         self.assertAlmostEqual(calculated_total_auxin, expected_total_auxin, places=5)
@@ -213,10 +221,12 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         self.assertEqual(self.circ_mod.arr_hist, expected_arr_hist)
 
     def test_update_circ_contents(self):
-        soln = np.array([
-            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-            [0.1, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81]
-        ])
+        soln = np.array(
+            [
+                [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                [0.1, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81],
+            ]
+        )
         self.circ_mod.arr_hist = [0.1, 0.2, 0.3]
         self.circ_mod.arr = 0.15  # Current arr value to be updated to the history
         self.circ_mod.update_circ_contents(soln)
@@ -233,10 +243,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
     def test_update_neighbor_auxin(self):
         neighbor_mock_1 = MagicMock()
         neighbor_mock_2 = MagicMock()
-        neighbors_auxin = [
-            {neighbor_mock_1: 0.1},
-            {neighbor_mock_2: -0.05}
-        ]
+        neighbors_auxin = [{neighbor_mock_1: 0.1}, {neighbor_mock_2: -0.05}]
         self.circ_mod.update_neighbor_auxin(neighbors_auxin)
         self.circulator_mock.add_delta.assert_any_call(neighbor_mock_1, -0.1)
         self.circulator_mock.add_delta.assert_any_call(neighbor_mock_2, 0.05)
@@ -254,10 +261,12 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         self.cell_mock.get_m_neighbors.assert_called_once()
 
     def test_update_auxin(self):
-        soln = np.array([
-            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-            [0.1, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81]
-        ])
+        soln = np.array(
+            [
+                [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                [0.1, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81],
+            ]
+        )
         self.circ_mod.auxin = 0.1
         self.circ_mod.auxlax = 0.3
         self.circ_mod.pina = 0.4
@@ -271,35 +280,42 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         auxinl_exchange = {self.neighbors_l[0]: -0.05}
         auxinm_exchange = {self.neighbors_m[0]: -0.1}
 
-        self.circ_mod.get_aux_exchange_across_membrane = MagicMock(side_effect=[auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange])
+        self.circ_mod.get_aux_exchange_across_membrane = MagicMock(
+            side_effect=[auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange]
+        )
         self.circ_mod.calculate_delta_auxin = MagicMock(return_value=0.2)
         self.circ_mod.update_neighbor_auxin = MagicMock()
 
         self.circ_mod.update_auxin(soln)
 
         # Verify that get_aux_exchange_across_membrane was called with correct parameters
-        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(self.circ_mod.auxlax, self.circ_mod.pina, self.neighbors_a)
-        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(self.circ_mod.auxlax, self.circ_mod.pinb, self.neighbors_b)
-        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(self.circ_mod.auxlax, self.circ_mod.pinl, self.neighbors_l)
-        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(self.circ_mod.auxlax, self.circ_mod.pinm, self.neighbors_m)
+        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
+            self.circ_mod.auxlax, self.circ_mod.pina, self.neighbors_a
+        )
+        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
+            self.circ_mod.auxlax, self.circ_mod.pinb, self.neighbors_b
+        )
+        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
+            self.circ_mod.auxlax, self.circ_mod.pinl, self.neighbors_l
+        )
+        self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
+            self.circ_mod.auxlax, self.circ_mod.pinm, self.neighbors_m
+        )
 
         # Verify calculate_delta_auxin was called with correct parameters
         auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.circ_mod.auxin
         self.circ_mod.calculate_delta_auxin.assert_called_once_with(
             auxin_synthesized_and_degraded_this_timestep,
-            [auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange]
+            [auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange],
         )
 
         # Verify add_delta was called correctly for the current cell
         self.circulator_mock.add_delta.assert_any_call(self.cell_mock, round_to_sf(0.2, 5))
 
         # Verify update_neighbor_auxin was called with correct parameters
-        self.circ_mod.update_neighbor_auxin.assert_called_once_with([
-            auxina_exchange,
-            auxinb_exchange,
-            auxinl_exchange,
-            auxinm_exchange
-        ])
+        self.circ_mod.update_neighbor_auxin.assert_called_once_with(
+            [auxina_exchange, auxinb_exchange, auxinl_exchange, auxinm_exchange]
+        )
 
     def test_get_auxin(self):
         self.assertEqual(self.circ_mod.get_auxin(), self.init_vals["auxin"])
@@ -405,18 +421,28 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         self.circ_mod.calculate_arr.assert_called_once_with(0.2)
         self.circ_mod.calculate_auxlax.assert_called_once_with(0.1, 0.3)
         self.circ_mod.calculate_pin.assert_called_once_with(0.1, 0.2)
-        self.circ_mod.calculate_membrane_pin.assert_any_call(0.4, 0.5, "a", cast(float, self.circ_mod.pin_weights.get("a")))
-        self.circ_mod.calculate_membrane_pin.assert_any_call(0.4, 0.6, "b", cast(float, self.circ_mod.pin_weights.get("b")))
-        self.circ_mod.calculate_membrane_pin.assert_any_call(0.4, 0.7, "l", cast(float, self.circ_mod.pin_weights.get("l")))
-        self.circ_mod.calculate_membrane_pin.assert_any_call(0.4, 0.8, "m", cast(float, self.circ_mod.pin_weights.get("m")))
+        self.circ_mod.calculate_membrane_pin.assert_any_call(
+            0.4, 0.5, "a", cast(float, self.circ_mod.pin_weights.get("a"))
+        )
+        self.circ_mod.calculate_membrane_pin.assert_any_call(
+            0.4, 0.6, "b", cast(float, self.circ_mod.pin_weights.get("b"))
+        )
+        self.circ_mod.calculate_membrane_pin.assert_any_call(
+            0.4, 0.7, "l", cast(float, self.circ_mod.pin_weights.get("l"))
+        )
+        self.circ_mod.calculate_membrane_pin.assert_any_call(
+            0.4, 0.8, "m", cast(float, self.circ_mod.pin_weights.get("m"))
+        )
 
-    @patch('src.agent.circ_mod_indep_syn_deg.odeint')
+    @patch("src.agent.circ_module_indep_syn_deg.odeint")
     def test_solve_equations(self, mock_odeint):
         # Mock the return value of odeint
-        mock_solution = np.array([
-            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-            [0.11, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81]
-        ])
+        mock_solution = np.array(
+            [
+                [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                [0.11, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81],
+            ]
+        )
         mock_odeint.return_value = mock_solution
 
         # Expected initial conditions and time array
@@ -439,15 +465,17 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         # Verify the result
         np.testing.assert_array_equal(result, mock_solution)
 
-    @patch('src.agent.circ_mod_indep_syn_deg.CirculateModuleIndSynDeg.update_auxin')
-    @patch('src.agent.circ_mod_indep_syn_deg.CirculateModuleIndSynDeg.solve_equations')
-    @patch('src.agent.circ_mod_indep_syn_deg.CirculateModuleIndSynDeg.update_circ_contents')
+    @patch("src.agent.circ_module_indep_syn_deg.CirculateModuleIndSynDeg.update_auxin")
+    @patch("src.agent.circ_module_indep_syn_deg.CirculateModuleIndSynDeg.solve_equations")
+    @patch("src.agent.circ_module_indep_syn_deg.CirculateModuleIndSynDeg.update_circ_contents")
     def test_update(self, mock_update_circ_contents, mock_solve_equations, mock_update_auxin):
         # Mocking solve_equations to return a known solution
-        mock_soln = np.array([
-            [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-            [0.11, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81]
-        ])
+        mock_soln = np.array(
+            [
+                [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                [0.11, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81],
+            ]
+        )
         mock_solve_equations.return_value = mock_soln
 
         # Mocking get_pin_weights to return a dictionary with weights summing to 1
