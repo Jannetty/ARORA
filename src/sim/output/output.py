@@ -1,4 +1,5 @@
 import csv
+import json
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
@@ -17,32 +18,38 @@ class Output:
     ----------
     sim : GrowingSim
         The simulation instance from which to gather output data.
-    filename : str
-        The name of the file to which output data will be written.
+    filename_csv : str
+        The name of the CSV file to which output data will be written.
+    filename_json : str
+        The name of the JSON file to which output data will be written.
 
     Parameters
     ----------
     sim : GrowingSim
         The simulation instance associated with this output.
-    filename : str
+    filename_csv : str
         The filename for the output CSV file.
-
+    filename_json : str
+        The filename for the output JSON file.
     """
 
-    def __init__(self, sim: "GrowingSim", filename: str):
+    def __init__(self, sim: "GrowingSim", filename_csv: str, filename_json: str):
         """
-        Initializes the Output object with a simulation instance and output filename.
+        Initializes the Output object with a simulation instance and output filenames.
 
         Parameters
         ----------
         sim : GrowingSim
             The simulation instance associated with this output.
-        filename : str
+        filename_csv : str
             The filename for the output CSV file.
+        filename_json : str
+            The filename for the output JSON file.
         """
         self.sim = sim
-        self.filename = filename
-        with open(self.filename, "w", newline="") as file:
+        self.filename_csv = filename_csv
+        self.filename_json = filename_json
+        with open(self.filename_csv, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(
                 [
@@ -70,14 +77,15 @@ class Output:
 
     def output_cells(self) -> None:
         """
-        Writes the current state of all cells to the output file.
+        Writes the current state of all cells to the output files.
 
         This method gathers data from each cell within the simulation, including
         concentrations, locations, and PIN distributions, and writes this information
-        to the specified output file.
+        to the specified output files.
         """
         output = []
         cell_list = list(self.sim.get_cell_list())
+        print(f"cell_list: {cell_list}")
         for cell in cell_list:
             summary: dict[str, Any] = {}
             summary["tick"] = self.sim.get_tick()
@@ -91,15 +99,17 @@ class Output:
             summary["dev_zone"] = cell.get_dev_zone()
             summary["cell_type"] = cell.get_cell_type()
             summary = self.get_circ_contents(summary, cell)
-            # summary["num_divisions"] = self.get_division_number(cell)
             output.append(summary)
 
-        # generate spreadsheet
+        # Generate CSV
         header = output[0].keys()
-        with open(self.filename, "a", newline="") as file:
+        with open(self.filename_csv, "a", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=header)
-            # writer.writeheader()
             writer.writerows(output)
+
+        # Generate JSON
+        with open(self.filename_json, "w") as file:
+            json.dump(output, file, indent=4)
 
     def get_circ_contents(self, summary: dict[str, Any], cell: "Cell") -> dict[str, Any]:
         """
@@ -118,7 +128,7 @@ class Output:
             The updated summary dictionary containing circulation content information for the cell.
         """
         summary["ARR"] = cell.get_circ_mod().get_arr()
-        summary["AUX/LAX"] = cell.get_circ_mod().get_al()
+        summary["AUX/LAX"] = cell.get_circ_mod().get_auxlax()
         summary["PIN_unlocalized"] = cell.get_circ_mod().get_pin()
         summary["PIN_apical"] = cell.get_circ_mod().get_apical_pin()
         summary["PIN_basal"] = cell.get_circ_mod().get_basal_pin()

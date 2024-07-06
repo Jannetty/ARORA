@@ -87,7 +87,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         self.assertAlmostEqual(expected_arr, found_arr, places=5)
 
-    def test_calculate_al(self):
+    def test_calculate_auxlax(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = Cell(
             sim,
@@ -107,7 +107,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             init_vals["k_s"] * (init_vals["auxin"] / (init_vals["auxin"] + init_vals["k2"]))
             - init_vals["k_d"] * init_vals["al"]
         )
-        found_al = circ_module_cont.calculate_al(2, 3)
+        found_al = circ_module_cont.calculate_auxlax(2, 3)
         self.assertAlmostEqual(expected_al, found_al, places=5)
 
     def test_calculate_pin(self):
@@ -219,7 +219,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         neighborsa, neighborsb, neighborsl, neighborsm = cell.get_circ_mod().get_neighbors()
         found_neighbor_auxin = cell.get_circ_mod().get_aux_exchange_across_membrane(
-            cell.get_circ_mod().get_al(),
+            cell.get_circ_mod().get_auxlax(),
             cell.get_circ_mod().get_pin(),
             neighborsa,
         )
@@ -277,7 +277,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         y0 = [
             circ_module_cont.auxin,
             circ_module_cont.arr,
-            circ_module_cont.al,
+            circ_module_cont.auxlax,
             circ_module_cont.pin,
             circ_module_cont.pina,
             circ_module_cont.pinb,
@@ -328,7 +328,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         y0 = [
             circ_module_cont.auxin,
             circ_module_cont.arr,
-            circ_module_cont.al,
+            circ_module_cont.auxlax,
             circ_module_cont.pin,
             circ_module_cont.pina,
             circ_module_cont.pinb,
@@ -344,7 +344,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         self.assertAlmostEqual(expected_arr, found_arr, places=4)
         # test al
         expected_al = soln[1, 2]
-        found_al = circ_module_cont.al
+        found_al = circ_module_cont.auxlax
         self.assertAlmostEqual(expected_al, found_al, places=4)
         # test pina
         expected_pina = soln[1, 4]
@@ -466,7 +466,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         y0 = [
             circ_module_cont.auxin,
             circ_module_cont.arr,
-            circ_module_cont.al,
+            circ_module_cont.auxlax,
             circ_module_cont.pin,
             circ_module_cont.pina,
             circ_module_cont.pinb,
@@ -512,12 +512,12 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         sim2.setup()
 
         auxina = circ_module_cont2.get_aux_exchange_across_membrane(
-            curr_cell2.get_circ_mod().get_al(),
+            curr_cell2.get_circ_mod().get_auxlax(),
             curr_cell2.get_circ_mod().get_apical_pin(),
             [neighbora2],
         )
         auxinm = circ_module_cont2.get_aux_exchange_across_membrane(
-            curr_cell2.get_circ_mod().get_al(),
+            curr_cell2.get_circ_mod().get_auxlax(),
             curr_cell2.get_circ_mod().get_medial_pin(),
             [neighborm2],
         )
@@ -569,7 +569,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         expected = 3
         self.assertEqual(expected, found)
 
-    def test_get_al(self):
+    def test_get_auxlax(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         cell = Cell(
             sim,
@@ -584,7 +584,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
         )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
-        found = circ_module_cont.get_al()
+        found = circ_module_cont.get_auxlax()
         expected = 3
         self.assertEqual(expected, found)
 

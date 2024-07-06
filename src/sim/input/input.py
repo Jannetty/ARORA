@@ -99,14 +99,14 @@ class Input:
         self.update_neighbors(cell_neigbors, new_cells)
 
     # Helper functions
-    def get_vertices_from_input_file(self) -> dict[str, "Vertex"]:
+    def get_vertices_from_input_file(self) -> dict[int, "Vertex"]:
         """
         Extracts vertices from the input file and returns them as a dictionary.
 
         Returns
         -------
-        dict[str, Vertex]
-            A dictionary where keys are vertex identifiers (ints as strings) and values are Vertex objects.
+        dict[int, Vertex]
+            A dictionary where keys are vertex identifiers (ints) and values are Vertex objects.
         """
         vertex_dict = {}
         for index, row in self.vertex_input.iterrows():
@@ -114,9 +114,16 @@ class Input:
         # update the vertex_dict to store vertcies in Vertex format
         new_vertex_dict = {}
         for v_num, vertex in vertex_dict.items():
+            # Ensure that v_num can be interpreted as an integer
+            if isinstance(v_num, int):
+                vnum_int = v_num
+            elif isinstance(v_num, str) and v_num.isdigit():
+                vnum_int = int(v_num)
+            else:
+                raise ValueError(f"Vertex identifier {v_num} is not convertible to integer")
             x = int(vertex["x"])
             y = int(vertex["y"])
-            new_vertex_dict[v_num] = Vertex(x, y, int(v_num))
+            new_vertex_dict[vnum_int] = Vertex(x, y, vnum_int)
         return new_vertex_dict
 
     def replace_default_to_gparam(self, gparam_series: pd.Series) -> None:
@@ -153,35 +160,38 @@ class Input:
         init_vals_dict = {}
         init_vals_data = self.init_vals_input
 
-        # Dynamically get the field names from the JSON data
+        # Get field names from DataFrame columns
         init_vals_names = init_vals_data.columns.tolist()
 
         for index, row in init_vals_data.iterrows():
             cell_num = f"c{index}"
-            cell_dict = {}
-            for key in init_vals_names:
-                cell_dict[key] = init_vals_data.loc[index, key]
+            cell_dict = {key: row[key] for key in init_vals_names}
             init_vals_dict[cell_num] = cell_dict
 
-            for val in init_vals_dict[cell_num]:
-                if val in ["arr_hist", "vertices"]:
-                    if isinstance(init_vals_dict[cell_num][val], str):
+            # Process each value, evaluating only if it's a string containing a valid expression
+            for val in ["arr_hist", "vertices", "neighbors"]:
+                if val in init_vals_dict[cell_num] and isinstance(
+                    init_vals_dict[cell_num][val], str
+                ):
+                    try:
+                        # Safely evaluate strings that are supposed to be Python literals (lists, dicts)
                         init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
-                    elif isinstance(init_vals_dict[cell_num][val], list):
-                        init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
-                if val == "neighbors":
-                    if isinstance(init_vals_dict[cell_num][val], str):
-                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    except SyntaxError as e:
+                        raise ValueError(f"Error evaluating {val}: {e}")
+
+                # Specifically handling neighbors to strip spaces from entries if it's a list of strings
+                if val == "neighbors" and isinstance(init_vals_dict[cell_num][val], list):
                     init_vals_dict[cell_num][val] = [
-                        neighbor.strip() for neighbor in init_vals_dict[cell_num][val]
+                        item.strip()
+                        for item in init_vals_dict[cell_num][val]
+                        if isinstance(item, str)
                     ]
 
-            # Setting arr_hist
-            init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
-                init_vals_dict[cell_num]["arr_hist"]
-            )
+            # Replicate arr_hist based on a specific length if it's a list
+            if "arr_hist" in init_vals_dict[cell_num]:
+                arr_len = len(init_vals_dict[cell_num]["arr_hist"])
+                init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * arr_len
 
-        self.set_arr_hist(init_vals_dict)
         return init_vals_dict
 
     def set_arr_hist(self, init_vals_dict: dict) -> None:
@@ -208,7 +218,7 @@ class Input:
         """
         vertex_assign = {}
         for index, row in self.init_vals_input.iterrows():
-            vertex_assign[f"c{index}"] = self.init_vals_input.iloc[index]["vertices"]
+            vertex_assign[f"c{index}"] = row["vertices"]
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
@@ -222,7 +232,7 @@ class Input:
         """
         neighbors = {}
         for index, row in self.init_vals_input.iterrows():
-            neighbors[f"c{index}"] = self.init_vals_input.iloc[index]["neighbors"]
+            neighbors[f"c{index}"] = row["neighbors"]
         return neighbors
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:

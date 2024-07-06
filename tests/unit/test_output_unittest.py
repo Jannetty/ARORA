@@ -1,9 +1,7 @@
 import os
 import platform
-
-if platform.system() == "Linux":
-    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
+import json
 from src.sim.output.output import Output
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
@@ -12,6 +10,7 @@ from src.sim.simulation.sim import GrowingSim
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
+
 init_vals = {
     "auxin": 2,
     "arr": 3,
@@ -40,6 +39,7 @@ init_vals = {
     "growing": False,
     "circ_mod": "cont",
 }
+
 init_vals2 = {
     "auxin": 2,
     "arr": 3,
@@ -81,26 +81,29 @@ cell1 = Cell(
     init_vals2,
     sim.get_next_cell_id(),
 )
-sim.setup()
-CELL_LIST = [cell0, cell1]
 
 
 class TestOutput(unittest.TestCase):
 
-    # def test_get_auxin(self):
-    #     output = Output(sim, "ouput.csv")
-    #     expected = 2
-    #     found = output.get_auxin(cell0)
-    #     self.assertEqual(expected, found)
+    def setUp(self):
+        """Set up common test variables."""
+        self.output_csv = "output.csv"
+        self.output_json = "output.json"
+        CELL_LIST = [cell0, cell1]
+        self.output = Output(sim, self.output_csv, self.output_json)
+        sim.setup()
+        sim.add_to_cell_list(cell0)
+        sim.add_to_cell_list(cell1)
+        print(f"cell_list: {sim.get_cell_list()}")
 
-    # def test_get_location(self):
-    #     output = Output(sim, "ouput.csv")
-    #     expected = [[30.0, 10.0], [10.0, 10.0], [10.0, 30.0], [30.0, 30.0]]
-    #     found = output.get_location(cell0)
-    #     self.assertEqual(expected, found)
+    def tearDown(self):
+        """Clean up test files."""
+        if os.path.isfile(self.output_csv):
+            os.remove(self.output_csv)
+        if os.path.isfile(self.output_json):
+            os.remove(self.output_json)
 
     def test_get_circ_contents(self):
-        output = Output(sim, "ouput.csv")
         summary = {"cell": cell0}
         expected = {
             "cell": cell0,
@@ -114,8 +117,9 @@ class TestOutput(unittest.TestCase):
             "arr_hist": [0.1, 0.2, 0.3],
             "auxin_w": 1,
         }
-        found = output.get_circ_contents(summary, cell0)
+        found = self.output.get_circ_contents(summary, cell0)
         self.assertEqual(expected, found)
+
         # test cell1
         summary1 = {"cell": cell1}
         expected1 = {
@@ -130,13 +134,16 @@ class TestOutput(unittest.TestCase):
             "arr_hist": [0.1, 0.2, 0.3, 0.4],
             "auxin_w": 1,
         }
-        found1 = output.get_circ_contents(summary1, cell1)
+        found1 = self.output.get_circ_contents(summary1, cell1)
         self.assertEqual(expected1, found1)
 
-    def test_get_division_number(self):
-        pass
-
     def test_output_cells(self):
-        # output = Output(sim, "ouput.csv")
-        # output.output_cells()
+        self.output.output_cells()
+        # Check if files are created and not empty
+        self.assertTrue(os.path.isfile(self.output_csv))
+        self.assertTrue(os.path.isfile(self.output_json))
+        self.assertGreater(os.path.getsize(self.output_csv), 0)
+        self.assertGreater(os.path.getsize(self.output_json), 0)
+
+    def test_get_division_number(self):
         pass

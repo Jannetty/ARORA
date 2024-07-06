@@ -1,10 +1,11 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, cast, Union, Dict
 from src.agent.circ_module_cont import BaseCirculateModuleCont
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
+from src.agent.circ_module import CirculateModule
 
 if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
@@ -143,14 +144,17 @@ class Cell(Sprite):
         self.sim: "GrowingSim" = simulation
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
+        # Type hint circ_mod to accept any class that implements the CirculateModule protocol
+        self.circ_mod: CirculateModule
         if init_vals.get("circ_mod") == "cont":
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         elif init_vals.get("circ_mod") == "indep_syn_deg":
-            self.circ_mod = BaseCirculateModuleIndepSynDeg(self, init_vals)
+            self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
         else:
             print("Circ mod not recognized, using continuous circ mod")
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
-        self.pin_weights: dict[str, float] = self.calculate_pin_weights()
+
+        self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         if self.sim.geometry != "default":
             self.dev_zone = ""
             self.cell_type = ""
@@ -428,7 +432,7 @@ class Cell(Sprite):
         """
         return self.sim
 
-    def get_circ_mod(self) -> "BaseCirculateModuleCont":
+    def get_circ_mod(self) -> "CirculateModule":
         """
         Returns the circ module object that manages hormone circulation for this cell.
 
@@ -775,7 +779,7 @@ class Cell(Sprite):
             Keys are "a", "b", "l", and "m".
 
         """
-        return self.circ_mod.pin_weights
+        return self.circ_mod.get_pin_weights()
 
     def get_pin_weights(self) -> dict:
         """

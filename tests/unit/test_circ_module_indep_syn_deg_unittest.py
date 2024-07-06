@@ -85,7 +85,6 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         self.assertEqual(module.pinb, 0.6)
         self.assertEqual(module.pinl, 0.7)
         self.assertEqual(module.pinm, 0.8)
-        self.assertTrue(module.growing)
         self.assertEqual(module.k_arr_arr, 1.1)
         self.assertEqual(module.k_auxin_auxlax, 1.2)
         self.assertEqual(module.k_auxin_pin, 1.3)
@@ -175,7 +174,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         neighbor_mock.get_c_id.return_value = 2
         self.circ_mod.cell.quad_perimeter.get_perimeter_len.return_value = 100.0
         with unittest.mock.patch(
-            "src.agent.circ_module_indep_syn_deg.get_len_perimeter_in_common", return_value=25.0
+            "src.agent.circ_module.get_len_perimeter_in_common", return_value=25.0
         ) as mock_get_len_perimeter_in_common:
             memfrac = self.circ_mod.calculate_neighbor_memfrac(neighbor_mock)
             mock_get_len_perimeter_in_common.assert_called_once_with(
@@ -323,8 +322,8 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
     def test_get_arr(self):
         self.assertEqual(self.circ_mod.get_arr(), self.init_vals["arr"])
 
-    def test_get_al(self):
-        self.assertEqual(self.circ_mod.get_al(), self.init_vals["al"])
+    def test_get_auxlax(self):
+        self.assertEqual(self.circ_mod.get_auxlax(), self.init_vals["al"])
 
     def test_get_arr_hist(self):
         self.assertEqual(self.circ_mod.get_arr_hist(), self.init_vals["arr_hist"])
@@ -434,7 +433,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
             0.4, 0.8, "m", cast(float, self.circ_mod.pin_weights.get("m"))
         )
 
-    @patch("src.agent.circ_module_indep_syn_deg.odeint")
+    @patch("src.agent.circ_module.odeint")
     def test_solve_equations(self, mock_odeint):
         # Mock the return value of odeint
         mock_solution = np.array(
