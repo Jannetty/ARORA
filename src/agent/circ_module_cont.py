@@ -138,45 +138,45 @@ class BaseCirculateModuleCont:
 
         self.cell = cell
 
-        self.init_auxin = cast(float, init_vals.get("auxin"))
+        self.init_auxin = float(init_vals.get("auxin"))
         self.auxin = self.init_auxin
 
-        self.init_arr = cast(float, init_vals.get("arr"))
+        self.init_arr = float(init_vals.get("arr"))
         self.arr = self.init_arr
 
-        self.init_al = cast(float, init_vals.get("al"))
+        self.init_al = float(init_vals.get("al"))
         self.al = self.init_al
 
-        self.init_pin = cast(float, init_vals.get("pin"))
+        self.init_pin = float(init_vals.get("pin"))
         self.pin = self.init_pin
 
-        self.init_pina = cast(float, init_vals.get("pina"))
+        self.init_pina = float(init_vals.get("pina"))
         self.pina = self.init_pina
 
-        self.init_pinb = cast(float, init_vals.get("pinb"))
+        self.init_pinb = float(init_vals.get("pinb"))
         self.pinb = self.init_pinb
 
-        self.init_pinl = cast(float, init_vals.get("pinl"))
+        self.init_pinl = float(init_vals.get("pinl"))
         self.pinl = self.init_pinl
 
-        self.init_pinm = cast(float, init_vals.get("pinm"))
+        self.init_pinm = float(init_vals.get("pinm"))
         self.pinm = self.init_pinm
 
-        self.growing = cast(bool, init_vals.get("growing"))
+        self.growing = bool(init_vals.get("growing"))
 
-        self.k_arr_arr = cast(float, init_vals.get("k1"))
-        self.k_auxin_auxlax = cast(float, init_vals.get("k2"))
-        self.k_auxin_pin = cast(float, init_vals.get("k3"))
-        self.k_arr_pin = cast(float, init_vals.get("k4"))
-        self.k_al = cast(float, init_vals.get("k5"))
-        self.k_pin = cast(float, init_vals.get("k6"))
+        self.k_arr_arr = float(init_vals.get("k1"))
+        self.k_auxin_auxlax = float(init_vals.get("k2"))
+        self.k_auxin_pin = float(init_vals.get("k3"))
+        self.k_arr_pin = float(init_vals.get("k4"))
+        self.k_al = float(init_vals.get("k5"))
+        self.k_pin = float(init_vals.get("k6"))
 
-        self.ks = cast(float, init_vals.get("k_s"))
-        self.kd = cast(float, init_vals.get("k_d"))
+        self.ks = float(init_vals.get("k_s"))
+        self.kd = float(init_vals.get("k_d"))
 
-        self.auxin_w = cast(float, init_vals.get("auxin_w"))
+        self.auxin_w = float(init_vals.get("auxin_w"))
 
-        self.arr_hist = cast(list[float], init_vals.get("arr_hist"))
+        self.arr_hist = [float(i) for i in init_vals.get("arr_hist")]
 
         # set medial to either "left" or "right" and lateral to the opposite
         # based on where self.cell.QuadPerimeter.get_midpointx() is in relation

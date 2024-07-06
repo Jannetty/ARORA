@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
-import pandas
+import pandas as pd
 import numpy as np
-import csv
+import json
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 
@@ -38,30 +38,35 @@ class Input:
         The simulation instance to which this Input class belongs.
     """
 
-    int_params: list = ["k1", "k2", "k3", "k4"]
-    float_params: list = ["k5", "k6", "k_s", "k_d"]
+    int_params: list = ["k1", "k2", "k4"]
+    float_params: list = ["k3", "k5", "k6", "k_s", "k_d"]
 
     def __init__(self, init_vals_file: str, vertex_file: str, sim: "GrowingSim"):
         """
-        Initializes the Input class by loading initial values and vertex information from CSV files.
+        Initializes the Input class by loading initial values and vertex information from JSON files.
 
         Parameters
         ----------
         init_vals_file : str
-            The file path to the CSV containing initial cell parameter values.
+            The file path to the JSON containing initial cell parameter values.
         vertex_file : str
-            The file path to the CSV containing initial locations for vertices.
+            The file path to the JSON containing initial locations for vertices.
         sim : GrowingSim
             The simulation instance to which this Input class belongs.
         """
-        self.init_vals_input = pandas.read_csv(init_vals_file)
+        self.init_vals_input = self.load_json(init_vals_file)
         for col in self.int_params:
             self.init_vals_input[col] = self.init_vals_input[col].astype("int")
         for col in self.float_params:
             self.init_vals_input[col] = self.init_vals_input[col].astype("float")
-        self.vertex_input = pandas.read_csv(vertex_file)
-        self.initial_v_miny = min(self.vertex_input["y"])
+        self.vertex_input = self.load_json(vertex_file)
+        self.initial_v_miny = float(min(self.vertex_input["y"]))
         self.sim = sim
+
+    def load_json(self, file_path: str) -> pd.DataFrame:
+        with open(file_path, "r") as file:
+            data = json.load(file)
+        return pd.DataFrame(data)
 
     def get_initial_v_miny(self) -> float:
         """
@@ -105,16 +110,16 @@ class Input:
         """
         vertex_dict = {}
         for index, row in self.vertex_input.iterrows():
-            vertex_dict[f"{index}"] = row.to_dict()
+            vertex_dict[index] = row.to_dict()
         # update the vertex_dict to store vertcies in Vertex format
         new_vertex_dict = {}
         for v_num, vertex in vertex_dict.items():
-            x = vertex["x"]
-            y = vertex["y"]
+            x = int(vertex["x"])
+            y = int(vertex["y"])
             new_vertex_dict[v_num] = Vertex(x, y, int(v_num))
         return new_vertex_dict
 
-    def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
+    def replace_default_to_gparam(self, gparam_series: pd.Series) -> None:
         """
         Updates default initialization values with specific values from a given pandas Series.
 
@@ -138,7 +143,7 @@ class Input:
 
     def get_init_vals(self) -> dict:
         """
-        Extracts initial values for cells from the input file and returns them as a dictionary.
+        Extracts initial values for cells from the input JSON and returns them as a dictionary.
 
         Returns
         -------
@@ -146,52 +151,36 @@ class Input:
             A dictionary with cell indices as keys and dictionaries of their initial values as values.
         """
         init_vals_dict = {}
-        init_vals_names = [
-            "auxin",
-            "arr",
-            "al",
-            "pin",
-            "pina",
-            "pinb",
-            "pinl",
-            "pinm",
-            "k1",
-            "k2",
-            "k3",
-            "k4",
-            "k5",
-            "k6",
-            "k_s",
-            "k_d",
-            "auxin_w",
-            "arr_hist",
-            "growing",
-            "circ_mod",
-            "vertices",
-            "neighbors",
-        ]
-        # make changes: ser.iloc[pos]
-        # task for this week!
-        for index, row in self.init_vals_input[init_vals_names].iterrows():
+        init_vals_data = self.init_vals_input
+
+        # Dynamically get the field names from the JSON data
+        init_vals_names = init_vals_data.columns.tolist()
+
+        for index, row in init_vals_data.iterrows():
             cell_num = f"c{index}"
-            init_vals_dict[cell_num] = row.to_dict()
+            cell_dict = {}
+            for key in init_vals_names:
+                cell_dict[key] = init_vals_data.loc[index, key]
+            init_vals_dict[cell_num] = cell_dict
+
             for val in init_vals_dict[cell_num]:
                 if val in ["arr_hist", "vertices"]:
-                    if type(init_vals_dict[cell_num][val]) == str:
+                    if isinstance(init_vals_dict[cell_num][val], str):
                         init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
-                    elif type(init_vals_dict[cell_num][val]) == list:
+                    elif isinstance(init_vals_dict[cell_num][val], list):
                         init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
                 if val == "neighbors":
-                    init_vals_dict[cell_num][val] = (
-                        init_vals_dict[cell_num][val]
-                        .replace(" ", "")
-                        .replace("[", "")
-                        .replace("]", "")
-                        .split(",")
-                    )
+                    if isinstance(init_vals_dict[cell_num][val], str):
+                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    init_vals_dict[cell_num][val] = [
+                        neighbor.strip() for neighbor in init_vals_dict[cell_num][val]
+                    ]
+
+            # Setting arr_hist
             init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
                 init_vals_dict[cell_num]["arr_hist"]
             )
+
         self.set_arr_hist(init_vals_dict)
         return init_vals_dict
 
@@ -218,9 +207,8 @@ class Input:
             A dictionary with cell indices as keys and lists of assigned vertex identifiers as values.
         """
         vertex_assign = {}
-        for index, row in self.init_vals_input[["vertices"]].iterrows():
-            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
-            vertex_assign[f"c{index}"] = row
+        for index, row in self.init_vals_input.iterrows():
+            vertex_assign[f"c{index}"] = self.init_vals_input.iloc[index]["vertices"]
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
@@ -233,9 +221,8 @@ class Input:
             A dictionary with cell indices as keys and lists of neighbor cell indices as values.
         """
         neighbors = {}
-        for index, row in self.init_vals_input[["neighbors"]].iterrows():
-            row = row.iloc[0].replace(" ", "").replace("[", "").replace("]", "").split(",")
-            neighbors[f"c{index}"] = row
+        for index, row in self.init_vals_input.iterrows():
+            neighbors[f"c{index}"] = self.init_vals_input.iloc[index]["neighbors"]
         return neighbors
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:

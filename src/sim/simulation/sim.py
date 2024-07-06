@@ -301,7 +301,7 @@ class GrowingSim(Window):
         max_tick = 24 * 8
         # max_tick = 48
         try:
-            if self.tick < 1:
+            if self.tick < 12:
                 self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
@@ -342,9 +342,9 @@ def main(
     print("Making GrowingSim")
     geometry = ""
     if cell_val_file == "default" and v_file == "default":
-        cell_val_file = "src/sim/input/default_init_vals_higher_auxinw_in_shootward_vasc.csv"
-        # cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        # cell_val_file = "src/sim/input/default_init_vals_higher_auxinw_in_shootward_vasc.csv"
+        cell_val_file = "src/sim/input/default_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         geometry = "default"
     simulation = GrowingSim(
         SCREEN_WIDTH,

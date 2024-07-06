@@ -20,8 +20,8 @@ class TestInitializationSymmetry(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
@@ -932,8 +932,8 @@ class TestInitializationSymmetry(unittest.TestCase):
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
