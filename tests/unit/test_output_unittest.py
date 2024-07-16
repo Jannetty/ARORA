@@ -155,7 +155,6 @@ class TestOutput(unittest.TestCase):
         expected2 = cell2.get_circ_mod().get_state()
         found2 = self.output.get_circ_contents(summary2, cell2)
 
-
     def test_output_cells(self):
         self.output.output_cells()
         # Check if files are created and not empty
