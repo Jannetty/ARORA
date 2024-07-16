@@ -138,10 +138,10 @@ class Input:
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
                 if index_s in ["k1", "k2", "k3", "k4"]:
-                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
+                    # (f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
                     # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = int(value)
-                if index_s in ["k5", "k6", "k_s", "k_d"]:
+                if index_s in ["k5", "k6", "k_s", "k_d", "ks_aux", "kd_aux", "ks_arr", "kd_arr", "ks_pinu", "kd_pinu", "kd_pinloc", "ks_auxlax", "kd_auxlax"]:
                     # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
                     # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = float(value)
