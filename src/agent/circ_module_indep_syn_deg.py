@@ -77,15 +77,25 @@ class CirculateModuleIndSynDeg(CirculateModule):
                 raise ValueError(f"Missing value for key: {key}")
             return float(value)
 
+        print(f"init_vals: {init_vals}")
         self.ks_aux = get_float("ks_aux")
+        self.output_list.append("ks_aux")
         self.kd_aux = get_float("kd_aux")
+        self.output_list.append("kd_aux")
         self.ks_arr = get_float("ks_arr")
+        self.output_list.append("ks_arr")
         self.kd_arr = get_float("kd_arr")
+        self.output_list.append("kd_arr")
         self.ks_pinu = get_float("ks_pinu")
+        self.output_list.append("ks_pinu")
         self.kd_pinu = get_float("kd_pinu")
+        self.output_list.append("kd_pinu")
         self.kd_pinloc = get_float("kd_pinloc")
+        self.output_list.append("kd_pinloc")
         self.ks_auxlax = get_float("ks_auxlax")
+        self.output_list.append("ks_auxlax")
         self.kd_auxlax = get_float("kd_auxlax")
+        self.output_list.append("kd_auxlax")
 
     def calculate_auxin(self, auxini: float) -> float:
         """

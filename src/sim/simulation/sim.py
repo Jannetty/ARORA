@@ -134,8 +134,8 @@ class GrowingSim(Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        self.output = Output(self, "20240619_for_geo.csv", "20240619_for_geo.json")
         self.setup()
+        self.output = Output(self, "20240619_for_geo.csv", "20240619_for_geo.json")
 
     def get_root_midpointx(self) -> float:
         """

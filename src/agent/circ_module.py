@@ -32,6 +32,7 @@ class CirculateModule(ABC):
     k_pin: float
     auxin_w: float
     arr_hist: List[float]
+    output_list = []
 
     @abstractmethod
     def __init__(self, cell: "Cell", init_vals: Dict[str, Any]) -> None:
@@ -53,21 +54,37 @@ class CirculateModule(ABC):
             return [float(v) for v in value]
 
         self.auxin = get_float("auxin")
+        self.output_list.append("auxin")
         self.arr = get_float("arr")
+        self.output_list.append("arr")
         self.auxlax = get_float("al")
+        self.output_list.append("al")
         self.pin = get_float("pin")
+        self.output_list.append("pin")
         self.pina = get_float("pina")
+        self.output_list.append("pina")
         self.pinb = get_float("pinb")
+        self.output_list.append("pinb")
         self.pinl = get_float("pinl")
+        self.output_list.append("pinl")
         self.pinm = get_float("pinm")
+        self.output_list.append("pinm")
         self.k_arr_arr = get_float("k1")
+        self.output_list.append("k1")
         self.k_auxin_auxlax = get_float("k2")
+        self.output_list.append("k2")
         self.k_auxin_pin = get_float("k3")
+        self.output_list.append("k3")
         self.k_arr_pin = get_float("k4")
+        self.output_list.append("k4")
         self.k_al = get_float("k5")
+        self.output_list.append("k5")
         self.k_pin = get_float("k6")
+        self.output_list.append("k6")
         self.auxin_w = get_float("auxin_w")
+        self.output_list.append("auxin_w")
         self.arr_hist = get_float_list("arr_hist")
+        self.output_list.append("arr_hist")
         self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
             self.cell.get_sim().get_root_midpointx()
         )
@@ -187,7 +204,9 @@ class CirculateModule(ABC):
         Ensures that the sum of PIN weights is 1.0 before proceeding with the updates.
         """
         # Retrieve current PIN weights
-        self.pin_weights = self.cell.get_pin_weights() # Calculations to update PIN weights are done in Cell class
+        self.pin_weights = (
+            self.cell.get_pin_weights()
+        )  # Calculations to update PIN weights are done in Cell class
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
 
         # Solve the differential equations for the current state

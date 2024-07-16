@@ -49,31 +49,7 @@ class Output:
         self.sim = sim
         self.filename_csv = filename_csv
         self.filename_json = filename_json
-        with open(self.filename_csv, "w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow(
-                [
-                    "tick",
-                    "cell",
-                    "auxin",
-                    "location",
-                    "apical_memlen",
-                    "basal_memlen",
-                    "left_memlen",
-                    "right_memlen",
-                    "dev_zone",
-                    "cell_type",
-                    "ARR",
-                    "AUX/LAX",
-                    "PIN_unlocalized",
-                    "PIN_apical",
-                    "PIN_basal",
-                    "PIN_left",
-                    "PIN_right",
-                    "arr_hist",
-                    "auxin_w",
-                ]
-            )
+        self.title_labels_written_to_output_file = False
 
     def output_cells(self) -> None:
         """
@@ -83,14 +59,34 @@ class Output:
         concentrations, locations, and PIN distributions, and writes this information
         to the specified output files.
         """
+        if self.title_labels_written_to_output_file == False:
+            if len(self.sim.get_cell_list()) <= 0:
+                print("No Cells added to simulation. Cannot output simulation contents.")
+                return
+            sim_and_cell_contents = [
+                "tick",
+                "cell",
+                "location",
+                "apical_memlen",
+                "basal_memlen",
+                "left_memlen",
+                "right_memlen",
+                "dev_zone",
+                "cell_type",
+            ]
+            self.sim_and_cell_contents = sim_and_cell_contents
+            circ_contents = list(self.sim.get_cell_list()[0].get_circ_mod().get_state().keys())
+            self.circ_contents = circ_contents
+            with open(self.filename_csv, "w", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(sim_and_cell_contents + circ_contents)
+            self.title_labels_written_to_output_file = True
         output = []
         cell_list = list(self.sim.get_cell_list())
-        print(f"cell_list: {cell_list}")
         for cell in cell_list:
             summary: dict[str, Any] = {}
             summary["tick"] = self.sim.get_tick()
             summary["cell"] = cell.get_c_id()
-            summary["auxin"] = cell.get_circ_mod().get_auxin()
             summary["location"] = cell.quad_perimeter.get_corners_for_disp()
             summary["apical_memlen"] = cell.quad_perimeter.get_apical_memlen()
             summary["basal_memlen"] = cell.quad_perimeter.get_basal_memlen()
@@ -127,16 +123,7 @@ class Output:
         dict[str, Any]
             The updated summary dictionary containing circulation content information for the cell.
         """
-        summary["ARR"] = cell.get_circ_mod().get_arr()
-        summary["AUX/LAX"] = cell.get_circ_mod().get_auxlax()
-        summary["PIN_unlocalized"] = cell.get_circ_mod().get_pin()
-        summary["PIN_apical"] = cell.get_circ_mod().get_apical_pin()
-        summary["PIN_basal"] = cell.get_circ_mod().get_basal_pin()
-        summary["PIN_left"] = cell.get_circ_mod().get_left_pin()
-        summary["PIN_right"] = cell.get_circ_mod().get_right_pin()
-        summary["arr_hist"] = cell.get_circ_mod().get_arr_hist()
-        summary["auxin_w"] = cell.get_circ_mod().get_auxin_w()
-        return summary
+        return cell.get_circ_mod().get_state()
 
     def get_division_number(self, cell: "Cell") -> int:
         """
