@@ -296,6 +296,7 @@ class GrowingSim(Window):
             delta_time: The time step.
         """
         print("----")
+        time.sleep(2)
         self.output.output_cells()
         self.tick += 1
         max_tick = 24 * 8
@@ -343,7 +344,8 @@ def main(
     geometry = ""
     if cell_val_file == "default" and v_file == "default":
         # cell_val_file = "src/sim/input/default_init_vals_higher_auxinw_in_shootward_vasc.csv"
-        cell_val_file = "src/sim/input/default_init_vals.json"
+        # cell_val_file = "src/sim/input/default_init_vals.json"
+        cell_val_file = "src/sim/input/indep_syn_deg_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
         geometry = "default"
     simulation = GrowingSim(

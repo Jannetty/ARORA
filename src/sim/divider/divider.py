@@ -72,6 +72,7 @@ class Divider:
         new cells, and then updates the simulation's cell list accordingly.
         """
         if len(self.cells_to_divide) != 0:
+            print("---------- Dividing cells ----------")
             meristematic_cells_to_divide = [
                 cell for cell in self.cells_to_divide if cell.get_dev_zone() == "meristematic"
             ]

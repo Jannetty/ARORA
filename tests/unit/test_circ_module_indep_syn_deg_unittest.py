@@ -385,7 +385,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
             "kd_auxlax": self.init_vals["kd_auxlax"],
             "auxin_w": self.init_vals["auxin_w"],
             "arr_hist": self.init_vals["arr_hist"],
-            "circ_mod": "cont",
+            "circ_mod": "indep_syn_deg",
         }
         self.assertEqual(self.circ_mod.get_state(), expected_state)
 
