@@ -245,8 +245,6 @@ class VertexMover:
             The maximum delta value calculated across all vertices, used for adjusting non-growing cells.
         """
         for vertex in self.vertex_deltas:
-            # if vertex.get_vid() in [0, 1, 2, 3]:
-            #     print(f"Vertex {vertex.get_vid()} delta: {self.vertex_deltas[vertex]}")
             vertex.set_y(vertex.get_y() + self.vertex_deltas[vertex])
         # iterate through all nongrowing cells in root tip, move all basal vertices not yet moved
         moved_vs = list(self.vertex_deltas.keys())

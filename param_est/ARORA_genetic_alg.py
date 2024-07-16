@@ -15,7 +15,8 @@ SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "ARORA"
 
-PARAM_NAMES = ["k_s","k_d","k1","k2","k3","k4","k5","k6","tau"]
+DEFAULT_PARAM_NAMES = ["k_s","k_d","k1","k2","k3","k4","k5","k6","tau"]
+INDEP_SYN_DEG_PARAM_NAMES = ["ks_aux","kd_aux","ks_pinu","kd_pinu","kd_pinloc","ks_auxlax","kd_auxlax","k1","k2","k3","k4","k5","k6","tau"] 
 
 class ARORAGeneticAlg:
     def __init__(self, filename: str):
@@ -28,13 +29,14 @@ class ARORAGeneticAlg:
         print(f"Chromosome {solution_idx} : {solution}")
         chromosome = {}
         chromosome['sol_idx'] = solution_idx
-        params = pd.Series(solution, index=PARAM_NAMES)
-        for param in PARAM_NAMES:
+        params = pd.Series(solution, index=INDEP_SYN_DEG_PARAM_NAMES)
+        for param in INDEP_SYN_DEG_PARAM_NAMES:
             chromosome[param] = params[param]
         if not self._check_constraints(params, chromosome):
             print("Invalid solution")
             cost = np.inf
         else:
+            print(f"Running ARORA with params: {params}")
             fitness = self._run_ARORA(params, chromosome)
         chromosome['fitness'] = fitness
         self.population.append(chromosome)
@@ -57,8 +59,8 @@ class ARORAGeneticAlg:
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/indep_syn_deg_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         gparam_series = params
         geometry = "default"
         simulation = GrowingSim(
@@ -98,7 +100,7 @@ class ARORAGeneticAlg:
         print(f"Fitness: {fitness}")
         return fitness 
 
-    def make_paramspace(self):
+    def make_paramspace_ks_kd(self):
         ks_range = np.linspace(0.001, 0.3, 100).astype(float)
         kd_range = np.linspace(0.0001, 0.03, 100).astype(float)
         k1_range = np.linspace(10, 160, 151).astype(int)
@@ -109,9 +111,26 @@ class ARORAGeneticAlg:
         k6_range = np.linspace(0.2, 1, 100).astype(float)
         tau_range = np.linspace(1, 24, 24).astype(int)
         return [ks_range, kd_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
+    
+    def make_paramspace_indep_syn_deg(self):
+        ks_aux_range = np.linspace(0.001, 0.3, 100).astype(float)
+        kd_aux_range = np.linspace(0.0001, 0.03, 100).astype(float)
+        ks_pinu_range = np.linspace(0.001, 0.3, 100).astype(float)
+        kd_pinu_range = np.linspace(0.0001, 0.03, 100).astype(float)
+        kd_pinloc_range = np.linspace(0.0001, 0.03, 100).astype(float)
+        ks_auxlax_range = np.linspace(0.001, 0.3, 100).astype(float)
+        kd_auxlax_range = np.linspace(0.0001, 0.03, 100).astype(float)
+        k1_range = np.linspace(10, 160, 151).astype(int)
+        k2_range = np.linspace(50, 100, 51).astype(int)
+        k3_range = np.linspace(10, 75, 66).astype(int)
+        k4_range = np.linspace(50, 100, 51).astype(int)
+        k5_range = np.linspace(0.07, 1, 100).astype(float)
+        k6_range = np.linspace(0.2, 1, 100).astype(float)
+        tau_range = np.linspace(1, 24, 24).astype(int)
+        return [ks_aux_range, kd_aux_range, ks_pinu_range, kd_pinu_range, kd_pinloc_range, ks_auxlax_range, kd_auxlax_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
 
     def run_genetic_alg(self):
-        genespace = self.make_paramspace()
+        genespace = self.make_paramspace_indep_syn_deg()
         ga_parameters = {
             "num_generations": 10,
             "num_parents_mating": 10,

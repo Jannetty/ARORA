@@ -81,10 +81,7 @@ class Input:
                 pass
         self.vertex_input = self.load_json(vertex_file)
         self.vertex_input["y"] = self.vertex_input["y"].astype("int")
-        print(f"Vertex input: {self.vertex_input}")
-        print(f"Vertex_input[y]: {[val for val in self.vertex_input['y']]}")
         self.initial_v_miny = min(self.vertex_input["y"])
-        print(f"Initial v_miny: {self.initial_v_miny}")
         self.sim = sim
 
     def load_json(self, file_path: str) -> pd.DataFrame:
