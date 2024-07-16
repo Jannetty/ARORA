@@ -77,7 +77,6 @@ class CirculateModuleIndSynDeg(CirculateModule):
                 raise ValueError(f"Missing value for key: {key}")
             return float(value)
 
-        print(f"init_vals: {init_vals}")
         self.ks_aux = get_float("ks_aux")
         self.output_list.append("ks_aux")
         self.kd_aux = get_float("kd_aux")

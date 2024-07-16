@@ -39,7 +39,22 @@ class Input:
     """
 
     int_params: list = ["k1", "k2", "k4"]
-    float_params: list = ["k3", "k5", "k6", "k_s", "k_d"]
+    float_params: list = [
+        "k3",
+        "k5",
+        "k6",
+        "k_s",
+        "k_d",
+        "ks_aux",
+        "kd_aux",
+        "ks_arr",
+        "kd_arr",
+        "ks_pinu",
+        "kd_pinu",
+        "kd_pinloc",
+        "ks_auxlax",
+        "kd_auxlax",
+    ]
 
     def __init__(self, init_vals_file: str, vertex_file: str, sim: "GrowingSim"):
         """
@@ -58,9 +73,18 @@ class Input:
         for col in self.int_params:
             self.init_vals_input[col] = self.init_vals_input[col].astype("int")
         for col in self.float_params:
-            self.init_vals_input[col] = self.init_vals_input[col].astype("float")
+            try:
+                self.init_vals_input[col] = self.init_vals_input[col].astype("float")
+                print(f"Converted {col} to float")
+            except KeyError:
+                print(f"Key Error: {col}")
+                pass
         self.vertex_input = self.load_json(vertex_file)
-        self.initial_v_miny = float(min(self.vertex_input["y"]))
+        self.vertex_input["y"] = self.vertex_input["y"].astype("int")
+        print(f"Vertex input: {self.vertex_input}")
+        print(f"Vertex_input[y]: {[val for val in self.vertex_input['y']]}")
+        self.initial_v_miny = min(self.vertex_input["y"])
+        print(f"Initial v_miny: {self.initial_v_miny}")
         self.sim = sim
 
     def load_json(self, file_path: str) -> pd.DataFrame:
@@ -141,7 +165,21 @@ class Input:
                     # (f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
                     # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = int(value)
-                if index_s in ["k5", "k6", "k_s", "k_d", "ks_aux", "kd_aux", "ks_arr", "kd_arr", "ks_pinu", "kd_pinu", "kd_pinloc", "ks_auxlax", "kd_auxlax"]:
+                if index_s in [
+                    "k5",
+                    "k6",
+                    "k_s",
+                    "k_d",
+                    "ks_aux",
+                    "kd_aux",
+                    "ks_arr",
+                    "kd_arr",
+                    "ks_pinu",
+                    "kd_pinu",
+                    "kd_pinloc",
+                    "ks_auxlax",
+                    "kd_auxlax",
+                ]:
                     # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
                     # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = float(value)
@@ -232,7 +270,8 @@ class Input:
         """
         neighbors = {}
         for index, row in self.init_vals_input.iterrows():
-            neighbors[f"c{index}"] = row["neighbors"]
+            cell_id = f"c{index}"
+            neighbors[cell_id] = row["neighbors"]
         return neighbors
 
     def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
@@ -307,14 +346,14 @@ class Input:
             A dictionary with cell indices as keys and lists of neighboring Cell objects as values.
         """
         neighbors_assignment = self.get_neighbors_assignment()
-        neighbors = {}
+        neighbors_dict = {}
         for cell_num, neighb in neighbors_assignment.items():
-            for each in neighb:
-                if cell_num not in neighbors:
-                    neighbors[cell_num] = [new_cells[each]]
+            for each_neighbor in neighb:
+                if cell_num not in neighbors_dict:
+                    neighbors_dict[cell_num] = [new_cells[each_neighbor]]
                 else:
-                    neighbors[cell_num].append(new_cells[each])
-        return neighbors
+                    neighbors_dict[cell_num].append(new_cells[each_neighbor])
+        return neighbors_dict
 
     def update_neighbors(self, neighbors: dict, new_cells: dict) -> None:
         """

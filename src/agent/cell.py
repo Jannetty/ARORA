@@ -637,6 +637,7 @@ class Cell(Sprite):
         blend_function : Any, optional
             The blend function to be used during drawing, by default None.
         """
+
         super().draw(filter=filter, pixelated=pixelated, blend_function=blend_function)
         self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
@@ -797,6 +798,11 @@ class Cell(Sprite):
         """
         Updates the cell by growing, calculating pin weights, and updating the circ module.
         """
+        if self.get_c_id() == 0:
+            print(f"a_neighbors: {[cell.get_c_id() for cell in self.get_a_neighbors()]}")
+            print(f"Cell {self.get_c_id()} is in the {self.dev_zone} zone")
+        if self.get_c_id() == 6:
+            print(f"b_neighbors: {[cell.get_c_id() for cell in self.get_b_neighbors()]}")
         if self.growing:
             self.grow()
         self.pin_weights = self.calculate_pin_weights()
