@@ -22,7 +22,7 @@ class TestFitnessFunctions(unittest.TestCase):
     @patch('param_est.fitness_functions.spearmanr')
     def test_auxin_greater_in_larger_cells_at_trans_elon_interface(self, mock_spearmanr):
         # Arrange
-        mock_spearmanr.return_value = 0.5  # Set a mock correlation coefficient
+        mock_spearmanr.return_value = MagicMock(statistic=0.5)  # Set a mock correlation coefficient
 
         # Act
         result = auxin_greater_in_larger_cells_at_trans_elon_interface(self.sim, self.chromosome)
@@ -34,7 +34,7 @@ class TestFitnessFunctions(unittest.TestCase):
     @patch('param_est.fitness_functions.spearmanr')
     def test_auxin_greater_in_larger_cells_at_trans_elon_interface_inverse_correlation(self, mock_spearmanr):
         # Arrange
-        mock_spearmanr.return_value = -0.5  # Set a mock inverse correlation coefficient
+        mock_spearmanr.return_value = MagicMock(statistic=-0.5)  # Set a mock inverse correlation coefficient
 
         # Act
         result = auxin_greater_in_larger_cells_at_trans_elon_interface(self.sim, self.chromosome)

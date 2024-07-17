@@ -4,7 +4,7 @@ import pyglet
 import pandas
 from pandas import Series
 import matplotlib.pyplot as plt
-from arcade import Window
+from arcade import Window, draw_polygon_filled
 from arcade import SpriteList
 from arcade import set_background_color
 from arcade import close_window
@@ -122,7 +122,7 @@ class GrowingSim(Window):
             super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        set_background_color(color=(250, 250, 250, 250))
+            set_background_color(color=(250, 250, 250, 250))
         if cell_val_file != "" and v_file != "":
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
@@ -272,10 +272,13 @@ class GrowingSim(Window):
         """
         Renders the screen.
         """
+        print("Drawing")
+        self.switch_to()  # Ensure the OpenGL context is active
         if self.vis:
             self.clear()
             for cell in self.cell_list:
                 cell.draw()
+        self.flip() # Flip the buffers to update the display
 
     def update_viewport_position(self) -> None:
         """
@@ -297,7 +300,6 @@ class GrowingSim(Window):
             delta_time: The time step.
         """
         print("----")
-        time.sleep(2)
         self.output.output_cells()
         self.tick += 1
         max_tick = 24 * 8
@@ -307,6 +309,7 @@ class GrowingSim(Window):
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
+                    self.on_draw()
                 self.cell_list.update()
                 self.vertex_mover.update()
                 self.circulator.update()
@@ -330,9 +333,7 @@ class GrowingSim(Window):
         while not self.exit_flag:
             pyglet.clock.tick()
             self.dispatch_events()
-            self.dispatch_event('on_draw')
-            self.dispatch_event('on_update', 1/60.0)
-            time.sleep(1/60.0)
+            self.on_update(1 / 60.0)
         print("CLOSING WINDOW")
         self.close()  # Close the window
         print("WINDOW CLOSED")

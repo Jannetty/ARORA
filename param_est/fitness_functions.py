@@ -37,12 +37,10 @@ def auxin_greater_in_larger_cells_at_trans_elon_interface(sim: GrowingSim, chrom
     # Trying with all cells
     areas = [cell.get_quad_perimeter().get_area() for cell in xpp_trans_and_elon_cells]
     auxins = [cell.get_circ_mod().get_auxin() for cell in xpp_trans_and_elon_cells]
-    corr_coeff = spearmanr(areas, auxins)
+    corr_coeff = spearmanr(areas, auxins).statistic
     if corr_coeff < 0:
         print(f"Inverse correlation between xpp cell size and auxin concentration in transition and elongation zone. Fitness set to {abs(corr_coeff)}.")
         print(f"corr_coef = {corr_coeff}")
-        print(f"Areas = {areas}")
-        print(f"Auxins = {auxins}")
         chromosome["notes"] = f"Inverse correlation between xpp cell size and auxin concentration in transition and elongation zone. Fitness set to {abs(corr_coeff)}."
         return abs(corr_coeff) #we want there to be a strong positive correlation
     return abs(corr_coeff)
