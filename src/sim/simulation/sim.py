@@ -136,6 +136,7 @@ class GrowingSim(Window):
         self.cmap = plt.get_cmap("coolwarm")
         self.setup()
         self.output = Output(self, "20240619_for_geo.csv", "20240619_for_geo.json")
+        self.exit_flag = False
 
     def get_root_midpointx(self) -> float:
         """
@@ -300,9 +301,8 @@ class GrowingSim(Window):
         self.output.output_cells()
         self.tick += 1
         max_tick = 24 * 8
-        # max_tick = 48
         try:
-            if self.tick < 12:
+            if self.tick <= 12:
                 self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
@@ -317,18 +317,26 @@ class GrowingSim(Window):
                 print(f"Total auxin: {total_aux}")
                 print(f"Total area: {total_area}")
                 print(f"Total auxin/area = {total_aux/total_area}")
-
             else:
                 print("Simulation Complete")
-                close_window()
+                self.exit_flag = True  # Set the exit flag
         except (ValueError, OverflowError) as e:
             print(e)
             print("Ending Simulation")
-            close_window()
+            self.exit_flag = True  # Set the exit flag
             raise e
 
     def run_sim(self) -> None:
-        pyglet.app.run(0)
+        while not self.exit_flag:
+            pyglet.clock.tick()
+            self.dispatch_events()
+            self.dispatch_event('on_draw')
+            self.dispatch_event('on_update', 1/60.0)
+            time.sleep(1/60.0)
+        print("CLOSING WINDOW")
+        self.close()  # Close the window
+        print("WINDOW CLOSED")
+        pyglet.app.exit()  # Exit the pyglet event loop
 
 
 def main(
@@ -362,5 +370,5 @@ def main(
     )
     print("Running Simulation")
     simulation.run_sim()
-
+    print("HEREHEREHEREHERE")
     return simulation.get_tick()
