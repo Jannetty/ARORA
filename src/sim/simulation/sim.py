@@ -278,7 +278,7 @@ class GrowingSim(Window):
             self.clear()
             for cell in self.cell_list:
                 cell.draw()
-        self.flip() # Flip the buffers to update the display
+        self.flip()  # Flip the buffers to update the display
 
     def update_viewport_position(self) -> None:
         """

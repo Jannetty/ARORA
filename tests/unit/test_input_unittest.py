@@ -25,8 +25,8 @@ class TestInput(unittest.TestCase):
     def test_get_vertex(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected_vertex_list = {
@@ -45,8 +45,8 @@ class TestInput(unittest.TestCase):
     def test_get_init_vals(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected = {
@@ -107,8 +107,8 @@ class TestInput(unittest.TestCase):
     def test_set_arr_hist(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         dict = {
@@ -220,8 +220,8 @@ class TestInput(unittest.TestCase):
     def test_get_vertex_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected = {"c0": [0, 1, 2, 3], "c1": [1, 3, 4, 5]}
@@ -232,8 +232,8 @@ class TestInput(unittest.TestCase):
     def test_get_neighbors_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected = {"c0": ["c1"], "c1": ["c0"]}
@@ -245,8 +245,8 @@ class TestInput(unittest.TestCase):
     def test_group_vertices(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         found_vertices = input.get_vertices_from_input_file()
@@ -264,8 +264,8 @@ class TestInput(unittest.TestCase):
     def test_create_cells(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -309,8 +309,8 @@ class TestInput(unittest.TestCase):
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 300)
@@ -341,8 +341,8 @@ class TestInput(unittest.TestCase):
     def test_update_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 400, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -373,8 +373,8 @@ class TestInput(unittest.TestCase):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.json",
-            "tests/unit/test_csv/vertex.json",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -415,8 +415,8 @@ class TestInput(unittest.TestCase):
                 1,
                 400,
                 False,
-                cell_val_file="tests/unit/test_csv/init_vals.json",
-                v_file="tests/unit/test_csv/vertex.json",
+                cell_val_file="tests/unit/test_input_files/init_vals.json",
+                v_file="tests/unit/test_input_files/vertex.json",
             )
             this_input = this_sim.input
             this_input.replace_default_to_gparam(this_sim_gparam_series)
