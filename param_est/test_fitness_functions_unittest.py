@@ -199,8 +199,8 @@ class TestFitnessFunctions(unittest.TestCase):
         self.assertEqual(len(closest_cells), len(self.centroid_y_locations))
 
         # Check that the correct closest cells are returned
-        self.assertEqual(closest_cells[0]["adjusted_centroid_y"], 100)
-        self.assertEqual(closest_cells[1]["adjusted_centroid_y"], 200)
+        self.assertEqual(closest_cells[0]["adj_centroid_y"], 100)
+        self.assertEqual(closest_cells[1]["adj_centroid_y"], 200)
 
         # Optionally, check auxin values for additional confirmation
         self.assertEqual(closest_cells[0]["cell"], 2)
