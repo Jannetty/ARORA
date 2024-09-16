@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import pygad
 from pygad import GA
-from param_est.fitness_functions import auxin_greater_in_larger_cells_at_trans_elon_interface, auxin_peak_at_root_tip
+from param_est.fitness_functions import auxin_greater_in_larger_cells_at_trans_elon_interface, avg_auxin_root_tip_greater_than_elsewhere
 from src.sim.simulation.sim import GrowingSim
 
 SCREEN_WIDTH = 1000
@@ -92,9 +92,9 @@ class ARORAGeneticAlg:
     
     def _calculate_fitness(self, simulation, chromosome):
         # calculate fitness
-        fitness = (100 * auxin_greater_in_larger_cells_at_trans_elon_interface(simulation, chromosome)) + auxin_peak_at_root_tip(simulation, chromosome)
+        fitness = (100 * auxin_greater_in_larger_cells_at_trans_elon_interface(simulation, chromosome)) + avg_auxin_root_tip_greater_than_elsewhere(simulation, chromosome)
         chromosome['auxin_corr_with_cell_size'] = (100 * auxin_greater_in_larger_cells_at_trans_elon_interface(simulation, chromosome))
-        chromosome['auxin_peak_at_root_tip'] = auxin_peak_at_root_tip(simulation, chromosome)
+        chromosome['auxin_peak_at_root_tip'] = avg_auxin_root_tip_greater_than_elsewhere(simulation, chromosome)
         print(f"auxin_corr_with_cell_size: {chromosome['auxin_corr_with_cell_size']}")
         print(f"Auxin peak at root tip: {chromosome['auxin_peak_at_root_tip']}")
         print(f"Fitness: {fitness}")
