@@ -94,7 +94,7 @@ class Output:
             summary["right_memlen"] = cell.quad_perimeter.get_right_memlen()
             summary["dev_zone"] = cell.get_dev_zone()
             summary["cell_type"] = cell.get_cell_type()
-            summary = self.get_circ_contents(summary, cell)
+            summary.update(self.get_circ_contents(summary, cell))
             output.append(summary)
 
         # Generate CSV
@@ -104,7 +104,7 @@ class Output:
             writer.writerows(output)
 
         # Generate JSON
-        with open(self.filename_json, "w") as file:
+        with open(self.filename_json, "a") as file:
             json.dump(output, file, indent=4)
 
     def get_circ_contents(self, summary: dict[str, Any], cell: "Cell") -> dict[str, Any]:

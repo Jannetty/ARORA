@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from arcade import Window, draw_polygon_filled
 from arcade import SpriteList
 from arcade import set_background_color
-from arcade import close_window
+from arcade import close_window, set_window
 import time
 from src.sim.circulator.circulator import Circulator
 from src.sim.divider.divider import Divider
@@ -109,6 +109,7 @@ class GrowingSim(Window):
         v_file: str = "",
         gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
+        output_file: str = "output",
     ):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
@@ -135,7 +136,7 @@ class GrowingSim(Window):
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
         self.setup()
-        self.output = Output(self, "20240619_for_geo.csv", "20240619_for_geo.json")
+        self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
         self.exit_flag = False
 
     def get_root_midpointx(self) -> float:
@@ -368,7 +369,9 @@ def main(
         v_file,
         gparam_series,
         geometry,
+        output_file="20240619_for_geo",
     )
+    set_window(simulation)
     print("Running Simulation")
     simulation.run_sim()
     print("HEREHEREHEREHERE")
