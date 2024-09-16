@@ -94,8 +94,9 @@ def parity_of_mz_auxin_concentrations_with_VDB_data(sim: GrowingSim, chromosome:
         The parity of the auxin concentrations in the marginal zone cells with the VDB data.
     """
     
+    print("here1")
     # Step 1: Load VDB and ARORA data
-    vdb_summary_df = pd.read_csv('vdb_summary_seven_peri_cells_across_27_ticks.csv')
+    vdb_summary_df = pd.read_csv('param_est/vdb_summary_seven_peri_cells_across_27_ticks.csv')
     sim_output_df = pd.read_csv(sim.output.filename_csv)
     # Preprocess ARORA simulation output for analysis
     sim_output_df = preprocess_ARORA_sim_output(sim_output_df)
@@ -106,27 +107,36 @@ def parity_of_mz_auxin_concentrations_with_VDB_data(sim: GrowingSim, chromosome:
 
     # Step 3: Generate summary statistics of auxin concentration per location
     ARORA_summary_df = calculate_auxin_summary(closest_arora_cells_dfs)
-
     # Step 4: Calculate Pearson correlation between ARORA and VDB data
     correlation_coefficient = np.corrcoef(vdb_summary_df['auxin_mean'], ARORA_summary_df['auxin_mean'])[0, 1]
-    
     return correlation_coefficient
 
 def parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point(sim: GrowingSim, chromosome: dict) -> float:
+    print("here2")
     # Load VDB data
-    vdb_auxins = pd.read_csv('vdb_auxins_at_56pt5_336pt5')
+    vdb_auxins = pd.read_csv('param_est/vdb_auxins_at_56pt5_336pt5.csv')
+    print("here3")
     sim_output_df = pd.read_csv(sim.output.filename_csv)
+    print("here4")
     sim_output_df = preprocess_ARORA_sim_output(sim_output_df)
+    print("here5")
     # Get auxin concentrations of XPP boundary cell at each time point
     xpp_boundary_cell_loc = [56.5, 336.5]
     # For every tick in sim_output_df, find the ARORA cell closest to the XPP boundary cell
     closest_cells = []
     for tick in sim_output_df['tick'].unique():
+        print(f"Processing tick {tick}")
         sim_output_df_tick = sim_output_df[sim_output_df['tick'] == tick]
+        print("here6")
         closest_cell = find_ARORA_cell_closest_to_centroid(xpp_boundary_cell_loc, sim_output_df_tick)
+        print("here7")
         closest_cells.append(closest_cell)
+    print("here8")
+    print(f"Length of VDB auxins: {len(vdb_auxins['auxin'])}")
+    print(f"Length of closest cells: {len(closest_cells)}")
     # Calculate Pearson correlation between ARORA and VDB data
     correlation_coefficient = np.corrcoef(vdb_auxins['auxin'], [cell['Auxin'] for cell in closest_cells])[0, 1]
+    print("here9")
     return correlation_coefficient
 
 
@@ -150,16 +160,16 @@ def collect_auxin_data_by_tick(sim_output_df: pd.DataFrame, centroid_y_locations
     unique_ticks = sim_output_df['tick'].unique()
 
     for tick in unique_ticks:
+        print(f"Processing tick {tick}")
         closest_cells_df = pd.DataFrame()
         sim_output_df_meri_peri = sim_output_df[
             (sim_output_df['tick'] == tick) &
             (sim_output_df['dev_zone'] == 'meristematic') &
             (sim_output_df['cell_type'] == 'peri')
         ].copy()
-
         closest_cells = find_closest_ARORA_pericycle_cell(centroid_y_locations, sim_output_df_meri_peri)
         closest_cells_df = pd.concat([closest_cells_df, pd.DataFrame(closest_cells)])
-        closest_cells_df = closest_cells_df.sort_values(by='adjusted_centroid_y')
+        closest_cells_df = closest_cells_df.sort_values(by='adj_centroid_y')
         closest_arora_cells_dfs.append(closest_cells_df)
 
     return pd.concat(closest_arora_cells_dfs)
@@ -232,7 +242,8 @@ def find_closest_ARORA_pericycle_cell(centroid_y_locations, arora_df_ONLY_PERI):
     # Make a copy of the DataFrame to avoid the SettingWithCopyWarning
     arora_df_ONLY_PERICYCLE = arora_df_ONLY_PERI.copy()
     for ylocation in centroid_y_locations:
-        arora_df_ONLY_PERICYCLE.loc[:, 'distance'] = (arora_df_ONLY_PERICYCLE['adjusted_centroid_y'] - ylocation).abs()
+        # Calculate the distance between each cell's centroid and the y-location
+        arora_df_ONLY_PERICYCLE.loc[:, 'distance'] = (arora_df_ONLY_PERICYCLE['adj_centroid_y'] - ylocation).abs()
         closest_cell = arora_df_ONLY_PERICYCLE.loc[arora_df_ONLY_PERICYCLE['distance'].idxmin()]
         # Drop the 'distance' column after finding the closest cell
         arora_df_ONLY_PERICYCLE = arora_df_ONLY_PERICYCLE.drop(columns=['distance'])

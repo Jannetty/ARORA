@@ -36,7 +36,7 @@ class TestFitnessFunctions(unittest.TestCase):
 
         self.arora_df_ONLY_PERICYCLE = pd.DataFrame(
             {
-                "adjusted_centroid_y": [50, 100, 150, 200, 250],
+                "adj_centroid_y": [50, 100, 150, 200, 250],
                 "auxin": [10, 20, 30, 40, 50],  # Mock auxin concentration
                 "cell": [1, 2, 3, 4, 5],
             }
@@ -55,7 +55,7 @@ class TestFitnessFunctions(unittest.TestCase):
                 ],
                 "cell_type": ["peri", "peri", "peri", "peri"],
                 "auxin": [10, 20, 15, 25],
-                "adjusted_centroid_y": [75, 80, 120, 125],
+                "adj_centroid_y": [75, 80, 120, 125],
                 "centroid_y": [75, 80, 120, 125],
             }
         )

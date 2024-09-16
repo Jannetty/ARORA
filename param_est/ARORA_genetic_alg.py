@@ -95,6 +95,7 @@ class ARORAGeneticAlg:
             v_file,
             gparam_series,
             geometry,
+            f"param_est/ARORA_output_{chromosome['sol_idx']}.csv",
         )
         simulation.setup()
         try:
