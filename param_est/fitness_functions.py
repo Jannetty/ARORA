@@ -94,7 +94,6 @@ def parity_of_mz_auxin_concentrations_with_VDB_data(sim: GrowingSim, chromosome:
         The parity of the auxin concentrations in the marginal zone cells with the VDB data.
     """
     
-    print("here1")
     # Step 1: Load VDB and ARORA data
     vdb_summary_df = pd.read_csv('param_est/vdb_summary_seven_peri_cells_across_27_ticks.csv')
     sim_output_df = pd.read_csv(sim.output.filename_csv)
@@ -109,34 +108,25 @@ def parity_of_mz_auxin_concentrations_with_VDB_data(sim: GrowingSim, chromosome:
     ARORA_summary_df = calculate_auxin_summary(closest_arora_cells_dfs)
     # Step 4: Calculate Pearson correlation between ARORA and VDB data
     correlation_coefficient = np.corrcoef(vdb_summary_df['auxin_mean'], ARORA_summary_df['auxin_mean'])[0, 1]
+    chromosome["auxin_corr_with_mz"] = correlation_coefficient
     return correlation_coefficient
 
 def parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point(sim: GrowingSim, chromosome: dict) -> float:
-    print("here2")
     # Load VDB data
     vdb_auxins = pd.read_csv('param_est/vdb_auxins_at_56pt5_336pt5.csv')
-    print("here3")
     sim_output_df = pd.read_csv(sim.output.filename_csv)
-    print("here4")
     sim_output_df = preprocess_ARORA_sim_output(sim_output_df)
-    print("here5")
     # Get auxin concentrations of XPP boundary cell at each time point
     xpp_boundary_cell_loc = [56.5, 336.5]
     # For every tick in sim_output_df, find the ARORA cell closest to the XPP boundary cell
     closest_cells = []
     for tick in sim_output_df['tick'].unique():
-        print(f"Processing tick {tick}")
         sim_output_df_tick = sim_output_df[sim_output_df['tick'] == tick]
-        print("here6")
         closest_cell = find_ARORA_cell_closest_to_centroid(xpp_boundary_cell_loc, sim_output_df_tick)
-        print("here7")
         closest_cells.append(closest_cell)
-    print("here8")
-    print(f"Length of VDB auxins: {len(vdb_auxins['auxin'])}")
-    print(f"Length of closest cells: {len(closest_cells)}")
     # Calculate Pearson correlation between ARORA and VDB data
     correlation_coefficient = np.corrcoef(vdb_auxins['auxin'], [cell['Auxin'] for cell in closest_cells])[0, 1]
-    print("here9")
+    chromosome["auxin_corr_with_xpp_boundary"] = correlation_coefficient
     return correlation_coefficient
 
 
@@ -160,7 +150,6 @@ def collect_auxin_data_by_tick(sim_output_df: pd.DataFrame, centroid_y_locations
     unique_ticks = sim_output_df['tick'].unique()
 
     for tick in unique_ticks:
-        print(f"Processing tick {tick}")
         closest_cells_df = pd.DataFrame()
         sim_output_df_meri_peri = sim_output_df[
             (sim_output_df['tick'] == tick) &

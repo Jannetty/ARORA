@@ -303,7 +303,7 @@ class GrowingSim(Window):
         print("----")
         self.output.output_cells()
         self.tick += 1
-        #max_tick = 24 * 8
+        # max_tick = 24 * 8
         try:
             if self.tick < 27:
                 self.output.output_cells()

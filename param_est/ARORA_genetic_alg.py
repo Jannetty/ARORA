@@ -95,13 +95,18 @@ class ARORAGeneticAlg:
             v_file,
             gparam_series,
             geometry,
-            f"param_est/ARORA_output_{chromosome['sol_idx']}.csv",
+            f"param_est/ARORA_output_{chromosome['sol_idx']}",
         )
         simulation.setup()
         try:
             simulation.run_sim()
             chromosome["finished"] = True
             fitness = self._calculate_fitness(simulation, chromosome)
+            try:
+                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.csv")
+                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.json")
+            except Exception as e:
+                print(e)
         except Exception as e:
             print(e)
             chromosome["exception"] = str(e)
@@ -110,6 +115,11 @@ class ARORAGeneticAlg:
             chromosome["tick"] = tick
             print("Fitness set to -infinity")
             fitness = -np.inf
+            try:
+                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.csv")
+                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.json")
+            except Exception as e:
+                print(e)
         return fitness
 
     def _calculate_fitness_original(self, simulation, chromosome):
