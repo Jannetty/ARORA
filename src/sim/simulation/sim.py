@@ -356,7 +356,7 @@ def main(
         cell_val_file = "src/sim/input/indep_syn_deg_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
         geometry = "default"
-    output_file_name = "2024091601"
+    output_file_name = "2024091801"
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
