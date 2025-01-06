@@ -18,8 +18,9 @@ Here I am constructing an ABM of lateral root development---the process by which
 
 This project is a work in progress.
 
-This repository uses GitHub Actions and the following tools:
+This repository uses the following tools:
 
+- Github Actions for CI
 - [Poetry](https://python-poetry.org/) for packaging and dependency management
 - [Tox](https://tox.readthedocs.io/en/latest/) for automated testing
 - [Black](https://black.readthedocs.io/en/stable/) for code formatting
