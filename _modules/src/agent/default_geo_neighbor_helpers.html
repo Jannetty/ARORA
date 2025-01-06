@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>src.agent.default_geo_neighbor_helpers &mdash; ARORA VERSION NUMBER 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=bdfe92e1"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=bdfe92e1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -72,16 +70,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for src.agent.default_geo_neighbor_helpers</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">src.agent.cell</span> <span class="kn">import</span> <span class="n">Cell</span>
-    <span class="kn">from</span> <span class="nn">src.sim.simulation.sim</span> <span class="kn">import</span> <span class="n">GrowingSim</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.agent.cell</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cell</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.sim.simulation.sim</span><span class="w"> </span><span class="kn">import</span> <span class="n">GrowingSim</span>
 
 
 <div class="viewcode-block" id="NeighborHelpers">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers">[docs]</a>
-<span class="k">class</span> <span class="nc">NeighborHelpers</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">NeighborHelpers</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper functions to determine the direction of a neighbor cell relative to a cell</span>
 <span class="sd">    when initializing model to default geometry.</span>
@@ -107,7 +105,7 @@
 <div class="viewcode-block" id="NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_neighbor_dir_neighbor_shares_one_v_default_geo</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_neighbor_dir_neighbor_shares_one_v_default_geo</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine the direction of a neighbor cell sharing one vertex in default geometry.</span>
 
@@ -243,7 +241,7 @@
 <div class="viewcode-block" id="NeighborHelpers.check_if_neighbors_with_new_root_cap_cell">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers.check_if_neighbors_with_new_root_cap_cell">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">check_if_neighbors_with_new_root_cap_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_neighbors_with_new_root_cap_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the neighbor is the next root cap cell.</span>
 
@@ -272,7 +270,7 @@
 <div class="viewcode-block" id="NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_neighbor_dir_neighbor_shares_no_vs_default_geo</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_neighbor_dir_neighbor_shares_no_vs_default_geo</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determine the direction of a neighbor cell without shared vertices in default geometry.</span>
 
@@ -335,7 +333,7 @@
 <div class="viewcode-block" id="NeighborHelpers.fix_lrc_neighbors_after_growth">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers.fix_lrc_neighbors_after_growth">[docs]</a>
     <span class="nd">@staticmethod</span>  <span class="c1"># This relies on the assumption that only cells that were previously neighbors with root cap cells will ever be neighbors with root cap cells</span>
-    <span class="k">def</span> <span class="nf">fix_lrc_neighbors_after_growth</span><span class="p">(</span><span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fix_lrc_neighbors_after_growth</span><span class="p">(</span><span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">non_root_tip_cells</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">cell</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">sim</span><span class="o">.</span><span class="n">get_cell_list</span><span class="p">()</span> <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_cell_type</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;roottip&quot;</span>
         <span class="p">]</span>
@@ -353,7 +351,7 @@
 <div class="viewcode-block" id="NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers.check_if_no_longer_neighbors_with_root_cap_cell">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">check_if_no_longer_neighbors_with_root_cap_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">lrc_neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_if_no_longer_neighbors_with_root_cap_cell</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">lrc_neighbor</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">NeighborHelpers</span><span class="o">.</span><span class="n">cell_and_lrc_cell_are_neighbors</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span> <span class="n">lrc_neighbor</span><span class="p">):</span>
             <span class="n">cell</span><span class="o">.</span><span class="n">remove_l_neighbor</span><span class="p">(</span><span class="n">lrc_neighbor</span><span class="p">)</span>
             <span class="n">lrc_neighbor</span><span class="o">.</span><span class="n">remove_m_neighbor</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span></div>
@@ -362,7 +360,7 @@
 <div class="viewcode-block" id="NeighborHelpers.cell_and_lrc_cell_are_neighbors">
 <a class="viewcode-back" href="../../../src.agent.default_geo_neighbor_helpers.html#src.agent.default_geo_neighbor_helpers.NeighborHelpers.cell_and_lrc_cell_are_neighbors">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">cell_and_lrc_cell_are_neighbors</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">lrc_cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cell_and_lrc_cell_are_neighbors</span><span class="p">(</span><span class="n">cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">,</span> <span class="n">lrc_cell</span><span class="p">:</span> <span class="s2">&quot;Cell&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">cell_left_l_or_m</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_quad_perimeter</span><span class="p">()</span><span class="o">.</span><span class="n">get_left_lateral_or_medial</span><span class="p">(</span>
             <span class="n">cell</span><span class="o">.</span><span class="n">get_sim</span><span class="p">()</span><span class="o">.</span><span class="n">get_root_midpointx</span><span class="p">()</span>
         <span class="p">)</span>
