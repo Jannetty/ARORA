@@ -2,6 +2,7 @@ import json
 import os
 import platform
 
+
 if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
 import numpy as np
@@ -37,21 +38,38 @@ INDEP_SYN_DEG_PARAM_NAMES = [
     "k6",
     "tau",
 ]
+AUX_SYN_DEG_PARAM_NAMES = [
+    "ks_aux",
+    "kd_aux",
+    "k1",
+    "k2",
+    "k3",
+    "k4",
+    "k5",
+    "k6",
+    "tau",
+]
 
 
 class ARORAGeneticAlg:
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, circ_mod: str):
         self.ga_instance = None
         self.filename = filename
         self.population = []
+        if circ_mod == "auxsyndeg_only":
+            self.param_names = AUX_SYN_DEG_PARAM_NAMES
+        elif circ_mod == "indep_syn_deg":
+            self.param_names = INDEP_SYN_DEG_PARAM_NAMES
+        else:
+            raise ValueError("Invalid circ_mod")
 
     def fitness_function(self, ga_instance, solution, solution_idx):
         print(f"-----------------------{solution_idx}---------------------------")
         print(f"Chromosome {solution_idx} : {solution}")
         chromosome = {}
         chromosome["sol_idx"] = solution_idx
-        params = pd.Series(solution, index=INDEP_SYN_DEG_PARAM_NAMES)
-        for param in INDEP_SYN_DEG_PARAM_NAMES:
+        params = pd.Series(solution, index=self.param_names)
+        for param in self.param_names:
             chromosome[param] = params[param]
         if not self._check_constraints(params, chromosome):
             print("Invalid solution")
@@ -80,7 +98,10 @@ class ARORAGeneticAlg:
         timestep = 1
         root_midpoint_x = 71
         vis = False
-        cell_val_file = "src/sim/input/indep_syn_deg_init_vals.json"
+        if self.param_names == AUX_SYN_DEG_PARAM_NAMES:
+            cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
+        elif self.param_names == INDEP_SYN_DEG_PARAM_NAMES:
+            cell_val_file = "src/sim/input/indep_syn_deg_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
         gparam_series = params
         geometry = "default"
@@ -122,27 +143,27 @@ class ARORAGeneticAlg:
                 print(e)
         return fitness
 
-    def _calculate_fitness_original(self, simulation, chromosome):
-        # calculate fitness
-        fitness = (
-            100
-            * auxin_greater_in_larger_cells_at_trans_elon_interface(
-                simulation, chromosome
-            )
-        ) + avg_auxin_root_tip_greater_than_elsewhere(simulation, chromosome)
-        chromosome["auxin_corr_with_cell_size"] = (
-            100
-            * auxin_greater_in_larger_cells_at_trans_elon_interface(
-                simulation, chromosome
-            )
-        )
-        chromosome["auxin_peak_at_root_tip"] = (
-            avg_auxin_root_tip_greater_than_elsewhere(simulation, chromosome)
-        )
-        print(f"auxin_corr_with_cell_size: {chromosome['auxin_corr_with_cell_size']}")
-        print(f"Auxin peak at root tip: {chromosome['auxin_peak_at_root_tip']}")
-        print(f"Fitness: {fitness}")
-        return fitness
+    # def _calculate_fitness_original(self, simulation, chromosome):
+    #     # calculate fitness
+    #     fitness = (
+    #         100
+    #         * auxin_greater_in_larger_cells_at_trans_elon_interface(
+    #             simulation, chromosome
+    #         )
+    #     ) + avg_auxin_root_tip_greater_than_elsewhere(simulation, chromosome)
+    #     chromosome["auxin_corr_with_cell_size"] = (
+    #         100
+    #         * auxin_greater_in_larger_cells_at_trans_elon_interface(
+    #             simulation, chromosome
+    #         )
+    #     )
+    #     chromosome["auxin_peak_at_root_tip"] = (
+    #         avg_auxin_root_tip_greater_than_elsewhere(simulation, chromosome)
+    #     )
+    #     print(f"auxin_corr_with_cell_size: {chromosome['auxin_corr_with_cell_size']}")
+    #     print(f"Auxin peak at root tip: {chromosome['auxin_peak_at_root_tip']}")
+    #     print(f"Fitness: {fitness}")
+    #     return fitness
 
     def _calculate_fitness(self, simulation, chromosome):
         # calculate fitness
@@ -154,15 +175,15 @@ class ARORAGeneticAlg:
         return fitness
 
     def make_paramspace_ks_kd(self):
-        ks_range = np.linspace(0.001, 0.3, 100).astype(float)
-        kd_range = np.linspace(0.0001, 0.03, 100).astype(float)
-        k1_range = np.linspace(10, 160, 151).astype(int)
-        k2_range = np.linspace(50, 100, 51).astype(int)
-        k3_range = np.linspace(10, 75, 66).astype(int)
-        k4_range = np.linspace(50, 100, 51).astype(int)
-        k5_range = np.linspace(0.07, 1, 100).astype(float)
-        k6_range = np.linspace(0.2, 1, 100).astype(float)
-        tau_range = np.linspace(1, 24, 24).astype(int)
+        ks_range = np.linspace(0.0001, 3, 1000).astype(float)
+        kd_range = np.linspace(0.00001, 0.3, 1000).astype(float)
+        k1_range = np.linspace(1, 1600, 1510).astype(int)
+        k2_range = np.linspace(5, 1000, 510).astype(int)
+        k3_range = np.linspace(1, 750, 660).astype(int)
+        k4_range = np.linspace(5, 1000, 510).astype(int)
+        k5_range = np.linspace(0.007, 10, 1000).astype(float)
+        k6_range = np.linspace(0.02, 10, 1000).astype(float)
+        tau_range = np.linspace(1, 240, 240).astype(int)
         return [
             ks_range,
             kd_range,
@@ -206,14 +227,39 @@ class ARORAGeneticAlg:
             k6_range,
             tau_range,
         ]
+    
+    def make_paramspace_aux_syn_deg(self):
+        ks_aux_range = np.linspace(0.001, 0.3, 100).astype(float)
+        kd_aux_range = np.linspace(0.0001, 0.03, 100).astype(float)
+        k1_range = np.linspace(10, 160, 151).astype(int)
+        k2_range = np.linspace(50, 100, 51).astype(int)
+        k3_range = np.linspace(10, 75, 66).astype(int)
+        k4_range = np.linspace(50, 100, 51).astype(int)
+        k5_range = np.linspace(0.07, 1, 100).astype(float)
+        k6_range = np.linspace(0.2, 1, 100).astype(float)
+        tau_range = np.linspace(1, 24, 24).astype(int)
+        return [
+            ks_aux_range,
+            kd_aux_range,
+            k1_range,
+            k2_range,
+            k3_range,
+            k4_range,
+            k5_range,
+            k6_range,
+            tau_range,
+        ]
 
     def run_genetic_alg(self):
-        genespace = self.make_paramspace_indep_syn_deg()
+        if self.param_names == AUX_SYN_DEG_PARAM_NAMES:
+            genespace = self.make_paramspace_aux_syn_deg()
+        elif self.param_names == INDEP_SYN_DEG_PARAM_NAMES:
+            genespace = self.make_paramspace_indep_syn_deg()
         ga_parameters = {
-            "num_generations": 10,
-            "num_parents_mating": 10,
+            "num_generations":20,
+            "num_parents_mating": 25,
             "fitness_func": self.fitness_function,
-            "sol_per_pop": 25,
+            "sol_per_pop": 50,
             "num_genes": len(genespace),
             "gene_space": genespace,
             "mutation_percent_genes": 5,
@@ -221,18 +267,18 @@ class ARORAGeneticAlg:
             "parent_selection_type": "sss",
         }
         ga_parameters_for_saving = {
-            "num_generations": 10,
-            "num_parents_mating": 10,
-            "fitness_func": "magnitude auxin corr with cell size (xpp in transition and elongation zones) * 100 + auxin peak at root tip",
+            "num_generations": 20,
+            "num_parents_mating": 5,
+            "fitness_func": "parity_of_mz_auxin_concentrations_with_VDB_data + parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point",
             "negative_corr_sets_fitness_to_neg_inf": False,
-            "sol_per_pop": 25,
+            "sol_per_pop": 20,
             "num_genes": len(genespace),
             "gene_space": "ks .001 to .3, kd .0001 to .03, k1 10 to 160, k2 50 to 100, k3 10 to 75, k4 50 to 100, k5 .07 to 1, k6 .2 to 1, tau 1 to 24",
             "mutation_percent_genes": 5,
             "save_best_solutions": False,
             "parent_selection_type": "sss",
-            "initialization_file": "default_init_vals_higher_auxinw_in_shootward_vasc.csv",
-            "hours_per_simulation": 48,
+            "initialization_file": "aux_syndegonly_init_vals.json",
+            "hours_per_simulation": 27,
         }
         self.population.append(ga_parameters_for_saving)
         # with open(self.filename, 'w') as f:
@@ -259,5 +305,3 @@ class ARORAGeneticAlg:
                 solution_idx=solution_idx
             )
         )
-        # plot the fitness evolution
-        self.ga_instance.plot_fitness(label="Fitness")

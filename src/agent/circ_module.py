@@ -111,9 +111,12 @@ class CirculateModule(ABC):
             self.get_medial_pin(),
         ]
         pin_sum = sum(pin_vals)
-        for val, direction in zip(pin_vals, ["a", "b", "l", "m"]):
-            pin_weights_dict[direction] = val / pin_sum
-        return pin_weights_dict
+        if pin_sum == 0:
+            return {"a": 0, "b": 0, "l": 0, "m": 0}
+        else:
+            for val, direction in zip(pin_vals, ["a", "b", "l", "m"]):
+                pin_weights_dict[direction] = val / pin_sum
+            return pin_weights_dict
 
     def f(self, y: list[float], t: float) -> list[float]:
         """
@@ -207,7 +210,7 @@ class CirculateModule(ABC):
         self.pin_weights = (
             self.cell.get_pin_weights()
         )  # Calculations to update PIN weights are done in Cell class
-        assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
+        # assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
 
         # Solve the differential equations for the current state
         soln = self.solve_equations()
@@ -314,6 +317,10 @@ class CirculateModule(ABC):
                 print(f"cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()}")
                 print(f"neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}")
             neighbor_aux_exchange = auxin_influx - auxin_efflux
+            if neighbor_aux_exchange != 0:
+                print(
+                    f"HERE cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()} auxin exchange {neighbor_aux_exchange}"
+                )
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 

@@ -4,11 +4,12 @@ from src.agent.circ_module import CirculateModule
 if TYPE_CHECKING:
     from src.agent.cell import Cell
 
+
 class AuxinSynDegOnlyCirculateModule(CirculateModule):
     ks_aux: float
     kd_aux: float
 
-    def __init__(self, cell:"Cell", init_vals: dict[str, Any]):
+    def __init__(self, cell: "Cell", init_vals: dict[str, Any]):
         super().__init__(cell, init_vals)
 
         def get_float(key: str) -> float:
@@ -30,8 +31,6 @@ class AuxinSynDegOnlyCirculateModule(CirculateModule):
         self.pinb = 0
         self.pinl = 0
         self.pinm = 0
-        self.pin_weights = 0
-        self.arr_hist = 0
 
     def calculate_auxin(self, auxini: float) -> float:
         auxin = (self.ks_aux * self.auxin_w) - (self.kd_aux * auxini)
@@ -40,13 +39,15 @@ class AuxinSynDegOnlyCirculateModule(CirculateModule):
     def calculate_arr(self, arri: float) -> float:
         return 0
 
-    def calculate_auxlax(self, auxlax: float) -> float:
+    def calculate_auxlax(self, auxin: float, auxlax: float) -> float:
         return 0
 
-    def calculate_pin(self, pin: float) -> float:
+    def calculate_pin(self, auxin: float, arr: float) -> float:
         return 0
 
-    def calculate_membrane_pin(self, pin: float, direction: str, weight: float) -> float:
+    def calculate_membrane_pin(
+        self, pin: float, membrane_pin: float, direction: str, weight: float
+    ) -> float:
         return 0
 
     def get_state(self) -> dict[str, Any]:
@@ -69,6 +70,6 @@ class AuxinSynDegOnlyCirculateModule(CirculateModule):
             "kd_aux": self.kd_aux,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
-            "circ_mod": "auxin_syn_deg_only",
+            "circ_mod": "auxsyndeg_only",
         }
         return state

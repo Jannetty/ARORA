@@ -39,20 +39,20 @@ def make_default_param_series_default():
     return pd.Series(param_vals, index=DEFAULT_PARAM_NAMES)
 
 def make_indep_param_series():
-    ks_aux = 0.3
-    kd_aux = 0.0284899
-    ks_pinu = 0.203354
-    kd_pinu = 0.0260737
-    kd_pinloc = 0.00674444
-    ks_auxlax = 0.179192
-    kd_auxlax = 0.0197313
-    k1_range = 79
-    k2_range = 98
-    k3_range = 45
-    k4_range = 73
-    k5_range = 0.924848
+    ks_aux = 0.266778
+    kd_aux = 0.0224495
+    ks_pinu = 0.523434
+    kd_pinu = .0176172
+    kd_pinloc = 0.00191212
+    ks_auxlax = 0.0040202
+    kd_auxlax = 0.0257717
+    k1_range = 60
+    k2_range = 60
+    k3_range = 33
+    k4_range = 58
+    k5_range = 1
     k6_range = 0.975758
-    tau_range =6
+    tau_range =3
     param_vals = [ks_aux, kd_aux, ks_pinu, kd_pinu, kd_pinloc, ks_auxlax, kd_auxlax, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
     return pd.Series(param_vals, index=INDEP_PARAM_NAMES)
 
