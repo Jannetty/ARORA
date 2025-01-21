@@ -100,8 +100,8 @@ class Output:
         # Generate CSV
         header = output[0].keys()
         with open(self.filename_csv, "a", newline="") as file:
-            writer = csv.DictWriter(file, fieldnames=header)
-            writer.writerows(output)
+            csv_writer = csv.DictWriter(file, fieldnames=header)
+            csv_writer.writerows(output)
 
         # Generate JSON
         with open(self.filename_json, "a") as file:

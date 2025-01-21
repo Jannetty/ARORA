@@ -32,7 +32,7 @@ class CirculateModule(ABC):
     k_pin: float
     auxin_w: float
     arr_hist: List[float]
-    output_list = []
+    output_list: List[str] = []
 
     @abstractmethod
     def __init__(self, cell: "Cell", init_vals: Dict[str, Any]) -> None:

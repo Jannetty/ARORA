@@ -78,12 +78,6 @@ json_file_path = "default_init_vals.json"
 # Initialize an empty list to store the rows
 data = []
 
-
-# Helper function to parse list-like strings and convert elements to integers
-def parse_list_string(s):
-    return [int(x) for x in s.strip("[]").split(",")]
-
-
 # Open the CSV file and read the contents
 with open(csv_file_path, mode="r") as csv_file:
     csv_reader = csv.DictReader(csv_file)
