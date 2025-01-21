@@ -11,7 +11,7 @@ data = []
 
 
 # Helper function to parse list-like strings and convert elements to integers
-def parse_list_string(s):
+def parse_list_string(s: str) -> list[int]:
     return [int(x) for x in s.strip("[]").split(",")]
 
 

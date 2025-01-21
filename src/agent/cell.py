@@ -3,7 +3,6 @@ from arcade import draw_polygon_filled, draw_polygon_outline
 from typing import TYPE_CHECKING, Any, cast, Union, Dict
 from src.agent.circ_module_cont import BaseCirculateModuleCont
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
-from src.agent.circ_module_abs_loc import AbsLocCirculateModule
 from src.agent.circ_module_aux_syn_deg_only import AuxinSynDegOnlyCirculateModule
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
@@ -152,8 +151,6 @@ class Cell(Sprite):
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
         elif init_vals.get("circ_mod") == "indep_syn_deg":
             self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
-        elif init_vals.get("circ_mod") == "abs_loc":
-            self.circ_mod = AbsLocCirculateModule(self, init_vals)
         elif init_vals.get("circ_mod") == "auxsyndeg_only":
             self.circ_mod = AuxinSynDegOnlyCirculateModule(self, init_vals)
         else:
