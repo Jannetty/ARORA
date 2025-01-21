@@ -117,10 +117,6 @@ class Divider:
                 # update neighbor lists
                 self.update_neighbor_lists(new_top_cell, new_bottom_cell, cell)
 
-                # add two new cells to sim.cell_list
-                self.sim.get_cell_list().append(new_top_cell)
-                self.sim.get_cell_list().append(new_bottom_cell)
-
                 self.sim.get_cell_list().remove(cell)
             self.cells_to_divide = []
 

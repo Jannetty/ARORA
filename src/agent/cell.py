@@ -167,6 +167,7 @@ class Cell(Sprite):
             self.cell_type = self.calculate_cell_type()
             self.growing = cast(bool, init_vals.get("growing"))
         self.color: tuple[int, int, int, int] = self.calculate_color()
+        self.sim.add_to_cell_list(self)
 
     def calculate_cell_type(self) -> str:
         """
@@ -752,7 +753,6 @@ class Cell(Sprite):
             return ELONGATION_GROWTH_RATE
         if self.dev_zone == "differentiation":
             return DIFFERENTIATION_GROWTH_RATE
-        print(f"Cell {self.c_id} distance to root tip = {self.get_distance_from_tip()}")
         raise ValueError("Cell has no recognizable dev zone")
 
     def calculate_delta(self) -> float:

@@ -4,6 +4,8 @@ import numpy as np
 import json
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
+from typing import TYPE_CHECKING
+import typing
 
 if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
@@ -112,10 +114,6 @@ class Input:
         new_cells = self.create_cells()
         cell_neigbors = self.get_neighbors(new_cells)
 
-        # add new cells to the cell_list
-        for cell in new_cells.values():
-            cell_list.append(cell)
-
         # update neighbors
         self.update_neighbors(cell_neigbors, new_cells)
 
@@ -159,6 +157,7 @@ class Input:
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
                 if index_s in ["k1", "k2", "k3", "k4"]:
+
                     # (f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
                     # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = int(value)
@@ -193,6 +192,7 @@ class Input:
             A dictionary with cell indices as keys and dictionaries of their initial values as values.
         """
         init_vals_dict = {}
+
         init_vals_data = self.init_vals_input
 
         # Get field names from DataFrame columns
@@ -226,7 +226,6 @@ class Input:
             if "arr_hist" in init_vals_dict[cell_num]:
                 arr_len = len(init_vals_dict[cell_num]["arr_hist"])
                 init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * arr_len
-
         return init_vals_dict
 
     def set_arr_hist(self, init_vals_dict: dict) -> None:
@@ -271,7 +270,7 @@ class Input:
             neighbors[cell_id] = row["neighbors"]
         return neighbors
 
-    def group_vertices(self, vertices: dict, vertex_assignment: dict) -> dict:
+    def group_vertices(self, vertices: dict, cell_vIDlist_mapping: dict) -> dict:
         """
         Groups vertices by cell index based on vertex assignments.
 
@@ -291,11 +290,10 @@ class Input:
             A dictionary with cell indices as keys and lists of Vertex objects (four per cell) as values.
         """
         grouping = {}
-        for cell in vertex_assignment:
+        for cell in cell_vIDlist_mapping:
             vertex_list = []
-            for vertex in vertex_assignment[cell]:
-                if vertex in vertices:
-                    vertex_list.append(vertices[vertex])
+            for vertex in cell_vIDlist_mapping[cell]:
+                vertex_list.append(vertices[vertex])
             grouping[cell] = vertex_list
         return grouping
 
@@ -312,9 +310,9 @@ class Input:
             A dictionary with int cell indices as keys and the corresponding newly created Cell objects as values.
         """
         all_vs = self.get_vertices_from_input_file()
-        vertex_assignment = self.get_vertex_assignment()
+        cell_vIDlist_mapping = self.get_vertex_assignment()
 
-        vertex_grouping = self.group_vertices(all_vs, vertex_assignment)
+        vertex_grouping = self.group_vertices(all_vs, cell_vIDlist_mapping)
         init_vals = self.get_init_vals()
 
         # generate new cells
@@ -366,3 +364,50 @@ class Input:
         for cell in neighbors:
             for neighbor in neighbors[cell]:
                 new_cells[cell].add_neighbor(neighbor)
+
+    def make_arr_hist_to_list(self) -> None:
+        """
+        Change arr_hist in init_vals from string to list after reading in.
+        """
+        all_cells_arr_hist_lists = []
+        for arr_hist_list in self.init_vals_input["arr_hist"]:
+            one_cell_arr_hist_list = (
+                arr_hist_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            )
+            for index, arr_val in enumerate(one_cell_arr_hist_list):
+                one_cell_arr_hist_list[index] = float(arr_val)
+            all_cells_arr_hist_lists.append(one_cell_arr_hist_list)
+        self.init_vals_input["arr_hist"] = pd.Series(all_cells_arr_hist_lists)
+
+    def make_cell_vertices_to_list(self) -> None:
+        """
+        Change vertices in init_vals from string to list after reading in.
+        """
+        all_cells_v_lists = []
+        for v_list in self.init_vals_input["vertices"]:
+            one_cell_v_list = v_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            for index, v in enumerate(one_cell_v_list):
+                one_cell_v_list[index] = int(v)
+            all_cells_v_lists.append(one_cell_v_list)
+        self.init_vals_input["vertices"] = pd.Series(all_cells_v_lists)
+
+    def make_neighbors_to_list(self) -> None:
+        """
+        Change neighbors in init_vals from string to list after reading in.
+        """
+        all_cells_neighbors_lists = []
+        for neighbor_list in self.init_vals_input["neighbors"]:
+            one_cell_neighbors_list = (
+                neighbor_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            )
+            all_cells_neighbors_lists.append(one_cell_neighbors_list)
+        self.init_vals_input["neighbors"] = pd.Series(all_cells_neighbors_lists)
+
+    def make_param_to_int(self) -> None:
+        """
+        Change the integer paramters to integer type.
+        """
+        int_params = ["k1", "k2", "k3", "k4"]
+        for param in int_params:
+            for index in range(len(param)):
+                self.init_vals_input.loc[index, param] = int(self.init_vals_input[param][index])

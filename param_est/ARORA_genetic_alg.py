@@ -96,7 +96,6 @@ class ARORAGeneticAlg:
 
     def _run_ARORA(self, params, chromosome):
         timestep = 1
-        root_midpoint_x = 71
         vis = False
         if self.param_names == AUX_SYN_DEG_PARAM_NAMES:
             cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
