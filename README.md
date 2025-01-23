@@ -1,7 +1,6 @@
 # ARORA
 
 [![Build Status](https://github.com/Jannetty/PythonRootDevModel/workflows/build/badge.svg)](https://github.com/Jannetty/PythonRootDevModel/actions?query=workflow%3Abuild)
-[![Codecov](https://codecov.io/gh/Jannetty/PythonRootDevModel/branch/main/graph/badge.svg?token=SRGlpwpsbr)](https://codecov.io/gh/Jannetty/PythonRootDevModel)
 ![Lint Status](https://github.com/Jannetty/PythonRootDevModel/actions/workflows/lint.yml/badge.svg)
 ![Documentation](https://github.com/Jannetty/PythonRootDevModel/actions/workflows/documentation.yml/badge.svg)
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

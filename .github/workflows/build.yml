@@ -56,11 +56,5 @@ jobs:
     - name: Test with pytest
       run: |
         source .venv/bin/activate
-        pytest --cov-report xml --cov=src/ tests/
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: ./coverage.xml
-        verbose: true
+        pytest --cov-report html --cov=src/ tests/
+        rm htmlcov/.gitignore
