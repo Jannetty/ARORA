@@ -1,19 +1,16 @@
 import os
 import platform
-
-if platform.system() == "Linux":
-    os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
+import json
 from src.sim.output.output import Output
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
 
-
-# CELL_LIST = sim.get_cell_list()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Starting Template"
+SCREEN_TITLE = "TEST"
+
 init_vals = {
     "auxin": 2,
     "arr": 3,
@@ -42,6 +39,7 @@ init_vals = {
     "growing": False,
     "circ_mod": "cont",
 }
+
 init_vals2 = {
     "auxin": 2,
     "arr": 3,
@@ -71,84 +69,97 @@ init_vals2 = {
     "circ_mod": "cont",
 }
 
+init_vals3 = {
+    "auxin": 0.1,
+    "arr": 0.2,
+    "al": 0.3,
+    "pin": 0.4,
+    "pina": 0.5,
+    "pinb": 0.6,
+    "pinl": 0.7,
+    "pinm": 0.8,
+    "growing": True,
+    "k1": 1.1,
+    "k2": 1.2,
+    "k3": 1.3,
+    "k4": 1.4,
+    "k5": 1.5,
+    "k6": 1.6,
+    "ks_aux": 2.1,
+    "kd_aux": 2.2,
+    "ks_arr": 2.3,
+    "kd_arr": 2.4,
+    "ks_pinu": 2.5,
+    "kd_pinu": 2.6,
+    "kd_pinloc": 2.7,
+    "ks_auxlax": 2.8,
+    "kd_auxlax": 2.9,
+    "auxin_w": 3.0,
+    "arr_hist": [0.1, 0.2, 0.3],
+    "circ_mod": "indep_syn_deg",
+}
+
 
 class TestOutput(unittest.TestCase):
 
-    # def test_get_auxin(self):
-    #     output = Output(sim, "ouput.csv")
-    #     expected = 2
-    #     found = output.get_auxin(cell0)
-    #     self.assertEqual(expected, found)
+    output_csv = "output.csv"
+    output_json = "output.json"
 
-    # def test_get_location(self):
-    #     output = Output(sim, "ouput.csv")
-    #     expected = [[30.0, 10.0], [10.0, 10.0], [10.0, 30.0], [30.0, 30.0]]
-    #     found = output.get_location(cell0)
-    #     self.assertEqual(expected, found)
-
-    def test_get_circ_contents(self):
-
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
-        cell0 = Cell(
-            sim,
+    def setUp(self):
+        self.sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        self.cell0 = Cell(
+            self.sim,
             [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
             init_vals,
-            sim.get_next_cell_id(),
+            self.sim.get_next_cell_id(),
         )
-        cell1 = Cell(
-            sim,
-            [Vertex(50.0, 10.0), Vertex(50.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
+        self.cell1 = Cell(
+            self.sim,
+            [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
             init_vals2,
-            sim.get_next_cell_id(),
+            self.sim.get_next_cell_id(),
         )
-        sim.setup()
-        CELL_LIST = sim.get_cell_list()
+        self.output = Output(self.sim, self.output_csv, self.output_json)
 
-        output = Output(sim, "ouput.csv")
-        summary = {"cell": cell0}
-        expected = {
-            "cell": cell0,
-            "ARR": 3,
-            "AUX/LAX": 3,
-            "PIN_unlocalized": 1,
-            "PIN_apical": 0.5,
-            "PIN_basal": 0.7,
-            "PIN_left": 0.4,
-            "PIN_right": 0.2,
-            "arr_hist": [0.1, 0.2, 0.3],
-            "auxin_w": 1,
-        }
-        found = output.get_circ_contents(summary, cell0)
+    @classmethod
+    def tearDown(self):
+        """Clean up test files."""
+        if os.path.isfile(self.output_csv):
+            os.remove(self.output_csv)
+        if os.path.isfile(self.output_json):
+            os.remove(self.output_json)
 
-        for key in expected:
-            print(f"key: {key}")
-            print(f"expected: {expected[key]}")
-            print(f"found: {found[key]}")
-            self.assertEqual(expected[key], found[key])
-
+    def test_get_circ_contents(self):
+        summary = {"cell": self.cell0}
+        expected = self.cell0.get_circ_mod().get_state()
+        found = self.output.get_circ_contents(summary, self.cell0)
         self.assertEqual(expected, found)
-        # # test cell1
-        # summary1 = {"cell": cell1}
-        # expected1 = {
-        #     "cell": cell1,
-        #     "ARR": 3,
-        #     "AUX/LAX": 3,
-        #     "PIN_unlocalized": 1,
-        #     "PIN_apical": 0.5,
-        #     "PIN_basal": 0.7,
-        #     "PIN_left": 0.4,
-        #     "PIN_right": 0.2,
-        #     "arr_hist": '[0.1, 0.2, 0.3, 0.4]',
-        #     "auxin_w": 1,
-        # }
-        # found1 = output.get_circ_contents(summary1, cell1)
 
-        # self.assertEqual(expected1, found1)
+        # test cell1
+        summary1 = {"cell": self.cell1}
+        expected1 = self.cell1.get_circ_mod().get_state()
+        found1 = self.output.get_circ_contents(summary1, self.cell1)
+        self.assertEqual(expected1, found1)
 
-    def test_get_division_number(self):
-        pass
+        # test cell3 (with circ_mod: indep_syn_deg)
+        cell3 = Cell(
+            self.sim,
+            [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
+            init_vals3,
+            self.sim.get_next_cell_id(),
+        )
+        summary2 = {"cell": cell3}
+        expected2 = cell3.get_circ_mod().get_state()
+        found2 = self.output.get_circ_contents(summary2, cell3)
 
     def test_output_cells(self):
-        # output = Output(sim, "ouput.csv")
-        # output.output_cells()
+        self.output.output_cells()
+        # Check if files are created and not empty
+        self.assertTrue(os.path.isfile(self.output_csv))
+        self.assertTrue(os.path.isfile(self.output_json))
+        self.assertGreater(os.path.getsize(self.output_csv), 0)
+        self.assertGreater(os.path.getsize(self.output_json), 0)
+
+    def test_get_division_number(self):
+        # TODO: Implement
         pass

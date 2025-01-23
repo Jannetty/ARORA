@@ -4,10 +4,10 @@ import pyglet
 import pandas
 from pandas import Series
 import matplotlib.pyplot as plt
-from arcade import Window
+from arcade import Window, draw_polygon_filled
 from arcade import SpriteList
 from arcade import set_background_color
-from arcade import close_window
+from arcade import close_window, set_window
 import time
 from src.sim.circulator.circulator import Circulator
 from src.sim.divider.divider import Divider
@@ -15,8 +15,8 @@ from src.sim.mover.vertex_mover import VertexMover
 from src.sim.input.input import Input
 from src.sim.output.output import Output
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 800
 SCREEN_TITLE = "ARORA"
 
 if TYPE_CHECKING:
@@ -109,6 +109,7 @@ class GrowingSim(Window):
         v_file: str = "",
         gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
+        output_file: str = "output",
     ):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
@@ -124,7 +125,7 @@ class GrowingSim(Window):
             super().__init__(width, height, title, visible=False)
         if vis is True:
             super().__init__(width, height, title)
-        set_background_color(color=(250, 250, 250, 250))
+            set_background_color(color=(250, 250, 250, 250))
         if cell_val_file != "" and v_file != "":
             self.input = Input(cell_val_file, v_file, self)
             self.input_from_file = True
@@ -136,8 +137,9 @@ class GrowingSim(Window):
         self.timestep = timestep
         self.vis = vis
         self.cmap = plt.get_cmap("coolwarm")
-        # self.output = Output(self, "yes_aux_exchange_scaling_mem_pin_allocation_by_weight.csv")
         self.setup()
+        self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
+        self.exit_flag = False
 
     def get_root_midpointx(self) -> float:
         """
@@ -232,7 +234,6 @@ class GrowingSim(Window):
         and preparing the simulation environment.
         """
         # find midpoint x of root basd on vertices that exist
-        # I think function will be (max_x - min_x) / 2
         self.tick = 0
         self.next_cell_id = 0
         self.circulator = Circulator(self)
@@ -276,7 +277,7 @@ class GrowingSim(Window):
 
     def calculate_root_midpoint_x_from_input(self) -> float:
         """Calculates the midpoint of the x-coordinates from the input vertex file."""
-        vertex_input = self.input.vertex_file_input
+        vertex_input = self.input.vertex_input
         if len(vertex_input) == 0:
             return 0
         xs = vertex_input["x"].tolist()
@@ -289,10 +290,13 @@ class GrowingSim(Window):
         """
         Renders the screen.
         """
+        print("Drawing")
+        self.switch_to()  # Ensure the OpenGL context is active
         if self.vis:
             self.clear()
             for cell in self.cell_list:
                 cell.draw()
+        self.flip()  # Flip the buffers to update the display
 
     def update_viewport_position(self) -> None:
         """
@@ -301,10 +305,10 @@ class GrowingSim(Window):
         self.set_viewport(
             0,
             SCREEN_WIDTH,
-            self.root_tip_y - 2,
-            SCREEN_HEIGHT + self.root_tip_y - 2,
+            self.root_tip_y - 100,
+            SCREEN_HEIGHT + self.root_tip_y - 100,
         )
-        self.window_offset = self.root_tip_y - 2
+        self.window_offset = self.root_tip_y - 100
 
     def on_update(self, delta_time: float) -> None:
         """
@@ -314,15 +318,16 @@ class GrowingSim(Window):
             delta_time: The time step.
         """
         print("----")
+        self.output.output_cells()
         self.tick += 1
-        # max_tick = 20
-        max_tick = 2592
+        # max_tick = 24 * 8
         try:
-            if self.tick < max_tick:
-                # self.output.output_cells()
+            if self.tick < 27:
+                self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
+                    self.on_draw()
                 self.cell_list.update()
                 self.vertex_mover.update()
                 self.circulator.update()
@@ -333,18 +338,24 @@ class GrowingSim(Window):
                 print(f"Total auxin: {total_aux}")
                 print(f"Total area: {total_area}")
                 print(f"Total auxin/area = {total_aux/total_area}")
-
             else:
                 print("Simulation Complete")
-                close_window()
+                self.exit_flag = True  # Set the exit flag
         except (ValueError, OverflowError) as e:
             print(e)
             print("Ending Simulation")
-            close_window()
+            self.exit_flag = True  # Set the exit flag
             raise e
 
     def run_sim(self) -> None:
-        pyglet.app.run(0)
+        while not self.exit_flag:
+            pyglet.clock.tick()
+            self.dispatch_events()
+            self.on_update(1 / 60.0)
+        print("CLOSING WINDOW")
+        self.close()  # Close the window
+        print("WINDOW CLOSED")
+        pyglet.app.exit()  # Exit the pyglet event loop
 
 
 def main(
@@ -358,9 +369,10 @@ def main(
     print("Making GrowingSim")
     geometry = ""
     if cell_val_file == "default" and v_file == "default":
-        cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         geometry = "default"
+    output_file_name = "2024100801"
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
@@ -371,8 +383,9 @@ def main(
         v_file,
         gparam_series,
         geometry,
+        output_file_name,
     )
+    set_window(simulation)
     print("Running Simulation")
     simulation.run_sim()
-
     return simulation.get_tick()

@@ -21,6 +21,7 @@ class TestVertexMover(unittest.TestCase):
         "auxin": 2,
         "arr": 3,
         "al": 3,
+        "pin": 1,
         "pina": 0.5,
         "pinb": 0.7,
         "pinl": 0.4,
@@ -29,9 +30,13 @@ class TestVertexMover(unittest.TestCase):
         "k2": 1,
         "k3": 1,
         "k4": 1,
+        "k5": 1,
+        "k6": 1,
         "k_s": 0.005,
         "k_d": 0.0015,
-        "growing": True,
+        "auxin_w": 1,
+        "arr_hist": [0.1, 0.2, 0.3],
+        "growing": False,
         "circ_mod": "cont",
     }
 

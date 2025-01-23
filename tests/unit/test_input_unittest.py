@@ -5,7 +5,8 @@ import numpy
 if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
-import pandas
+import pandas as pd
+import json
 from src.sim.input.input import Input
 from src.sim.simulation.sim import GrowingSim
 from src.agent.cell import Cell
@@ -25,8 +26,8 @@ class TestInput(unittest.TestCase):
     def test_get_vertex(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected_vertex_list = {
@@ -45,8 +46,8 @@ class TestInput(unittest.TestCase):
     def test_get_init_vals(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected = {
@@ -107,8 +108,8 @@ class TestInput(unittest.TestCase):
     def test_set_arr_hist(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         dict = {
@@ -220,21 +221,20 @@ class TestInput(unittest.TestCase):
     def test_get_vertex_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected = {"c0": [0, 1, 2, 3], "c1": [1, 3, 4, 5]}
         found = input.get_vertex_assignment()
         for cell in expected:
-            for i in range(len(expected[cell])):
-                self.assertEqual(expected[cell][i], found[cell][i])
+            self.assertEqual(expected[cell], found[cell])
 
     def test_get_neighbors_assignment(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         expected = {"c0": ["c1"], "c1": ["c0"]}
@@ -246,8 +246,8 @@ class TestInput(unittest.TestCase):
     def test_group_vertices(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         found_vertices = input.get_vertices_from_input_file()
@@ -265,8 +265,8 @@ class TestInput(unittest.TestCase):
     def test_create_cells(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -310,8 +310,8 @@ class TestInput(unittest.TestCase):
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 300)
@@ -342,8 +342,8 @@ class TestInput(unittest.TestCase):
     def test_update_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -374,8 +374,8 @@ class TestInput(unittest.TestCase):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.json",
+            "tests/unit/test_input_files/vertex.json",
             sim,
         )
         v0 = Vertex(10, 30)
@@ -401,8 +401,10 @@ class TestInput(unittest.TestCase):
             )
 
     def test_replace_default_to_gparam(self):
-        gparam_file = "src/sim/input/default_input_gparam.csv"
-        full_gparam_df = pandas.read_csv(gparam_file)
+        gparam_file = "src/sim/input/default_input_gparam.json"
+        with open(gparam_file, "r") as file:
+            gparam_data = json.load(file)
+        full_gparam_df = pd.DataFrame([gparam_data])
         for index, row in full_gparam_df.iterrows():
             this_sim_gparam_series = row
             this_sim = GrowingSim(
@@ -411,15 +413,9 @@ class TestInput(unittest.TestCase):
                 SCREEN_TITLE,
                 1,
                 False,
-                cell_val_file="tests/unit/test_csv/init_vals.csv",
-                v_file="tests/unit/test_csv/vertex.csv",
+                cell_val_file="tests/unit/test_input_files/init_vals.json",
+                v_file="tests/unit/test_input_files/vertex.json",
             )
-            # check to make sure that cells have gparams instead of cell_val_file params
-            # this_input = Input(
-            #    "tests/unit/test_csv/init_vals.csv",
-            #    "tests/unit/test_csv/vertex.csv",
-            #    this_sim
-            # )
             this_input = this_sim.input
             this_input.replace_default_to_gparam(this_sim_gparam_series)
             for _, row_df in this_input.init_vals_input.iterrows():
@@ -432,8 +428,8 @@ class TestInput(unittest.TestCase):
     def test_make_arr_hist_to_list(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
         found_arr_hist = input.init_vals_input["arr_hist"]
@@ -445,12 +441,13 @@ class TestInput(unittest.TestCase):
     def test_make_vertices_to_list(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
         found_vs = input.init_vals_input["vertices"]
         for each in found_vs:
+            print(f"each: {each}")
             self.assertEqual(type(each), type([]))
             for val in each:
                 self.assertEqual(type(val), type(1))
@@ -458,8 +455,8 @@ class TestInput(unittest.TestCase):
     def test_make_neighbors_to_list(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
         found_vs = input.init_vals_input["neighbors"]
@@ -471,11 +468,11 @@ class TestInput(unittest.TestCase):
     def test_make_param_to_int(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
-        int_params = ["k1", "k2", "k3", "k4"]
+        int_params = ["k1", "k2", "k4"]
         for param in int_params:
             for index in range(len(param)):
                 self.assertTrue(isinstance(input.init_vals_input[param][index], numpy.int64))

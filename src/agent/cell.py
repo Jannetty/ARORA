@@ -1,25 +1,31 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, cast, Union, Dict
 from src.agent.circ_module_cont import BaseCirculateModuleCont
+from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
+from src.agent.circ_module_aux_syn_deg_only import AuxinSynDegOnlyCirculateModule
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
+from src.agent.circ_module import CirculateModule
 
 if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
     from src.loc.vertex.vertex import Vertex
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
-MERISTEMATIC_GROWTH_RATE: float = -0.0179
+# MERISTEMATIC_GROWTH_RATE: float = -0.0179
+MERISTEMATIC_GROWTH_RATE: float = -1.2  # trying to divide every 5 hours
 
 # Growth rate cells in transition zone in um per um per hour from Van den Berg et al. 2018
-TRANSITION_GROWTH_RATE: float = -0.0179
+# TRANSITION_GROWTH_RATE: float = -0.0179
+TRANSITION_GROWTH_RATE: float = -1.2  # same as Meristematic
 
 # Growth rate cells in elongation zone in um per um per hour from Van den Berg et al. 2018
-ELONGATION_GROWTH_RATE: float = -0.00112
-
+# ELONGATION_GROWTH_RATE: float = -0.00112
+ELONGATION_GROWTH_RATE: float = -0.075  # same ratio as van den berg
 # Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
-DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+# DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+DIFFERENTIATION_GROWTH_RATE: float = -0.075  # same ratio as van den berg
 
 # um Y distance from tip at which cells pass from root tip to meristematic zone
 # Inferred from Van dn Berg et al. 2018
@@ -139,12 +145,19 @@ class Cell(Sprite):
         self.sim: "GrowingSim" = simulation
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
+        # Type hint circ_mod to accept any class that implements the CirculateModule protocol
+        self.circ_mod: CirculateModule
         if init_vals.get("circ_mod") == "cont":
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
+        elif init_vals.get("circ_mod") == "indep_syn_deg":
+            self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
+        elif init_vals.get("circ_mod") == "auxsyndeg_only":
+            self.circ_mod = AuxinSynDegOnlyCirculateModule(self, init_vals)
         else:
             print("Circ mod not recognized, using continuous circ mod")
             self.circ_mod = BaseCirculateModuleCont(self, init_vals)
-        self.pin_weights: dict[str, float] = self.calculate_pin_weights()
+
+        self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         if self.sim.geometry != "default":
             self.dev_zone = ""
             self.cell_type = ""
@@ -423,7 +436,7 @@ class Cell(Sprite):
         """
         return self.sim
 
-    def get_circ_mod(self) -> "BaseCirculateModuleCont":
+    def get_circ_mod(self) -> "CirculateModule":
         """
         Returns the circ module object that manages hormone circulation for this cell.
 
@@ -628,6 +641,7 @@ class Cell(Sprite):
         blend_function : Any, optional
             The blend function to be used during drawing, by default None.
         """
+
         super().draw(filter=filter, pixelated=pixelated, blend_function=blend_function)
         self.color = self.calculate_color()
         point_list = self.quad_perimeter.get_corners_for_disp()
@@ -769,7 +783,7 @@ class Cell(Sprite):
             Keys are "a", "b", "l", and "m".
 
         """
-        return self.circ_mod.pin_weights
+        return self.circ_mod.get_pin_weights()
 
     def get_pin_weights(self) -> dict:
         """
