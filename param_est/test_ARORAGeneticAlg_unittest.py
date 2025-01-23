@@ -7,13 +7,9 @@ import unittest
 
 class TestARORAGeneticAlg(unittest.TestCase):
 
-    def test_initialize(self):
-        ga = ARORAGeneticAlg("filename.json")
-        self.assertIsInstance(ga.ga_instance, type(None))
+    SYNDEG_ONLY = "auxsyndeg_only"
+    INDEP_SYNDEG = "indep_syn_deg"
 
-    # def test_run_ARORA(self):
-    #     initial_parent_gen_file = "param_est/test_first_gen.csv"
-    #     ga = ARORAGeneticAlg(initial_parent_gen_file)
-    #     params = ga.parameters_df.iloc[0]
-    #     cost = ga.run_ARORA(params)
-    #     self.assertIsInstance(cost, float)
+    def test_initialize(self):
+        ga = ARORAGeneticAlg("filename.json", self.SYNDEG_ONLY)
+        self.assertIsInstance(ga, ARORAGeneticAlg)

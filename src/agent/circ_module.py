@@ -1,122 +1,43 @@
+from typing import Protocol, Dict, List, Any, cast
+from abc import ABC, abstractmethod
 import numpy as np
-from typing import Any, Dict, List, Optional, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 from scipy.integrate import odeint
 from src.sim.util.math_helpers import round_to_sf
-from src.agent.circ_module import CirculateModule
 from src.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 
 if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
-class BaseCirculateModuleCont(CirculateModule):
-    """
-    Base class for the circulation module controller.
+class CirculateModule(ABC):
 
-    This class defines the core attributes and methods required for simulating
-    the circulation of auxin between cells, focusing on regulatory interactions
-    pf auxin and ARR, as well as the expression and localization of PIN proteins.
+    auxin: float
+    arr: float
+    auxlax: float
+    pin: float
+    pina: float
+    pinb: float
+    pinl: float
+    pinm: float
+    cell: "Cell"
+    left: str
+    right: str
+    pin_weights: Dict[str, float]
+    k_arr_arr: float
+    k_auxin_auxlax: float
+    k_auxin_pin: float
+    k_arr_pin: float
+    k_al: float
+    k_pin: float
+    auxin_w: float
+    arr_hist: List[float]
+    output_list: List[str] = []
 
-    Attributes
-    ----------
-    auxin : float
-        The concentration of auxin in the cell.
-    arr : float
-        The concentration of ARR in the cell.
-    arr_hist : list[float]
-        History of ARR concentrations in the cell for the last `len(arr_hist)` time points.
-    al : float
-        The expression level of AUX/LAX in the cell.
-    pin : float
-        The total unlocalized PIN expression in the cell.
-    pina : float
-        The PIN protein localized in the apical direction.
-    pinb : float
-        The PIN protein localized in the basal direction.
-    pinl : float
-        The PIN protein localized in the lateral direction.
-    pinm : float
-        The PIN protein localized in the medial direction.
-    cell : Cell
-        The cell instance associated with this circulation module.
-    left : str
-        Indicates if the cell's left membrane is lateral ('l') or medial ('m').
-    right : str
-        Indicates if the cell's right membrane is lateral ('l') or medial ('m').
-    pin_weights : dict[str, float]
-        Weights of the PIN protein localized in each direction ('a', 'b', 'l', 'm') as keys and their respective weights as values.
-    k_arr_arr : float
-        Concentration of ARR at which the rate of ARR synthesis is half its maximum. ARR negatively regulates its own synthesis.
-    k_auxin_auxlax : float
-        Concentration of auxin at which the rate of AUX/LAX synthesis is half its maximum. Auxin positively regulates AUX/LAX synthesis.
-    k_auxin_pin : float
-        Concentration of auxin at which the rate of PIN synthesis is half its maximum. Auxin positively regulates PIN synthesis.
-    k_arr_pin : float
-        Concentration of ARR at which the rate of PIN synthesis is half its maximum. ARR negatively regulates PIN synthesis.
-    k_al : float
-        Rate of auxin import through AUX/LAX proteins.
-    k_pin : float
-        Rate of auxin export through PIN proteins.
-    ks : float
-        Rate of synthesis of the species.
-    kd : float
-        Rate of degradation of the species.
-    auxin_w : float
-        Weight of auxin in the synthesis process.
-    """
+    @abstractmethod
+    def __init__(self, cell: "Cell", init_vals: Dict[str, Any]) -> None:
 
-    ks: float
-    kd: float
-
-    def __init__(self, cell: "Cell", init_vals: dict[str, Any]):
-        """
-        Initialize the BaseCirculateModuleCont object by setting up initial values for various cellular attributes.
-
-        Parameters
-        ----------
-        cell : Cell
-            The cell associated with the circulation module. This parameter expects an instance of a Cell class.
-        init_vals : dict[str, Any]
-            A dictionary containing the initial values for the object's attributes. Expected keys include "auxin",
-            "arr", "al", "pin", "pina", "pinb", "pinl", "pinm", "growing", "k1" through "k6", "k_s", "k_d", and "auxin_w".
-            Each key's value should be of the appropriate type (float for numerical values, bool for "growing", and list[float] for "arr_hist").
-
-        Attributes
-        ----------
-        cell : Cell
-            The cell associated with this module.
-        auxin : float
-            Initial concentration of auxin in the cell.
-        arr : float
-            Initial concentration of ARR in the cell.
-        al : float
-            Initial level of AUX/LAX expression in the cell.
-        pin : float
-            Initial level of unlocalized PIN expression in the cell.
-        pina, pinb, pinl, pinm : float
-            Initial levels of PIN localized in the apical, basal, lateral, and medial directions, respectively.
-        growing : bool
-            Indicates whether the cell is currently growing. Not saved here, used in Cell constructor.
-        k_arr_arr, k_auxin_auxlax, k_auxin_pin, k_arr_pin, k_al, k_pin : float
-            Parameters for various rate calculations within the cell, relating to ARR, auxin, and PIN dynamics.
-        ks : float
-            Rate of synthesis of the species.
-        kd : float
-            Rate of degradation of the species.
-        auxin_w : float
-            Weight of auxin synthesis.
-        arr_hist : list[float]
-            History of ARR concentrations in the cell.
-        left, right : str
-            Indicators of whether the cell's left or right membrane is lateral or medial, respectively.
-        pin_weights : dict
-            Weights of PIN localized in each membrane direction.
-
-        Notes
-        -----
-        The 'init_vals' dictionary must contain keys corresponding to all attributes that need to be initialized. Missing keys may result in an AttributeError.
-        """
-        super().__init__(cell, init_vals)
+        self.cell = cell
 
         def get_float(key: str) -> float:
             value = init_vals.get(key)
@@ -124,53 +45,55 @@ class BaseCirculateModuleCont(CirculateModule):
                 raise ValueError(f"Missing value for key: {key}")
             return float(value)
 
-        self.init_auxin = cast(float, init_vals.get("auxin"))
-        self.auxin = self.init_auxin
+        def get_float_list(key: str) -> List[float]:
+            value = init_vals.get(key)
+            if value is None:
+                raise ValueError(f"Missing value for key: {key}")
+            if not isinstance(value, list):
+                raise ValueError(f"Expected a list for key: {key}")
+            return [float(v) for v in value]
 
-        self.init_arr = cast(float, init_vals.get("arr"))
-        self.arr = self.init_arr
-
-        self.init_al = cast(float, init_vals.get("al"))
-        self.aux_lax = self.init_al
-
-        self.init_pin = cast(float, init_vals.get("pin"))
-        self.pin = self.init_pin
-
-        self.init_pina = cast(float, init_vals.get("pina"))
-        self.pina = self.init_pina
-
-        self.init_pinb = cast(float, init_vals.get("pinb"))
-        self.pinb = self.init_pinb
-
-        self.init_pinl = cast(float, init_vals.get("pinl"))
-        self.pinl = self.init_pinl
-
-        self.init_pinm = cast(float, init_vals.get("pinm"))
-        self.pinm = self.init_pinm
-
-        self.growing = cast(bool, init_vals.get("growing"))
-
-        self.k_arr_arr = cast(float, init_vals.get("k1"))
-        self.k_auxin_auxlax = cast(float, init_vals.get("k2"))
-        self.k_auxin_pin = cast(float, init_vals.get("k3"))
-        self.k_arr_pin = cast(float, init_vals.get("k4"))
-        self.k_al = cast(float, init_vals.get("k5"))
-        self.k_pin = cast(float, init_vals.get("k6"))
-
-        self.ks = cast(float, init_vals.get("k_s"))
-        self.kd = cast(float, init_vals.get("k_d"))
-
-        self.auxin_w = cast(float, init_vals.get("auxin_w"))
-
-        self.arr_hist = cast(list[float], init_vals.get("arr_hist"))
-
-        # set medial to either "left" or "right" and lateral to the opposite
-        # based on where self.cell.QuadPerimeter.get_midpointx() is in relation
-        # to self.cell.sim.root_midpointx
-
+        self.auxin = get_float("auxin")
+        self.output_list.append("auxin")
+        self.arr = get_float("arr")
+        self.output_list.append("arr")
+        self.auxlax = get_float("al")
+        self.output_list.append("al")
+        self.pin = get_float("pin")
+        self.output_list.append("pin")
+        self.pina = get_float("pina")
+        self.output_list.append("pina")
+        self.pinb = get_float("pinb")
+        self.output_list.append("pinb")
+        self.pinl = get_float("pinl")
+        self.output_list.append("pinl")
+        self.pinm = get_float("pinm")
+        self.output_list.append("pinm")
+        self.k_arr_arr = get_float("k1")
+        self.output_list.append("k1")
+        self.k_auxin_auxlax = get_float("k2")
+        self.output_list.append("k2")
+        self.k_auxin_pin = get_float("k3")
+        self.output_list.append("k3")
+        self.k_arr_pin = get_float("k4")
+        self.output_list.append("k4")
+        self.k_al = get_float("k5")
+        self.output_list.append("k5")
+        self.k_pin = get_float("k6")
+        self.output_list.append("k6")
+        self.auxin_w = get_float("auxin_w")
+        self.output_list.append("auxin_w")
+        self.arr_hist = get_float_list("arr_hist")
+        self.output_list.append("arr_hist")
+        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )
+        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )
         self.pin_weights = self.initialize_pin_weights()
 
-    def initialize_pin_weights(self) -> dict[str, float]:
+    def initialize_pin_weights(self) -> Dict[str, float]:
         """
         Initialize PIN weights for each membrane based on initial PIN distribution.
 
@@ -181,15 +104,19 @@ class BaseCirculateModuleCont(CirculateModule):
             'l' for lateral, 'm' for medial) to their respective initial PIN weights.
         """
         pin_weights_dict = {}
-        pina = self.get_apical_pin()
-        pinb = self.get_basal_pin()
-        pinl = self.get_lateral_pin()
-        pinm = self.get_medial_pin()
-        pin_vals = [pina, pinb, pinl, pinm]
-        pin_sum = pina + pinb + pinl + pinm
-        for val, direction in zip(pin_vals, ["a", "b", "l", "m"]):
-            pin_weights_dict[direction] = val / pin_sum
-        return pin_weights_dict
+        pin_vals = [
+            self.get_apical_pin(),
+            self.get_basal_pin(),
+            self.get_lateral_pin(),
+            self.get_medial_pin(),
+        ]
+        pin_sum = sum(pin_vals)
+        if pin_sum == 0:
+            return {"a": 0, "b": 0, "l": 0, "m": 0}
+        else:
+            for val, direction in zip(pin_vals, ["a", "b", "l", "m"]):
+                pin_weights_dict[direction] = val / pin_sum
+            return pin_weights_dict
 
     def f(self, y: list[float], t: float) -> list[float]:
         """
@@ -239,24 +166,30 @@ class BaseCirculateModuleCont(CirculateModule):
 
     def solve_equations(self, time_step: float = 0.001, duration: float = 1.0) -> np.ndarray:
         """
-        Solve the model's differential equations over a given time span.
+        Solve the model's differential equations over a given time span with a specified time step.
+
+        Parameters
+        ----------
+        time_step : float
+            The time step for the ODE solver. Default is 0.001 hours.
+        duration : float
+            The total duration for the simulation. Default is 1.0 hours.
 
         Returns
         -------
         ndarray
-            An array containing the solution of the differential equations at each
-            time step. Each row corresponds to a time step, and each column corresponds
-            to one of the model variables.
+            An array containing the solution of the differential equations at each time step.
+            Each row corresponds to a time step, and each column corresponds to one of the model variables.
         """
         y0 = [
-            self.auxin,
-            self.arr,
-            self.auxlax,
-            self.pin,
-            self.pina,
-            self.pinb,
-            self.pinl,
-            self.pinm,
+            self.get_auxin(),
+            self.get_arr(),
+            self.get_auxlax(),
+            self.get_pin(),
+            self.get_apical_pin(),
+            self.get_basal_pin(),
+            self.get_lateral_pin(),
+            self.get_medial_pin(),
         ]
         t = np.linspace(0, duration, int(duration / time_step) + 1)
         soln = odeint(self.f, y0, t)
@@ -273,10 +206,11 @@ class BaseCirculateModuleCont(CirculateModule):
 
         Ensures that the sum of PIN weights is 1.0 before proceeding with the updates.
         """
-
         # Retrieve current PIN weights
-        self.pin_weights = self.cell.get_pin_weights()
-        assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
+        self.pin_weights = (
+            self.cell.get_pin_weights()
+        )  # Calculations to update PIN weights are done in Cell class
+        # assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
 
         # Solve the differential equations for the current state
         soln = self.solve_equations()
@@ -285,121 +219,27 @@ class BaseCirculateModuleCont(CirculateModule):
         self.update_auxin(soln)
         self.update_circ_contents(soln)
 
-    def calculate_auxin(self, auxini: float) -> float:
-        """
-        Calculate the auxin synthesis and degradation of the current cell.
+    @abstractmethod
+    def calculate_auxin(self, auxin: float) -> float:
+        pass
 
-        Parameters
-        ----------
-        auxini : float
-            The initial (current) auxin concentration of the current cell in au/um^2.
+    @abstractmethod
+    def calculate_arr(self, arr: float) -> float:
+        pass
 
-        Returns
-        -------
-        float
-            The calculated auxin concentration after accounting for synthesis and
-            degradation.
-        """
-        auxin = (self.ks * self.auxin_w) - (self.kd * auxini)
-        return auxin
+    @abstractmethod
+    def calculate_auxlax(self, auxin: float, auxlax: float) -> float:
+        pass
 
-    def calculate_arr(self, arri: float) -> float:
-        """
-        Calculate the ARR concentration of the current cell based on initial
-        concentration and historical data.
+    @abstractmethod
+    def calculate_pin(self, auxin: float, arr: float) -> float:
+        pass
 
-        Parameters
-        ----------
-        arri : float
-            The initial (current) ARR concentration in au/um^2.
-
-        Returns
-        -------
-        float
-            The calculated ARR concentration after accounting for synthesis and
-            degradation dynamics.
-        """
-        arr = (self.ks * (self.k_arr_arr / (self.arr_hist[0] + self.k_arr_arr))) - (self.kd * arri)
-        return arr
-
-    def calculate_auxlax(self, auxini: float, ali: float) -> float:
-        """
-        Calculate the AUX/LAX expression of the current cell based on initial
-        auxin concentration and AUX/LAX expression.
-
-        Parameters
-        ----------
-        auxini : float
-            The initial (current) auxin concentration of the current cell in
-            au/um^2.
-        ali : float
-            The initial (current) AUX/LAX expression in au/um^2.
-
-        Returns
-        -------
-        float
-            The calculated AUX/LAX expression after synthesis and degradation.
-        """
-        al = self.ks * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd * ali
-        return al
-
-    def calculate_pin(self, auxini: float, arri: float) -> float:
-        """
-        Calculate the PIN expression of the current cell based on initial auxin
-        and ARR concentrations.
-
-        Parameters
-        ----------
-        auxini : float
-            The initial (current) auxin concentration of the current cell in
-            au/um^2.
-        arri : float
-            The initial (current) ARR expression in au/um^2.
-
-        Returns
-        -------
-        float
-            The calculated PIN expression considering both synthesis and
-            degradation factors.
-        """
-        pin = (
-            self.ks
-            * (self.k_arr_pin / (arri + self.k_arr_pin))
-            * (auxini / (auxini + self.k_auxin_pin))
-            - self.kd * self.pin
-        )
-        return pin
-
+    @abstractmethod
     def calculate_membrane_pin(
-        self, pini: float, pindi: float, direction: str, pin_weight: float
+        self, pin: float, membrane_pin: float, direction: str, weight: float
     ) -> float:
-        """
-        Calculate the PIN expression on one membrane based on the current cell's
-        unlocalized and localized PIN expressions, the membrane direction, and
-        the proportion of membrane-localized PIN in this membrane.
-
-        Parameters
-        ----------
-        pini : float
-            The current cell's unlocalized PIN expression.
-        pindi : float
-            The current cell's localized PIN expression in the specified direction.
-        direction : str
-            The direction of the membrane.
-        pin_weight : float
-            The proportion of membrane-localized PIN in this membrane.
-
-        Returns
-        -------
-        float
-            The calculated PIN expression on the membrane, taking into account
-            localization and degradation.
-        """
-        self.update_left_right()
-        weight = pin_weight
-        memfrac = self.cell.get_quad_perimeter().get_memfrac(direction, self.left)
-        membrane_pin = pin_weight * pini - (self.kd * pindi)
-        return membrane_pin
+        pass
 
     def calculate_neighbor_memfrac(self, neighbor: "Cell") -> float:
         """
@@ -477,6 +317,10 @@ class BaseCirculateModuleCont(CirculateModule):
                 print(f"cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()}")
                 print(f"neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}")
             neighbor_aux_exchange = auxin_influx - auxin_efflux
+            if neighbor_aux_exchange != 0:
+                print(
+                    f"HERE cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()} auxin exchange {neighbor_aux_exchange}"
+                )
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
@@ -539,13 +383,13 @@ class BaseCirculateModuleCont(CirculateModule):
             different time point and columns represent the concentrations of different
             substances at that time point.
         """
-        self.arr = round_to_sf(soln[-1, 1], 5)
-        self.auxlax = round_to_sf(soln[-1, 2], 5)
-        self.pin = round_to_sf(soln[-1, 3], 5) - self.pin
-        self.pina = round_to_sf(soln[-1, 4], 5)
-        self.pinb = round_to_sf(soln[-1, 5], 5)
-        self.pinl = round_to_sf(soln[-1, 6], 5)
-        self.pinm = round_to_sf(soln[-1, 7], 5)
+        self.arr = round_to_sf(soln[1, 1], 5)
+        self.auxlax = round_to_sf(soln[1, 2], 5)
+        self.pin = round_to_sf(soln[1, 3], 5) - self.pin
+        self.pina = round_to_sf(soln[1, 4], 5)
+        self.pinb = round_to_sf(soln[1, 5], 5)
+        self.pinl = round_to_sf(soln[1, 6], 5)
+        self.pinm = round_to_sf(soln[1, 7], 5)
         self.update_arr_hist()
 
     def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
@@ -618,7 +462,7 @@ class BaseCirculateModuleCont(CirculateModule):
         ]
 
         # Compute net auxin synthesized and degraded at this time step
-        auxin_synthesized_and_degraded_this_timestep = soln[-1, 0] - self.auxin
+        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
 
         delta_auxin = self.calculate_delta_auxin(
             auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
@@ -653,7 +497,7 @@ class BaseCirculateModuleCont(CirculateModule):
         """
         return self.arr
 
-    def get_al(self) -> float:
+    def get_auxlax(self) -> float:
         """
         Get the AUX/LAX expression in the cell.
 
@@ -750,7 +594,6 @@ class BaseCirculateModuleCont(CirculateModule):
         float
             The PIN localized in the left direction.
         """
-        self.update_left_right()
         if self.left == "medial":
             return self.pinm
         return self.pinl
@@ -764,47 +607,47 @@ class BaseCirculateModuleCont(CirculateModule):
         float
             The PIN localized in the right direction.
         """
-        self.update_left_right()
         if self.right == "medial":
             return self.pinm
         return self.pinl
 
-    def get_state(self) -> dict[str, Any]:
-        """
-        Retrieve the current state of the circulate module.
+    @abstractmethod
+    def get_state(self) -> Dict[str, Any]:
+        pass
 
-        This method compiles the current state of the circulate module, encapsulating
-        all relevant attributes and their values into a dictionary. This includes
-        concentrations of various species, kinetic parameters, and historical data
-        related to the module's operation.
+    def set_auxin(self, new_aux: float) -> None:
+        """
+        Set the auxin concentration in the cell.
+
+        Parameters
+        ----------
+        new_aux: float
+            The new auxin concentration in the cell.
+        """
+        self.auxin = new_aux
+
+    def get_pin_weights(self) -> dict[str, float]:
+        """
+        Get the weights of PIN localized in each membrane direction.
 
         Returns
         -------
-        dict[str, Any]
-            A dictionary containing key-value pairs of attribute names and their
-            current values. Includes concentrations (auxin, ARR, etc.), kinetic
-            parameters (`k1` to `k6`, `k_s`, `k_d`), auxin weight, and the history
-            of ARR concentrations.
+        dict[str, float]
+            A dictionary mapping membrane identifiers ('a' for apical, 'b' for basal,
+            'l' for lateral, 'm' for medial) to their respective PIN weights.
         """
-        state = {
-            "auxin": self.auxin,
-            "arr": self.arr,
-            "al": self.auxlax,
-            "pin": self.pin,
-            "pina": self.pina,
-            "pinb": self.pinb,
-            "pinl": self.pinl,
-            "pinm": self.pinm,
-            "k1": self.k_arr_arr,
-            "k2": self.k_auxin_auxlax,
-            "k3": self.k_auxin_pin,
-            "k4": self.k_arr_pin,
-            "k5": self.k_al,
-            "k6": self.k_pin,
-            "k_s": self.ks,
-            "k_d": self.kd,
-            "auxin_w": self.auxin_w,
-            "arr_hist": self.arr_hist,
-            "circ_mod": "cont",
-        }
-        return state
+        return self.pin_weights
+
+    def update_left_right(self) -> None:
+        """
+        Update the left and right attributes of the current cell.
+
+        This method updates the left and right attributes of the current cell based on the
+        current midpoint of the cell's perimeter relative to the root midpoint.
+        """
+        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )
+        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )

@@ -1,7 +1,7 @@
-import csv
-import pandas
-import numpy as np
+from typing import TYPE_CHECKING
 import pandas as pd
+import numpy as np
+import json
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from typing import TYPE_CHECKING
@@ -40,30 +40,79 @@ class Input:
         The simulation instance to which this Input class belongs.
     """
 
-    int_params: list = ["k1", "k2", "k3", "k4"]
-    float_params: list = ["k5", "k6", "k_s", "k_d"]
+    int_params: list = ["k1", "k2", "k4"]
+    float_params: list = [
+        "k3",
+        "k5",
+        "k6",
+        "k_s",
+        "k_d",
+        "ks_aux",
+        "kd_aux",
+        "ks_arr",
+        "kd_arr",
+        "ks_pinu",
+        "kd_pinu",
+        "kd_pinloc",
+        "ks_auxlax",
+        "kd_auxlax",
+    ]
 
     def __init__(self, init_vals_file: str, vertex_file: str, sim: "GrowingSim"):
         """
-        Initializes the Input class by loading initial values and vertex information from CSV files.
+        Initializes the Input class by loading initial values and vertex information from JSON files.
 
         Parameters
         ----------
         init_vals_file : str
-            The file path to the CSV containing initial cell parameter values.
+            The file path to the JSON containing initial cell parameter values.
         vertex_file : str
-            The file path to the CSV containing initial locations for vertices.
+            The file path to the JSON containing initial locations for vertices.
         sim : GrowingSim
             The simulation instance to which this Input class belongs.
         """
-        self.init_vals_input = pandas.read_csv(init_vals_file)
-        self.make_arr_hist_to_list()
-        self.make_cell_vertices_to_list()
-        self.make_neighbors_to_list()
-        self.make_param_to_int()
-        self.vertex_file_input = pandas.read_csv(vertex_file)
-        self.initial_v_miny = min(self.vertex_file_input["y"])
+        # check if init_vals_file is a json file or a csv
+        if init_vals_file.endswith(".json"):
+            self.init_vals_input = self.load_json(init_vals_file)
+        elif init_vals_file.endswith(".csv"):
+            self.init_vals_input = pd.read_csv(init_vals_file)
+            # convert the arr_hist to list (only needed for csv)
+            self.make_arr_hist_to_list()
+        else:
+            raise ValueError("Input file must be a JSON or CSV file.")
+
+        # convert the integer and float parameters to the correct type
+        for col in self.int_params:
+            self.init_vals_input[col] = self.init_vals_input[col].astype("int")
+        for col in self.float_params:
+            try:
+                self.init_vals_input[col] = self.init_vals_input[col].astype("float")
+                print(f"Converted {col} to float")
+            except KeyError:
+                print(f"Key Error: {col}")
+                pass
+
+        # check if vertex_input is a json file or a csv
+        if vertex_file.endswith(".json"):
+            self.vertex_input = self.load_json(vertex_file)
+        elif vertex_file.endswith(".csv"):
+            self.vertex_input = pd.read_csv(vertex_file)
+            # convert the vertices to list (only needed for csv)
+            self.make_cell_vertices_to_list()
+            # convert the neighbors to list (only needed for csv)
+            self.make_neighbors_to_list()
+        else:
+            raise ValueError("Input file must be a JSON or CSV file.")
+
+        self.vertex_input["x"] = self.vertex_input["x"].astype("int")
+        self.vertex_input["y"] = self.vertex_input["y"].astype("int")
+        self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
+
+    def load_json(self, file_path: str) -> pd.DataFrame:
+        with open(file_path, "r") as file:
+            data = json.load(file)
+        return pd.DataFrame(data)
 
     def get_initial_v_miny(self) -> float:
         """
@@ -98,16 +147,28 @@ class Input:
 
         Returns
         -------
-        dict[str, Vertex]
-            A dictionary where keys are vertex identifiers (ints as strings) and values are Vertex objects.
+        dict[int, Vertex]
+            A dictionary where keys are vertex identifiers (ints) and values are Vertex objects.
         """
         vertex_dict = {}
-        for index, row in self.vertex_file_input.iterrows():
-            v_id = typing.cast(int, index)
-            vertex_dict[v_id] = Vertex(row["x"], row["y"], v_id)
-        return vertex_dict
+        for index, row in self.vertex_input.iterrows():
+            vertex_dict[index] = row.to_dict()
+        # update the vertex_dict to store vertcies in Vertex format
+        new_vertex_dict = {}
+        for v_num, vertex in vertex_dict.items():
+            # Ensure that v_num can be interpreted as an integer
+            if isinstance(v_num, int):
+                vnum_int = v_num
+            elif isinstance(v_num, str) and v_num.isdigit():
+                vnum_int = int(v_num)
+            else:
+                raise ValueError(f"Vertex identifier {v_num} is not convertible to integer")
+            x = int(vertex["x"])
+            y = int(vertex["y"])
+            new_vertex_dict[vnum_int] = Vertex(x, y, vnum_int)
+        return new_vertex_dict
 
-    def replace_default_to_gparam(self, gparam_series: pandas.Series) -> None:
+    def replace_default_to_gparam(self, gparam_series: pd.Series) -> None:
         """
         Updates default initialization values with specific values from a given pandas Series.
 
@@ -119,15 +180,34 @@ class Input:
         for index_df, row in self.init_vals_input.iterrows():
             for index_s, value in gparam_series.items():
                 if index_s in ["k1", "k2", "k3", "k4"]:
+
+                    # (f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as int: {int(value)}")
+                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = int(value)
-                if index_s in ["k5", "k6", "k_s", "k_d"]:
+                if index_s in [
+                    "k5",
+                    "k6",
+                    "k_s",
+                    "k_d",
+                    "ks_aux",
+                    "kd_aux",
+                    "ks_arr",
+                    "kd_arr",
+                    "ks_pinu",
+                    "kd_pinu",
+                    "kd_pinloc",
+                    "ks_auxlax",
+                    "kd_auxlax",
+                ]:
+                    # print(f"index_s: {index_s}, value: {value}, value type: {type(value)}, value as float: {float(value)}")
+                    # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = float(value)
                 if index_s == "tau":
                     self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(value)
 
     def get_init_vals(self) -> dict:
         """
-        Extracts initial values for cells from the input file and returns them as a dictionary.
+        Extracts initial values for cells from the input JSON and returns them as a dictionary.
 
         Returns
         -------
@@ -135,39 +215,40 @@ class Input:
             A dictionary with cell indices as keys and dictionaries of their initial values as values.
         """
         init_vals_dict = {}
-        init_vals_names = [
-            "auxin",
-            "arr",
-            "al",
-            "pin",
-            "pina",
-            "pinb",
-            "pinl",
-            "pinm",
-            "k1",
-            "k2",
-            "k3",
-            "k4",
-            "k5",
-            "k6",
-            "k_s",
-            "k_d",
-            "auxin_w",
-            "arr_hist",
-            "growing",
-            "circ_mod",
-            "vertices",
-            "neighbors",
-        ]
-        for index, row in self.init_vals_input[init_vals_names].iterrows():
+
+        init_vals_data = self.init_vals_input
+
+        # Get field names from DataFrame columns
+        init_vals_names = init_vals_data.columns.tolist()
+
+        for index, row in init_vals_data.iterrows():
             cell_num = f"c{index}"
-            init_vals_dict[cell_num] = row.to_dict()
-            for val in init_vals_dict[cell_num]:
-                init_vals_dict[cell_num][val] = init_vals_dict[cell_num][val]
-            init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * len(
-                init_vals_dict[cell_num]["arr_hist"]
-            )
-        self.set_arr_hist(init_vals_dict)
+            cell_dict = {key: row[key] for key in init_vals_names}
+            init_vals_dict[cell_num] = cell_dict
+
+            # Process each value, evaluating only if it's a string containing a valid expression
+            for val in ["arr_hist", "vertices", "neighbors"]:
+                if val in init_vals_dict[cell_num] and isinstance(
+                    init_vals_dict[cell_num][val], str
+                ):
+                    try:
+                        # Safely evaluate strings that are supposed to be Python literals (lists, dicts)
+                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                    except SyntaxError as e:
+                        raise ValueError(f"Error evaluating {val}: {e}")
+
+                # Specifically handling neighbors to strip spaces from entries if it's a list of strings
+                if val == "neighbors" and isinstance(init_vals_dict[cell_num][val], list):
+                    init_vals_dict[cell_num][val] = [
+                        item.strip()
+                        for item in init_vals_dict[cell_num][val]
+                        if isinstance(item, str)
+                    ]
+
+            # Replicate arr_hist based on a specific length if it's a list
+            if "arr_hist" in init_vals_dict[cell_num]:
+                arr_len = len(init_vals_dict[cell_num]["arr_hist"])
+                init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * arr_len
         return init_vals_dict
 
     def set_arr_hist(self, init_vals_dict: dict) -> None:
@@ -193,8 +274,8 @@ class Input:
             A dictionary with cell indices as keys and lists of assigned vertex identifiers as values.
         """
         vertex_assign = {}
-        for index in range(len(self.init_vals_input["vertices"])):
-            vertex_assign[f"c{index}"] = self.init_vals_input["vertices"][index]
+        for index, row in self.init_vals_input.iterrows():
+            vertex_assign[f"c{index}"] = row["vertices"]
         return vertex_assign
 
     def get_neighbors_assignment(self) -> dict:
@@ -207,8 +288,9 @@ class Input:
             A dictionary with cell indices as keys and lists of neighbor cell indices as values.
         """
         neighbors = {}
-        for index in range(len(self.init_vals_input["neighbors"])):
-            neighbors[f"c{index}"] = self.init_vals_input["neighbors"][index]
+        for index, row in self.init_vals_input.iterrows():
+            cell_id = f"c{index}"
+            neighbors[cell_id] = row["neighbors"]
         return neighbors
 
     def group_vertices(self, vertices: dict, cell_vIDlist_mapping: dict) -> dict:
@@ -282,14 +364,14 @@ class Input:
             A dictionary with cell indices as keys and lists of neighboring Cell objects as values.
         """
         neighbors_assignment = self.get_neighbors_assignment()
-        neighbors = {}
+        neighbors_dict = {}
         for cell_num, neighb in neighbors_assignment.items():
-            for each in neighb:
-                if cell_num not in neighbors:
-                    neighbors[cell_num] = [new_cells[each]]
+            for each_neighbor in neighb:
+                if cell_num not in neighbors_dict:
+                    neighbors_dict[cell_num] = [new_cells[each_neighbor]]
                 else:
-                    neighbors[cell_num].append(new_cells[each])
-        return neighbors
+                    neighbors_dict[cell_num].append(new_cells[each_neighbor])
+        return neighbors_dict
 
     def update_neighbors(self, neighbors: dict, new_cells: dict) -> None:
         """

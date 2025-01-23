@@ -19,8 +19,8 @@ class TestInitializationSymmetry(unittest.TestCase):
     def test_initial_symmetry(self):
         timestep = 1
         vis = False
-        cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
@@ -929,8 +929,8 @@ class TestInitializationSymmetry(unittest.TestCase):
     def test_symmetry_after_updates(self):
         timestep = 1
         vis = False
-        cell_val_file = "src/sim/input/default_init_vals.csv"
-        v_file = "src/sim/input/default_vs.csv"
+        cell_val_file = "src/sim/input/default_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
         gparam_series = None
         simulation = GrowingSim(
             SCREEN_WIDTH,
