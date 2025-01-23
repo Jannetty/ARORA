@@ -1,0 +1,7 @@
+src.agent.circ\_module module
+=============================
+
+.. automodule:: src.agent.circ_module
+   :members:
+   :undoc-members:
+   :show-inheritance:

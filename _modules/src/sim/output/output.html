@@ -71,6 +71,7 @@
              
   <h1>Source code for src.sim.output.output</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -91,78 +92,96 @@
 <span class="sd">    ----------</span>
 <span class="sd">    sim : GrowingSim</span>
 <span class="sd">        The simulation instance from which to gather output data.</span>
-<span class="sd">    filename : str</span>
-<span class="sd">        The name of the file to which output data will be written.</span>
+<span class="sd">    filename_csv : str</span>
+<span class="sd">        The name of the CSV file to which output data will be written.</span>
+<span class="sd">    filename_json : str</span>
+<span class="sd">        The name of the JSON file to which output data will be written.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    sim : GrowingSim</span>
 <span class="sd">        The simulation instance associated with this output.</span>
-<span class="sd">    filename : str</span>
+<span class="sd">    filename_csv : str</span>
 <span class="sd">        The filename for the output CSV file.</span>
-
+<span class="sd">    filename_json : str</span>
+<span class="sd">        The filename for the output JSON file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim</span><span class="p">:</span> <span class="s2">&quot;GrowingSim&quot;</span><span class="p">,</span> <span class="n">filename_csv</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename_json</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initializes the Output object with a simulation instance and output filename.</span>
+<span class="sd">        Initializes the Output object with a simulation instance and output filenames.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        sim : GrowingSim</span>
 <span class="sd">            The simulation instance associated with this output.</span>
-<span class="sd">        filename : str</span>
+<span class="sd">        filename_csv : str</span>
 <span class="sd">            The filename for the output CSV file.</span>
+<span class="sd">        filename_json : str</span>
+<span class="sd">            The filename for the output JSON file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sim</span> <span class="o">=</span> <span class="n">sim</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-            <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="s2">&quot;tick&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;cell&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;auxin&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;location&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;ARR&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;AUX/LAX&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;PIN_unlocalized&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;PIN_apical&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;PIN_basal&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;PIN_left&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;PIN_right&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;arr_hist&quot;</span><span class="p">,</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_csv</span> <span class="o">=</span> <span class="n">filename_csv</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename_json</span> <span class="o">=</span> <span class="n">filename_json</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_labels_written_to_output_file</span> <span class="o">=</span> <span class="kc">False</span>
 
 <div class="viewcode-block" id="Output.output_cells">
 <a class="viewcode-back" href="../../../../src.sim.output.output.html#src.sim.output.output.Output.output_cells">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">output_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Writes the current state of all cells to the output file.</span>
+<span class="sd">        Writes the current state of all cells to the output files.</span>
 
 <span class="sd">        This method gathers data from each cell within the simulation, including</span>
 <span class="sd">        concentrations, locations, and PIN distributions, and writes this information</span>
-<span class="sd">        to the specified output file.</span>
+<span class="sd">        to the specified output files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_labels_written_to_output_file</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_cell_list</span><span class="p">())</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No Cells added to simulation. Cannot output simulation contents.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">sim_and_cell_contents</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;tick&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cell&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;location&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;apical_memlen&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;basal_memlen&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;left_memlen&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;right_memlen&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;dev_zone&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;cell_type&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sim_and_cell_contents</span> <span class="o">=</span> <span class="n">sim_and_cell_contents</span>
+            <span class="n">circ_contents</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_cell_list</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">circ_contents</span> <span class="o">=</span> <span class="n">circ_contents</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_csv</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">sim_and_cell_contents</span> <span class="o">+</span> <span class="n">circ_contents</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title_labels_written_to_output_file</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">cell_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_cell_list</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cell_list</span><span class="p">:</span>
             <span class="n">summary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;tick&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">get_tick</span><span class="p">()</span>
             <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;cell&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_c_id</span><span class="p">()</span>
-            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;auxin&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_auxin</span><span class="p">()</span>
             <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_corners_for_disp</span><span class="p">()</span>
-            <span class="n">summary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_circ_contents</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">cell</span><span class="p">)</span>
-            <span class="c1"># summary[&quot;num_divisions&quot;] = self.get_division_number(cell)</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;apical_memlen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_apical_memlen</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;basal_memlen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_basal_memlen</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;left_memlen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_left_memlen</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;right_memlen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">quad_perimeter</span><span class="o">.</span><span class="n">get_right_memlen</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;dev_zone&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_dev_zone</span><span class="p">()</span>
+            <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;cell_type&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_cell_type</span><span class="p">()</span>
+            <span class="n">summary</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_circ_contents</span><span class="p">(</span><span class="n">summary</span><span class="p">,</span> <span class="n">cell</span><span class="p">))</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
 
-        <span class="c1"># generate spreadsheet</span>
+        <span class="c1"># Generate CSV</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
-            <span class="c1"># writer.writeheader()</span>
-            <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_csv</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">csv_writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="n">header</span><span class="p">)</span>
+            <span class="n">csv_writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="c1"># Generate JSON</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename_json</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Output.get_circ_contents">
@@ -183,16 +202,7 @@
 <span class="sd">        dict[str, Any]</span>
 <span class="sd">            The updated summary dictionary containing circulation content information for the cell.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;ARR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_arr</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;AUX/LAX&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_al</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_unlocalized&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_pin</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_apical&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_apical_pin</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_basal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_basal_pin</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_left&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_left_pin</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;PIN_right&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_right_pin</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;arr_hist&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_arr_hist</span><span class="p">()</span>
-        <span class="n">summary</span><span class="p">[</span><span class="s2">&quot;auxin_w&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_auxin_w</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">summary</span></div>
+        <span class="k">return</span> <span class="n">cell</span><span class="o">.</span><span class="n">get_circ_mod</span><span class="p">()</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Output.get_division_number">

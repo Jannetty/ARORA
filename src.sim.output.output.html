@@ -91,7 +91,7 @@
 <span id="src-sim-output-output-module"></span><h1>src.sim.output.output module<a class="headerlink" href="#module-src.sim.output.output" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.sim.output.output.Output">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GrowingSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/sim/output/output.html#Output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.sim.output.output.Output" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GrowingSim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename_csv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/sim/output/output.html#Output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.sim.output.output.Output" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Handles the generation and management of simulation output data.</p>
 <p>This class is responsible for creating and writing simulation results to a CSV file,
@@ -108,9 +108,20 @@ including detailed information about each cell.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.sim.output.output.Output.filename">
-<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#src.sim.output.output.Output.filename" title="Link to this definition"></a></dt>
-<dd><p>The name of the file to which output data will be written.</p>
+<dt class="sig sig-object py" id="src.sim.output.output.Output.filename_csv">
+<span class="sig-name descname"><span class="pre">filename_csv</span></span><a class="headerlink" href="#src.sim.output.output.Output.filename_csv" title="Link to this definition"></a></dt>
+<dd><p>The name of the CSV file to which output data will be written.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.sim.output.output.Output.filename_json">
+<span class="sig-name descname"><span class="pre">filename_json</span></span><a class="headerlink" href="#src.sim.output.output.Output.filename_json" title="Link to this definition"></a></dt>
+<dd><p>The name of the JSON file to which output data will be written.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -122,17 +133,18 @@ including detailed information about each cell.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sim</strong> (<em>GrowingSim</em>) – The simulation instance associated with this output.</p></li>
-<li><p><strong>filename</strong> (<em>str</em>) – The filename for the output CSV file.</p></li>
+<li><p><strong>filename_csv</strong> (<em>str</em>) – The filename for the output CSV file.</p></li>
+<li><p><strong>filename_json</strong> (<em>str</em>) – The filename for the output JSON file.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="src.sim.output.output.Output.output_cells">
 <span class="sig-name descname"><span class="pre">output_cells</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/sim/output/output.html#Output.output_cells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.sim.output.output.Output.output_cells" title="Link to this definition"></a></dt>
-<dd><p>Writes the current state of all cells to the output file.</p>
+<dd><p>Writes the current state of all cells to the output files.</p>
 <p>This method gathers data from each cell within the simulation, including
 concentrations, locations, and PIN distributions, and writes this information
-to the specified output file.</p>
+to the specified output files.</p>
 </dd></dl>
 
 <dl class="py method">

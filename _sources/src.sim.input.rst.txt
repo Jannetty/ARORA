@@ -12,4 +12,5 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   src.sim.input.convert_input_filetype_script
    src.sim.input.input
