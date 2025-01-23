@@ -7,11 +7,9 @@ from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
 
-
-# CELL_LIST = sim.get_cell_list()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Starting Template"
+SCREEN_TITLE = "TEST"
 
 init_vals = {
     "auxin": 2,
@@ -100,33 +98,30 @@ init_vals3 = {
     "arr_hist": [0.1, 0.2, 0.3],
     "circ_mod": "indep_syn_deg",
 }
-sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
-cell0 = Cell(
-    sim,
-    [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
-    init_vals,
-    sim.get_next_cell_id(),
-)
-cell1 = Cell(
-    sim,
-    [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
-    init_vals2,
-    sim.get_next_cell_id(),
-)
 
 
 class TestOutput(unittest.TestCase):
 
-    def setUp(self):
-        """Set up common test variables."""
-        self.output_csv = "output.csv"
-        self.output_json = "output.json"
-        CELL_LIST = [cell0, cell1]
-        self.output = Output(sim, self.output_csv, self.output_json)
-        sim.setup()
-        sim.add_to_cell_list(cell0)
-        sim.add_to_cell_list(cell1)
+    output_csv = "output.csv"
+    output_json = "output.json"
 
+    def setUp(self):
+        self.sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        self.cell0 = Cell(
+            self.sim,
+            [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
+            init_vals,
+            self.sim.get_next_cell_id(),
+        )
+        self.cell1 = Cell(
+            self.sim,
+            [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
+            init_vals2,
+            self.sim.get_next_cell_id(),
+        )
+        self.output = Output(self.sim, self.output_csv, self.output_json)
+
+    @classmethod
     def tearDown(self):
         """Clean up test files."""
         if os.path.isfile(self.output_csv):
@@ -135,27 +130,27 @@ class TestOutput(unittest.TestCase):
             os.remove(self.output_json)
 
     def test_get_circ_contents(self):
-        summary = {"cell": cell0}
-        expected = cell0.get_circ_mod().get_state()
-        found = self.output.get_circ_contents(summary, cell0)
+        summary = {"cell": self.cell0}
+        expected = self.cell0.get_circ_mod().get_state()
+        found = self.output.get_circ_contents(summary, self.cell0)
         self.assertEqual(expected, found)
 
         # test cell1
-        summary1 = {"cell": cell1}
-        expected1 = cell1.get_circ_mod().get_state()
-        found1 = self.output.get_circ_contents(summary1, cell1)
+        summary1 = {"cell": self.cell1}
+        expected1 = self.cell1.get_circ_mod().get_state()
+        found1 = self.output.get_circ_contents(summary1, self.cell1)
         self.assertEqual(expected1, found1)
 
-        # test cell2 (with circ_mod: indep_syn_deg)
-        cell2 = Cell(
-            sim,
+        # test cell3 (with circ_mod: indep_syn_deg)
+        cell3 = Cell(
+            self.sim,
             [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],
             init_vals3,
-            sim.get_next_cell_id(),
+            self.sim.get_next_cell_id(),
         )
-        summary2 = {"cell": cell2}
-        expected2 = cell2.get_circ_mod().get_state()
-        found2 = self.output.get_circ_contents(summary2, cell2)
+        summary2 = {"cell": cell3}
+        expected2 = cell3.get_circ_mod().get_state()
+        found2 = self.output.get_circ_contents(summary2, cell3)
 
     def test_output_cells(self):
         self.output.output_cells()
@@ -166,4 +161,5 @@ class TestOutput(unittest.TestCase):
         self.assertGreater(os.path.getsize(self.output_json), 0)
 
     def test_get_division_number(self):
+        # TODO: Implement
         pass

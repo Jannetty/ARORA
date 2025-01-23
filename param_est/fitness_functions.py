@@ -9,7 +9,7 @@ from src.agent.cell import Cell
 
 def avg_auxin_root_tip_greater_than_elsewhere(sim: GrowingSim, chromosome: dict) -> float:
     """
-    Returns the ratio of the average auxin concentration in non-root tip cells 
+    Returns the ratio of the average auxin concentration in non-root tip cells
     to the average auxin concentration in root tip cells.
 
     Parameters
@@ -93,13 +93,13 @@ def parity_of_mz_auxin_concentrations_with_VDB_data(sim: GrowingSim, chromosome:
     float
         The parity of the auxin concentrations in the marginal zone cells with the VDB data.
     """
-    
+
     # Step 1: Load VDB and ARORA data
     vdb_summary_df = pd.read_csv('param_est/vdb_summary_seven_peri_cells_across_27_ticks.csv')
     sim_output_df = pd.read_csv(sim.output.filename_csv)
     # Preprocess ARORA simulation output for analysis
     sim_output_df = preprocess_ARORA_sim_output(sim_output_df)
-    
+
     # Step 2: Collect auxin concentrations at specific locations for each tick
     centroid_y_locations = np.linspace(75, 178, 7)
     closest_arora_cells_dfs = collect_auxin_data_by_tick(sim_output_df, centroid_y_locations)

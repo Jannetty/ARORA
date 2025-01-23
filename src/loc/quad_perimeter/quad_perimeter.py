@@ -28,6 +28,161 @@ def list_intersection(lst1: list, lst2: list) -> list:
     return intersection
 
 
+def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float:
+    """
+    Calculates the length of the common perimeter between two cells.
+
+    Parameters
+    ----------
+    cell: Cell
+        The reference cell from which the common perimeter length is calculated
+    neighbor: Cell
+        The neighboring cell adjacemt to the 'cell'.
+
+    Returns
+    -------
+    float
+        The length of the perimeter shared by the `cell` and its `neighbor`.
+
+    Raises
+    ------
+    ValueError
+        If `cell` and `neighbor` do not share a direct boundary, indicating an
+        error in identifying neighboring cells or a potential issue with the cell
+        geometry configuration.
+    """
+
+    length = 0.0
+    cellqp = cell.get_quad_perimeter()
+    neighborqp = neighbor.get_quad_perimeter()
+    # if cellqp and neighborqp share two vertices, calculate euclidean distance between them
+    cell_vs = cellqp.get_vs()
+    neighbor_vs = neighborqp.get_vs()
+    if len(list_intersection(cell_vs, neighbor_vs)) == 2:
+        vs = list(set(cellqp.get_vs()).intersection(set(neighborqp.get_vs())))
+        length = math.dist(vs[0].get_xy(), vs[1].get_xy())
+    elif cell.sim.geometry == "default":
+        length = PerimeterNeighborHelpers.get_default_len_perimeter_in_common(cell, neighbor)
+
+    if length == 0:
+        raise ValueError("Neighbor list is incorrect, neighbor does not share membrane with cell")
+    return length
+
+
+def get_apical(vertex_list: list["Vertex"]) -> list["Vertex"]:
+    """
+    Returns two apical vertices from the given vertex list.
+
+    Parameters
+    ----------
+    vertex_list: list[Vertex]
+        A list of four vertices.
+
+    Returns
+    -------
+    list[Vertex]
+        A list of the cell's two apical vertices.
+    """
+    vs = vertex_list
+    assert len(vs) == 4
+    maxy = float("-inf")
+    apical_vs = []
+    for v in vs:
+        if v.get_y() > maxy:
+            maxy = v.get_y()
+            apical_v = v
+    apical_vs.append(apical_v)
+    maxy = float("-inf")
+    for v in vs:
+        if v.get_y() > maxy and v not in apical_vs:
+            maxy = v.get_y()
+            apical_v = v
+    apical_vs.append(apical_v)
+    return apical_vs
+
+
+def get_basal(vertex_list: list["Vertex"]) -> list["Vertex"]:
+    """
+    Returns two basal vertices from the given vertex list.
+
+    Parameters
+    ----------
+    vertex_list: list[Vertex]
+        A list of four vertices.
+
+    Returns
+    -------
+    list[Vertex]
+        A list of the cell's two basal vertices.
+    """
+    apical = get_apical(vertex_list)
+    return [v for v in vertex_list if v not in apical]
+
+
+def get_left_v(vertex_list: list["Vertex"]) -> Vertex:
+    """
+    Return the leftmost vertex from a specified list of two vertices.
+
+    Parameters
+    ----------
+    vertex_list : list[Vertex]
+        A list containing exactly two `Vertex` instances.
+
+    Returns
+    -------
+    Vertex
+        The leftmost vertex based on the x-coordinate.
+
+    Raises
+    ------
+    ValueError
+        If `vertex_list` does not contain exactly two vertices.
+
+    """
+    if len(vertex_list) != 2:
+        raise ValueError("get_left_v called on vertex list of length != 2")
+    vs = vertex_list
+    minx = float("inf")
+    for v in vs:
+        if v.get_x() < minx:
+            minx = v.get_x()
+            left_v = v
+    return left_v
+
+
+def get_right_v(vertex_list: list["Vertex"]) -> Vertex:
+    """
+    Return the rightmost vertex from a specified list of two vertices.
+
+    This function identifies and returns the vertex with the smallest x-coordinate,
+    effectively determining the leftmost vertex among a pair. This operation assumes
+    the vertex list contains exactly two vertices.
+
+    Parameters
+    ----------
+    vertex_list : list[Vertex]
+        A list containing exactly two `Vertex` instances.
+
+    Returns
+    -------
+    Vertex
+        The rightmost vertex based on the x-coordinate.
+
+    Raises
+    ------
+    ValueError
+        If `vertex_list` does not contain exactly two vertices.
+
+    """
+    if len(vertex_list) != 2:
+        raise ValueError("get_right_v called on vertex list of length != 2")
+    left = get_left_v(vertex_list)
+    for v in vertex_list:
+        if v is not left:
+            right = v
+    return right
+
+
 class QuadPerimeter:
     """
     Represents the perimeter of a cell defined by its four corner vertices.
@@ -467,158 +622,3 @@ class QuadPerimeter:
             else:
                 memfrac = self.get_right_memlen() / cell_perimeter
         return round_to_sf(memfrac, 6)
-
-
-def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float:
-    """
-    Calculates the length of the common perimeter between two cells.
-
-    Parameters
-    ----------
-    cell: Cell
-        The reference cell from which the common perimeter length is calculated
-    neighbor: Cell
-        The neighboring cell adjacemt to the 'cell'.
-
-    Returns
-    -------
-    float
-        The length of the perimeter shared by the `cell` and its `neighbor`.
-
-    Raises
-    ------
-    ValueError
-        If `cell` and `neighbor` do not share a direct boundary, indicating an
-        error in identifying neighboring cells or a potential issue with the cell
-        geometry configuration.
-    """
-
-    length = 0.0
-    cellqp = cell.get_quad_perimeter()
-    neighborqp = neighbor.get_quad_perimeter()
-    # if cellqp and neighborqp share two vertices, calculate euclidean distance between them
-    cell_vs = cellqp.get_vs()
-    neighbor_vs = neighborqp.get_vs()
-    if len(list_intersection(cell_vs, neighbor_vs)) == 2:
-        vs = list(set(cellqp.get_vs()).intersection(set(neighborqp.get_vs())))
-        length = math.dist(vs[0].get_xy(), vs[1].get_xy())
-    elif cell.sim.geometry == "default":
-        length = PerimeterNeighborHelpers.get_default_len_perimeter_in_common(cell, neighbor)
-
-    if length == 0:
-        raise ValueError("Neighbor list is incorrect, neighbor does not share membrane with cell")
-    return length
-
-
-def get_apical(vertex_list: list["Vertex"]) -> list["Vertex"]:
-    """
-    Returns two apical vertices from the given vertex list.
-
-    Parameters
-    ----------
-    vertex_list: list[Vertex]
-        A list of four vertices.
-
-    Returns
-    -------
-    list[Vertex]
-        A list of the cell's two apical vertices.
-    """
-    vs = vertex_list
-    assert len(vs) == 4
-    maxy = float("-inf")
-    apical_vs = []
-    for v in vs:
-        if v.get_y() > maxy:
-            maxy = v.get_y()
-            apical_v = v
-    apical_vs.append(apical_v)
-    maxy = float("-inf")
-    for v in vs:
-        if v.get_y() > maxy and v not in apical_vs:
-            maxy = v.get_y()
-            apical_v = v
-    apical_vs.append(apical_v)
-    return apical_vs
-
-
-def get_basal(vertex_list: list["Vertex"]) -> list["Vertex"]:
-    """
-    Returns two basal vertices from the given vertex list.
-
-    Parameters
-    ----------
-    vertex_list: list[Vertex]
-        A list of four vertices.
-
-    Returns
-    -------
-    list[Vertex]
-        A list of the cell's two basal vertices.
-    """
-    apical = get_apical(vertex_list)
-    return [v for v in vertex_list if v not in apical]
-
-
-def get_left_v(vertex_list: list["Vertex"]) -> Vertex:
-    """
-    Return the leftmost vertex from a specified list of two vertices.
-
-    Parameters
-    ----------
-    vertex_list : list[Vertex]
-        A list containing exactly two `Vertex` instances.
-
-    Returns
-    -------
-    Vertex
-        The leftmost vertex based on the x-coordinate.
-
-    Raises
-    ------
-    ValueError
-        If `vertex_list` does not contain exactly two vertices.
-
-    """
-    if len(vertex_list) != 2:
-        raise ValueError("get_left_v called on vertex list of length != 2")
-    vs = vertex_list
-    minx = float("inf")
-    for v in vs:
-        if v.get_x() < minx:
-            minx = v.get_x()
-            left_v = v
-    return left_v
-
-
-def get_right_v(vertex_list: list["Vertex"]) -> Vertex:
-    """
-    Return the rightmost vertex from a specified list of two vertices.
-
-    This function identifies and returns the vertex with the smallest x-coordinate,
-    effectively determining the leftmost vertex among a pair. This operation assumes
-    the vertex list contains exactly two vertices.
-
-    Parameters
-    ----------
-    vertex_list : list[Vertex]
-        A list containing exactly two `Vertex` instances.
-
-    Returns
-    -------
-    Vertex
-        The rightmost vertex based on the x-coordinate.
-
-    Raises
-    ------
-    ValueError
-        If `vertex_list` does not contain exactly two vertices.
-
-    """
-    if len(vertex_list) != 2:
-        raise ValueError("get_right_v called on vertex list of length != 2")
-    left = get_left_v(vertex_list)
-    for v in vertex_list:
-        if v is not left:
-            right = v
-    return right

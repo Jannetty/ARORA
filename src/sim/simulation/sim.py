@@ -234,7 +234,6 @@ class GrowingSim(Window):
         and preparing the simulation environment.
         """
         # find midpoint x of root basd on vertices that exist
-        # I think function will be (max_x - min_x) / 2
         self.tick = 0
         self.next_cell_id = 0
         self.circulator = Circulator(self)
@@ -278,7 +277,7 @@ class GrowingSim(Window):
 
     def calculate_root_midpoint_x_from_input(self) -> float:
         """Calculates the midpoint of the x-coordinates from the input vertex file."""
-        vertex_input = self.input.vertex_file_input
+        vertex_input = self.input.vertex_input
         if len(vertex_input) == 0:
             return 0
         xs = vertex_input["x"].tolist()

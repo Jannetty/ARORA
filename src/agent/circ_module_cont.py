@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, TYPE_CHECKING, cast
 from scipy.integrate import odeint
 from src.sim.util.math_helpers import round_to_sf
 from src.agent.circ_module import CirculateModule
+from src.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 
 if TYPE_CHECKING:
     from src.agent.cell import Cell
@@ -130,7 +131,7 @@ class BaseCirculateModuleCont(CirculateModule):
         self.arr = self.init_arr
 
         self.init_al = cast(float, init_vals.get("al"))
-        self.al = self.init_al
+        self.aux_lax = self.init_al
 
         self.init_pin = cast(float, init_vals.get("pin"))
         self.pin = self.init_pin
@@ -168,20 +169,6 @@ class BaseCirculateModuleCont(CirculateModule):
         # to self.cell.sim.root_midpointx
 
         self.pin_weights = self.initialize_pin_weights()
-
-    def update_left_right(self) -> None:
-        """
-        Update the left and right attributes of the current cell.
-
-        This method updates the left and right attributes of the current cell based on the
-        current midpoint of the cell's perimeter relative to the root midpoint.
-        """
-        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
-            self.cell.get_sim().get_root_midpointx()
-        )
-        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(
-            self.cell.get_sim().get_root_midpointx()
-        )
 
     def initialize_pin_weights(self) -> dict[str, float]:
         """
@@ -239,7 +226,7 @@ class BaseCirculateModuleCont(CirculateModule):
         # arr
         f1 = self.calculate_arr(arri)
         # al
-        f2 = self.calculate_al(auxini, ali)
+        f2 = self.calculate_auxlax(auxini, ali)
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
@@ -250,7 +237,7 @@ class BaseCirculateModuleCont(CirculateModule):
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
-    def solve_equations(self) -> np.ndarray:
+    def solve_equations(self, time_step: float = 0.001, duration: float = 1.0) -> np.ndarray:
         """
         Solve the model's differential equations over a given time span.
 
@@ -264,14 +251,14 @@ class BaseCirculateModuleCont(CirculateModule):
         y0 = [
             self.auxin,
             self.arr,
-            self.al,
+            self.auxlax,
             self.pin,
             self.pina,
             self.pinb,
             self.pinl,
             self.pinm,
         ]
-        t = np.array([0, 1])
+        t = np.linspace(0, duration, int(duration / time_step) + 1)
         soln = odeint(self.f, y0, t)
         return soln
 
@@ -552,13 +539,13 @@ class BaseCirculateModuleCont(CirculateModule):
             different time point and columns represent the concentrations of different
             substances at that time point.
         """
-        self.arr = round_to_sf(soln[1, 1], 5)
-        self.al = round_to_sf(soln[1, 2], 5)
-        self.pin = round_to_sf(soln[1, 3], 5) - self.pin
-        self.pina = round_to_sf(soln[1, 4], 5)
-        self.pinb = round_to_sf(soln[1, 5], 5)
-        self.pinl = round_to_sf(soln[1, 6], 5)
-        self.pinm = round_to_sf(soln[1, 7], 5)
+        self.arr = round_to_sf(soln[-1, 1], 5)
+        self.auxlax = round_to_sf(soln[-1, 2], 5)
+        self.pin = round_to_sf(soln[-1, 3], 5) - self.pin
+        self.pina = round_to_sf(soln[-1, 4], 5)
+        self.pinb = round_to_sf(soln[-1, 5], 5)
+        self.pinl = round_to_sf(soln[-1, 6], 5)
+        self.pinm = round_to_sf(soln[-1, 7], 5)
         self.update_arr_hist()
 
     def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
@@ -619,10 +606,10 @@ class BaseCirculateModuleCont(CirculateModule):
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
         # Calculate auxin exchange across membranes
-        auxina_exchange = self.get_aux_exchange_across_membrane(self.al, self.pina, neighborsa)
-        auxinb_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinb, neighborsb)
-        auxinl_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinl, neighborsl)
-        auxinm_exchange = self.get_aux_exchange_across_membrane(self.al, self.pinm, neighborsm)
+        auxina_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pina, neighborsa)
+        auxinb_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinb, neighborsb)
+        auxinl_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinl, neighborsl)
+        auxinm_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinm, neighborsm)
         neighbors_auxin_exchange = [
             auxina_exchange,
             auxinb_exchange,
@@ -631,7 +618,7 @@ class BaseCirculateModuleCont(CirculateModule):
         ]
 
         # Compute net auxin synthesized and degraded at this time step
-        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
+        auxin_synthesized_and_degraded_this_timestep = soln[-1, 0] - self.auxin
 
         delta_auxin = self.calculate_delta_auxin(
             auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
@@ -675,7 +662,7 @@ class BaseCirculateModuleCont(CirculateModule):
         float
             The AUX/LAX expression in the cell.
         """
-        return self.al
+        return self.auxlax
 
     def get_arr_hist(self) -> list[float]:
         """

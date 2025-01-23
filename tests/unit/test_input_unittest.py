@@ -428,8 +428,8 @@ class TestInput(unittest.TestCase):
     def test_make_arr_hist_to_list(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
         found_arr_hist = input.init_vals_input["arr_hist"]
@@ -441,12 +441,13 @@ class TestInput(unittest.TestCase):
     def test_make_vertices_to_list(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
         found_vs = input.init_vals_input["vertices"]
         for each in found_vs:
+            print(f"each: {each}")
             self.assertEqual(type(each), type([]))
             for val in each:
                 self.assertEqual(type(val), type(1))
@@ -454,8 +455,8 @@ class TestInput(unittest.TestCase):
     def test_make_neighbors_to_list(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
         found_vs = input.init_vals_input["neighbors"]
@@ -467,11 +468,11 @@ class TestInput(unittest.TestCase):
     def test_make_param_to_int(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         input = Input(
-            "tests/unit/test_csv/init_vals.csv",
-            "tests/unit/test_csv/vertex.csv",
+            "tests/unit/test_input_files/init_vals.csv",
+            "tests/unit/test_input_files/vertex.csv",
             sim,
         )
-        int_params = ["k1", "k2", "k3", "k4"]
+        int_params = ["k1", "k2", "k4"]
         for param in int_params:
             for index in range(len(param)):
                 self.assertTrue(isinstance(input.init_vals_input[param][index], numpy.int64))

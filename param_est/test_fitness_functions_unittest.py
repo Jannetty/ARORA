@@ -165,6 +165,7 @@ class TestFitnessFunctions(unittest.TestCase):
         sim.cell_list[6].get_circ_mod().get_auxin.return_value = 7
         sim.cell_list[7].get_circ_mod().get_auxin.return_value = 8
         sim.cell_list[8].get_circ_mod().get_auxin.return_value = 9
+        sim.cell_list[9].get_circ_mod().get_auxin.return_value = 10
         avg_non_root_tip_auxins = sum([1, 2, 3, 4, 5, 6, 7, 8, 9]) / 9
         avg_root_tip_auxins = 10
         chromosome = {}

@@ -637,3 +637,17 @@ class CirculateModule(ABC):
             'l' for lateral, 'm' for medial) to their respective PIN weights.
         """
         return self.pin_weights
+
+    def update_left_right(self) -> None:
+        """
+        Update the left and right attributes of the current cell.
+
+        This method updates the left and right attributes of the current cell based on the
+        current midpoint of the cell's perimeter relative to the root midpoint.
+        """
+        self.left = self.cell.get_quad_perimeter().get_left_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )
+        self.right = self.cell.get_quad_perimeter().get_right_lateral_or_medial(
+            self.cell.get_sim().get_root_midpointx()
+        )

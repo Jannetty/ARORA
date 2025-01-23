@@ -9,6 +9,7 @@ import numpy as np
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
+from src.sim.util.math_helpers import round_to_sf
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -28,8 +29,8 @@ class BaseCirculateModuleContTests(unittest.TestCase):
     Tests BaseCirculateModuleCont Class
     """
 
-    DURATION = 1.0
-    TIME_STEP = 0.001
+    duration = 1.0
+    time_step = 0.001
 
     def test_calculate_cont_auxin(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
@@ -55,11 +56,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             init_vals["pinl"],
             init_vals["pinm"],
         ]
-        t = np.linspace(0, self.DURATION, int(self.DURATION / self.TIME_STEP) + 1)
+        t = np.linspace(0, self.duration, int(self.duration / self.time_step) + 1)
         expected_soln = odeint(f, y0, t)
-        expected_auxin = expected_soln[1][0]
+        expected_auxin = expected_soln[-1][0]
         found_soln = cell.get_circ_mod().solve_equations()
-        found_auxin = found_soln[1][0]
+        found_auxin = found_soln[-1][0]
         self.assertAlmostEqual(expected_auxin, found_auxin, places=3)
 
     def test_calculate_arr(self):
@@ -306,11 +307,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pinl,
             circ_module_cont.pinm,
         ]
-        t = np.linspace(0, self.DURATION, int(self.DURATION / self.TIME_STEP) + 1)
+        t = np.linspace(0, self.duration, int(self.duration / self.time_step) + 1)
         expected_soln = odeint(f, y0, t)
         found_soln = circ_module_cont.solve_equations()
         for i in range(8):
-            self.assertAlmostEqual(expected_soln[1, i], found_soln[1, i], places=3)
+            self.assertAlmostEqual(expected_soln[-1, i], found_soln[-1, i], places=3)
 
     def test_update_arr_hist(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
@@ -345,17 +346,6 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             make_init_vals(),
             sim.get_next_cell_id(),
         )
-        cell2 = Cell(
-            sim,
-            [
-                Vertex(30.0, 10.0),
-                Vertex(30.0, 30.0),
-                Vertex(50.0, 30.0),
-                Vertex(50.0, 10.0),
-            ],
-            make_init_vals(),
-            sim.get_next_cell_id(),
-        )
         circ_module_cont = cell.get_circ_mod()
         sim.setup()
         y0 = [
@@ -368,19 +358,19 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pinl,
             circ_module_cont.pinm,
         ]
-        t = np.array([0, 1])
+        t = np.linspace(0, self.duration, int(self.duration / self.time_step) + 1)
         soln = odeint(f, y0, t)
-        circ_module_cont.update_circ_contents(soln)
+        circ_module_cont.update()
         # test arr
-        expected_arr = soln[1, 1]
+        expected_arr = round_to_sf(soln[-1, 1], 5)
         found_arr = circ_module_cont.arr
         self.assertAlmostEqual(expected_arr, found_arr, places=4)
         # test al
-        expected_al = soln[1, 2]
+        expected_al = round_to_sf(soln[-1, 2], 5)
         found_al = circ_module_cont.auxlax
         self.assertAlmostEqual(expected_al, found_al, places=4)
         # test pina
-        expected_pina = soln[1, 4]
+        expected_pina = round_to_sf(soln[-1, 4], 5)
         found_pina = circ_module_cont.pina
         self.assertAlmostEqual(expected_pina, found_pina, places=4)
 
@@ -506,7 +496,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             circ_module_cont.pinl,
             circ_module_cont.pinm,
         ]
-        t = np.array([0, 1])
+        t = np.linspace(0, self.duration, int(self.duration / self.time_step) + 1)
         soln = odeint(f, y0, t)
         circ_module_cont.update_auxin(soln)
         found = curr_cell.get_sim().get_circulator().delta_auxins
@@ -555,7 +545,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             [neighborm2],
         )
         expected = {
-            curr_cell: (soln[1, 0] - make_init_vals()["auxin"])
+            curr_cell: (soln[-1, 0] - make_init_vals()["auxin"])
             + auxina[neighbora2]
             + auxinm[neighborm2],
             neighbora: -auxina[neighbora2],

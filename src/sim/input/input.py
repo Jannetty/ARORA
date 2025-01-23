@@ -71,7 +71,17 @@ class Input:
         sim : GrowingSim
             The simulation instance to which this Input class belongs.
         """
-        self.init_vals_input = self.load_json(init_vals_file)
+        # check if init_vals_file is a json file or a csv
+        if init_vals_file.endswith(".json"):
+            self.init_vals_input = self.load_json(init_vals_file)
+        elif init_vals_file.endswith(".csv"):
+            self.init_vals_input = pd.read_csv(init_vals_file)
+            # convert the arr_hist to list (only needed for csv)
+            self.make_arr_hist_to_list()
+        else:
+            raise ValueError("Input file must be a JSON or CSV file.")
+
+        # convert the integer and float parameters to the correct type
         for col in self.int_params:
             self.init_vals_input[col] = self.init_vals_input[col].astype("int")
         for col in self.float_params:
@@ -81,7 +91,20 @@ class Input:
             except KeyError:
                 print(f"Key Error: {col}")
                 pass
-        self.vertex_input = self.load_json(vertex_file)
+
+        # check if vertex_input is a json file or a csv
+        if vertex_file.endswith(".json"):
+            self.vertex_input = self.load_json(vertex_file)
+        elif vertex_file.endswith(".csv"):
+            self.vertex_input = pd.read_csv(vertex_file)
+            # convert the vertices to list (only needed for csv)
+            self.make_cell_vertices_to_list()
+            # convert the neighbors to list (only needed for csv)
+            self.make_neighbors_to_list()
+        else:
+            raise ValueError("Input file must be a JSON or CSV file.")
+
+        self.vertex_input["x"] = self.vertex_input["x"].astype("int")
         self.vertex_input["y"] = self.vertex_input["y"].astype("int")
         self.initial_v_miny = min(self.vertex_input["y"])
         self.sim = sim
