@@ -240,7 +240,7 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             found = found_neighbor_auxin[neighbor]
             self.assertAlmostEqual(expected, found, places=5)
 
-    def test_calculate_delta_auxin(self):
+    def testCalculateDeltaAuxin_calledWithSynDegAndExchange_CorrectlySums(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
         cell = Cell(
             sim,
@@ -266,9 +266,11 @@ class BaseCirculateModuleContTests(unittest.TestCase):
             sim.get_next_cell_id(),
         )
         sim.setup()
-        neighbors_auxin = [{neighbora: 0.004999925}]
-        expected_delta_auxin = 0.004999925 + 0.004999925
-        found_delta_auxin = circ_module_cont.calculate_delta_auxin(0.004999925, neighbors_auxin)
+        neighbor_a_exchange = 0.004999925
+        neighbors_auxin = [{neighbora: neighbor_a_exchange}]
+        cell_syn_deg_auxin = .004999925
+        expected_delta_auxin = cell_syn_deg_auxin + neighbor_a_exchange
+        found_delta_auxin = circ_module_cont.calculate_delta_auxin(cell_syn_deg_auxin, neighbors_auxin)
         self.assertAlmostEqual(expected_delta_auxin, found_delta_auxin, places=5)
 
     def test_solve_equations(self):
