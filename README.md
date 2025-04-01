@@ -13,7 +13,7 @@ Agent-Based Models (ABMs) are a powerful tool for interrogating how changes in c
 In ABMs, agents—here representing individual cells—follow predefined rules dictating their behavior as they progress through time and interact with other agents and their environment.  
 These rules are derived from hypothesized or observed relationships between low-level interactions and emergent behavior in the system, thus enabling highly interpretable exploration of how changes or perturbations at the agent level affect system dynamics and system-wide emergent behavior.
 ABMs have been effective at interrogating complex bioprocesses ([Reisfeld et al. 2013](https://www.nature.com/articles/s41598-021-04205-8), [Prybutok et al. 2022](https://pubmed.ncbi.nlm.nih.gov/35903149/), [Yu and Bagheri 2020](https://pubmed.ncbi.nlm.nih.gov/32596213/), [Yu and Bagheri 2021](https://pubmed.ncbi.nlm.nih.gov/34139155/)).
-Here I am constructing an ABM of lateral root development---the process by which new lateral roots emerge from the primary root of dicot plants---with the goal of identifying methods for controlling the timing and locations of lateral root emergence, ultimately enabling precise manipulation of dicot root architecture.
+Here I am constructing an ABM of lateral root development,the process by which new lateral roots emerge from the primary root of dicot plants, with the goal of identifying methods for controlling the timing and locations of lateral root emergence, ultimately enabling precise manipulation of dicot root architecture.
 
 This project is a work in progress.
 
