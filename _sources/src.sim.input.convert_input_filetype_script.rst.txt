@@ -3,5 +3,5 @@ src.sim.input.convert\_input\_filetype\_script module
 
 .. automodule:: src.sim.input.convert_input_filetype_script
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

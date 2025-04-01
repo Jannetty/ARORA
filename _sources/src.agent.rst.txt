@@ -3,8 +3,8 @@ src.agent package
 
 .. automodule:: src.agent
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

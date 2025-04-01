@@ -3,8 +3,8 @@ src package
 
 .. automodule:: src
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Subpackages
 -----------

@@ -3,8 +3,8 @@ src.loc package
 
 .. automodule:: src.loc
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Subpackages
 -----------

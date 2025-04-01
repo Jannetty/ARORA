@@ -3,8 +3,8 @@ src.sim.simulation package
 
 .. automodule:: src.sim.simulation
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

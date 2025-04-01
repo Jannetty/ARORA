@@ -3,8 +3,8 @@ src.sim.circulator package
 
 .. automodule:: src.sim.circulator
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

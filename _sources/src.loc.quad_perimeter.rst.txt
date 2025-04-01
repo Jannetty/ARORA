@@ -3,8 +3,8 @@ src.loc.quad\_perimeter package
 
 .. automodule:: src.loc.quad_perimeter
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

@@ -3,8 +3,8 @@ src.sim.input package
 
 .. automodule:: src.sim.input
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

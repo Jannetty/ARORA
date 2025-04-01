@@ -3,5 +3,5 @@ src.agent.circ\_module\_aux\_syn\_deg\_only module
 
 .. automodule:: src.agent.circ_module_aux_syn_deg_only
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

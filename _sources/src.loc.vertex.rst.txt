@@ -3,8 +3,8 @@ src.loc.vertex package
 
 .. automodule:: src.loc.vertex
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

@@ -3,5 +3,5 @@ src.agent.circ\_module\_indep\_syn\_deg module
 
 .. automodule:: src.agent.circ_module_indep_syn_deg
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

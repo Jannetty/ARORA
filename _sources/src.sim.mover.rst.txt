@@ -3,8 +3,8 @@ src.sim.mover package
 
 .. automodule:: src.sim.mover
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------

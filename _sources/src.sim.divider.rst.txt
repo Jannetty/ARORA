@@ -3,8 +3,8 @@ src.sim.divider package
 
 .. automodule:: src.sim.divider
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Submodules
 ----------
