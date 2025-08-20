@@ -364,13 +364,13 @@ def main(
     cell_val_file: str = "",
     v_file: str = "",
     gparam_series: Series | str = "",
+    output_file: str = "output",
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
     geometry = ""
     if v_file == "src/sim/input/default_vs.json":
         geometry = "default"
-    output_file_name = "2024100801"
     simulation = GrowingSim(
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
@@ -381,7 +381,7 @@ def main(
         v_file,
         gparam_series,
         geometry,
-        output_file_name,
+        output_file,
     )
     set_window(simulation)
     print("Running Simulation")

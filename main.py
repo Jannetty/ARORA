@@ -75,6 +75,10 @@ if __name__ == '__main__':
     parser.add_argument("--circ_mod", type=str, default="universal_syndeg",
                         choices=["universal_syndeg", "indep_syndeg", "aux_syndegonly"],
                         help="Which circulation module to use")
+    parser.add_argument(
+    "--output_file", type=str, default="output",
+    help="Base name for the output files (without extension)"
+)
 
     args = parser.parse_args()
     circ_mod = args.circ_mod
@@ -87,7 +91,8 @@ if __name__ == '__main__':
         vis,
         cell_val_file=config["cell_val_file"],
         v_file=config["v_file"],
-        gparam_series=config["gparam_series"]
+        gparam_series=config["gparam_series"],
+        output_file=args.output_file
     )
     end_time = time.time()
     elapsed_time = end_time - start_time
