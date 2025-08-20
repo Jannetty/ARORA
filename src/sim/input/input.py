@@ -105,7 +105,9 @@ class Input:
                     raw_vertex_data, orient="index", columns=["x", "y"]
                 )
             else:
-                raise ValueError("Unsupported vertex format. Expected dict of {int: {x: val, y: val}}.")
+                raise ValueError(
+                    "Unsupported vertex format. Expected dict of {int: {x: val, y: val}}."
+                )
 
         elif vertex_file.endswith(".csv"):
             self.vertex_input = pd.read_csv(vertex_file)
@@ -176,12 +178,12 @@ class Input:
         """
         if isinstance(self.vertex_input, pd.DataFrame):
             return {
-                int(index): Vertex(int(row["x"]), int(row["y"]), int(index))
-                for index, row in self.vertex_input.iterrows()
+                int(str(i)): Vertex(int(row["x"]), int(row["y"]), int(str(i)))
+                for i, row in self.vertex_input.iterrows()
             }
         elif isinstance(self.vertex_input, dict):
             return {
-                int(v_id): Vertex(int(data["x"]), int(data["y"]), int(v_id))
+                int(str(v_id)): Vertex(int(data["x"]), int(data["y"]), int(str(v_id)))
                 for v_id, data in self.vertex_input.items()
             }
         else:
