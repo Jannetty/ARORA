@@ -73,7 +73,7 @@ class Input:
         """
         # check if init_vals_file is a json file or a csv
         if init_vals_file.endswith(".json"):
-            self.init_vals_input = self.load_json(init_vals_file)
+            self.init_vals_input = self.load_cell_json(init_vals_file)
         elif init_vals_file.endswith(".csv"):
             self.init_vals_input = pd.read_csv(init_vals_file)
             # convert the arr_hist to list (only needed for csv)
@@ -92,26 +92,50 @@ class Input:
                 print(f"Key Error: {col}")
                 pass
 
-        # check if vertex_input is a json file or a csv
+        # handle vertex input
         if vertex_file.endswith(".json"):
-            self.vertex_input = self.load_json(vertex_file)
+            raw_vertex_data = self.load_vertex_json(vertex_file)
+
+            # Now expect int keys
+            if isinstance(raw_vertex_data, dict) and all(
+                isinstance(k, int) and isinstance(v, dict) and "x" in v and "y" in v
+                for k, v in raw_vertex_data.items()
+            ):
+                self.vertex_input = pd.DataFrame.from_dict(
+                    raw_vertex_data, orient="index", columns=["x", "y"]
+                )
+            else:
+                raise ValueError("Unsupported vertex format. Expected dict of {int: {x: val, y: val}}.")
+
         elif vertex_file.endswith(".csv"):
             self.vertex_input = pd.read_csv(vertex_file)
-            # convert the vertices to list (only needed for csv)
             self.make_cell_vertices_to_list()
-            # convert the neighbors to list (only needed for csv)
             self.make_neighbors_to_list()
         else:
             raise ValueError("Input file must be a JSON or CSV file.")
 
-        self.vertex_input["x"] = self.vertex_input["x"].astype("int")
-        self.vertex_input["y"] = self.vertex_input["y"].astype("int")
-        self.initial_v_miny = min(self.vertex_input["y"])
+        self.vertex_input["x"] = self.vertex_input["x"].astype(int)
+        self.vertex_input["y"] = self.vertex_input["y"].astype(int)
+        self.initial_v_miny = self.vertex_input["y"].min()
         self.sim = sim
 
-    def load_json(self, file_path: str) -> pd.DataFrame:
+    def load_vertex_json(self, file_path: str) -> dict:
+        with open(file_path, "r") as file:
+            raw = json.load(file)
+        return {int(k): v for k, v in raw.items()}  # convert string keys to int
+
+    def load_cell_json(self, file_path: str) -> pd.DataFrame:
         with open(file_path, "r") as file:
             data = json.load(file)
+
+        # Force conversion of stringified list fields to actual lists
+        for entry in data:
+            for key in ["vertices", "neighbors", "arr_hist"]:
+                if key in entry and isinstance(entry[key], str):
+                    try:
+                        entry[key] = eval(entry[key])
+                    except Exception as e:
+                        raise ValueError(f"Error parsing {key} in {file_path}: {entry[key]} — {e}")
         return pd.DataFrame(data)
 
     def get_initial_v_miny(self) -> float:
@@ -150,23 +174,18 @@ class Input:
         dict[int, Vertex]
             A dictionary where keys are vertex identifiers (ints) and values are Vertex objects.
         """
-        vertex_dict = {}
-        for index, row in self.vertex_input.iterrows():
-            vertex_dict[index] = row.to_dict()
-        # update the vertex_dict to store vertcies in Vertex format
-        new_vertex_dict = {}
-        for v_num, vertex in vertex_dict.items():
-            # Ensure that v_num can be interpreted as an integer
-            if isinstance(v_num, int):
-                vnum_int = v_num
-            elif isinstance(v_num, str) and v_num.isdigit():
-                vnum_int = int(v_num)
-            else:
-                raise ValueError(f"Vertex identifier {v_num} is not convertible to integer")
-            x = int(vertex["x"])
-            y = int(vertex["y"])
-            new_vertex_dict[vnum_int] = Vertex(x, y, vnum_int)
-        return new_vertex_dict
+        if isinstance(self.vertex_input, pd.DataFrame):
+            return {
+                int(index): Vertex(int(row["x"]), int(row["y"]), int(index))
+                for index, row in self.vertex_input.iterrows()
+            }
+        elif isinstance(self.vertex_input, dict):
+            return {
+                int(v_id): Vertex(int(data["x"]), int(data["y"]), int(v_id))
+                for v_id, data in self.vertex_input.items()
+            }
+        else:
+            raise ValueError("Unsupported vertex_input format.")
 
     def replace_default_to_gparam(self, gparam_series: pd.Series) -> None:
         """
@@ -316,7 +335,7 @@ class Input:
         for cell in cell_vIDlist_mapping:
             vertex_list = []
             for vertex in cell_vIDlist_mapping[cell]:
-                vertex_list.append(vertices[vertex])
+                vertex_list.append(vertices[int(vertex)])
             grouping[cell] = vertex_list
         return grouping
 

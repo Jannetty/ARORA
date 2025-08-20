@@ -11,7 +11,7 @@ from src.sim.input.input import Input
 from src.sim.simulation.sim import GrowingSim
 from src.agent.cell import Cell
 from src.loc.vertex.vertex import Vertex
-from src.agent.circ_module_cont import BaseCirculateModuleCont
+from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -301,11 +301,11 @@ class TestInput(unittest.TestCase):
 
         # check that cell0 is nongrowing and has continuous circulator
         self.assertEqual(found_cell0.growing, False)
-        self.assertTrue(isinstance(found_cell0.get_circ_mod(), BaseCirculateModuleCont))
+        self.assertTrue(isinstance(found_cell0.get_circ_mod(), CirculateModuleUniversalSynDeg))
 
         # check that cell1 is nongrowing and has continuous circulator
         self.assertEqual(found_cell1.growing, False)
-        self.assertTrue(isinstance(found_cell1.get_circ_mod(), BaseCirculateModuleCont))
+        self.assertTrue(isinstance(found_cell1.get_circ_mod(), CirculateModuleUniversalSynDeg))
 
     def test_get_neighbors(self):
         sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)

@@ -1,5 +1,6 @@
 import os
 import platform
+import argparse
 
 if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
@@ -16,7 +17,7 @@ File to run simulation
 DEFAULT_PARAM_NAMES = ["k_s","k_d","k1","k2","k3","k4","k5","k6","tau"]
 INDEP_PARAM_NAMES = ["ks_aux","kd_aux","ks_pinu","kd_pinu","kd_pinloc","ks_auxlax","kd_auxlax","k1","k2","k3","k4","k5","k6","tau"]
 
-def make_default_param_series_default():
+def make_default_param_series():
     ks_range = 0.0553636
     kd_range = 0.0278859
     k1_range = 60
@@ -26,15 +27,6 @@ def make_default_param_series_default():
     k5_range = 0.464545
     k6_range = 0.959596
     tau_range = 18
-    # ks_range = .3 #np.linspace(0.001, 0.3, 100).astype(float)
-    # kd_range = .003 #np.linspace(0.0001, 0.03, 100).astype(float)
-    # k1_range = 10 #np.round(np.linspace(10, 160, 100)).astype(int)
-    # k2_range = 50 #np.round(np.linspace(50, 100, 100)).astype(int)
-    # k3_range = 10 #np.round(np.linspace(10, 75, 100)).astype(int)
-    # k4_range = 50 #np.round(np.linspace(50, 100, 100)).astype(int)
-    # k5_range = .08 #np.linspace(0.07, 1, 100).astype(float)#np.linspace(0.07, 20, 100).astype(float) # kal
-    # k6_range = .3 #np.linspace(0.2, 1, 100).astype(float)#np.linspace(0.2, 20, 100).astype(float) # kpin
-    # tau_range = 60 #np.round(np.linspace(60, 7200, 100)).astype(int)
     param_vals =  [ks_range, kd_range, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
     return pd.Series(param_vals, index=DEFAULT_PARAM_NAMES)
 
@@ -56,11 +48,47 @@ def make_indep_param_series():
     param_vals = [ks_aux, kd_aux, ks_pinu, kd_pinu, kd_pinloc, ks_auxlax, kd_auxlax, k1_range, k2_range, k3_range, k4_range, k5_range, k6_range, tau_range]
     return pd.Series(param_vals, index=INDEP_PARAM_NAMES)
 
+def get_simulation_config(circ_mod: str):
+    if circ_mod == "universal_syndeg":
+        return {
+            "cell_val_file": "src/sim/input/default_init_vals_higher_auxinw_in_shootward_vasc.json",
+            "v_file": "src/sim/input/default_vs.json",
+            "gparam_series": make_default_param_series(),
+        }
+    elif circ_mod == "indep_syndeg":
+        return {
+            "cell_val_file": "src/sim/input/indep_syndeg_init_vals.json",
+            "v_file": "src/sim/input/default_vs.json",
+            "gparam_series": make_indep_param_series(),
+        }
+    elif circ_mod == "aux_syndegonly":
+        return {
+            "cell_val_file": "src/sim/input/aux_syndegonly_init_vals.json",
+            "v_file": "src/sim/input/default_vs.json",
+            "gparam_series": make_default_param_series(),
+        }
+    else:
+        raise ValueError(f"Unsupported circ_mod: {circ_mod}")
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Run ARORA Simulation")
+    parser.add_argument("--circ_mod", type=str, default="universal_syndeg",
+                        choices=["universal_syndeg", "indep_syndeg", "aux_syndegonly"],
+                        help="Which circulation module to use")
+
+    args = parser.parse_args()
+    circ_mod = args.circ_mod
     timestep = 1
     vis = True
     start_time = time.time()
-    sim.main(timestep, root_midpoint_x, vis, cell_val_file="default", v_file="default", gparam_series=make_indep_param_series())
+    config = get_simulation_config(circ_mod)
+    sim.main(
+        timestep,
+        vis,
+        cell_val_file=config["cell_val_file"],
+        v_file=config["v_file"],
+        gparam_series=config["gparam_series"]
+    )
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Elapsed Time: {elapsed_time} seconds")

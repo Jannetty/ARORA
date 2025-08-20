@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
-class AuxinSynDegOnlyCirculateModule(CirculateModule):
+class CirculateModuleAuxinSynDegOnly(CirculateModule):
     ks_aux: float
     kd_aux: float
 
@@ -70,6 +70,6 @@ class AuxinSynDegOnlyCirculateModule(CirculateModule):
             "kd_aux": self.kd_aux,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
-            "circ_mod": "auxsyndeg_only",
+            "circ_mod": "aux_syndegonly",
         }
         return state

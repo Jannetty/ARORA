@@ -5,7 +5,7 @@ if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.loc.vertex.vertex import Vertex
-from src.agent.circ_module_cont import BaseCirculateModuleCont
+from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
 

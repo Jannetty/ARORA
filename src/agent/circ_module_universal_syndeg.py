@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
-class BaseCirculateModuleCont(CirculateModule):
+class CirculateModuleUniversalSynDeg(CirculateModule):
     """
     Base class for the circulation module controller.
 
@@ -805,6 +805,6 @@ class BaseCirculateModuleCont(CirculateModule):
             "k_d": self.kd,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
-            "circ_mod": "cont",
+            "circ_mod": "universal_syndeg",
         }
         return state

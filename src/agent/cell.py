@@ -1,9 +1,9 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
 from typing import TYPE_CHECKING, Any, cast, Union, Dict
-from src.agent.circ_module_cont import BaseCirculateModuleCont
+from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
-from src.agent.circ_module_aux_syn_deg_only import AuxinSynDegOnlyCirculateModule
+from src.agent.circ_module_aux_syn_deg_only import CirculateModuleAuxinSynDegOnly
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 from src.agent.circ_module import CirculateModule
@@ -147,15 +147,16 @@ class Cell(Sprite):
         self.quad_perimeter = QuadPerimeter(corners)
         # Type hint circ_mod to accept any class that implements the CirculateModule protocol
         self.circ_mod: CirculateModule
-        if init_vals.get("circ_mod") == "cont":
-            self.circ_mod = BaseCirculateModuleCont(self, init_vals)
-        elif init_vals.get("circ_mod") == "indep_syn_deg":
+        circ_mod_name = init_vals.get("circ_mod")
+        if circ_mod_name == "universal_syndeg":
+            self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
+        elif circ_mod_name == "indep_syndeg":
             self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
-        elif init_vals.get("circ_mod") == "auxsyndeg_only":
-            self.circ_mod = AuxinSynDegOnlyCirculateModule(self, init_vals)
+        elif circ_mod_name == "aux_syndegonly":
+            self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
         else:
-            print("Circ mod not recognized, using continuous circ mod")
-            self.circ_mod = BaseCirculateModuleCont(self, init_vals)
+            print(f"Warning: Unknown circ_mod '{circ_mod_name}', defaulting to universal_syndeg.")
+            self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
 
         self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         if self.sim.geometry != "default":

@@ -256,6 +256,6 @@ class CirculateModuleIndSynDeg(CirculateModule):
             "kd_auxlax": self.kd_auxlax,
             "auxin_w": self.auxin_w,
             "arr_hist": self.arr_hist,
-            "circ_mod": "indep_syn_deg",
+            "circ_mod": "indep_syndeg",
         }
         return state
