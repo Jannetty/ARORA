@@ -1,0 +1,7 @@
+src.agent.circ\_module\_universal\_syndeg module
+================================================
+
+.. automodule:: src.agent.circ_module_universal_syndeg
+   :members:
+   :show-inheritance:
+   :undoc-members:

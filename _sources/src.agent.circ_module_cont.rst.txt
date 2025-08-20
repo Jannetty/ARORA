@@ -3,5 +3,5 @@ src.agent.circ\_module\_cont module
 
 .. automodule:: src.agent.circ_module_cont
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:

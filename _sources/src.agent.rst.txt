@@ -15,6 +15,6 @@ Submodules
    src.agent.cell
    src.agent.circ_module
    src.agent.circ_module_aux_syn_deg_only
-   src.agent.circ_module_cont
    src.agent.circ_module_indep_syn_deg
+   src.agent.circ_module_universal_syndeg
    src.agent.default_geo_neighbor_helpers
