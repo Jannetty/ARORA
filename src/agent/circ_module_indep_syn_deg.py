@@ -153,7 +153,10 @@ class CirculateModuleIndSynDeg(CirculateModule):
         float
             The calculated AUX/LAX expression after synthesis and degradation.
         """
-        al = self.ks_auxlax * (auxini / (auxini + self.k_auxin_auxlax)) - self.kd_auxlax * ali
+        al = (
+            self.ks_auxlax * (auxini / (auxini + self.k_auxin_auxlax))
+            - self.kd_auxlax * ali
+        )
         return al
 
     def calculate_pin(self, auxini: float, arri: float) -> float:

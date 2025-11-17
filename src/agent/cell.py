@@ -1,6 +1,7 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
 from typing import TYPE_CHECKING, Any, cast, Union, Dict
+from src.arora_enums import PinLocalizationRuleset
 from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.agent.circ_module_aux_syn_deg_only import CirculateModuleAuxinSynDegOnly
@@ -107,6 +108,8 @@ class Cell(Sprite):
         The development zone of the cell.
     cell_type : str
         The type of the cell.
+    pin_loc_ruleset : PinLocalizationRules
+        The rules the cell is following to determine its PIN localization
     color : str
         The color of the cell.
     """
@@ -114,6 +117,7 @@ class Cell(Sprite):
     dev_zone: str
     cell_type: str
     growing: bool
+    pin_loc_ruleset: PinLocalizationRuleset
 
     def __init__(
         self,
@@ -147,6 +151,7 @@ class Cell(Sprite):
         self.quad_perimeter = QuadPerimeter(corners)
         # Type hint circ_mod to accept any class that implements the CirculateModule protocol
         self.circ_mod: CirculateModule
+        # TODO: change this to rely on enums instead of string matching
         circ_mod_name = init_vals.get("circ_mod")
         if circ_mod_name == "universal_syndeg":
             self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
@@ -155,9 +160,12 @@ class Cell(Sprite):
         elif circ_mod_name == "aux_syndegonly":
             self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
         else:
-            print(f"Warning: Unknown circ_mod '{circ_mod_name}', defaulting to universal_syndeg.")
+            print(
+                f"Warning: Unknown circ_mod '{circ_mod_name}', defaulting to universal_syndeg."
+            )
             self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
 
+        self.pin_loc_ruleset = self.get_sim().get_pin_loc_rules()
         self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         if self.sim.geometry != "default":
             self.dev_zone = ""
@@ -321,7 +329,9 @@ class Cell(Sprite):
             elif neighbor_location == "cell no longer root cap cell neighbor":
                 pass
             elif neighbor_location is None:
-                print(f"cell {self.c_id} is not neighbors with cell {neighbor.get_c_id()}")
+                print(
+                    f"cell {self.c_id} is not neighbors with cell {neighbor.get_c_id()}"
+                )
                 raise ValueError("Non-neighbor added as neighbor")
             else:
                 raise ValueError("Non-neighbor added as neighbor")
@@ -350,19 +360,35 @@ class Cell(Sprite):
         self_vs = self.get_quad_perimeter().get_vs()
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         neighbor_dir = ""
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and self.sim.geometry == "default":
-            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
-                self, neighbor
+        if (
+            len(set(self_vs).intersection(set(neighbor_vs))) == 1
+            and self.sim.geometry == "default"
+        ):
+            neighbor_dir = (
+                NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                    self, neighbor
+                )
             )
-        if len(set(self_vs).intersection(set(neighbor_vs))) == 0 and self.sim.geometry == "default":
-            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
-                self, neighbor
+        if (
+            len(set(self_vs).intersection(set(neighbor_vs))) == 0
+            and self.sim.geometry == "default"
+        ):
+            neighbor_dir = (
+                NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+                    self, neighbor
+                )
             )
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2 and neighbor_dir == "":
             neighbor_dir = self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and neighbor_dir == "":
             neighbor_dir = self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
-        if neighbor_dir not in ["a", "b", "l", "m", "cell no longer root cap cell neighbor"]:
+        if neighbor_dir not in [
+            "a",
+            "b",
+            "l",
+            "m",
+            "cell no longer root cap cell neighbor",
+        ]:
             raise ValueError("Neighbor not recognized")
         return neighbor_dir
 
@@ -775,7 +801,7 @@ class Cell(Sprite):
 
     def calculate_pin_weights(self) -> dict:
         """
-        Calculates the pin weights of each membrane of the cell.
+        Calculates the pin weights of each membrane of the cell. Depends on what PinLocalizationRuleset is being used for the simulation.
 
         Returns
         -------
@@ -784,7 +810,17 @@ class Cell(Sprite):
             Keys are "a", "b", "l", and "m".
 
         """
-        return self.circ_mod.get_pin_weights()
+        if self.pin_loc_ruleset == PinLocalizationRuleset.SIMPLE_INHERITANCE:
+            return self.circ_mod.get_pin_weights()
+        elif self.pin_loc_ruleset == PinLocalizationRuleset.IMPOSED:
+            return self.get_imposed_pin_distribution()
+        else:
+            raise NotImplementedError("Please choose either simple_inheritance or imposed as your pin_loc_rules")
+
+    def get_imposed_pin_distribution(self) -> dict:
+        dev_zone = self.get_dev_zone()
+        # TODO: IMPLEMENT!!!
+        return {}
 
     def get_pin_weights(self) -> dict:
         """
@@ -804,6 +840,7 @@ class Cell(Sprite):
         """
         if self.growing:
             self.grow()
+        self.dev_zone = self.calculate_dev_zone()
         self.pin_weights = self.calculate_pin_weights()
         self.circ_mod.update()
 
@@ -824,33 +861,51 @@ class Cell(Sprite):
         """
         # standard case, check which vertices neighbor shares with self
         # if neighbor shares top left and bottom left, neighbor is to the left
-        if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()
+        if (
+            self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()
+        ) and (
+            self.quad_perimeter.get_bottom_left()
+            in neighbor.get_quad_perimeter().get_vs()
         ):
             if (
-                self.quad_perimeter.get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                self.quad_perimeter.get_left_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "lateral"
             ):
                 neighbor_direction = "l"
             else:
                 neighbor_direction = "m"
         # if neighbor shares top right and bottom right, neighbor is to the right
-        elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
+        elif (
+            self.quad_perimeter.get_top_right()
+            in neighbor.get_quad_perimeter().get_vs()
+        ) and (
+            self.quad_perimeter.get_bottom_right()
+            in neighbor.get_quad_perimeter().get_vs()
         ):
             if (
-                self.quad_perimeter.get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                self.quad_perimeter.get_right_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "lateral"
             ):
                 neighbor_direction = "l"
             else:
                 neighbor_direction = "m"
-        elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()
+        elif (
+            self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()
+        ) and (
+            self.quad_perimeter.get_top_right()
+            in neighbor.get_quad_perimeter().get_vs()
         ):
             neighbor_direction = "a"
-        elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (
-            self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
+        elif (
+            self.quad_perimeter.get_bottom_left()
+            in neighbor.get_quad_perimeter().get_vs()
+        ) and (
+            self.quad_perimeter.get_bottom_right()
+            in neighbor.get_quad_perimeter().get_vs()
         ):
             neighbor_direction = "b"
         return neighbor_direction
@@ -875,12 +930,16 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_top_right()
         ):
             if (
-                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_left_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_left_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "medial"
             ):
                 neighbor_direction = "m"
@@ -890,12 +949,16 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_top_left()
         ):
             if (
-                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_right_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_right_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "medial"
             ):
                 neighbor_direction = "m"
@@ -905,12 +968,16 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_bottom_right()
         ):
             if (
-                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_left_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_left_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "medial"
             ):
                 neighbor_direction = "m"
@@ -920,12 +987,16 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_bottom_left()
         ):
             if (
-                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_right_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
+                self.get_quad_perimeter().get_right_lateral_or_medial(
+                    self.sim.get_root_midpointx()
+                )
                 == "medial"
             ):
                 neighbor_direction = "m"

@@ -137,7 +137,9 @@ class Input:
                     try:
                         entry[key] = eval(entry[key])
                     except Exception as e:
-                        raise ValueError(f"Error parsing {key} in {file_path}: {entry[key]} — {e}")
+                        raise ValueError(
+                            f"Error parsing {key} in {file_path}: {entry[key]} — {e}"
+                        )
         return pd.DataFrame(data)
 
     def get_initial_v_miny(self) -> float:
@@ -224,7 +226,9 @@ class Input:
                     # print(f"current self.init_vals_input.at[index_df, index_s] = {self.init_vals_input.at[index_df, index_s]}, type: {type(self.init_vals_input.at[index_df, index_s])}")
                     self.init_vals_input.at[index_df, index_s] = float(value)
                 if index_s == "tau":
-                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(value)
+                    self.init_vals_input.at[index_df, "arr_hist"] = [row["arr"]] * int(
+                        value
+                    )
 
     def get_init_vals(self) -> dict:
         """
@@ -254,12 +258,16 @@ class Input:
                 ):
                     try:
                         # Safely evaluate strings that are supposed to be Python literals (lists, dicts)
-                        init_vals_dict[cell_num][val] = eval(init_vals_dict[cell_num][val])
+                        init_vals_dict[cell_num][val] = eval(
+                            init_vals_dict[cell_num][val]
+                        )
                     except SyntaxError as e:
                         raise ValueError(f"Error evaluating {val}: {e}")
 
                 # Specifically handling neighbors to strip spaces from entries if it's a list of strings
-                if val == "neighbors" and isinstance(init_vals_dict[cell_num][val], list):
+                if val == "neighbors" and isinstance(
+                    init_vals_dict[cell_num][val], list
+                ):
                     init_vals_dict[cell_num][val] = [
                         item.strip()
                         for item in init_vals_dict[cell_num][val]
@@ -269,7 +277,9 @@ class Input:
             # Replicate arr_hist based on a specific length if it's a list
             if "arr_hist" in init_vals_dict[cell_num]:
                 arr_len = len(init_vals_dict[cell_num]["arr_hist"])
-                init_vals_dict[cell_num]["arr_hist"] = [init_vals_dict[cell_num]["arr"]] * arr_len
+                init_vals_dict[cell_num]["arr_hist"] = [
+                    init_vals_dict[cell_num]["arr"]
+                ] * arr_len
         return init_vals_dict
 
     def set_arr_hist(self, init_vals_dict: dict) -> None:
@@ -416,7 +426,10 @@ class Input:
         all_cells_arr_hist_lists = []
         for arr_hist_list in self.init_vals_input["arr_hist"]:
             one_cell_arr_hist_list = (
-                arr_hist_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+                arr_hist_list.replace(" ", "")
+                .replace("[", "")
+                .replace("]", "")
+                .split(",")
             )
             for index, arr_val in enumerate(one_cell_arr_hist_list):
                 one_cell_arr_hist_list[index] = float(arr_val)
@@ -429,7 +442,9 @@ class Input:
         """
         all_cells_v_lists = []
         for v_list in self.init_vals_input["vertices"]:
-            one_cell_v_list = v_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            one_cell_v_list = (
+                v_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+            )
             for index, v in enumerate(one_cell_v_list):
                 one_cell_v_list[index] = int(v)
             all_cells_v_lists.append(one_cell_v_list)
@@ -442,7 +457,10 @@ class Input:
         all_cells_neighbors_lists = []
         for neighbor_list in self.init_vals_input["neighbors"]:
             one_cell_neighbors_list = (
-                neighbor_list.replace(" ", "").replace("[", "").replace("]", "").split(",")
+                neighbor_list.replace(" ", "")
+                .replace("[", "")
+                .replace("]", "")
+                .split(",")
             )
             all_cells_neighbors_lists.append(one_cell_neighbors_list)
         self.init_vals_input["neighbors"] = pd.Series(all_cells_neighbors_lists)
@@ -454,4 +472,6 @@ class Input:
         int_params = ["k1", "k2", "k3", "k4"]
         for param in int_params:
             for index in range(len(param)):
-                self.init_vals_input.loc[index, param] = int(self.init_vals_input[param][index])
+                self.init_vals_input.loc[index, param] = int(
+                    self.init_vals_input[param][index]
+                )

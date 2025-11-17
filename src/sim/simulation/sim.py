@@ -9,6 +9,7 @@ from arcade import SpriteList
 from arcade import set_background_color
 from arcade import close_window, set_window
 import time
+from src.arora_enums import PinLocalizationRuleset
 from src.sim.circulator.circulator import Circulator
 from src.sim.divider.divider import Divider
 from src.sim.mover.vertex_mover import VertexMover
@@ -50,6 +51,8 @@ class GrowingSim(Window):
         A list of vertices currently present in the simulation.
     vis : bool
         Indicates whether the simulation should be visualized.
+    pin_loc_rules : PinLocalizationRuleset
+        The rules the cells follow to determine how they localize PIN auxin exporters
     next_cell_id : int
         The ID to be assigned to the next new cell.
     root_tip_y : float
@@ -73,6 +76,8 @@ class GrowingSim(Window):
         The timestep size for the simulation, in seconds.
     vis : bool
         Flag to indicate whether the simulation should be visualized.
+    pin_loc_rules : PinLocalizationRuleset
+        The rules the cells follow to determine how they localize PIN auxin exporters
     cell_val_file : str, optional
         The filename containing cell values to initialize the simulation.
     v_file : str, optional
@@ -92,6 +97,7 @@ class GrowingSim(Window):
     cell_list: SpriteList
     vertex_list: list
     vis: bool
+    pin_loc_rules: PinLocalizationRuleset
     next_cell_id: int
     root_tip_y: float = 0
     cell_val_file: str
@@ -105,6 +111,7 @@ class GrowingSim(Window):
         title: str,
         timestep: int,
         vis: bool,
+        pin_loc_rules: PinLocalizationRuleset,
         cell_val_file: str = "",
         v_file: str = "",
         gparam_series: pandas.core.series.Series | str = "",
@@ -136,6 +143,7 @@ class GrowingSim(Window):
         self.geometry = geometry
         self.timestep = timestep
         self.vis = vis
+        self.pin_loc_rules = pin_loc_rules
         self.cmap = plt.get_cmap("coolwarm")
         self.setup()
         self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
@@ -179,6 +187,10 @@ class GrowingSim(Window):
     def get_timestep(self) -> float:
         """Returns the timestep of the simulation (in seconds)."""
         return self.timestep
+
+    def get_pin_loc_rules(self) -> PinLocalizationRuleset:
+        """Returns the PIN localization ruleset"""
+        return self.pin_loc_rules
 
     def get_tick(self) -> int:
         """Returns the current tick (or step) of the simulation."""
@@ -333,8 +345,12 @@ class GrowingSim(Window):
                 self.circulator.update()
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
-                total_aux = sum([cell.get_circ_mod().get_auxin() for cell in self.cell_list])
-                total_area = sum([cell.get_quad_perimeter().get_area() for cell in self.cell_list])
+                total_aux = sum(
+                    [cell.get_circ_mod().get_auxin() for cell in self.cell_list]
+                )
+                total_area = sum(
+                    [cell.get_quad_perimeter().get_area() for cell in self.cell_list]
+                )
                 print(f"Total auxin: {total_aux}")
                 print(f"Total area: {total_area}")
                 print(f"Total auxin/area = {total_aux/total_area}")
@@ -361,6 +377,7 @@ class GrowingSim(Window):
 def main(
     timestep: int,
     vis: bool,
+    pin_loc_rules: PinLocalizationRuleset,
     cell_val_file: str = "",
     v_file: str = "",
     gparam_series: Series | str = "",
@@ -377,6 +394,7 @@ def main(
         SCREEN_TITLE,
         timestep,
         vis,
+        pin_loc_rules,
         cell_val_file,
         v_file,
         gparam_series,

@@ -2,7 +2,9 @@ import math
 from typing import TYPE_CHECKING
 from src.sim.util.math_helpers import round_to_sf
 from src.loc.vertex.vertex import Vertex
-from src.loc.quad_perimeter.default_perimeter_geo_neighor_helper import PerimeterNeighborHelpers
+from src.loc.quad_perimeter.default_perimeter_geo_neighor_helper import (
+    PerimeterNeighborHelpers,
+)
 
 if TYPE_CHECKING:
     from src.agent.cell import Cell
@@ -62,10 +64,14 @@ def get_len_perimeter_in_common(cell: "Cell", neighbor: "Cell") -> float:
         vs = list(set(cellqp.get_vs()).intersection(set(neighborqp.get_vs())))
         length = math.dist(vs[0].get_xy(), vs[1].get_xy())
     elif cell.sim.geometry == "default":
-        length = PerimeterNeighborHelpers.get_default_len_perimeter_in_common(cell, neighbor)
+        length = PerimeterNeighborHelpers.get_default_len_perimeter_in_common(
+            cell, neighbor
+        )
 
     if length == 0:
-        raise ValueError("Neighbor list is incorrect, neighbor does not share membrane with cell")
+        raise ValueError(
+            "Neighbor list is incorrect, neighbor does not share membrane with cell"
+        )
     return length
 
 
