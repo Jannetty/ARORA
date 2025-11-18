@@ -818,7 +818,7 @@ class Cell(Sprite):
         else:
             raise NotImplementedError("Only SIMPLE_INHERITANCE currently supports pin weights")
 
-    def get_imposed_pin_distribution(self) -> dict:
+    def get_imposed_pin_distribution(self) -> Dict[str, float]:
         """
         Assign PIN weights according to a cell's global location, maintaining the
         PIN distributions established in the initial conditions.
@@ -874,7 +874,7 @@ class Cell(Sprite):
             row = TRANSITION_MAX_ROW_INDEX
         return row
 
-    def _pin_meristematic(self, cell_type: str, dist_to_root_tip: float) -> dict | None:
+    def _pin_meristematic(self, cell_type: str, dist_to_root_tip: float) -> Dict[str, float]:
         """
         Meristematic zone PIN patterns, banded along y.
         """
@@ -934,7 +934,7 @@ class Cell(Sprite):
             "Meristematic cell not within meristamatic PIN bands. Check for growth errros."
         )
 
-    def _pin_transition(self, cell_type: str, dist_to_root_tip: float) -> dict | None:
+    def _pin_transition(self, cell_type: str, dist_to_root_tip: float) -> Dict[str, float]:
         """
         Transition zone PIN patterns, banded along y.
         """
@@ -997,7 +997,7 @@ class Cell(Sprite):
             "Transition cell not within transition PIN bands. Check for growth errros."
         )
 
-    def _pin_elongation(self, cell_type: str) -> dict | None:
+    def _pin_elongation(self, cell_type: str) -> Dict[str, float]:
         """
         Elongation zone PIN patterns, constant within each cell type.
         """
@@ -1013,7 +1013,7 @@ class Cell(Sprite):
             return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
         raise SyntaxError("Vascular cell type unrecognized.")
 
-    def _pin_differentiation(self, cell_type: str) -> dict | None:
+    def _pin_differentiation(self, cell_type: str) -> Dict[str, float]:
         """
         Differentiation zone PIN patterns, constant within each cell type.
         """

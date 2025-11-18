@@ -393,12 +393,12 @@ class CirculateModule(ABC):
 
         if self.cell.get_sim().get_pin_loc_rules == PinLocalizationRulesetEnum.IMPOSED:
             pins = self.cell.get_imposed_pin_distribution()
-            self.pina = pins.get("a")
-            self.pinb = pins.get("b")
-            self.pinl = pins.get("l")
-            self.pinm = pins.get("m")
+            self.pina = pins["a"]
+            self.pinb = pins["b"]
+            self.pinl = pins["l"]
+            self.pinm = pins["m"]
             self.pin_weights = self.initialize_pin_weights()
-            self.auxlax = 1
+            self.auxlax = 1.0
 
     def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
         """
