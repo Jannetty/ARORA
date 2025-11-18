@@ -9,7 +9,8 @@ from arcade import SpriteList
 from arcade import set_background_color
 from arcade import close_window, set_window
 import time
-from src.arora_enums import PinLocalizationRuleset
+from src.arora_enums import PinLocalizationRulesetEnum
+from src.arora_enums import CircModEnum
 from src.sim.circulator.circulator import Circulator
 from src.sim.divider.divider import Divider
 from src.sim.mover.vertex_mover import VertexMover
@@ -52,7 +53,9 @@ class GrowingSim(Window):
     vis : bool
         Indicates whether the simulation should be visualized.
     pin_loc_rules : PinLocalizationRuleset
-        The rules the cells follow to determine how they localize PIN auxin exporters
+        The rules the cells follow to determine how they localize PIN auxin exporters.
+    circ_mod : CircMod
+        The circulation module the cells should be using.
     next_cell_id : int
         The ID to be assigned to the next new cell.
     root_tip_y : float
@@ -77,7 +80,9 @@ class GrowingSim(Window):
     vis : bool
         Flag to indicate whether the simulation should be visualized.
     pin_loc_rules : PinLocalizationRuleset
-        The rules the cells follow to determine how they localize PIN auxin exporters
+        The rules the cells follow to determine how they localize PIN auxin exporters.
+    circ_mod : CircMod
+        The circulation module the cells should be using.
     cell_val_file : str, optional
         The filename containing cell values to initialize the simulation.
     v_file : str, optional
@@ -97,7 +102,8 @@ class GrowingSim(Window):
     cell_list: SpriteList
     vertex_list: list
     vis: bool
-    pin_loc_rules: PinLocalizationRuleset
+    pin_loc_rules: PinLocalizationRulesetEnum
+    circ_mod: CircModEnum
     next_cell_id: int
     root_tip_y: float = 0
     cell_val_file: str
@@ -111,7 +117,8 @@ class GrowingSim(Window):
         title: str,
         timestep: int,
         vis: bool,
-        pin_loc_rules: PinLocalizationRuleset,
+        pin_loc_rules: PinLocalizationRulesetEnum,
+        circ_mod: CircModEnum,
         cell_val_file: str = "",
         v_file: str = "",
         gparam_series: pandas.core.series.Series | str = "",
@@ -144,6 +151,7 @@ class GrowingSim(Window):
         self.timestep = timestep
         self.vis = vis
         self.pin_loc_rules = pin_loc_rules
+        self.circ_mod = circ_mod
         self.cmap = plt.get_cmap("coolwarm")
         self.setup()
         self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
@@ -188,9 +196,13 @@ class GrowingSim(Window):
         """Returns the timestep of the simulation (in seconds)."""
         return self.timestep
 
-    def get_pin_loc_rules(self) -> PinLocalizationRuleset:
+    def get_pin_loc_rules(self) -> PinLocalizationRulesetEnum:
         """Returns the PIN localization ruleset"""
         return self.pin_loc_rules
+    
+    def get_circ_mod(self) -> CircModEnum:
+        """Returns the circulation module the cells should use"""
+        return self.circ_mod
 
     def get_tick(self) -> int:
         """Returns the current tick (or step) of the simulation."""
@@ -377,7 +389,8 @@ class GrowingSim(Window):
 def main(
     timestep: int,
     vis: bool,
-    pin_loc_rules: PinLocalizationRuleset,
+    pin_loc_rules: PinLocalizationRulesetEnum,
+    circ_mod: CircModEnum,
     cell_val_file: str = "",
     v_file: str = "",
     gparam_series: Series | str = "",
@@ -395,6 +408,7 @@ def main(
         timestep,
         vis,
         pin_loc_rules,
+        circ_mod,
         cell_val_file,
         v_file,
         gparam_series,

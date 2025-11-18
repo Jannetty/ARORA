@@ -4,6 +4,7 @@ import numpy as np
 from typing import TYPE_CHECKING
 from scipy.integrate import odeint
 from src.sim.util.math_helpers import round_to_sf
+from src.arora_enums import PinLocalizationRulesetEnum
 from src.loc.quad_perimeter.quad_perimeter import get_len_perimeter_in_common
 
 if TYPE_CHECKING:
@@ -220,7 +221,7 @@ class CirculateModule(ABC):
         self.pin_weights = (
             self.cell.get_pin_weights()
         )  # Calculations to update PIN weights are done in Cell class
-        # assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
+        assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
 
         # Solve the differential equations for the current state
         soln = self.solve_equations()
@@ -317,11 +318,8 @@ class CirculateModule(ABC):
                 (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
             )
             pin_activity = pindi * self.k_pin
-            # pin_activity = ((pindi * memfrac) / (pindi * memfrac + self.k_pin)) * self.k_pin
             accessible_auxin = self.auxin * memfrac
-            # print(f"accessible auxin {accessible_auxin}")
             auxin_efflux = accessible_auxin * pin_activity
-            # print(f"auxin efflux {auxin_efflux}")
             if (
                 auxin_influx == float("inf")
                 or auxin_influx == float("-inf")
@@ -331,10 +329,10 @@ class CirculateModule(ABC):
                 print(f"cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()}")
                 print(f"neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}")
             neighbor_aux_exchange = auxin_influx - auxin_efflux
-            if neighbor_aux_exchange != 0:
-                print(
-                    f"HERE cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()} auxin exchange {neighbor_aux_exchange}"
-                )
+            # if neighbor_aux_exchange != 0:
+            #     print(
+            #         f"HERE cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()} auxin exchange {neighbor_aux_exchange}"
+            #     )
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
@@ -388,6 +386,7 @@ class CirculateModule(ABC):
             if i == (len(self.arr_hist) - 1):
                 self.arr_hist[i] = self.arr
 
+    # TODO: (maybe) Make this abstract and implement in each circ mod
     def update_circ_contents(self, soln: np.ndarray) -> None:
         """
         Update the circulation contents of the cell, except for auxin, based on the
@@ -409,6 +408,16 @@ class CirculateModule(ABC):
         self.pinl = round_to_sf(soln[1, 6], 5)
         self.pinm = round_to_sf(soln[1, 7], 5)
         self.update_arr_hist()
+
+        if self.cell.get_sim().get_pin_loc_rules == PinLocalizationRulesetEnum.IMPOSED:
+            pins = self.cell.get_imposed_pin_distribution()
+            self.pina = pins.get("a")
+            self.pinb = pins.get("b")
+            self.pinl = pins.get("l")
+            self.pinm = pins.get("m")
+            self.pin_weights = self.initialize_pin_weights()
+            self.auxlax = 1
+
 
     def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
         """

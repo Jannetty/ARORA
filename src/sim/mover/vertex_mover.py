@@ -268,7 +268,8 @@ class VertexMover:
             The list of cells this VertexMover affected this time point.
         """
         for cell in cells:
-            if cell.get_quad_perimeter().get_area() >= (
-                2 * cell.get_quad_perimeter().get_init_area()
-            ):
-                self.sim.get_divider().add_cell(cell)
+            if cell.get_dev_zone() == "meristematic":
+                if cell.get_quad_perimeter().get_area() >= (
+                    2 * cell.get_quad_perimeter().get_init_area()
+                ):
+                    self.sim.get_divider().add_cell(cell)

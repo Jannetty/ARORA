@@ -1,12 +1,13 @@
 from enum import Enum
 
 
-class CircMod(Enum):
-    AUX_SYN_DEG_ONLY = 3
-    INDEP_SYN_DEG = 2
+class CircModEnum(Enum):
     UNIVERSAL_SYN_DEG = 1
+    INDEP_SYN_DEG = 2
+    AUX_SYN_DEG_ONLY = 3
+    AUX_SYN_DEG_TRANS = 4
 
 
-class PinLocalizationRuleset(Enum):
+class PinLocalizationRulesetEnum(Enum):
     SIMPLE_INHERITANCE = 1
     IMPOSED = 2

@@ -9,8 +9,8 @@ import time
 import numpy as np
 import pandas as pd
 from src.sim.simulation import sim
-from src.arora_enums import CircMod
-from src.arora_enums import PinLocalizationRuleset
+from src.arora_enums import CircModEnum
+from src.arora_enums import PinLocalizationRulesetEnum
 import pyglet
 
 """
@@ -36,8 +36,8 @@ INDEP_PARAM_NAMES = [
 
 
 def make_default_param_series():
-    ks_range = 0.0553636
-    kd_range = 0.0278859
+    ks_range = 0.01
+    kd_range = 0.0001
     k1_range = 60
     k2_range = 64
     k3_range = 35
@@ -93,20 +93,26 @@ def make_indep_param_series():
     return pd.Series(param_vals, index=INDEP_PARAM_NAMES)
 
 
-def get_simulation_config(circ_mod: CircMod):
-    if circ_mod == CircMod.UNIVERSAL_SYN_DEG:
+def get_simulation_config(circ_mod: CircModEnum):
+    if circ_mod == CircModEnum.UNIVERSAL_SYN_DEG:
         return {
             "cell_val_file": "src/sim/input/default_init_vals_higher_auxinw_in_shootward_vasc.json",
             "v_file": "src/sim/input/default_vs.json",
             "gparam_series": make_default_param_series(),
         }
-    elif CircMod.INDEP_SYN_DEG:
+    elif CircModEnum.INDEP_SYN_DEG:
         return {
             "cell_val_file": "src/sim/input/indep_syndeg_init_vals.json",
             "v_file": "src/sim/input/default_vs.json",
             "gparam_series": make_indep_param_series(),
         }
-    elif circ_mod == CircMod.AUX_SYN_DEG_ONLY:
+    elif circ_mod == CircModEnum.AUX_SYN_DEG_ONLY:
+        return {
+            "cell_val_file": "src/sim/input/aux_syndegonly_init_vals.json",
+            "v_file": "src/sim/input/default_vs.json",
+            "gparam_series": make_default_param_series(),
+        }
+    elif circ_mod == CircModEnum.AUX_SYN_DEG_TRANS:
         return {
             "cell_val_file": "src/sim/input/aux_syndegonly_init_vals.json",
             "v_file": "src/sim/input/default_vs.json",
@@ -118,20 +124,22 @@ def get_simulation_config(circ_mod: CircMod):
 
 def get_circ_mod_enum(circ_mod_str: str):
     if circ_mod_str == "universal_syndeg" or circ_mod_str == "1":
-        return CircMod.UNIVERSAL_SYN_DEG
+        return CircModEnum.UNIVERSAL_SYN_DEG
     elif circ_mod_str == "indep_syndeg" or circ_mod_str == "2":
-        return CircMod.INDEP_SYN_DEG
+        return CircModEnum.INDEP_SYN_DEG
     elif circ_mod_str == "aux_syndegonly" or circ_mod_str == "3":
-        return CircMod.AUX_SYN_DEG_ONLY
+        return CircModEnum.AUX_SYN_DEG_ONLY
+    elif circ_mod_str == "aux_syndegtrans" or circ_mod_str == "4":
+        return CircModEnum.AUX_SYN_DEG_TRANS
     else:
         raise ValueError(f"Unsupported circ_mod: {circ_mod}")
 
 
 def get_pin_loc_rules_enum(pin_loc_rules_str: str):
     if pin_loc_rules_str == "simple_inheritance" or pin_loc_rules_str == "1":
-        return PinLocalizationRuleset.SIMPLE_INHERITANCE
+        return PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
     elif pin_loc_rules_str == "imposed" or pin_loc_rules_str == "2":
-        return PinLocalizationRuleset.IMPOSED
+        return PinLocalizationRulesetEnum.IMPOSED
 
 
 if __name__ == "__main__":
@@ -140,7 +148,7 @@ if __name__ == "__main__":
         "--circ_mod",
         type=str,
         default="universal_syndeg",
-        choices=["universal_syndeg", "1", "indep_syndeg", "2", "aux_syndegonly", "3"],
+        choices=["universal_syndeg", "1", "indep_syndeg", "2", "aux_syndegonly", "3", "aux_syndegtrans", "4"],
         help="Which circulation module to use",
     )
     parser.add_argument(
@@ -167,6 +175,7 @@ if __name__ == "__main__":
         timestep,
         vis,
         pin_loc_rules=get_pin_loc_rules_enum(args.pin_loc_rules),
+        circ_mod = circ_mod,
         cell_val_file=config["cell_val_file"],
         v_file=config["v_file"],
         gparam_series=config["gparam_series"],
