@@ -8,10 +8,13 @@ from src.loc.vertex.vertex import Vertex
 from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
+PIN_LOC_RULES = PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
+CIRC_MOD = CircModEnum.UNIVERSAL_SYN_DEG
 
 
 def make_init_vals():
@@ -49,7 +52,9 @@ class TestCirculator(unittest.TestCase):
     """
 
     def test_add_delta(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         cell = Cell(
             sim,
             [
@@ -65,7 +70,9 @@ class TestCirculator(unittest.TestCase):
         self.assertEqual(sim.get_circulator().get_delta_auxins()[cell], delta)
 
     def test_update(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         cell = Cell(
             sim,
             [

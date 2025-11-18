@@ -29,9 +29,7 @@ class NeighborHelpers:
     ]
 
     @staticmethod
-    def get_neighbor_dir_neighbor_shares_one_v_default_geo(
-        cell: "Cell", neighbor: "Cell"
-    ) -> str:
+    def get_neighbor_dir_neighbor_shares_one_v_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
         Determine the direction of a neighbor cell sharing one vertex in default geometry.
 
@@ -164,9 +162,7 @@ class NeighborHelpers:
         return neighbor_direct
 
     @staticmethod
-    def check_if_neighbors_with_new_root_cap_cell(
-        cell: "Cell", sim: "GrowingSim"
-    ) -> None:
+    def check_if_neighbors_with_new_root_cap_cell(cell: "Cell", sim: "GrowingSim") -> None:
         """
         Checks if the neighbor is the next root cap cell.
 
@@ -184,9 +180,7 @@ class NeighborHelpers:
             if cell.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
         ]
         non_current_neighbor_lrc_cells = [
-            lrc_cell
-            for lrc_cell in all_lrc_cells
-            if lrc_cell not in cell.get_l_neighbors()
+            lrc_cell for lrc_cell in all_lrc_cells if lrc_cell not in cell.get_l_neighbors()
         ]
         for lrc_cell in non_current_neighbor_lrc_cells:
             if NeighborHelpers.cell_and_lrc_cell_are_neighbors(cell, lrc_cell):
@@ -194,9 +188,7 @@ class NeighborHelpers:
                 lrc_cell.add_m_neighbor(cell)
 
     @staticmethod
-    def get_neighbor_dir_neighbor_shares_no_vs_default_geo(
-        cell: "Cell", neighbor: "Cell"
-    ) -> str:
+    def get_neighbor_dir_neighbor_shares_no_vs_default_geo(cell: "Cell", neighbor: "Cell") -> str:
         """
         Determine the direction of a neighbor cell without shared vertices in default geometry.
 
@@ -252,9 +244,7 @@ class NeighborHelpers:
                 neighbor_direct = "l"
             else:
                 neighbor_direct = "cell no longer root cap cell neighbor"
-                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(
-                    cell, cell.get_sim()
-                )
+                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(cell, cell.get_sim())
         return neighbor_direct
 
     @staticmethod  # This relies on the assumption that only cells that were previously neighbors with root cap cells will ever be neighbors with root cap cells
@@ -273,9 +263,7 @@ class NeighborHelpers:
                     )
 
     @staticmethod
-    def check_if_no_longer_neighbors_with_root_cap_cell(
-        cell: "Cell", lrc_neighbor: "Cell"
-    ) -> None:
+    def check_if_no_longer_neighbors_with_root_cap_cell(cell: "Cell", lrc_neighbor: "Cell") -> None:
         if not NeighborHelpers.cell_and_lrc_cell_are_neighbors(cell, lrc_neighbor):
             cell.remove_l_neighbor(lrc_neighbor)
             lrc_neighbor.remove_m_neighbor(cell)
@@ -295,13 +283,11 @@ class NeighborHelpers:
         # Cells must share a membrane (x-coordinates of adjacent membrane don't match)
         if cell_left_l_or_m == "lateral":
             assert (
-                cell.get_quad_perimeter().get_min_x()
-                == lrc_cell.get_quad_perimeter().get_max_x()
+                cell.get_quad_perimeter().get_min_x() == lrc_cell.get_quad_perimeter().get_max_x()
             )
         else:
             assert (
-                cell.get_quad_perimeter().get_max_x()
-                == lrc_cell.get_quad_perimeter().get_min_x()
+                cell.get_quad_perimeter().get_max_x() == lrc_cell.get_quad_perimeter().get_min_x()
             )
 
         cell_miny = cell.get_quad_perimeter().get_min_y()
@@ -311,10 +297,7 @@ class NeighborHelpers:
         if (
             lrc_cell_miny <= cell_miny <= lrc_cell_maxy
             or lrc_cell_miny <= cell_maxy <= lrc_cell_maxy
-            or (
-                cell_miny <= lrc_cell_miny <= cell_maxy
-                and cell_miny <= lrc_cell_maxy <= cell_maxy
-            )
+            or (cell_miny <= lrc_cell_miny <= cell_maxy and cell_miny <= lrc_cell_maxy <= cell_maxy)
         ):
             return True
         else:

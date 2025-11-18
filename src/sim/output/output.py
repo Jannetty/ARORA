@@ -61,9 +61,7 @@ class Output:
         """
         if self.title_labels_written_to_output_file == False:
             if len(self.sim.get_cell_list()) <= 0:
-                print(
-                    "No Cells added to simulation. Cannot output simulation contents."
-                )
+                print("No Cells added to simulation. Cannot output simulation contents.")
                 return
             sim_and_cell_contents = [
                 "tick",
@@ -77,9 +75,7 @@ class Output:
                 "cell_type",
             ]
             self.sim_and_cell_contents = sim_and_cell_contents
-            circ_contents = list(
-                self.sim.get_cell_list()[0].get_circ_mod().get_state().keys()
-            )
+            circ_contents = list(self.sim.get_cell_list()[0].get_circ_mod().get_state().keys())
             self.circ_contents = circ_contents
             with open(self.filename_csv, "w", newline="") as file:
                 writer = csv.writer(file)
@@ -111,9 +107,7 @@ class Output:
         with open(self.filename_json, "a") as file:
             json.dump(output, file, indent=4)
 
-    def get_circ_contents(
-        self, summary: dict[str, Any], cell: "Cell"
-    ) -> dict[str, Any]:
+    def get_circ_contents(self, summary: dict[str, Any], cell: "Cell") -> dict[str, Any]:
         """
         Populates the summary dictionary with circulation content information for a given cell.
 

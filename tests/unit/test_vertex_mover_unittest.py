@@ -9,10 +9,13 @@ from src.loc.vertex.vertex import Vertex
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
+PIN_LOC_RULES = PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
+CIRC_MOD = CircModEnum.UNIVERSAL_SYN_DEG
 
 
 class TestVertexMover(unittest.TestCase):
@@ -42,7 +45,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_add_cell_delta_val(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -54,7 +59,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_add_cell_b_vertices_to_vertex_deltas(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -67,7 +74,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_propogate_deltas(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -104,7 +113,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_execute_vertex_movement(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -140,7 +151,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_get_top_row(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, vis=False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -184,7 +197,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_update(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, vis=False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -228,7 +243,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_sort_top_row(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -267,7 +284,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_update_onecol(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v50 = Vertex(50, 10)
         simulation.vertex_list.append(v50)
         v1 = Vertex(10, 10)
@@ -303,7 +322,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_update_threecol(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, vis=False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -370,7 +391,9 @@ class TestVertexMover(unittest.TestCase):
 
     def test_check_if_divide(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -379,5 +402,6 @@ class TestVertexMover(unittest.TestCase):
         simulation.setup()
         v2.set_y(50)
         v3.set_y(50)
+        cell1.set_dev_zone("meristematic")
         simulation.get_vertex_mover().check_if_divide([cell1])
         self.assertEqual([cell1], simulation.get_divider().get_cells_to_divide())

@@ -13,7 +13,9 @@ class CirculateModuleAuxinSynDegTransport(CirculateModule):
     def __init__(self, cell: "Cell", init_vals: dict[str, Any]):
         super().__init__(cell, init_vals)
         if cell.get_sim().get_pin_loc_rules() != PinLocalizationRulesetEnum.IMPOSED:
-            raise NotImplementedError("CirculateModuleAuxinSynDegTransport only supports imposed transporter distribution")
+            raise NotImplementedError(
+                "CirculateModuleAuxinSynDegTransport only supports imposed transporter distribution"
+            )
 
         def get_float(key: str) -> float:
             value = init_vals.get(key)

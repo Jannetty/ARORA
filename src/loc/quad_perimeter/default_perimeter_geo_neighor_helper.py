@@ -50,9 +50,7 @@ class PerimeterNeighborHelpers:
 
         if cell.get_c_id() in rootcap_cell_ids:
             if (
-                neighborqp.get_left_lateral_or_medial(
-                    neighbor.get_sim().get_root_midpointx()
-                )
+                neighborqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_vs_on_shared_edge = [
@@ -67,9 +65,7 @@ class PerimeterNeighborHelpers:
                     neighbor_vs_on_shared_edge, cell_vs_on_shared_edge
                 )
             elif (
-                neighborqp.get_right_lateral_or_medial(
-                    neighbor.get_sim().get_root_midpointx()
-                )
+                neighborqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_vs_on_shared_edge = [
@@ -86,9 +82,7 @@ class PerimeterNeighborHelpers:
 
         elif neighbor.get_c_id() in rootcap_cell_ids:
             if (
-                cellqp.get_left_lateral_or_medial(
-                    neighbor.get_sim().get_root_midpointx()
-                )
+                cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
                 == "lateral"
             ):
                 cell_vs_on_shared_edge = [
@@ -103,9 +97,7 @@ class PerimeterNeighborHelpers:
                     cell_vs_on_shared_edge, neighbor_vs_on_shared_edge
                 )
             elif (
-                cellqp.get_right_lateral_or_medial(
-                    neighbor.get_sim().get_root_midpointx()
-                )
+                cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
                 == "lateral"
             ):
                 cell_vs_on_shared_edge = [
@@ -292,14 +284,12 @@ class PerimeterNeighborHelpers:
             len(set(vertex_xs)) == 1
         ), "In PerimeterNeighborHelpers.get_overlap, the vertices of the shared membrane do not share an x value."
         cell_v_ys_on_shared_edge = sorted([v.get_y() for v in cell_vs_on_shared_edge])
-        neighbor_v_ys_on_shared_edge = sorted(
-            [v.get_y() for v in neighbor_vs_on_shared_edge]
-        )
+        neighbor_v_ys_on_shared_edge = sorted([v.get_y() for v in neighbor_vs_on_shared_edge])
         if cell_v_ys_on_shared_edge[1] < neighbor_v_ys_on_shared_edge[0]:
             raise ValueError(
                 "In PerimeterNeighborHelpers.get_overlap, the vertices of the shared membrane do not overlap."
             )
         else:
-            return min(
-                cell_v_ys_on_shared_edge[1], neighbor_v_ys_on_shared_edge[1]
-            ) - max(cell_v_ys_on_shared_edge[0], neighbor_v_ys_on_shared_edge[0])
+            return min(cell_v_ys_on_shared_edge[1], neighbor_v_ys_on_shared_edge[1]) - max(
+                cell_v_ys_on_shared_edge[0], neighbor_v_ys_on_shared_edge[0]
+            )

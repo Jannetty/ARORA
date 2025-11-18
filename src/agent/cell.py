@@ -69,13 +69,13 @@ CORTEX_CELL_DIST_FROM_ROOT_MIDPOINTX: int = 35
 # from Salvi et al. 2020
 EPIDERMIS_CELL_DIST_FROM_ROOT_MIDPOINTX: int = 45
 
-MERISTEM_FIRST_ROW_CENTER_Y = 75.5   # μm distance from tip for first meristematic band
-MERISTEM_ROW_STEP = 5.0              # μm between successive meristematic bands
-MERISTEM_MAX_ROW_INDEX = 16          # last observed meristematic band index
+MERISTEM_FIRST_ROW_CENTER_Y = 75.5  # μm distance from tip for first meristematic band
+MERISTEM_ROW_STEP = 5.0  # μm between successive meristematic bands
+MERISTEM_MAX_ROW_INDEX = 16  # last observed meristematic band index
 
 TRANSITION_FIRST_ROW_CENTER_Y = 160.5  # μm distance from tip for first transition band
 TRANSITION_ROW_STEP = 5.0
-TRANSITION_MAX_ROW_INDEX = 33          # highest observed transition band index
+TRANSITION_MAX_ROW_INDEX = 33  # highest observed transition band index
 
 
 class Cell(Sprite):
@@ -338,9 +338,7 @@ class Cell(Sprite):
             elif neighbor_location == "cell no longer root cap cell neighbor":
                 pass
             elif neighbor_location is None:
-                print(
-                    f"cell {self.c_id} is not neighbors with cell {neighbor.get_c_id()}"
-                )
+                print(f"cell {self.c_id} is not neighbors with cell {neighbor.get_c_id()}")
                 raise ValueError("Non-neighbor added as neighbor")
             else:
                 raise ValueError("Non-neighbor added as neighbor")
@@ -369,23 +367,13 @@ class Cell(Sprite):
         self_vs = self.get_quad_perimeter().get_vs()
         neighbor_vs = neighbor.get_quad_perimeter().get_vs()
         neighbor_dir = ""
-        if (
-            len(set(self_vs).intersection(set(neighbor_vs))) == 1
-            and self.sim.geometry == "default"
-        ):
-            neighbor_dir = (
-                NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
-                    self, neighbor
-                )
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and self.sim.geometry == "default":
+            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_one_v_default_geo(
+                self, neighbor
             )
-        if (
-            len(set(self_vs).intersection(set(neighbor_vs))) == 0
-            and self.sim.geometry == "default"
-        ):
-            neighbor_dir = (
-                NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
-                    self, neighbor
-                )
+        if len(set(self_vs).intersection(set(neighbor_vs))) == 0 and self.sim.geometry == "default":
+            neighbor_dir = NeighborHelpers.get_neighbor_dir_neighbor_shares_no_vs_default_geo(
+                self, neighbor
             )
         if len(set(self_vs).intersection(set(neighbor_vs))) == 2 and neighbor_dir == "":
             neighbor_dir = self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
@@ -823,7 +811,9 @@ class Cell(Sprite):
             return self.circ_mod.get_pin_weights()
         elif self.pin_loc_ruleset == PinLocalizationRulesetEnum.IMPOSED:
             # when pin is imposed, it is not synthesized or degraded, only maintained at level calculated by self.get_imposed_pin_distribution()
-            Warning ("Only SIMPLE_INHERITANCE currently supports pin weights, setting all weights to 0 for imposed PIN localization")
+            Warning(
+                "Only SIMPLE_INHERITANCE currently supports pin weights, setting all weights to 0 for imposed PIN localization"
+            )
             return self.circ_mod.get_pin_weights()
         else:
             raise NotImplementedError("Only SIMPLE_INHERITANCE currently supports pin weights")
@@ -872,7 +862,6 @@ class Cell(Sprite):
             row = MERISTEM_MAX_ROW_INDEX
         return row
 
-
     def _transition_row_index(self, dist_to_root_tip: float) -> int:
         """
         Map distance from tip to a discrete 'row' index in the transition zone,
@@ -893,55 +882,57 @@ class Cell(Sprite):
 
         if cell_type == "vasc":
             if row == 0:
-                return {"a": 0.0, "b": 1.0, "l": 0.4,   "m": 0.4}
+                return {"a": 0.0, "b": 1.0, "l": 0.4, "m": 0.4}
             # rows 1–16: alternate stripes
             if row % 2 == 1:
-                return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
             else:
                 return {"a": 0.0, "b": 1.0, "l": 0.025, "m": 0.025}
 
         elif cell_type == "peri":
             if row == 0:
-                return {"a": 0.0, "b": 1.0, "l": 0.35,  "m": 0.5}
+                return {"a": 0.0, "b": 1.0, "l": 0.35, "m": 0.5}
             if row % 2 == 1:
-                return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
             else:
-                return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.1}
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
 
         elif cell_type == "endo":
             if row == 0:
-                return {"a": 0.0, "b": 1.0, "l": 0.35,  "m": 0.5}
+                return {"a": 0.0, "b": 1.0, "l": 0.35, "m": 0.5}
             if row % 2 == 1:
-                return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
             else:
-                return {"a": 0.0, "b": 1.0, "l": 0.1,   "m": 0.35}
+                return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.35}
 
         elif cell_type == "cortex":
             if row == 0:
-                return {"a": 0.0, "b": 1.0, "l": 0.1,   "m": 0.1}
+                return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
             if row % 2 == 1:
-                return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
             else:
-                return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.1}
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
 
         elif cell_type == "epidermis":
             # row 0: low lateral PIN
             if row == 0:
-                return {"a": 1.0, "b": 0.0, "l": 0.1,   "m": 0.1}
+                return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
             # rows 1–9: alternate (high lateral) vs (higher shootward)
             if 1 <= row <= 9:
                 if row % 2 == 1:
-                    return {"a": 1.0, "b": 0.0, "l": 1.0,   "m": 1.0}
+                    return {"a": 1.0, "b": 0.0, "l": 1.0, "m": 1.0}
                 else:
-                    return {"a": 1.0, "b": 0.0, "l": 0.3,   "m": 0.1}
+                    return {"a": 1.0, "b": 0.0, "l": 0.3, "m": 0.1}
             # rows 10–16: alternate between low lateral and high lateral
             if row % 2 == 0:
-                return {"a": 1.0, "b": 0.0, "l": 0.1,   "m": 0.1}
+                return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
             else:
-                return {"a": 1.0, "b": 0.0, "l": 1.0,   "m": 1.0}
+                return {"a": 1.0, "b": 0.0, "l": 1.0, "m": 1.0}
 
         # unknown types: raise exception
-        raise SyntaxError("Meristematic cell not within meristamatic PIN bands. Check for growth errros.")
+        raise SyntaxError(
+            "Meristematic cell not within meristamatic PIN bands. Check for growth errros."
+        )
 
     def _pin_transition(self, cell_type: str, dist_to_root_tip: float) -> dict | None:
         """
@@ -953,56 +944,58 @@ class Cell(Sprite):
             # rows 0–22: alternate weak vs stronger shootward
             if row <= 22:
                 if row % 2 == 0:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,    "m": 0.0}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
                 else:
-                    return {"a": 0.0, "b": 1.0, "l": 0.025,  "m": 0.025}
+                    return {"a": 0.0, "b": 1.0, "l": 0.025, "m": 0.025}
             # upper transition: match elongation/diff vasc profile
             return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
 
         elif cell_type == "peri":
             if row <= 22:
                 if row % 2 == 0:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
                 else:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.1}
-            return {"a": 0.0, "b": 1.0, "l": 0.1,   "m": 0.1}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
 
         elif cell_type == "endo":
             # rows 0–14: alternate (0,0) vs (0.1,0.35)
             if row <= 14:
                 if row % 2 == 0:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
                 else:
-                    return {"a": 0.0, "b": 1.0, "l": 0.1,   "m": 0.35}
+                    return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.35}
             # rows 15–22: alternate (0,0) vs (0,0.35)
             if row <= 22:
                 if row % 2 == 0:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
                 else:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.35}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
             # upper transition: fixed 0.35 on m
-            return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.35}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
 
         elif cell_type == "cortex":
             if row <= 22:
                 if row % 2 == 0:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.0}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
                 else:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.1}
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
             # upper transition cortex matches elongation cortex
-            return {"a": 1.0, "b": 0.0, "l": 0.0,   "m": 0.1}
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
 
         elif cell_type == "epidermis":
             if row <= 22:
                 if row % 2 == 0:
-                    return {"a": 1.0, "b": 0.0, "l": 1.0,   "m": 1.0}
+                    return {"a": 1.0, "b": 0.0, "l": 1.0, "m": 1.0}
                 else:
-                    return {"a": 1.0, "b": 0.0, "l": 0.1,   "m": 0.1}
+                    return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
             # upper transition epidermis matches elongation epidermis
-            return {"a": 1.0, "b": 0.0, "l": 0.0,   "m": 0.1}
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
 
         # unknown types: raise exception
-        raise SyntaxError("Transition cell not within transition PIN bands. Check for growth errros.")
+        raise SyntaxError(
+            "Transition cell not within transition PIN bands. Check for growth errros."
+        )
 
     def _pin_elongation(self, cell_type: str) -> dict | None:
         """
@@ -1011,15 +1004,14 @@ class Cell(Sprite):
         if cell_type == "vasc":
             return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
         if cell_type == "peri":
-            return {"a": 0.0, "b": 1.0, "l": 0.1,   "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
         if cell_type == "endo":
-            return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.35}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
         if cell_type == "cortex":
-            return {"a": 1.0, "b": 0.0, "l": 0.0,   "m": 0.1}
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
         if cell_type == "epidermis":
-            return {"a": 1.0, "b": 0.0, "l": 0.0,   "m": 0.1}
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
         raise SyntaxError("Vascular cell type unrecognized.")
-
 
     def _pin_differentiation(self, cell_type: str) -> dict | None:
         """
@@ -1028,13 +1020,13 @@ class Cell(Sprite):
         if cell_type == "vasc":
             return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
         if cell_type == "peri":
-            return {"a": 0.0, "b": 1.0, "l": 0.1,   "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
         if cell_type == "endo":
-            return {"a": 0.0, "b": 1.0, "l": 0.0,   "m": 0.35}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
         if cell_type == "cortex":
-            return {"a": 0.35, "b": 0.0, "l": 0.0,  "m": 0.1}
+            return {"a": 0.35, "b": 0.0, "l": 0.0, "m": 0.1}
         if cell_type == "epidermis":
-            return {"a": 0.35, "b": 0.0, "l": 0.0,  "m": 0.1}
+            return {"a": 0.35, "b": 0.0, "l": 0.0, "m": 0.1}
         raise SyntaxError("Differentiation cell type unrecognized.")
 
     def get_pin_weights(self) -> dict:
@@ -1077,51 +1069,33 @@ class Cell(Sprite):
         """
         # standard case, check which vertices neighbor shares with self
         # if neighbor shares top left and bottom left, neighbor is to the left
-        if (
-            self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()
-        ) and (
-            self.quad_perimeter.get_bottom_left()
-            in neighbor.get_quad_perimeter().get_vs()
+        if (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
+            self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()
         ):
             if (
-                self.quad_perimeter.get_left_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.quad_perimeter.get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_direction = "l"
             else:
                 neighbor_direction = "m"
         # if neighbor shares top right and bottom right, neighbor is to the right
-        elif (
-            self.quad_perimeter.get_top_right()
-            in neighbor.get_quad_perimeter().get_vs()
-        ) and (
-            self.quad_perimeter.get_bottom_right()
-            in neighbor.get_quad_perimeter().get_vs()
+        elif (self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()) and (
+            self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
         ):
             if (
-                self.quad_perimeter.get_right_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.quad_perimeter.get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_direction = "l"
             else:
                 neighbor_direction = "m"
-        elif (
-            self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()
-        ) and (
-            self.quad_perimeter.get_top_right()
-            in neighbor.get_quad_perimeter().get_vs()
+        elif (self.quad_perimeter.get_top_left() in neighbor.get_quad_perimeter().get_vs()) and (
+            self.quad_perimeter.get_top_right() in neighbor.get_quad_perimeter().get_vs()
         ):
             neighbor_direction = "a"
-        elif (
-            self.quad_perimeter.get_bottom_left()
-            in neighbor.get_quad_perimeter().get_vs()
-        ) and (
-            self.quad_perimeter.get_bottom_right()
-            in neighbor.get_quad_perimeter().get_vs()
+        elif (self.quad_perimeter.get_bottom_left() in neighbor.get_quad_perimeter().get_vs()) and (
+            self.quad_perimeter.get_bottom_right() in neighbor.get_quad_perimeter().get_vs()
         ):
             neighbor_direction = "b"
         return neighbor_direction
@@ -1146,16 +1120,12 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_top_right()
         ):
             if (
-                self.get_quad_perimeter().get_left_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_left_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
@@ -1165,16 +1135,12 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_top_left()
         ):
             if (
-                self.get_quad_perimeter().get_right_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_right_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
@@ -1184,16 +1150,12 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_bottom_right()
         ):
             if (
-                self.get_quad_perimeter().get_left_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_left_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_left_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"
@@ -1203,16 +1165,12 @@ class Cell(Sprite):
             == neighbor.get_quad_perimeter().get_bottom_left()
         ):
             if (
-                self.get_quad_perimeter().get_right_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "lateral"
             ):
                 neighbor_direction = "l"
             elif (
-                self.get_quad_perimeter().get_right_lateral_or_medial(
-                    self.sim.get_root_midpointx()
-                )
+                self.get_quad_perimeter().get_right_lateral_or_medial(self.sim.get_root_midpointx())
                 == "medial"
             ):
                 neighbor_direction = "m"

@@ -199,7 +199,7 @@ class GrowingSim(Window):
     def get_pin_loc_rules(self) -> PinLocalizationRulesetEnum:
         """Returns the PIN localization ruleset"""
         return self.pin_loc_rules
-    
+
     def get_circ_mod(self) -> CircModEnum:
         """Returns the circulation module the cells should use"""
         return self.circ_mod
@@ -357,12 +357,8 @@ class GrowingSim(Window):
                 self.circulator.update()
                 self.divider.update()
                 self.root_tip_y = self.calculate_root_tip_y()
-                total_aux = sum(
-                    [cell.get_circ_mod().get_auxin() for cell in self.cell_list]
-                )
-                total_area = sum(
-                    [cell.get_quad_perimeter().get_area() for cell in self.cell_list]
-                )
+                total_aux = sum([cell.get_circ_mod().get_auxin() for cell in self.cell_list])
+                total_area = sum([cell.get_quad_perimeter().get_area() for cell in self.cell_list])
                 print(f"Total auxin: {total_aux}")
                 print(f"Total area: {total_area}")
                 print(f"Total auxin/area = {total_aux/total_area}")

@@ -158,24 +158,14 @@ class CirculateModule(ABC):
         # pin
         f3 = self.calculate_pin(auxini, arri)
         # neighbor pin
-        f4 = self.calculate_membrane_pin(
-            pini, pinai, "a", cast(float, self.pin_weights.get("a"))
-        )
-        f5 = self.calculate_membrane_pin(
-            pini, pinbi, "b", cast(float, self.pin_weights.get("b"))
-        )
-        f6 = self.calculate_membrane_pin(
-            pini, pinli, "l", cast(float, self.pin_weights.get("l"))
-        )
-        f7 = self.calculate_membrane_pin(
-            pini, pinmi, "m", cast(float, self.pin_weights.get("m"))
-        )
+        f4 = self.calculate_membrane_pin(pini, pinai, "a", cast(float, self.pin_weights.get("a")))
+        f5 = self.calculate_membrane_pin(pini, pinbi, "b", cast(float, self.pin_weights.get("b")))
+        f6 = self.calculate_membrane_pin(pini, pinli, "l", cast(float, self.pin_weights.get("l")))
+        f7 = self.calculate_membrane_pin(pini, pinmi, "m", cast(float, self.pin_weights.get("m")))
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
-    def solve_equations(
-        self, time_step: float = 0.001, duration: float = 1.0
-    ) -> np.ndarray:
+    def solve_equations(self, time_step: float = 0.001, duration: float = 1.0) -> np.ndarray:
         """
         Solve the model's differential equations over a given time span with a specified time step.
 
@@ -310,13 +300,9 @@ class CirculateModule(ABC):
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
-            neighbor_memfrac = neighbor.get_circ_mod().calculate_neighbor_memfrac(
-                self.cell
-            )
+            neighbor_memfrac = neighbor.get_circ_mod().calculate_neighbor_memfrac(self.cell)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            auxin_influx = (
-                (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
-            )
+            auxin_influx = (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
             pin_activity = pindi * self.k_pin
             accessible_auxin = self.auxin * memfrac
             auxin_efflux = accessible_auxin * pin_activity
@@ -336,9 +322,7 @@ class CirculateModule(ABC):
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
         return neighbor_dict
 
-    def calculate_delta_auxin(
-        self, syn_deg_auxin: float, neighbors_auxin: list
-    ) -> float:
+    def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
         """
         Calculate the total amount of change in auxin concentration for the current
         cell, considering both synthesized/degraded auxin and auxin exchanged with
@@ -366,9 +350,7 @@ class CirculateModule(ABC):
                 or auxin == float("-inf")
                 or total_auxin == float("-inf")
             ):
-                print(
-                    f"cell {self.cell.get_c_id()} auxin {auxin}, total auxin {total_auxin}"
-                )
+                print(f"cell {self.cell.get_c_id()} auxin {auxin}, total auxin {total_auxin}")
             else:
                 total_auxin += auxin
         return total_auxin
@@ -418,7 +400,6 @@ class CirculateModule(ABC):
             self.pin_weights = self.initialize_pin_weights()
             self.auxlax = 1
 
-
     def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
         """
         Update the change in auxin concentrations for neighbor cells in the circulator.
@@ -434,9 +415,7 @@ class CirculateModule(ABC):
         """
         for each_dirct in neighbors_auxin:
             for neighbor in each_dirct:
-                self.cell.get_sim().get_circulator().add_delta(
-                    neighbor, -each_dirct[neighbor]
-                )
+                self.cell.get_sim().get_circulator().add_delta(neighbor, -each_dirct[neighbor])
 
     def get_neighbors(self) -> tuple:
         """
@@ -479,18 +458,10 @@ class CirculateModule(ABC):
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
         # Calculate auxin exchange across membranes
-        auxina_exchange = self.get_aux_exchange_across_membrane(
-            self.auxlax, self.pina, neighborsa
-        )
-        auxinb_exchange = self.get_aux_exchange_across_membrane(
-            self.auxlax, self.pinb, neighborsb
-        )
-        auxinl_exchange = self.get_aux_exchange_across_membrane(
-            self.auxlax, self.pinl, neighborsl
-        )
-        auxinm_exchange = self.get_aux_exchange_across_membrane(
-            self.auxlax, self.pinm, neighborsm
-        )
+        auxina_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pina, neighborsa)
+        auxinb_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinb, neighborsb)
+        auxinl_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinl, neighborsl)
+        auxinm_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinm, neighborsm)
         neighbors_auxin_exchange = [
             auxina_exchange,
             auxinb_exchange,
@@ -506,9 +477,7 @@ class CirculateModule(ABC):
         )
 
         # Update current cell auxin
-        curr_cell.get_sim().get_circulator().add_delta(
-            curr_cell, round_to_sf(delta_auxin, 5)
-        )
+        curr_cell.get_sim().get_circulator().add_delta(curr_cell, round_to_sf(delta_auxin, 5))
 
         # Update auxin levels in neighbor cells
         self.update_neighbor_auxin(neighbors_auxin_exchange)

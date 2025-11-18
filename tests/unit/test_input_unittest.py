@@ -12,10 +12,13 @@ from src.sim.simulation.sim import GrowingSim
 from src.agent.cell import Cell
 from src.loc.vertex.vertex import Vertex
 from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
+PIN_LOC_RULES = PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
+CIRC_MOD = CircModEnum.UNIVERSAL_SYN_DEG
 
 
 class TestInput(unittest.TestCase):
@@ -24,7 +27,9 @@ class TestInput(unittest.TestCase):
     """
 
     def test_get_vertex(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -44,7 +49,9 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected_vertex_list[each], found_vertex_list)
 
     def test_get_init_vals(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -106,7 +113,9 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][val], found[cell][val])
 
     def test_set_arr_hist(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -219,7 +228,9 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][val], found[cell][val])
 
     def test_get_vertex_assignment(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -231,7 +242,9 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected[cell], found[cell])
 
     def test_get_neighbors_assignment(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -244,7 +257,9 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(expected[cell][i], found[cell][i])
 
     def test_group_vertices(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -263,7 +278,9 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected_vertex_cell1[i], found["c1"][i].get_xy())
 
     def test_create_cells(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -308,7 +325,9 @@ class TestInput(unittest.TestCase):
         self.assertTrue(isinstance(found_cell1.get_circ_mod(), CirculateModuleUniversalSynDeg))
 
     def test_get_neighbors(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -340,7 +359,9 @@ class TestInput(unittest.TestCase):
             )
 
     def test_update_neighbors(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -371,8 +392,12 @@ class TestInput(unittest.TestCase):
             self.assertEqual(expected.get_c_id(), found.get_c_id())
 
     def test_input(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
-        sim2 = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
+        sim2 = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.json",
             "tests/unit/test_input_files/vertex.json",
@@ -413,6 +438,8 @@ class TestInput(unittest.TestCase):
                 SCREEN_TITLE,
                 1,
                 False,
+                PIN_LOC_RULES,
+                CIRC_MOD,
                 cell_val_file="tests/unit/test_input_files/init_vals.json",
                 v_file="tests/unit/test_input_files/vertex.json",
             )
@@ -426,7 +453,9 @@ class TestInput(unittest.TestCase):
                         self.assertEqual(len(row_df["arr_hist"]), value)
 
     def test_make_arr_hist_to_list(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.csv",
             "tests/unit/test_input_files/vertex.csv",
@@ -439,7 +468,9 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(type(val), type(0.1))
 
     def test_make_vertices_to_list(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.csv",
             "tests/unit/test_input_files/vertex.csv",
@@ -453,7 +484,9 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(type(val), type(1))
 
     def test_make_neighbors_to_list(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.csv",
             "tests/unit/test_input_files/vertex.csv",
@@ -466,7 +499,9 @@ class TestInput(unittest.TestCase):
                 self.assertEqual(type(val), type(""))
 
     def test_make_param_to_int(self):
-        sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False)
+        sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         input = Input(
             "tests/unit/test_input_files/init_vals.csv",
             "tests/unit/test_input_files/vertex.csv",

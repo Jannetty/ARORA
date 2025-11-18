@@ -74,9 +74,7 @@ class Divider:
         if len(self.cells_to_divide) != 0:
             print("---------- Dividing cells ----------")
             meristematic_cells_to_divide = [
-                cell
-                for cell in self.cells_to_divide
-                if cell.get_dev_zone() == "meristematic"
+                cell for cell in self.cells_to_divide if cell.get_dev_zone() == "meristematic"
             ]
             for cell in meristematic_cells_to_divide:
                 new_vs = self.get_new_vs(cell)
@@ -141,14 +139,10 @@ class Divider:
         bottomleft = cell.get_quad_perimeter().get_bottom_left()
         bottomright = cell.get_quad_perimeter().get_bottom_right()
         new_left = Vertex(topleft.get_x(), (topleft.get_y() + bottomleft.get_y()) / 2)
-        new_right = Vertex(
-            topright.get_x(), (topright.get_y() + bottomright.get_y()) / 2
-        )
+        new_right = Vertex(topright.get_x(), (topright.get_y() + bottomright.get_y()) / 2)
         return [new_left, new_right]
 
-    def check_neighbors_for_v_existence(
-        self, cell: "Cell", new_vertex: Vertex
-    ) -> Vertex:
+    def check_neighbors_for_v_existence(self, cell: "Cell", new_vertex: Vertex) -> Vertex:
         """
         Checks the neighboring cells for the existence of a given vertex.
 
@@ -193,12 +187,8 @@ class Divider:
             self.swap_neighbors(new_top_cell, apical_neighbor, cell)
         for basal_neighbor in cell.get_b_neighbors():
             self.swap_neighbors(new_bottom_cell, basal_neighbor, cell)
-        self.set_one_side_neighbors(
-            new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell
-        )
-        self.set_one_side_neighbors(
-            new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell
-        )
+        self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_l_neighbors(), cell)
+        self.set_one_side_neighbors(new_top_cell, new_bottom_cell, cell.get_m_neighbors(), cell)
 
     def set_one_side_neighbors(
         self,
@@ -238,12 +228,8 @@ class Divider:
                 self.sim.geometry == "default"
                 and neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
             ):
-                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(
-                    new_top_cell, self.sim
-                )
-                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(
-                    new_bottom_cell, self.sim
-                )
+                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(new_top_cell, self.sim)
+                NeighborHelpers.check_if_neighbors_with_new_root_cap_cell(new_bottom_cell, self.sim)
                 neighbor.remove_neighbor(cell)
 
             elif (
