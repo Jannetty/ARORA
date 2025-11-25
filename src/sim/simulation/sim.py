@@ -335,6 +335,7 @@ class GrowingSim(Window):
                 self.root_tip_y = self.calculate_root_tip_y()
                 total_aux = sum([cell.get_circ_mod().get_auxin() for cell in self.cell_list])
                 total_area = sum([cell.get_quad_perimeter().get_area() for cell in self.cell_list])
+                self.generate_output()
                 print(f"Total auxin: {total_aux}")
                 print(f"Total area: {total_area}")
                 print(f"Total auxin/area = {total_aux/total_area}")
@@ -346,6 +347,38 @@ class GrowingSim(Window):
             print("Ending Simulation")
             self.exit_flag = True  # Set the exit flag
             raise e
+
+    def generate_output(self):
+        with open("ARORA_data" + str(self.tick) + ".csv", 'w') as f:
+            for y in range(int(self.root_tip_y), int(self.root_tip_y) + 1207):
+                row = []
+                for x in range(121):
+                    found = False
+                    for cell in self.cell_list:
+                        poly = [(v.get_x(), v.get_y()) for v in cell.get_quad_perimeter().get_vs()]
+                        xs, ys = zip(*poly)
+                        if not (min(xs) <= x <= max(xs) and min(ys) <= y <= max(ys)):
+                            continue
+                        num = len(poly)
+                        j = num - 1
+                        inside = False
+                        for i in range(num):
+                            xi, yi = poly[i]
+                            xj, yj = poly[j]
+                            if ((yi > y) != (yj > y)) and \
+                            (x < (xj - xi) * (y - yi) / (yj - yi + 1e-12) + xi):
+                                inside = not inside
+                            j = i
+                        if inside:
+                            auxin = cell.get_circ_mod().get_auxin()
+                            row.append(auxin)
+                            found = True
+                            break
+                    if not found:
+                        row.append(0)
+                for i in range(20):
+                    row.append(0)
+                f.write(','.join(map(str, row)) + '\n')
 
     def run_sim(self) -> None:
         while not self.exit_flag:
