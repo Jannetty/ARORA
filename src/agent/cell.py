@@ -5,7 +5,7 @@ from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.agent.circ_module_aux_syn_deg_only import CirculateModuleAuxinSynDegOnly
-from src.agent.circ_module_aux_syn_deg_transport import CirculateModuleAuxinSynDegTransport
+from src.agent.circ_module_aux_syn_deg_export import CirculateModuleAuxinSynDegExport
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 from src.agent.circ_module import CirculateModule
@@ -100,7 +100,7 @@ class Cell(Sprite):
     a_neighbors : list
         List of apical neighbors.
     b_neighbors : list
-        List of basal neighbors.
+        List of basal neighbors.get_pin
     l_neighbors : list
         List of lateral neighbors.
     m_neighbors : list
@@ -170,7 +170,7 @@ class Cell(Sprite):
             case CircModEnum.AUX_SYN_DEG_ONLY:
                 self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
             case CircModEnum.AUX_SYN_DEG_TRANS:
-                self.circ_mod = CirculateModuleAuxinSynDegTransport(self, init_vals)
+                self.circ_mod = CirculateModuleAuxinSynDegExport(self, init_vals)
             case _:
                 raise SyntaxError(f"Unknown circ mod '{circ_mod_name}'")
 

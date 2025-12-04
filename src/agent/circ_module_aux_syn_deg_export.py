@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
-class CirculateModuleAuxinSynDegTransport(CirculateModule):
+class CirculateModuleAuxinSynDegExport(CirculateModule):
     ks_aux: float
     kd_aux: float
 

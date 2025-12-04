@@ -130,14 +130,9 @@ class GrowingSim(Window):
         """
         self.cell_list = SpriteList(use_spatial_hash=False)
         self.vertex_list = []
-        if vis is False:
-            print("Running headless")
-            # for mac
-            pyglet.options["headless"] = True
-            # for PC
-            os.environ["ARCADE_HEADLESS"] = "true"
-            super().__init__(width, height, title, visible=False)
-        if vis is True:
+        if not vis:
+            print("Running headless (no window)")
+        else:
             super().__init__(width, height, title)
             set_background_color(color=(250, 250, 250, 250))
         if cell_val_file != "" and v_file != "":
@@ -257,6 +252,8 @@ class GrowingSim(Window):
         This method is called to (re)start the simulation, setting up initial cell configurations,
         and preparing the simulation environment.
         """
+        if len(self.cell_list) != 0:
+            raise Exception("Setup is being called twice. This can lead to doubling instances of cells if using default setup files. Reminder setup is called during simulation initialization. Please remove second setup call.")
         # find midpoint x of root basd on vertices that exist
         self.tick = 0
         self.next_cell_id = 0
@@ -346,7 +343,7 @@ class GrowingSim(Window):
         self.tick += 1
         # max_tick = 24 * 8
         try:
-            if self.tick < 27:
+            if self.tick < 5:
                 self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
@@ -372,14 +369,21 @@ class GrowingSim(Window):
             raise e
 
     def run_sim(self) -> None:
-        while not self.exit_flag:
-            pyglet.clock.tick()
-            self.dispatch_events()
-            self.on_update(1 / 60.0)
-        print("CLOSING WINDOW")
-        self.close()  # Close the window
-        print("WINDOW CLOSED")
-        pyglet.app.exit()  # Exit the pyglet event loop
+        if self.vis:
+            # Normal arcade/pyglet loop with a real window
+            while not self.exit_flag:
+                pyglet.clock.tick()
+                self.dispatch_events()
+                self.on_update(1 / 60.0)
+            print("CLOSING WINDOW")
+            self.close()
+            print("WINDOW CLOSED")
+            pyglet.app.exit()
+        else:
+            # Pure headless loop: just step the simulation, no window, no events
+            while not self.exit_flag:
+                self.on_update(self.timestep)
+            print("Headless simulation complete")
 
 
 def main(
