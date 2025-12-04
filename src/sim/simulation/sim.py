@@ -36,7 +36,7 @@ class GrowingSim(Window):
 
     Attributes
     ----------
-    timestep : int
+    timestep : float
         The size of the timestep of the simulation, in seconds.
     circulator : Circulator
         Manages the circulation of auxin within the simulation.
@@ -91,10 +91,12 @@ class GrowingSim(Window):
         Series containing global parameters for the simulation.
     geometry : str, optional
         Indicates the geometric configuration of the simulation.
+    output_frequency : int
+        Indicates how often (in units of ticks) the simulation should generate an output file
 
     """
 
-    timestep: int
+    timestep: float
     circulator: "Circulator"
     vertex_mover: "VertexMover"
     divider: "Divider"
@@ -115,7 +117,7 @@ class GrowingSim(Window):
         width: int,
         height: int,
         title: str,
-        timestep: int,
+        timestep: float,
         vis: bool,
         pin_loc_rules: PinLocalizationRulesetEnum,
         circ_mod: CircModEnum,
@@ -124,6 +126,7 @@ class GrowingSim(Window):
         gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
         output_file: str = "output",
+        output_frequency: int = 1
     ):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
@@ -151,6 +154,7 @@ class GrowingSim(Window):
         self.setup()
         self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
         self.exit_flag = False
+        self.output_frequency = output_frequency
 
     def get_root_midpointx(self) -> float:
         """
@@ -188,8 +192,12 @@ class GrowingSim(Window):
         raise ValueError(f"Cell with ID {ID} not found in cell_list")
 
     def get_timestep(self) -> float:
-        """Returns the timestep of the simulation (in seconds)."""
+        """Returns the simulation timestep (in hours per tick)."""
         return self.timestep
+
+    def get_timestep_hours(self) -> float:
+        """Returns the timestep of the simulation in hours. Redundant with get_timestep."""
+        return float(self.timestep)
 
     def get_pin_loc_rules(self) -> PinLocalizationRulesetEnum:
         """Returns the PIN localization ruleset"""
@@ -339,11 +347,12 @@ class GrowingSim(Window):
             delta_time: The time step.
         """
         print("----")
-        self.output.output_cells()
+        if self.tick % self.output_frequency == 0:
+            self.output.output_cells()
         self.tick += 1
         # max_tick = 24 * 8
         try:
-            if self.tick < 5:
+            if self.tick < 28:
                 self.output.output_cells()
                 print(f"tick: {self.tick}")
                 if self.vis:
@@ -387,7 +396,7 @@ class GrowingSim(Window):
 
 
 def main(
-    timestep: int,
+    timestep: float,
     vis: bool,
     pin_loc_rules: PinLocalizationRulesetEnum,
     circ_mod: CircModEnum,
@@ -395,6 +404,7 @@ def main(
     v_file: str = "",
     gparam_series: Series | str = "",
     output_file: str = "output",
+    output_frequency: int = 1
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
@@ -414,6 +424,7 @@ def main(
         gparam_series,
         geometry,
         output_file,
+        output_frequency
     )
     set_window(simulation)
     print("Running Simulation")

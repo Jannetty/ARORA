@@ -135,7 +135,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             gparam_series=gparam_series,
             geometry=geometry,
             output_file=f"param_est/ARORA_output_{chromosome['sol_idx']}",
-            circ_mod=CircModEnum.AUX_SYN_DEG_TRANS,
+            circ_mod=CircModEnum.AUX_SYN_DEG_EXP,
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
         )
 
@@ -218,15 +218,31 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         return fitness
 
     def make_paramspace_aux_syn_deg_trans(self):
-        ks_aux_range = np.linspace(0.001, 0.3, 100).astype(float)
-        kd_aux_range = np.linspace(0.0001, 0.03, 100).astype(float)
-        k1_range = np.linspace(10, 160, 151).astype(int)
-        k2_range = np.linspace(50, 100, 51).astype(int)
-        k3_range = np.linspace(10, 75, 66).astype(int)
-        k4_range = np.linspace(50, 100, 51).astype(int)
-        k5_range = np.linspace(0.07, 1, 100).astype(float)
-        k6_range = np.linspace(0.2, 1, 100).astype(float)
-        tau_range = np.linspace(1, 24, 24).astype(int)
+        # ks_aux: auxin synthesis rate [a.u./h].
+        # Chosen so that A_ss = ks_aux * auxin_w / kd_aux spans ~1–200 a.u. over kd_aux range.
+        ks_aux_range = np.geomspace(0.1, 10.0, 100).astype(float)
+
+        # kd_aux: auxin degradation rate [1/h].
+        # Half-life = ln(2)/kd_aux ≈ 1.4–13.9 h → “few hours to half-day” auxin turnover.
+        kd_aux_range = np.geomspace(0.05, 0.5, 100).astype(float)
+
+        # --- Parameters not used by this circ mod ---
+
+        # k1–k4: ARR / AUX-LAX / PIN regulatory couplings.
+        k1_range = 0
+        k2_range = 0
+        k3_range = 0
+        k4_range = 0
+
+        # k5: k_al, AUX/LAX-mediated exchange factor [1/h].
+        k5_range = 1
+
+        # k6: k_pin, PIN-mediated export factor [1/h].
+        k_pin_range = np.geomspace(0.05, 1.0, 60)
+
+        # tau: time course of ARR's self- repression
+        tau_range = 1
+
         return [
             ks_aux_range,
             kd_aux_range,
@@ -235,7 +251,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             k3_range,
             k4_range,
             k5_range,
-            k6_range,
+            k_pin_range,
             tau_range,
         ]
 
@@ -275,6 +291,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         }
         self.population.append(ga_parameters_for_saving)
         self.ga_instance = pygad.GA(**ga_parameters)
+        print("Running GA!")
         self.ga_instance.run()
 
     def on_gen(self, ga_instance):
