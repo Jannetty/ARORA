@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from src.agent.cell import Cell
 
 
-class CirculateModuleAuxinSynDegTransport(CirculateModule):
+class CirculateModuleAuxinSynDegExport(CirculateModule):
     ks_aux: float
     kd_aux: float
 
@@ -28,6 +28,8 @@ class CirculateModuleAuxinSynDegTransport(CirculateModule):
         self.output_list.append("ks_aux")
         self.kd_aux = get_float("kd_aux")
         self.output_list.append("kd_aux")
+        # Set auxlax to 1 ("on")
+        self.auxlax = 1.0
         # Zero out arr
         self.arr = 0
 

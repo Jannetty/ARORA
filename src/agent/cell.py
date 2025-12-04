@@ -5,7 +5,7 @@ from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.agent.circ_module_aux_syn_deg_only import CirculateModuleAuxinSynDegOnly
-from src.agent.circ_module_aux_syn_deg_transport import CirculateModuleAuxinSynDegTransport
+from src.agent.circ_module_aux_syn_deg_export import CirculateModuleAuxinSynDegExport
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 from src.agent.circ_module import CirculateModule
@@ -15,19 +15,17 @@ if TYPE_CHECKING:
     from src.loc.vertex.vertex import Vertex
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
-# MERISTEMATIC_GROWTH_RATE: float = -0.0179
-MERISTEMATIC_GROWTH_RATE: float = -1.2  # trying to divide every 5 hours
+MERISTEMATIC_GROWTH_RATE: float = -0.0179
 
 # Growth rate cells in transition zone in um per um per hour from Van den Berg et al. 2018
-# TRANSITION_GROWTH_RATE: float = -0.0179
-TRANSITION_GROWTH_RATE: float = -1.2  # same as Meristematic
+TRANSITION_GROWTH_RATE: float = -0.0179
 
 # Growth rate cells in elongation zone in um per um per hour from Van den Berg et al. 2018
-# ELONGATION_GROWTH_RATE: float = -0.00112
-ELONGATION_GROWTH_RATE: float = -0.075  # same ratio as van den berg
+ELONGATION_GROWTH_RATE: float = -0.00112
+
 # Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
-# DIFFERENTIATION_GROWTH_RATE: float = -0.00112
-DIFFERENTIATION_GROWTH_RATE: float = -0.075  # same ratio as van den berg
+DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+
 
 # um Y distance from tip at which cells pass from root tip to meristematic zone
 # Inferred from Van dn Berg et al. 2018
@@ -35,19 +33,19 @@ ROOT_TIP_DIST_FROM_TIP: int = 74
 
 # um Y distance from tip at which cells pass from meristemtic to transition zone
 # from Van den Berg et al. 2018
-MERISTEMATIC_MAX_DIST_FROM_TIP: int = 160
+MERISTEMATIC_MAX_DIST_FROM_TIP: int = ROOT_TIP_DIST_FROM_TIP + 160
 
 # um Y distance from tip at which cells pass from transition to elongation zone
 # from Van den Berg et al. 2018
-TRANSITION_MAX_DIST_FROM_TIP: int = 340
+TRANSITION_MAX_DIST_FROM_TIP: int = MERISTEMATIC_MAX_DIST_FROM_TIP + 180
 
 # um Y distance from tip at which cells pass from elongation to differentiation zone
 # from Van den Berg et al. 2018
-ELONGATION_MAX_DIST_FROM_TIP: int = 460
+ELONGATION_MAX_DIST_FROM_TIP: int = TRANSITION_MAX_DIST_FROM_TIP + 600
 
 # um Y distance from tip at which cells leave differentiation zone
 # from Van den Berg et al. 2018
-DIFFERENTIATION_MAX_DIST_FROM_TIP: int = 960
+DIFFERENTIATION_MAX_DIST_FROM_TIP: int = ELONGATION_MAX_DIST_FROM_TIP + 500
 
 # max um X distance vasc cells can be from self.sim.get_root_midpointx()
 # from Salvi et al. 2020
@@ -100,7 +98,7 @@ class Cell(Sprite):
     a_neighbors : list
         List of apical neighbors.
     b_neighbors : list
-        List of basal neighbors.
+        List of basal neighbors.get_pin
     l_neighbors : list
         List of lateral neighbors.
     m_neighbors : list
@@ -169,21 +167,23 @@ class Cell(Sprite):
                 self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
             case CircModEnum.AUX_SYN_DEG_ONLY:
                 self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
-            case CircModEnum.AUX_SYN_DEG_TRANS:
-                self.circ_mod = CirculateModuleAuxinSynDegTransport(self, init_vals)
+            case CircModEnum.AUX_SYN_DEG_EXP:
+                self.circ_mod = CirculateModuleAuxinSynDegExport(self, init_vals)
             case _:
                 raise SyntaxError(f"Unknown circ mod '{circ_mod_name}'")
 
-        self.pin_loc_ruleset = self.get_sim().get_pin_loc_rules()
-        self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         if self.sim.geometry != "default":
             self.dev_zone = ""
             self.cell_type = ""
             self.growing = False
         else:
-            self.dev_zone = self.calculate_dev_zone(self.get_distance_from_tip())
+            dist = self.get_distance_from_tip()
+            self.dev_zone = self.calculate_dev_zone(dist)
             self.cell_type = self.calculate_cell_type()
             self.growing = cast(bool, init_vals.get("growing"))
+
+        self.pin_loc_ruleset = self.get_sim().get_pin_loc_rules()
+        self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         self.color: tuple[int, int, int, int] = self.calculate_color()
         self.sim.add_to_cell_list(self)
 
@@ -781,42 +781,56 @@ class Cell(Sprite):
 
     def calculate_delta(self) -> float:
         """
-        Calculate the growth delta of the cell.
+        Calculate the growth delta of the cell for a single simulation tick.
 
         Returns
         -------
         float
-            The growth delta of the cell.
+            The growth delta (in μm) for this tick.
 
         Note
         ----
-        This method only works for the default geometry.
+        Growth is exponential: dL/dt = r * L, so
+        ΔL ≈ r * L * Δt.
         """
         dist_to_root_tip = self.get_distance_from_tip()
         self.dev_zone = self.calculate_dev_zone(dist_to_root_tip)
-        return self.get_growth_rate()
+
+        # Relative growth rate (1/hour)
+        rate = self.get_growth_rate()
+        if rate == 0.0:
+            return 0.0
+
+        # Current cell height in μm
+        height = self.get_quad_perimeter().get_height()
+
+        # Biological time for one tick (hours)
+        dt_hours = self.get_sim().get_timestep_hours()
+
+        # Exponential growth step: ΔL = r * L * Δt
+        return rate * height * dt_hours
 
     def calculate_pin_weights(self) -> dict:
         """
-        Calculates the pin weights of each membrane of the cell. Depends on what PinLocalizationRuleset is being used for the simulation.
-
-        Returns
-        -------
-        dict
-            The pin weights for each membrane of the cell.
-            Keys are "a", "b", "l", and "m".
-
+        Calculates the pin weights of each membrane of the cell.
+        For SIMPLE_INHERITANCE, uses circ_mod's dynamic PIN.
+        For IMPOSED, uses the VdB-style imposed PIN pattern and
+        converts it to fractions that sum to 1.
         """
         if self.pin_loc_ruleset == PinLocalizationRulesetEnum.SIMPLE_INHERITANCE:
+            # circ_mod holds the current PIN levels per membrane
             return self.circ_mod.get_pin_weights()
+
         elif self.pin_loc_ruleset == PinLocalizationRulesetEnum.IMPOSED:
-            # when pin is imposed, it is not synthesized or degraded, only maintained at level calculated by self.get_imposed_pin_distribution()
-            Warning(
-                "Only SIMPLE_INHERITANCE currently supports pin weights, setting all weights to 0 for imposed PIN localization"
-            )
-            return self.circ_mod.get_pin_weights()
+            # use imposed spatial pattern (VdB) as "absolute PIN"
+            pins = self.get_imposed_pin_distribution()  # {"a": ..., "b": ..., "l": ..., "m": ...}
+            total = pins["a"] + pins["b"] + pins["l"] + pins["m"]
+            if total == 0:
+                return {"a": 0.0, "b": 0.0, "l": 0.0, "m": 0.0}
+            return {key: val / total for key, val in pins.items()}
+
         else:
-            raise NotImplementedError("Only SIMPLE_INHERITANCE currently supports pin weights")
+            raise NotImplementedError("Unknown PIN localization ruleset")
 
     def get_imposed_pin_distribution(self) -> Dict[str, float]:
         """
@@ -832,8 +846,10 @@ class Cell(Sprite):
         """
         dev_zone = self.get_dev_zone()
         cell_type = self.get_cell_type()
+
+        # Root tip cells: use whatever the ODE module's initial PIN distribution is.
         if dev_zone == "roottip" or cell_type == "roottip":
-            return self.pin_weights
+            return self.circ_mod.get_pin_weights()
 
         dist_to_root_tip = self.get_distance_from_tip()
 
@@ -1042,14 +1058,20 @@ class Cell(Sprite):
         return self.pin_weights
 
     def update(self) -> None:
-        """
-        Updates the cell by growing, calculating pin weights, and updating the circ module.
-        """
         if self.growing:
             self.grow()
+
         self.dev_zone = self.calculate_dev_zone(self.get_distance_from_tip())
-        if self.get_sim().get_pin_loc_rules == PinLocalizationRulesetEnum.SIMPLE_INHERITANCE:
+
+        rules = self.get_sim().get_pin_loc_rules()
+
+        # Recompute pin_weights every tick so imposed patterns can change with zone / position
+        if rules in (
+            PinLocalizationRulesetEnum.SIMPLE_INHERITANCE,
+            PinLocalizationRulesetEnum.IMPOSED,
+        ):
             self.pin_weights = self.calculate_pin_weights()
+
         self.circ_mod.update()
 
     def get_neighbor_di_neighbor_shares_two_vs_std(self, neighbor: "Cell") -> str:

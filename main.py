@@ -58,6 +58,39 @@ def make_default_param_series():
     ]
     return pd.Series(param_vals, index=DEFAULT_PARAM_NAMES)
 
+def make_aux_syn_deg_exp_param_series():
+    ks_aux = 1
+    kd_aux = .2
+    ks_pinu = 0
+    kd_pinu = 0
+    kd_pinloc = 0
+    ks_auxlax = 0
+    kd_auxlax = 0
+    k1_range = 0
+    k2_range = 0
+    k3_range = 0
+    k4_range = 0
+    kal_range = .02
+    kpin_range = .02
+    tau_range = 1
+    param_vals = [
+        ks_aux,
+        kd_aux,
+        ks_pinu,
+        kd_pinu,
+        kd_pinloc,
+        ks_auxlax,
+        kd_auxlax,
+        k1_range,
+        k2_range,
+        k3_range,
+        k4_range,
+        kal_range,
+        kpin_range,
+        tau_range,
+    ]
+    return pd.Series(param_vals, index=INDEP_PARAM_NAMES)
+
 
 def make_indep_param_series():
     ks_aux = 0.266778
@@ -112,11 +145,11 @@ def get_simulation_config(circ_mod: CircModEnum):
             "v_file": "src/sim/input/default_vs.json",
             "gparam_series": make_default_param_series(),
         }
-    elif circ_mod == CircModEnum.AUX_SYN_DEG_TRANS:
+    elif circ_mod == CircModEnum.AUX_SYN_DEG_EXP:
         return {
             "cell_val_file": "src/sim/input/aux_syndegonly_init_vals.json",
             "v_file": "src/sim/input/default_vs.json",
-            "gparam_series": make_default_param_series(),
+            "gparam_series": make_aux_syn_deg_exp_param_series(),
         }
     else:
         raise ValueError(f"Unsupported circ_mod: {circ_mod}")
@@ -130,7 +163,7 @@ def get_circ_mod_enum(circ_mod_str: str):
     elif circ_mod_str == "aux_syndegonly" or circ_mod_str == "3":
         return CircModEnum.AUX_SYN_DEG_ONLY
     elif circ_mod_str == "aux_syndegtrans" or circ_mod_str == "4":
-        return CircModEnum.AUX_SYN_DEG_TRANS
+        return CircModEnum.AUX_SYN_DEG_EXP
     else:
         raise ValueError(f"Unsupported circ_mod: {circ_mod}")
 
@@ -167,7 +200,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     circ_mod = get_circ_mod_enum(args.circ_mod)
-    timestep = 1
+    timestep = .2
     vis = True
     start_time = time.time()
     config = get_simulation_config(circ_mod)

@@ -165,22 +165,20 @@ class CirculateModule(ABC):
 
         return [f0, f1, f2, f3, f4, f5, f6, f7]
 
-    def solve_equations(self, time_step: float = 0.001, duration: float = 1.0) -> np.ndarray:
+    def solve_equations(self, dt_hours: float) -> np.ndarray:
         """
-        Solve the model's differential equations over a given time span with a specified time step.
+        Advance the ODEs by dt_hours of biological time.
 
         Parameters
         ----------
-        time_step : float
-            The time step for the ODE solver. Default is 0.001 hours.
-        duration : float
-            The total duration for the simulation. Default is 1.0 hours.
+        dt_hours : float
+            Biological time elapsed this simulation tick (in hours).
 
         Returns
         -------
         ndarray
-            An array containing the solution of the differential equations at each time step.
-            Each row corresponds to a time step, and each column corresponds to one of the model variables.
+            Solution of the ODEs evaluated at t = 0 and t = dt_hours.
+            The last row (soln[-1]) is the state at t = dt_hours.
         """
         y0 = [
             self.get_auxin(),
@@ -192,31 +190,26 @@ class CirculateModule(ABC):
             self.get_lateral_pin(),
             self.get_medial_pin(),
         ]
-        t = np.linspace(0, duration, int(duration / time_step) + 1)
+
+        t = np.array([0.0, dt_hours], dtype=float)
         soln = odeint(self.f, y0, t)
         return soln
 
     def update(self) -> None:
         """
-        Update the model's circulation contents based on current PIN weights and differential equations.
-
-        This method performs a series of updates to the model's state, including:
-        - Retrieving current PIN weights from the associated cell.
-        - Solving the model's differential equations over a time step.
-        - Updating auxin levels and other circulation-related contents based on the solutions obtained.
-
-        Ensures that the sum of PIN weights is 1.0 before proceeding with the updates.
+        Update circulation contents based on current PIN weights and differential equations.
         """
-        # Retrieve current PIN weights
-        self.pin_weights = (
-            self.cell.get_pin_weights()
-        )  # Calculations to update PIN weights are done in Cell class
+        # Retrieve current PIN weights from the cell
+        self.pin_weights = self.cell.get_pin_weights()
         assert round_to_sf(sum(self.pin_weights.values()), 2) == 1.0, "PIN weights sum to 1.0"
 
-        # Solve the differential equations for the current state
-        soln = self.solve_equations()
+        # How much biological time does one simulation tick represent?
+        dt_hours = self.cell.get_sim().get_timestep_hours()
 
-        # Update model states based on the solutions
+        # Solve the ODEs over this biological time window
+        soln = self.solve_equations(dt_hours=dt_hours)
+
+        # Update model states based on the solution at t = dt_hours
         self.update_auxin(soln)
         self.update_circ_contents(soln)
 
@@ -273,7 +266,7 @@ class CirculateModule(ABC):
         return round_to_sf(memfrac, 6)
 
     def get_aux_exchange_across_membrane(
-        self, al: float, pindi: float, neighbors: list
+        self, al: float, pindi: float, neighbors: list, dt_hours: float
     ) -> dict["Cell", float]:
         """
         Calculate the amount of auxin that will be transported across each
@@ -302,24 +295,25 @@ class CirculateModule(ABC):
             memfrac = self.calculate_neighbor_memfrac(neighbor)
             neighbor_memfrac = neighbor.get_circ_mod().calculate_neighbor_memfrac(self.cell)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
-            auxin_influx = (neighbor_aux * (neighbor_memfrac)) * (al * memfrac) * self.k_al
+
+            # Per-hour rates:
+            influx_rate = neighbor_aux * al * memfrac * self.k_al
             pin_activity = pindi * self.k_pin
             accessible_auxin = self.auxin * memfrac
-            auxin_efflux = accessible_auxin * pin_activity
-            if (
-                auxin_influx == float("inf")
-                or auxin_influx == float("-inf")
-                or auxin_efflux == float("inf")
-                or auxin_efflux == float("-inf")
-            ):
+            efflux_rate = accessible_auxin * pin_activity
+
+            # Integrate over dt_hours
+            auxin_influx = influx_rate * dt_hours
+            auxin_efflux = efflux_rate * dt_hours
+
+            if any(x in (float("inf"), float("-inf")) for x in (auxin_influx, auxin_efflux)):
                 print(f"cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()}")
                 print(f"neighbor's auxin {auxin_influx}, self aux out {auxin_efflux}")
+                raise ValueError("Negative auxin")
+
             neighbor_aux_exchange = auxin_influx - auxin_efflux
-            # if neighbor_aux_exchange != 0:
-            #     print(
-            #         f"HERE cell {self.cell.get_c_id()} neighbor {neighbor.get_c_id()} auxin exchange {neighbor_aux_exchange}"
-            #     )
             neighbor_dict[neighbor] = round_to_sf(neighbor_aux_exchange, 5)
+
         return neighbor_dict
 
     def calculate_delta_auxin(self, syn_deg_auxin: float, neighbors_auxin: list) -> float:
@@ -382,23 +376,26 @@ class CirculateModule(ABC):
             different time point and columns represent the concentrations of different
             substances at that time point.
         """
-        self.arr = round_to_sf(soln[1, 1], 5)
-        self.auxlax = round_to_sf(soln[1, 2], 5)
-        self.pin = round_to_sf(soln[1, 3], 5) - self.pin
-        self.pina = round_to_sf(soln[1, 4], 5)
-        self.pinb = round_to_sf(soln[1, 5], 5)
-        self.pinl = round_to_sf(soln[1, 6], 5)
-        self.pinm = round_to_sf(soln[1, 7], 5)
+        last = soln[-1]
+        self.arr    = round_to_sf(last[1], 5)
+        self.auxlax = round_to_sf(last[2], 5)
+        self.pin    = round_to_sf(last[3], 5)
+        self.pina   = round_to_sf(last[4], 5)
+        self.pinb   = round_to_sf(last[5], 5)
+        self.pinl   = round_to_sf(last[6], 5)
+        self.pinm   = round_to_sf(last[7], 5)
         self.update_arr_hist()
 
-        if self.cell.get_sim().get_pin_loc_rules == PinLocalizationRulesetEnum.IMPOSED:
-            pins = self.cell.get_imposed_pin_distribution()
-            self.pina = pins["a"]
-            self.pinb = pins["b"]
-            self.pinl = pins["l"]
-            self.pinm = pins["m"]
-            self.pin_weights = self.initialize_pin_weights()
-            self.auxlax = 1.0
+        rules = self.cell.get_sim().get_pin_loc_rules()
+        if rules == PinLocalizationRulesetEnum.IMPOSED:
+            # For imposed, overwrite pina/pinb/pinl/pinm with the spatial pattern,
+            # but DO NOT touch self.pin_weights (those already came from cell)
+            pins_frac = self.cell.get_pin_weights()  # already normalized
+            self.pina = pins_frac["a"]
+            self.pinb = pins_frac["b"]
+            self.pinl = pins_frac["l"]
+            self.pinm = pins_frac["m"]
+            self.auxlax = 1
 
     def update_neighbor_auxin(self, neighbors_auxin: list[dict]) -> None:
         """
@@ -453,15 +450,38 @@ class CirculateModule(ABC):
             parameters or the numerical solution.
         """
         curr_cell = self.cell
+        dt_hours = self.cell.get_sim().get_timestep_hours()
 
         # Retrieve neighbors for auxin exchange
         neighborsa, neighborsb, neighborsl, neighborsm = self.get_neighbors()
 
+        reg = self.get_pin_reg_factor()
+
         # Calculate auxin exchange across membranes
-        auxina_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pina, neighborsa)
-        auxinb_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinb, neighborsb)
-        auxinl_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinl, neighborsl)
-        auxinm_exchange = self.get_aux_exchange_across_membrane(self.auxlax, self.pinm, neighborsm)
+        auxina_exchange = self.get_aux_exchange_across_membrane(
+            self.auxlax,
+            reg * self.cell.get_pin_weights()["a"],
+            neighborsa,
+            dt_hours
+        )
+        auxinb_exchange = self.get_aux_exchange_across_membrane(
+            self.auxlax,
+            reg * self.cell.get_pin_weights()["b"],
+            neighborsb,
+            dt_hours
+        )
+        auxinl_exchange = self.get_aux_exchange_across_membrane(
+            self.auxlax,
+            reg * self.cell.get_pin_weights()["l"],
+            neighborsl,
+            dt_hours
+        )
+        auxinm_exchange = self.get_aux_exchange_across_membrane(
+            self.auxlax,
+            reg * self.cell.get_pin_weights()["m"],
+            neighborsm,
+            dt_hours
+        )
         neighbors_auxin_exchange = [
             auxina_exchange,
             auxinb_exchange,
@@ -470,7 +490,9 @@ class CirculateModule(ABC):
         ]
 
         # Compute net auxin synthesized and degraded at this time step
-        auxin_synthesized_and_degraded_this_timestep = soln[1, 0] - self.auxin
+        # Net auxin change over dt_hours from synthesis/degradation
+        aux_new = soln[-1, 0]
+        auxin_synthesized_and_degraded_this_timestep = aux_new - self.auxin
 
         delta_auxin = self.calculate_delta_auxin(
             auxin_synthesized_and_degraded_this_timestep, neighbors_auxin_exchange
@@ -481,6 +503,50 @@ class CirculateModule(ABC):
 
         # Update auxin levels in neighbor cells
         self.update_neighbor_auxin(neighbors_auxin_exchange)
+
+        # delta_from_syn_deg = aux_new - self.auxin
+        # delta_from_neighbors = delta_from_neighbors = sum(sum(d.values()) for d in neighbors_auxin_exchange)
+        # print(self.cell.c_id,
+        #     "aux:", self.auxin,
+        #     "Δ_syn_deg:", delta_from_syn_deg,
+        #     "Δ_neighbors:", delta_from_neighbors)
+
+
+    def get_directional_pattern(self, direction: str) -> float:
+        return self.cell.get_pin_weights()[direction]  # "a", "b", "l", "m"
+
+    def get_pin_reg_factor(self) -> float:
+        """
+        Compute a regulatory factor for PIN-mediated auxin efflux based on
+        the current auxin and ARR levels.
+
+        - Auxin ACTIVATES export (increasing factor with auxin, saturating).
+        - ARR INHIBITS export (decreasing factor with ARR, saturating).
+
+        The returned value is in [0, 1] and is dimensionless.
+        """
+        # Guard against negatives / NaNs
+        aux = max(float(self.auxin), 0.0)
+        arr = max(float(self.arr), 0.0)
+
+        # TODO: Restructure the circulation modules so that this is how PIN is regulated!!!
+        # Simple “Hill-like” saturating activation by auxin:
+        # aux_term ~ 0 when aux ~ 0, aux_term -> 1 as aux grows large
+        aux_term = aux / (aux + 1.0)
+
+        # Simple saturating inhibition by ARR:
+        # arr_term ~ 1 when arr ~ 0, arr_term -> 0 as arr grows large
+        arr_term = 1.0 / (1.0 + arr)
+
+        reg = aux_term * arr_term
+
+        # Floating point protection
+        if reg < 0.0:
+            reg = 0.0
+        elif reg > 1.0:
+            reg = 1.0
+
+        return reg
 
     # getter functions
     def get_auxin(self) -> float:
