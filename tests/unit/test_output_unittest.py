@@ -6,10 +6,13 @@ from src.sim.output.output import Output
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "TEST"
+PIN_LOC_RULES = PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
+CIRC_MOD = CircModEnum.UNIVERSAL_SYN_DEG
 
 init_vals = {
     "auxin": 2,
@@ -106,7 +109,9 @@ class TestOutput(unittest.TestCase):
     output_json = "output.json"
 
     def setUp(self):
-        self.sim = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, 40, False)
+        self.sim = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, 1, False, PIN_LOC_RULES, CIRC_MOD
+        )
         self.cell0 = Cell(
             self.sim,
             [Vertex(10.0, 10.0), Vertex(10.0, 30.0), Vertex(30.0, 30.0), Vertex(30.0, 10.0)],

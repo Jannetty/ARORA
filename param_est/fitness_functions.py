@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import ast
+import csv
 from scipy.stats import spearmanr
 
 from src.sim.simulation.sim import GrowingSim
@@ -278,3 +279,29 @@ def parse_and_compute_centroid(location):
         y_coords = points_array[:, 1]
         centroid = [sum(x_coords) / len(x_coords), sum(y_coords) / len(y_coords)]
         return centroid
+
+def arora_vdb_ssd():
+    total_ssd = 0.0
+    reference_filenames = get_filenames("param_est/vdbdata/references/Caux1Array_", 0, 1000, 26000) # not quite sure how the matching of temporal scales is going
+    output_filenames = [f"output/ARORAoutput{i}.csv" for i in range(27)]
+    for output_file, reference_file in zip(output_filenames, reference_filenames):
+        total_ssd += np.sum((file_extract_values(output_file) - file_extract_values(reference_file))**2)
+    return total_ssd
+
+def file_extract_values(filename):
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        data = []
+        for row in reader:
+            if row and row[-1].strip() == '':
+                row.pop()
+            float_row = [float(cell) for cell in row]
+            data.append(float_row)
+        return np.array(data)
+
+def get_filenames(stringstart, t_start, tstep, t_total): # changed
+    filenames = []
+    for t in range(t_start, (t_total + tstep), tstep):
+        filename = stringstart + str(t).zfill(8) + ".csv" # if we decide to change number of digits in filename later, change this line
+        filenames.append(filename)
+    return filenames

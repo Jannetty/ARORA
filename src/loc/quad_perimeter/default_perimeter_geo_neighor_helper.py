@@ -57,7 +57,10 @@ class PerimeterNeighborHelpers:
                     neighborqp.get_bottom_left(),
                     neighborqp.get_top_left(),
                 ]
-                cell_vs_on_shared_edge = [cellqp.get_bottom_right(), cellqp.get_top_right()]
+                cell_vs_on_shared_edge = [
+                    cellqp.get_bottom_right(),
+                    cellqp.get_top_right(),
+                ]
                 length = PerimeterNeighborHelpers.get_overlap(
                     neighbor_vs_on_shared_edge, cell_vs_on_shared_edge
                 )
@@ -69,7 +72,10 @@ class PerimeterNeighborHelpers:
                     neighborqp.get_bottom_right(),
                     neighborqp.get_top_right(),
                 ]
-                cell_vs_on_shared_edge = [cellqp.get_bottom_left(), cellqp.get_top_left()]
+                cell_vs_on_shared_edge = [
+                    cellqp.get_bottom_left(),
+                    cellqp.get_top_left(),
+                ]
                 length = PerimeterNeighborHelpers.get_overlap(
                     neighbor_vs_on_shared_edge, cell_vs_on_shared_edge
                 )
@@ -79,7 +85,10 @@ class PerimeterNeighborHelpers:
                 cellqp.get_left_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
                 == "lateral"
             ):
-                cell_vs_on_shared_edge = [cellqp.get_bottom_left(), cellqp.get_top_left()]
+                cell_vs_on_shared_edge = [
+                    cellqp.get_bottom_left(),
+                    cellqp.get_top_left(),
+                ]
                 neighbor_vs_on_shared_edge = [
                     neighborqp.get_bottom_right(),
                     neighborqp.get_top_right(),
@@ -91,7 +100,10 @@ class PerimeterNeighborHelpers:
                 cellqp.get_right_lateral_or_medial(neighbor.get_sim().get_root_midpointx())
                 == "lateral"
             ):
-                cell_vs_on_shared_edge = [cellqp.get_bottom_right(), cellqp.get_top_right()]
+                cell_vs_on_shared_edge = [
+                    cellqp.get_bottom_right(),
+                    cellqp.get_top_right(),
+                ]
                 neighbor_vs_on_shared_edge = [
                     neighborqp.get_bottom_left(),
                     neighborqp.get_top_left(),
@@ -247,7 +259,8 @@ class PerimeterNeighborHelpers:
 
     @staticmethod
     def get_overlap(
-        cell_vs_on_shared_edge: list["Vertex"], neighbor_vs_on_shared_edge: list["Vertex"]
+        cell_vs_on_shared_edge: list["Vertex"],
+        neighbor_vs_on_shared_edge: list["Vertex"],
     ) -> float:
         """
         Calculate the length of the overlap between two segments.

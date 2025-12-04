@@ -1,6 +1,10 @@
 import json
 import os
 import platform
+import csv
+from skimage.draw import polygon
+
+from src.arora_enums import CircModEnum, PinLocalizationRulesetEnum
 
 
 if platform.system() == "Linux":
@@ -14,6 +18,7 @@ from param_est.fitness_functions import (
     avg_auxin_root_tip_greater_than_elsewhere,
     parity_of_mz_auxin_concentrations_with_VDB_data,
     parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point,
+    arora_vdb_ssd
 )
 from src.sim.simulation.sim import GrowingSim
 
@@ -50,6 +55,14 @@ AUX_SYN_DEG_PARAM_NAMES = [
     "tau",
 ]
 
+def fix_json(path: str):
+    with open(path, 'r') as file:
+        file_content = file.read()
+    find_text = "]["
+    replace_text = "],["
+    modified_content = file_content.replace(find_text, replace_text)
+    with open(path, 'w') as file:
+        file.write("[" + modified_content + "]")
 
 class ARORAGeneticAlg:
     def __init__(self, filename: str, circ_mod: str):
@@ -105,26 +118,30 @@ class ARORAGeneticAlg:
         gparam_series = params
         geometry = "default"
         simulation = GrowingSim(
-            SCREEN_WIDTH,
-            SCREEN_HEIGHT,
-            SCREEN_TITLE,
-            timestep,
-            root_midpoint_x,
-            vis,
-            cell_val_file,
-            v_file,
-            gparam_series,
-            geometry,
-            f"param_est/ARORA_output_{chromosome['sol_idx']}",
+            width=SCREEN_WIDTH,
+            height=SCREEN_HEIGHT,
+            title=SCREEN_TITLE,
+            timestep=timestep,
+            # root_midpoint_x,
+            vis=vis,
+            cell_val_file=cell_val_file,
+            v_file=v_file,
+            gparam_series=gparam_series,
+            geometry=geometry,
+            output_file=f"param_est/ARORA_output_{chromosome['sol_idx']}",
+
+            circ_mod=CircModEnum.AUX_SYN_DEG_ONLY,
+            pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
         )
         simulation.setup()
         try:
             simulation.run_sim()
             chromosome["finished"] = True
+            self.create_arora_csv(f"param_est/ARORAoutput{chromosome['sol_idx']}.json")
             fitness = self._calculate_fitness(simulation, chromosome)
             try:
-                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.csv")
-                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.json")
+                os.remove(f"param_est/ARORAoutput{chromosome['sol_idx']}.csv")
+                os.remove(f"param_est/ARORAoutput{chromosome['sol_idx']}.json")
             except Exception as e:
                 print(e)
         except Exception as e:
@@ -136,11 +153,34 @@ class ARORAGeneticAlg:
             print("Fitness set to -infinity")
             fitness = -np.inf
             try:
-                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.csv")
-                os.remove(f"param_est/ARORA_output_{chromosome['sol_idx']}.json")
+                os.remove(f"param_est/ARORAoutput{chromosome['sol_idx']}.csv")
+                os.remove(f"param_est/ARORAoutput{chromosome['sol_idx']}.json")
             except Exception as e:
                 print(e)
         return fitness
+
+    def create_arora_csv(path: str):
+        fix_json(path)
+        with open(path) as file:
+            data = json.load(file)
+
+        for i in range(len(data)): # ticks
+            arr = np.zeros((1207, 142))
+
+            ymin = 0
+            for j in range(len(data[i])): # cells
+                for k in range(4):
+                    ymin = min(ymin, data[i][j]["location"][k][1])
+
+            for j in range(len(data[i])): # cells
+                auxin = data[i][j]["auxin"]
+                location = np.array(data[i][j]["location"])
+                if (ymin < 0):
+                    for k in range(4):
+                        location[k][1] += abs(ymin)
+                rr, cc = polygon(location[:, 1], location[:, 0], arr.shape)
+                arr[rr, cc] = auxin
+            np.savetxt(f'output/ARORAoutput{i}.csv', arr, delimiter=",", fmt="%f")
 
     # def _calculate_fitness_original(self, simulation, chromosome):
     #     # calculate fitness
@@ -166,11 +206,12 @@ class ARORAGeneticAlg:
 
     def _calculate_fitness(self, simulation, chromosome):
         # calculate fitness
-        fitness = parity_of_mz_auxin_concentrations_with_VDB_data(
-            simulation, chromosome
-        ) + parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point(
-            simulation, chromosome
-        )
+        # fitness = parity_of_mz_auxin_concentrations_with_VDB_data(
+        #     simulation, chromosome
+        # ) + parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point(
+        #     simulation, chromosome
+        # )
+        fitness = arora_vdb_ssd()
         return fitness
 
     def make_paramspace_ks_kd(self):

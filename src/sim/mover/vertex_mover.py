@@ -173,6 +173,11 @@ class VertexMover:
         left_xs = []
         for cell in top_row:
             left_xs.append(cell.get_quad_perimeter().get_top_left().get_x())
+        zipped_list = zip(left_xs, top_row)
+        sorted_zipped_list = sorted(zipped_list)
+        sorted_top_row = []
+        for _, cell in sorted_zipped_list:
+            sorted_top_row.append(cell)
         return [cell for _, cell in sorted(zip(left_xs, top_row))]
 
     def propogate_deltas(self, top_row: list["Cell"]) -> None:
@@ -249,7 +254,7 @@ class VertexMover:
         # iterate through all nongrowing cells in root tip, move all basal vertices not yet moved
         moved_vs = list(self.vertex_deltas.keys())
         for cell in self.sim.get_cell_list():
-            if not cell.get_growing() and cell.get_dev_zone() is "roottip":
+            if not cell.get_growing() and cell.get_dev_zone() == "roottip":
                 vertices = cell.get_quad_perimeter().get_vs()
                 for vertex in vertices:
                     if vertex not in moved_vs:
@@ -266,7 +271,8 @@ class VertexMover:
             The list of cells this VertexMover affected this time point.
         """
         for cell in cells:
-            if cell.get_quad_perimeter().get_area() >= (
-                2 * cell.get_quad_perimeter().get_init_area()
-            ):
-                self.sim.get_divider().add_cell(cell)
+            if cell.get_dev_zone() == "meristematic":
+                if cell.get_quad_perimeter().get_area() >= (
+                    2 * cell.get_quad_perimeter().get_init_area()
+                ):
+                    self.sim.get_divider().add_cell(cell)

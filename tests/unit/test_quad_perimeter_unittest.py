@@ -15,10 +15,13 @@ from src.loc.quad_perimeter.quad_perimeter import (
 from src.loc.vertex.vertex import Vertex
 from src.agent.cell import Cell
 from src.sim.simulation.sim import GrowingSim
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
+PIN_LOC_RULES = PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
+CIRC_MOD = CircModEnum.UNIVERSAL_SYN_DEG
 
 init_vals = {
     "auxin": 2,
@@ -120,7 +123,9 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_right_neighbor(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -136,7 +141,9 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_left_neighbor(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -152,7 +159,9 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)
@@ -168,7 +177,9 @@ class TestQuadPerimeter(unittest.TestCase):
 
     def test_get_len_perimeter_in_common_top_neighbor(self):
         timestep = 1
-        simulation = GrowingSim(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False)
+        simulation = GrowingSim(
+            SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, timestep, False, PIN_LOC_RULES, CIRC_MOD
+        )
         v1 = Vertex(10, 10)
         v2 = Vertex(10, 30)
         v3 = Vertex(30, 30)

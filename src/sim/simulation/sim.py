@@ -9,6 +9,8 @@ from arcade import SpriteList
 from arcade import set_background_color
 from arcade import close_window, set_window
 import time
+from src.arora_enums import PinLocalizationRulesetEnum
+from src.arora_enums import CircModEnum
 from src.sim.circulator.circulator import Circulator
 from src.sim.divider.divider import Divider
 from src.sim.mover.vertex_mover import VertexMover
@@ -34,7 +36,7 @@ class GrowingSim(Window):
 
     Attributes
     ----------
-    timestep : int
+    timestep : float
         The size of the timestep of the simulation, in seconds.
     circulator : Circulator
         Manages the circulation of auxin within the simulation.
@@ -50,6 +52,10 @@ class GrowingSim(Window):
         A list of vertices currently present in the simulation.
     vis : bool
         Indicates whether the simulation should be visualized.
+    pin_loc_rules : PinLocalizationRuleset
+        The rules the cells follow to determine how they localize PIN auxin exporters.
+    circ_mod : CircMod
+        The circulation module the cells should be using.
     next_cell_id : int
         The ID to be assigned to the next new cell.
     root_tip_y : float
@@ -73,6 +79,10 @@ class GrowingSim(Window):
         The timestep size for the simulation, in seconds.
     vis : bool
         Flag to indicate whether the simulation should be visualized.
+    pin_loc_rules : PinLocalizationRuleset
+        The rules the cells follow to determine how they localize PIN auxin exporters.
+    circ_mod : CircMod
+        The circulation module the cells should be using.
     cell_val_file : str, optional
         The filename containing cell values to initialize the simulation.
     v_file : str, optional
@@ -81,10 +91,12 @@ class GrowingSim(Window):
         Series containing global parameters for the simulation.
     geometry : str, optional
         Indicates the geometric configuration of the simulation.
+    output_frequency : int
+        Indicates how often (in units of ticks) the simulation should generate an output file
 
     """
 
-    timestep: int
+    timestep: float
     circulator: "Circulator"
     vertex_mover: "VertexMover"
     divider: "Divider"
@@ -92,6 +104,8 @@ class GrowingSim(Window):
     cell_list: SpriteList
     vertex_list: list
     vis: bool
+    pin_loc_rules: PinLocalizationRulesetEnum
+    circ_mod: CircModEnum
     next_cell_id: int
     root_tip_y: float = 0
     cell_val_file: str
@@ -103,27 +117,25 @@ class GrowingSim(Window):
         width: int,
         height: int,
         title: str,
-        timestep: int,
+        timestep: float,
         vis: bool,
+        pin_loc_rules: PinLocalizationRulesetEnum,
+        circ_mod: CircModEnum,
         cell_val_file: str = "",
         v_file: str = "",
         gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
         output_file: str = "output",
+        output_frequency: int = 1
     ):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
         """
         self.cell_list = SpriteList(use_spatial_hash=False)
         self.vertex_list = []
-        if vis is False:
-            print("Running headless")
-            # for mac
-            pyglet.options["headless"] = True
-            # for PC
-            os.environ["ARCADE_HEADLESS"] = "true"
-            super().__init__(width, height, title, visible=False)
-        if vis is True:
+        if not vis:
+            print("Running headless (no window)")
+        else:
             super().__init__(width, height, title)
             set_background_color(color=(250, 250, 250, 250))
         if cell_val_file != "" and v_file != "":
@@ -136,10 +148,13 @@ class GrowingSim(Window):
         self.geometry = geometry
         self.timestep = timestep
         self.vis = vis
+        self.pin_loc_rules = pin_loc_rules
+        self.circ_mod = circ_mod
         self.cmap = plt.get_cmap("coolwarm")
         self.setup()
         self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
         self.exit_flag = False
+        self.output_frequency = output_frequency
 
     def get_root_midpointx(self) -> float:
         """
@@ -177,8 +192,20 @@ class GrowingSim(Window):
         raise ValueError(f"Cell with ID {ID} not found in cell_list")
 
     def get_timestep(self) -> float:
-        """Returns the timestep of the simulation (in seconds)."""
+        """Returns the simulation timestep (in hours per tick)."""
         return self.timestep
+
+    def get_timestep_hours(self) -> float:
+        """Returns the timestep of the simulation in hours. Redundant with get_timestep."""
+        return float(self.timestep)
+
+    def get_pin_loc_rules(self) -> PinLocalizationRulesetEnum:
+        """Returns the PIN localization ruleset"""
+        return self.pin_loc_rules
+
+    def get_circ_mod(self) -> CircModEnum:
+        """Returns the circulation module the cells should use"""
+        return self.circ_mod
 
     def get_tick(self) -> int:
         """Returns the current tick (or step) of the simulation."""
@@ -233,6 +260,8 @@ class GrowingSim(Window):
         This method is called to (re)start the simulation, setting up initial cell configurations,
         and preparing the simulation environment.
         """
+        if len(self.cell_list) != 0:
+            raise Exception("Setup is being called twice. This can lead to doubling instances of cells if using default setup files. Reminder setup is called during simulation initialization. Please remove second setup call.")
         # find midpoint x of root basd on vertices that exist
         self.tick = 0
         self.next_cell_id = 0
@@ -318,12 +347,12 @@ class GrowingSim(Window):
             delta_time: The time step.
         """
         print("----")
-        self.output.output_cells()
+        if self.tick % self.output_frequency == 0:
+            self.output.output_cells()
         self.tick += 1
-        # max_tick = 24 * 8
+        max_tick = 26 / self.get_timestep_hours() # number of timesteps to reach 26 hours, adjust as you see fit
         try:
-            if self.tick < 27:
-                self.output.output_cells()
+            if self.tick < max_tick:
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
@@ -348,23 +377,33 @@ class GrowingSim(Window):
             raise e
 
     def run_sim(self) -> None:
-        while not self.exit_flag:
-            pyglet.clock.tick()
-            self.dispatch_events()
-            self.on_update(1 / 60.0)
-        print("CLOSING WINDOW")
-        self.close()  # Close the window
-        print("WINDOW CLOSED")
-        pyglet.app.exit()  # Exit the pyglet event loop
+        if self.vis:
+            # Normal arcade/pyglet loop with a real window
+            while not self.exit_flag:
+                pyglet.clock.tick()
+                self.dispatch_events()
+                self.on_update(1 / 60.0)
+            print("CLOSING WINDOW")
+            self.close()
+            print("WINDOW CLOSED")
+            pyglet.app.exit()
+        else:
+            # Pure headless loop: just step the simulation, no window, no events
+            while not self.exit_flag:
+                self.on_update(self.timestep)
+            print("Headless simulation complete")
 
 
 def main(
-    timestep: int,
+    timestep: float,
     vis: bool,
+    pin_loc_rules: PinLocalizationRulesetEnum,
+    circ_mod: CircModEnum,
     cell_val_file: str = "",
     v_file: str = "",
     gparam_series: Series | str = "",
     output_file: str = "output",
+    output_frequency: int = 1
 ) -> int:
     """Creates and runs the ABM."""
     print("Making GrowingSim")
@@ -377,11 +416,14 @@ def main(
         SCREEN_TITLE,
         timestep,
         vis,
+        pin_loc_rules,
+        circ_mod,
         cell_val_file,
         v_file,
         gparam_series,
         geometry,
         output_file,
+        output_frequency
     )
     set_window(simulation)
     print("Running Simulation")

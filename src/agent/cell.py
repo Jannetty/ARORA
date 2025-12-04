@@ -1,9 +1,11 @@
 from arcade import Sprite
 from arcade import draw_polygon_filled, draw_polygon_outline
 from typing import TYPE_CHECKING, Any, cast, Union, Dict
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDeg
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.agent.circ_module_aux_syn_deg_only import CirculateModuleAuxinSynDegOnly
+from src.agent.circ_module_aux_syn_deg_export import CirculateModuleAuxinSynDegExport
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 from src.agent.circ_module import CirculateModule
@@ -13,19 +15,17 @@ if TYPE_CHECKING:
     from src.loc.vertex.vertex import Vertex
 
 # Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
-# MERISTEMATIC_GROWTH_RATE: float = -0.0179
-MERISTEMATIC_GROWTH_RATE: float = -1.2  # trying to divide every 5 hours
+MERISTEMATIC_GROWTH_RATE: float = -0.0179
 
 # Growth rate cells in transition zone in um per um per hour from Van den Berg et al. 2018
-# TRANSITION_GROWTH_RATE: float = -0.0179
-TRANSITION_GROWTH_RATE: float = -1.2  # same as Meristematic
+TRANSITION_GROWTH_RATE: float = -0.0179
 
 # Growth rate cells in elongation zone in um per um per hour from Van den Berg et al. 2018
-# ELONGATION_GROWTH_RATE: float = -0.00112
-ELONGATION_GROWTH_RATE: float = -0.075  # same ratio as van den berg
+ELONGATION_GROWTH_RATE: float = -0.00112
+
 # Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
-# DIFFERENTIATION_GROWTH_RATE: float = -0.00112
-DIFFERENTIATION_GROWTH_RATE: float = -0.075  # same ratio as van den berg
+DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+
 
 # um Y distance from tip at which cells pass from root tip to meristematic zone
 # Inferred from Van dn Berg et al. 2018
@@ -33,19 +33,19 @@ ROOT_TIP_DIST_FROM_TIP: int = 74
 
 # um Y distance from tip at which cells pass from meristemtic to transition zone
 # from Van den Berg et al. 2018
-MERISTEMATIC_MAX_DIST_FROM_TIP: int = 160
+MERISTEMATIC_MAX_DIST_FROM_TIP: int = ROOT_TIP_DIST_FROM_TIP + 160
 
 # um Y distance from tip at which cells pass from transition to elongation zone
 # from Van den Berg et al. 2018
-TRANSITION_MAX_DIST_FROM_TIP: int = 340
+TRANSITION_MAX_DIST_FROM_TIP: int = MERISTEMATIC_MAX_DIST_FROM_TIP + 180
 
 # um Y distance from tip at which cells pass from elongation to differentiation zone
 # from Van den Berg et al. 2018
-ELONGATION_MAX_DIST_FROM_TIP: int = 460
+ELONGATION_MAX_DIST_FROM_TIP: int = TRANSITION_MAX_DIST_FROM_TIP + 600
 
 # um Y distance from tip at which cells leave differentiation zone
 # from Van den Berg et al. 2018
-DIFFERENTIATION_MAX_DIST_FROM_TIP: int = 960
+DIFFERENTIATION_MAX_DIST_FROM_TIP: int = ELONGATION_MAX_DIST_FROM_TIP + 500
 
 # max um X distance vasc cells can be from self.sim.get_root_midpointx()
 # from Salvi et al. 2020
@@ -66,6 +66,14 @@ CORTEX_CELL_DIST_FROM_ROOT_MIDPOINTX: int = 35
 # max um X distance epidermis cells can be from self.sim.get_root_midpointx()
 # from Salvi et al. 2020
 EPIDERMIS_CELL_DIST_FROM_ROOT_MIDPOINTX: int = 45
+
+MERISTEM_FIRST_ROW_CENTER_Y = 75.5  # μm distance from tip for first meristematic band
+MERISTEM_ROW_STEP = 5.0  # μm between successive meristematic bands
+MERISTEM_MAX_ROW_INDEX = 16  # last observed meristematic band index
+
+TRANSITION_FIRST_ROW_CENTER_Y = 160.5  # μm distance from tip for first transition band
+TRANSITION_ROW_STEP = 5.0
+TRANSITION_MAX_ROW_INDEX = 33  # highest observed transition band index
 
 
 class Cell(Sprite):
@@ -90,7 +98,7 @@ class Cell(Sprite):
     a_neighbors : list
         List of apical neighbors.
     b_neighbors : list
-        List of basal neighbors.
+        List of basal neighbors.get_pin
     l_neighbors : list
         List of lateral neighbors.
     m_neighbors : list
@@ -107,6 +115,8 @@ class Cell(Sprite):
         The development zone of the cell.
     cell_type : str
         The type of the cell.
+    pin_loc_ruleset : PinLocalizationRules
+        The rules the cell is following to determine its PIN localization
     color : str
         The color of the cell.
     """
@@ -114,6 +124,7 @@ class Cell(Sprite):
     dev_zone: str
     cell_type: str
     growing: bool
+    pin_loc_ruleset: PinLocalizationRulesetEnum
 
     def __init__(
         self,
@@ -145,28 +156,34 @@ class Cell(Sprite):
         self.sim: "GrowingSim" = simulation
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
+
         # Type hint circ_mod to accept any class that implements the CirculateModule protocol
         self.circ_mod: CirculateModule
-        circ_mod_name = init_vals.get("circ_mod")
-        if circ_mod_name == "universal_syndeg":
-            self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
-        elif circ_mod_name == "indep_syndeg":
-            self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
-        elif circ_mod_name == "aux_syndegonly":
-            self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
-        else:
-            print(f"Warning: Unknown circ_mod '{circ_mod_name}', defaulting to universal_syndeg.")
-            self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
+        circ_mod_name = simulation.get_circ_mod()
+        match circ_mod_name:
+            case CircModEnum.UNIVERSAL_SYN_DEG:
+                self.circ_mod = CirculateModuleUniversalSynDeg(self, init_vals)
+            case CircModEnum.INDEP_SYN_DEG:
+                self.circ_mod = CirculateModuleIndSynDeg(self, init_vals)
+            case CircModEnum.AUX_SYN_DEG_ONLY:
+                self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
+            case CircModEnum.AUX_SYN_DEG_EXP:
+                self.circ_mod = CirculateModuleAuxinSynDegExport(self, init_vals)
+            case _:
+                raise SyntaxError(f"Unknown circ mod '{circ_mod_name}'")
 
-        self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         if self.sim.geometry != "default":
             self.dev_zone = ""
             self.cell_type = ""
             self.growing = False
         else:
-            self.dev_zone = self.calculate_dev_zone(self.get_distance_from_tip())
+            dist = self.get_distance_from_tip()
+            self.dev_zone = self.calculate_dev_zone(dist)
             self.cell_type = self.calculate_cell_type()
             self.growing = cast(bool, init_vals.get("growing"))
+
+        self.pin_loc_ruleset = self.get_sim().get_pin_loc_rules()
+        self.pin_weights: Dict[str, float] = self.calculate_pin_weights()
         self.color: tuple[int, int, int, int] = self.calculate_color()
         self.sim.add_to_cell_list(self)
 
@@ -362,7 +379,13 @@ class Cell(Sprite):
             neighbor_dir = self.get_neighbor_di_neighbor_shares_two_vs_std(neighbor)
         if len(set(self_vs).intersection(set(neighbor_vs))) == 1 and neighbor_dir == "":
             neighbor_dir = self.get_neighbor_dir_neighbor_shares_one_v_std(neighbor)
-        if neighbor_dir not in ["a", "b", "l", "m", "cell no longer root cap cell neighbor"]:
+        if neighbor_dir not in [
+            "a",
+            "b",
+            "l",
+            "m",
+            "cell no longer root cap cell neighbor",
+        ]:
             raise ValueError("Neighbor not recognized")
         return neighbor_dir
 
@@ -758,33 +781,269 @@ class Cell(Sprite):
 
     def calculate_delta(self) -> float:
         """
-        Calculate the growth delta of the cell.
+        Calculate the growth delta of the cell for a single simulation tick.
 
         Returns
         -------
         float
-            The growth delta of the cell.
+            The growth delta (in μm) for this tick.
 
         Note
         ----
-        This method only works for the default geometry.
+        Growth is exponential: dL/dt = r * L, so
+        ΔL ≈ r * L * Δt.
         """
         dist_to_root_tip = self.get_distance_from_tip()
         self.dev_zone = self.calculate_dev_zone(dist_to_root_tip)
-        return self.get_growth_rate()
+
+        # Relative growth rate (1/hour)
+        rate = self.get_growth_rate()
+        if rate == 0.0:
+            return 0.0
+
+        # Current cell height in μm
+        height = self.get_quad_perimeter().get_height()
+
+        # Biological time for one tick (hours)
+        dt_hours = self.get_sim().get_timestep_hours()
+
+        # Exponential growth step: ΔL = r * L * Δt
+        return rate * height * dt_hours
 
     def calculate_pin_weights(self) -> dict:
         """
         Calculates the pin weights of each membrane of the cell.
+        For SIMPLE_INHERITANCE, uses circ_mod's dynamic PIN.
+        For IMPOSED, uses the VdB-style imposed PIN pattern and
+        converts it to fractions that sum to 1.
+        """
+        if self.pin_loc_ruleset == PinLocalizationRulesetEnum.SIMPLE_INHERITANCE:
+            # circ_mod holds the current PIN levels per membrane
+            return self.circ_mod.get_pin_weights()
+
+        elif self.pin_loc_ruleset == PinLocalizationRulesetEnum.IMPOSED:
+            # use imposed spatial pattern (VdB) as "absolute PIN"
+            pins = self.get_imposed_pin_distribution()  # {"a": ..., "b": ..., "l": ..., "m": ...}
+            total = pins["a"] + pins["b"] + pins["l"] + pins["m"]
+            if total == 0:
+                return {"a": 0.0, "b": 0.0, "l": 0.0, "m": 0.0}
+            return {key: val / total for key, val in pins.items()}
+
+        else:
+            raise NotImplementedError("Unknown PIN localization ruleset")
+
+    def get_imposed_pin_distribution(self) -> Dict[str, float]:
+        """
+        Assign PIN weights according to a cell's global location, maintaining the
+        PIN distributions established in the initial conditions.
 
         Returns
         -------
         dict
-            The pin weights for each membrane of the cell.
+            The PIN weights for each membrane of the cell.
             Keys are "a", "b", "l", and "m".
-
+            Returns current pin_weights for roottip cells.
         """
-        return self.circ_mod.get_pin_weights()
+        dev_zone = self.get_dev_zone()
+        cell_type = self.get_cell_type()
+
+        # Root tip cells: use whatever the ODE module's initial PIN distribution is.
+        if dev_zone == "roottip" or cell_type == "roottip":
+            return self.circ_mod.get_pin_weights()
+
+        dist_to_root_tip = self.get_distance_from_tip()
+
+        if dev_zone == "meristematic":
+            pins = self._pin_meristematic(cell_type, dist_to_root_tip)
+        elif dev_zone == "transition":
+            pins = self._pin_transition(cell_type, dist_to_root_tip)
+        elif dev_zone == "elongation":
+            pins = self._pin_elongation(cell_type)
+        elif dev_zone == "differentiation":
+            pins = self._pin_differentiation(cell_type)
+        else:
+            raise SyntaxError("Dev zone error cannot get imposed PIN pattern")
+
+        return pins
+
+    def _meristem_row_index(self, dist_to_root_tip: float) -> int:
+        """
+        Map distance from tip to a discrete 'row' index in the meristematic zone,
+        using 5 μm bands centered at MERISTEM_FIRST_ROW_CENTER_Y.
+        """
+        row = int(round((dist_to_root_tip - MERISTEM_FIRST_ROW_CENTER_Y) / MERISTEM_ROW_STEP))
+        if row < 0:
+            row = 0
+        if row > MERISTEM_MAX_ROW_INDEX:
+            row = MERISTEM_MAX_ROW_INDEX
+        return row
+
+    def _transition_row_index(self, dist_to_root_tip: float) -> int:
+        """
+        Map distance from tip to a discrete 'row' index in the transition zone,
+        using 5 μm bands centered at TRANSITION_FIRST_ROW_CENTER_Y.
+        """
+        row = int(round((dist_to_root_tip - TRANSITION_FIRST_ROW_CENTER_Y) / TRANSITION_ROW_STEP))
+        if row < 0:
+            row = 0
+        if row > TRANSITION_MAX_ROW_INDEX:
+            row = TRANSITION_MAX_ROW_INDEX
+        return row
+
+    def _pin_meristematic(self, cell_type: str, dist_to_root_tip: float) -> Dict[str, float]:
+        """
+        Meristematic zone PIN patterns, banded along y.
+        """
+        row = self._meristem_row_index(dist_to_root_tip)
+
+        if cell_type == "vasc":
+            if row == 0:
+                return {"a": 0.0, "b": 1.0, "l": 0.4, "m": 0.4}
+            # rows 1–16: alternate stripes
+            if row % 2 == 1:
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+            else:
+                return {"a": 0.0, "b": 1.0, "l": 0.025, "m": 0.025}
+
+        elif cell_type == "peri":
+            if row == 0:
+                return {"a": 0.0, "b": 1.0, "l": 0.35, "m": 0.5}
+            if row % 2 == 1:
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+            else:
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
+
+        elif cell_type == "endo":
+            if row == 0:
+                return {"a": 0.0, "b": 1.0, "l": 0.35, "m": 0.5}
+            if row % 2 == 1:
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+            else:
+                return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.35}
+
+        elif cell_type == "cortex":
+            if row == 0:
+                return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+            if row % 2 == 1:
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+            else:
+                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
+
+        elif cell_type == "epidermis":
+            # row 0: low lateral PIN
+            if row == 0:
+                return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
+            # rows 1–9: alternate (high lateral) vs (higher shootward)
+            if 1 <= row <= 9:
+                if row % 2 == 1:
+                    return {"a": 1.0, "b": 0.0, "l": 1.0, "m": 1.0}
+                else:
+                    return {"a": 1.0, "b": 0.0, "l": 0.3, "m": 0.1}
+            # rows 10–16: alternate between low lateral and high lateral
+            if row % 2 == 0:
+                return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
+            else:
+                return {"a": 1.0, "b": 0.0, "l": 1.0, "m": 1.0}
+
+        # unknown types: raise exception
+        raise SyntaxError(
+            "Meristematic cell not within meristamatic PIN bands. Check for growth errros."
+        )
+
+    def _pin_transition(self, cell_type: str, dist_to_root_tip: float) -> Dict[str, float]:
+        """
+        Transition zone PIN patterns, banded along y.
+        """
+        row = self._transition_row_index(dist_to_root_tip)
+
+        if cell_type == "vasc":
+            # rows 0–22: alternate weak vs stronger shootward
+            if row <= 22:
+                if row % 2 == 0:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+                else:
+                    return {"a": 0.0, "b": 1.0, "l": 0.025, "m": 0.025}
+            # upper transition: match elongation/diff vasc profile
+            return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
+
+        elif cell_type == "peri":
+            if row <= 22:
+                if row % 2 == 0:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+                else:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+
+        elif cell_type == "endo":
+            # rows 0–14: alternate (0,0) vs (0.1,0.35)
+            if row <= 14:
+                if row % 2 == 0:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+                else:
+                    return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.35}
+            # rows 15–22: alternate (0,0) vs (0,0.35)
+            if row <= 22:
+                if row % 2 == 0:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+                else:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
+            # upper transition: fixed 0.35 on m
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
+
+        elif cell_type == "cortex":
+            if row <= 22:
+                if row % 2 == 0:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
+                else:
+                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
+            # upper transition cortex matches elongation cortex
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
+
+        elif cell_type == "epidermis":
+            if row <= 22:
+                if row % 2 == 0:
+                    return {"a": 1.0, "b": 0.0, "l": 1.0, "m": 1.0}
+                else:
+                    return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
+            # upper transition epidermis matches elongation epidermis
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
+
+        # unknown types: raise exception
+        raise SyntaxError(
+            "Transition cell not within transition PIN bands. Check for growth errros."
+        )
+
+    def _pin_elongation(self, cell_type: str) -> Dict[str, float]:
+        """
+        Elongation zone PIN patterns, constant within each cell type.
+        """
+        if cell_type == "vasc":
+            return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
+        if cell_type == "peri":
+            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+        if cell_type == "endo":
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
+        if cell_type == "cortex":
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
+        if cell_type == "epidermis":
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
+        raise SyntaxError("Vascular cell type unrecognized.")
+
+    def _pin_differentiation(self, cell_type: str) -> Dict[str, float]:
+        """
+        Differentiation zone PIN patterns, constant within each cell type.
+        """
+        if cell_type == "vasc":
+            return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
+        if cell_type == "peri":
+            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+        if cell_type == "endo":
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
+        if cell_type == "cortex":
+            return {"a": 0.35, "b": 0.0, "l": 0.0, "m": 0.1}
+        if cell_type == "epidermis":
+            return {"a": 0.35, "b": 0.0, "l": 0.0, "m": 0.1}
+        raise SyntaxError("Differentiation cell type unrecognized.")
 
     def get_pin_weights(self) -> dict:
         """
@@ -799,12 +1058,20 @@ class Cell(Sprite):
         return self.pin_weights
 
     def update(self) -> None:
-        """
-        Updates the cell by growing, calculating pin weights, and updating the circ module.
-        """
         if self.growing:
             self.grow()
-        self.pin_weights = self.calculate_pin_weights()
+
+        self.dev_zone = self.calculate_dev_zone(self.get_distance_from_tip())
+
+        rules = self.get_sim().get_pin_loc_rules()
+
+        # Recompute pin_weights every tick so imposed patterns can change with zone / position
+        if rules in (
+            PinLocalizationRulesetEnum.SIMPLE_INHERITANCE,
+            PinLocalizationRulesetEnum.IMPOSED,
+        ):
+            self.pin_weights = self.calculate_pin_weights()
+
         self.circ_mod.update()
 
     def get_neighbor_di_neighbor_shares_two_vs_std(self, neighbor: "Cell") -> str:

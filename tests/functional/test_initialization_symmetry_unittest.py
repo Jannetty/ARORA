@@ -5,12 +5,16 @@ if platform.system() == "Linux":
     os.environ["ARCADE_HEADLESS"] = "True"
 import unittest
 from src.sim.simulation.sim import GrowingSim
+from src.arora_enums import PinLocalizationRulesetEnum, CircModEnum
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 1000
 SCREEN_TITLE = "Starting Template"
+PIN_LOC_RULES = PinLocalizationRulesetEnum.SIMPLE_INHERITANCE
+CIRC_MOD = CircModEnum.UNIVERSAL_SYN_DEG
 
 
+# TODO: Add integration tests with different PIN_LOC_RULES and CIRC_MOD values
 class TestInitializationSymmetry(unittest.TestCase):
     """
     Tests the symmetry of the default simulation initialization.
@@ -28,6 +32,8 @@ class TestInitializationSymmetry(unittest.TestCase):
             SCREEN_TITLE,
             timestep,
             vis,
+            PIN_LOC_RULES,
+            CIRC_MOD,
             cell_val_file,
             v_file,
             gparam_series,
@@ -938,6 +944,8 @@ class TestInitializationSymmetry(unittest.TestCase):
             SCREEN_TITLE,
             timestep,
             vis,
+            PIN_LOC_RULES,
+            CIRC_MOD,
             cell_val_file,
             v_file,
             gparam_series,
