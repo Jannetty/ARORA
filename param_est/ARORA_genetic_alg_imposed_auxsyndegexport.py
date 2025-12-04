@@ -117,7 +117,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
                     print(f"Warning: could not delete {path}: {e}")
 
     def _run_ARORA(self, params, chromosome):
-        timestep = 1
+        timestep = .1 # 6 minutes, this is less frequent than VDB outputs.
         vis = False
         cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
@@ -137,6 +137,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             output_file=f"param_est/ARORA_output_{chromosome['sol_idx']}",
             circ_mod=CircModEnum.AUX_SYN_DEG_EXP,
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
+            output_frequency=1 # outputting every 6 minutes
         )
 
         try:
@@ -238,7 +239,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         k5_range = 1
 
         # k6: k_pin, PIN-mediated export factor [1/h].
-        k_pin_range = np.geomspace(0.05, 1.0, 60)
+        k_pin_range = np.geomspace(0.05, 0.5, 40)
 
         # tau: time course of ARR's self- repression
         tau_range = 1

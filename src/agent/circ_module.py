@@ -504,12 +504,12 @@ class CirculateModule(ABC):
         # Update auxin levels in neighbor cells
         self.update_neighbor_auxin(neighbors_auxin_exchange)
 
-        delta_from_syn_deg = aux_new - self.auxin
-        delta_from_neighbors = delta_from_neighbors = sum(sum(d.values()) for d in neighbors_auxin_exchange)
-        print(self.cell.c_id,
-            "aux:", self.auxin,
-            "Δ_syn_deg:", delta_from_syn_deg,
-            "Δ_neighbors:", delta_from_neighbors)
+        # delta_from_syn_deg = aux_new - self.auxin
+        # delta_from_neighbors = delta_from_neighbors = sum(sum(d.values()) for d in neighbors_auxin_exchange)
+        # print(self.cell.c_id,
+        #     "aux:", self.auxin,
+        #     "Δ_syn_deg:", delta_from_syn_deg,
+        #     "Δ_neighbors:", delta_from_neighbors)
 
 
     def get_directional_pattern(self, direction: str) -> float:

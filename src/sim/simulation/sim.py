@@ -350,10 +350,9 @@ class GrowingSim(Window):
         if self.tick % self.output_frequency == 0:
             self.output.output_cells()
         self.tick += 1
-        # max_tick = 24 * 8
+        max_tick = 26 / self.get_timestep_hours() # number of timesteps to reach 26 hours, adjust as you see fit
         try:
-            if self.tick < 28:
-                self.output.output_cells()
+            if self.tick < max_tick:
                 print(f"tick: {self.tick}")
                 if self.vis:
                     self.update_viewport_position()
