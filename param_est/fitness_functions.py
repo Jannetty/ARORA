@@ -280,10 +280,10 @@ def parse_and_compute_centroid(location):
         centroid = [sum(x_coords) / len(x_coords), sum(y_coords) / len(y_coords)]
         return centroid
 
-def arora_vdb_ssd():
+def arora_vdb_ssd(chromosome_idx: int):
     total_ssd = 0.0
-    reference_filenames = get_filenames("param_est/vdb_data/references/Caux1Array_", 0, 1000, 26000) # not quite sure how the matching of temporal scales is going
-    output_filenames = [f"output/ARORAtoVDBoutput{i}.csv" for i in range(27)]
+    reference_filenames = get_filenames("param_est/vdb_data/references/Caux1Array_", 0, 1800, 93600) # not quite sure how the matching of temporal scales is going
+    output_filenames = [f"param_est/ARORA_auxin_output_chrom_{chromosome_idx}_tick_{tick*5}.csv" for tick in range(52)]
     for output_file, reference_file in zip(output_filenames, reference_filenames):
         total_ssd += np.sum((file_extract_values(output_file) - file_extract_values(reference_file))**2)
     return -total_ssd

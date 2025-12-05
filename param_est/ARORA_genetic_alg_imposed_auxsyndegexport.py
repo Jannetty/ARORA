@@ -178,7 +178,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         - Loads all cell records for a single tick.
         - Computes the minimum y across all polygon corners (ymin).
         - If ymin < 0, shifts all y-coordinates up by |ymin|.
-        - Rasterizes each cell polygon into a (1207, 142) array (aligning with dimensions of VDB sim space),
+        - Rasterizes each cell polygon into a (1208, 141) array (aligning with dimensions of VDB sim space),
             filling it with the cell's auxin value.
         - Saves the resulting 2D auxin field as a CSV file named with the tick.
         """
@@ -186,7 +186,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             cells = json.load(file)  # list of cell dicts for a single tick
 
         # Initialize auxin image
-        arr = np.zeros((1207, 142), dtype=float)
+        arr = np.zeros((1208, 141), dtype=float)
 
         # --- Compute ymin across all cells ---
         ymin = 0
@@ -200,6 +200,8 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         for cell in cells:
             auxin = cell["auxin"]
             location = np.array(cell["location"], dtype=float)  # shape (4, 2), columns [x, y]
+            for coord in location: 
+                coord[0] -= 1 # to match where VDB data starts and ends
 
             if ymin < 0:
                 # Shift y-coordinates up so that they are non-negative
@@ -215,7 +217,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
 
     def _calculate_fitness(self, simulation, chromosome):
-        fitness = 100 # :) dummy fitness function lol
+        fitness = arora_vdb_ssd(chromosome['sol_idx'])
         return fitness
 
     def make_paramspace_aux_syn_deg_trans(self):
