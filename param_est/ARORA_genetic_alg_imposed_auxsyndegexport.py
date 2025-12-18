@@ -221,11 +221,6 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
     def _calculate_fitness(self, simulation, chromosome):
         ref0 = "param_est/vdb_data/references/Caux1Array_00000000.csv"
-        if not os.path.exists(ref0):
-            raise FileNotFoundError(
-                f"Missing VDB reference file: {ref0}\n"
-                "Either the VDB dataset isn't present, path is wrong, or you're running from a different working directory."
-            )
         fitness = arora_vdb_ssd(chromosome['sol_idx'])
         return fitness
 
@@ -437,7 +432,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
         plt.figure()
         plt.plot(times_hrs, aux_vals)
-        plt.xlabel("Time (hours)")
+        plt.xlabel("Time (hours?)")
         plt.ylabel(f"Auxin at (row={row}, col={col})")
         plt.title("Auxin time course at a fixed location (best solution)")
         plt.tight_layout()
