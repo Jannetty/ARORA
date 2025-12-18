@@ -66,7 +66,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         self.filename = filename
         self.population = []
         self.param_names = AUX_SYN_DEG_EXPORT_PARAM_NAMES
-        self.cleanup = False
+        self.cleanup = True
 
     def fitness_function(self, ga_instance, solution, solution_idx):
         print(f"-----------------------{solution_idx}---------------------------")
