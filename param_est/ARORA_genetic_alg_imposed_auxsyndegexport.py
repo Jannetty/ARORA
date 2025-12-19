@@ -4,6 +4,7 @@ import platform
 import csv
 import glob
 from skimage.draw import polygon
+import matplotlib.pyplot as plt
 
 from src.arora_enums import CircModEnum, PinLocalizationRulesetEnum
 
@@ -65,12 +66,14 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         self.filename = filename
         self.population = []
         self.param_names = AUX_SYN_DEG_EXPORT_PARAM_NAMES
+        self.cleanup = True
 
     def fitness_function(self, ga_instance, solution, solution_idx):
         print(f"-----------------------{solution_idx}---------------------------")
         print(f"Chromosome {solution_idx} : {solution}")
         chromosome = {}
         chromosome["sol_idx"] = solution_idx
+        chromosome["generation"] = ga_instance.generations_completed # debugging
         params = pd.Series(solution, index=self.param_names)
         for param in self.param_names:
             chromosome[param] = params[param]
@@ -104,6 +107,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             f"param_est/ARORA_output_{chrom_idx}.json",
             f"param_est/ARORA_output_{chrom_idx}_tick_*.json",
             f"param_est/ARORA_auxin_output_chrom_{chrom_idx}_tick_*.csv",
+            f"param_est/ARORA_best_solution_tick_*.json" # added this to clean up the best_solution files too
         ]
 
         for pattern in patterns:
@@ -117,7 +121,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
                     print(f"Warning: could not delete {path}: {e}")
 
     def _run_ARORA(self, params, chromosome):
-        timestep = .1 # 6 minutes, this is less frequent than VDB outputs.
+        timestep = 1/9 # 6.6 minutes, this is less frequent than VDB outputs.
         vis = False
         cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
@@ -137,7 +141,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             output_file=f"param_est/ARORA_output_{chromosome['sol_idx']}",
             circ_mod=CircModEnum.AUX_SYN_DEG_EXP,
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
-            output_frequency=1 # outputting every 6 minutes
+            output_frequency=1 # outputting every 6.6 minutes
         )
 
         try:
@@ -156,7 +160,8 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             print("Fitness set to -infinity")
             fitness = -np.inf
         finally:
-            self._cleanup_sim_files(chromosome["sol_idx"])
+            if self.cleanup:
+                self._cleanup_sim_files(chromosome["sol_idx"])
         return fitness
 
     def create_arora_csv(self, path: str, chromosome_idx: int,tick: int) -> None:
@@ -301,8 +306,47 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         print("Generation : ", ga_instance.generations_completed)
         print("Fitness of the best solution :", ga_instance.best_solution()[1])
 
+    def _auxin_at_rc_from_tick_json(self, path: str, r: int, c: int) -> float:
+        """
+        Returns the auxin value at array location (r, c) for a single tick JSON.
+
+        - Uses the same rasterization conventions as create_arora_csv():
+          arr shape = (1208, 141), polygon uses (row=y, col=x), and x is shifted by -1.
+        - If the point falls outside all polygons, returns 0.0 (background).
+        """
+        with open(path) as file:
+            cells = json.load(file)
+
+        arr = np.zeros((1208, 141), dtype=float)
+
+        ymin = 0
+        for cell in cells:
+            for corner in cell["location"]:
+                ymin = min(ymin, corner[1])
+
+        for cell in cells:
+            auxin = float(cell["auxin"])
+            location = np.array(cell["location"], dtype=float)  # (4,2) [x,y]
+
+            # match VDB alignment (same as create_arora_csv)
+            location[:, 0] -= 1
+
+            if ymin < 0:
+                location[:, 1] += abs(ymin)
+
+            rr, cc = polygon(location[:, 1], location[:, 0], arr.shape)
+            arr[rr, cc] = auxin
+
+        # guard against out-of-bounds
+        if r < 0 or r >= arr.shape[0] or c < 0 or c >= arr.shape[1]:
+            raise ValueError(f"(r,c)=({r},{c}) out of bounds for auxin array shape {arr.shape}")
+
+        return float(arr[r, c])
+
     def analyze_results(self):
+        print("Generating plot of best fitness per generation.")
         solution, solution_fitness, solution_idx = self.ga_instance.best_solution()
+
         print("Parameters of the best solution : {solution}".format(solution=solution))
         print(
             "Fitness value of the best solution = {solution_fitness}".format(
@@ -314,3 +358,83 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
                 solution_idx=solution_idx
             )
         )
+
+        # ---------------------------
+        # Plot 1: Best fitness per generation
+        # ---------------------------
+        # pygad keeps this as a list of best fitness values (one per generation)
+        best_fitness = self.ga_instance.best_solutions_fitness
+
+        if best_fitness is None or len(best_fitness) == 0:
+            # fallback: pygad also exposes plot_fitness(), but we keep this robust
+            print("Warning: ga_instance.best_solutions_fitness not found or empty; trying ga_instance.plot_fitness().")
+            try:
+                self.ga_instance.plot_fitness()
+                plt.title("GA fitness over generations")
+                plt.show()
+            except Exception as e:
+                print(f"Could not plot fitness automatically: {e}")
+        else:
+            gens = np.arange(1, len(best_fitness) + 1)
+            plt.figure()
+            plt.plot(gens, best_fitness)
+            plt.xlabel("Generation")
+            plt.ylabel("Best fitness")
+            plt.title("Best fitness per generation")
+            plt.tight_layout()
+            plt.show()
+
+        # ---------------------------
+        # Plot 2: Auxin at location (336, 56) over time for BEST params
+        # ---------------------------
+        print("Generating plot of auxin concentration at location (336, 56)")
+
+        row, col = 336, 56
+
+        # Re-run ARORA using the best set of parameters (and keep outputs so we can read per-tick JSONs)
+        timestep = 1 / 9  # hours
+        vis = False
+        cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
+        geometry = "default"
+
+        best_params = pd.Series(solution, index=self.param_names)
+
+        out_base = "param_est/ARORA_best_solution"
+
+        simulation = GrowingSim(
+            width=SCREEN_WIDTH,
+            height=SCREEN_HEIGHT,
+            title=SCREEN_TITLE,
+            timestep=timestep,
+            vis=vis,
+            cell_val_file=cell_val_file,
+            v_file=v_file,
+            gparam_series=best_params,
+            geometry=geometry,
+            output_file=out_base,
+            circ_mod=CircModEnum.AUX_SYN_DEG_EXP,
+            pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
+            output_frequency=1,
+        )
+
+        simulation.run_sim()
+
+        # Extract auxin at (r_query, c_query) for every tick
+        n_ticks = simulation.get_tick()
+        aux_vals = []
+        times_hrs = []
+
+        for tick in range(n_ticks):
+            tick_json = f"{out_base}_tick_{tick}.json"
+            a = self._auxin_at_rc_from_tick_json(tick_json, r=row, c=col)
+            aux_vals.append(a)
+            times_hrs.append(tick * timestep)
+
+        plt.figure()
+        plt.plot(times_hrs, aux_vals)
+        plt.xlabel("Time (hours?)")
+        plt.ylabel(f"Auxin at (row={row}, col={col})")
+        plt.title("Auxin time course at a fixed location (best solution)")
+        plt.tight_layout()
+        plt.show()
