@@ -73,6 +73,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         print(f"Chromosome {solution_idx} : {solution}")
         chromosome = {}
         chromosome["sol_idx"] = solution_idx
+        chromosome["generation"] = ga_instance.generations_completed # debugging
         params = pd.Series(solution, index=self.param_names)
         for param in self.param_names:
             chromosome[param] = params[param]
@@ -106,6 +107,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             f"param_est/ARORA_output_{chrom_idx}.json",
             f"param_est/ARORA_output_{chrom_idx}_tick_*.json",
             f"param_est/ARORA_auxin_output_chrom_{chrom_idx}_tick_*.csv",
+            f"param_est/ARORA_best_solution_tick_*.json" # added this to clean up the best_solution files too
         ]
 
         for pattern in patterns:
@@ -220,7 +222,6 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
 
     def _calculate_fitness(self, simulation, chromosome):
-        ref0 = "param_est/vdb_data/references/Caux1Array_00000000.csv"
         fitness = arora_vdb_ssd(chromosome['sol_idx'])
         return fitness
 
@@ -362,7 +363,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         # Plot 1: Best fitness per generation
         # ---------------------------
         # pygad keeps this as a list of best fitness values (one per generation)
-        best_fitness = getattr(self.ga_instance, "best_solutions_fitness", None)
+        best_fitness = self.ga_instance.best_solutions_fitness
 
         if best_fitness is None or len(best_fitness) == 0:
             # fallback: pygad also exposes plot_fitness(), but we keep this robust
