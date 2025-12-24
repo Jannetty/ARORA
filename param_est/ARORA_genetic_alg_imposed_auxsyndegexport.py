@@ -270,6 +270,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         num_parents_mating = 25
         sol_per_pop = 50
         fitness_function = "descriptive string" # also dummy :)
+        early_stop_GA = "stops when there is a less than 10%% difference in fitness over the last 10 generations"
         mutation_percent_genes = 5 # this is really low
         save_best_solutions = False
         parent_selection_type = "sss"
@@ -283,6 +284,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             "mutation_percent_genes": mutation_percent_genes,
             "save_best_solutions": save_best_solutions,
             "parent_selection_type": parent_selection_type,
+            "on_generation": self.early_stop_GA
         }
         ga_parameters_for_saving = {
             "num_generations": num_generations,
@@ -296,11 +298,25 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             "parent_selection_type": parent_selection_type,
             "initialization_file": "aux_syndegonly_init_vals.json",
             "hours_per_simulation": 27,
+            "on_generation": early_stop_GA
         }
         self.population.append(ga_parameters_for_saving)
         self.ga_instance = pygad.GA(**ga_parameters)
         print("Running GA!")
         self.ga_instance.run()
+
+    def early_stop_GA(self, ga_instance):
+        if (self.ga_instance.generations_completed > 10):
+            most_recent_ten = self.ga_instance.best_solutions_fitness[-10:]
+            max_fitness = max(most_recent_ten)
+            min_fitness = min(most_recent_ten)
+            average = (max_fitness + min_fitness)/2
+            percent_diff = abs((max_fitness - min_fitness) / average) * 100
+
+            if (percent_diff < 10):
+                print("Plateau detected. GA stopped early!")
+                return "stop" # this is a built in PyGAD feature, pretty cool!
+
 
     def on_gen(self, ga_instance):
         print("Generation : ", ga_instance.generations_completed)

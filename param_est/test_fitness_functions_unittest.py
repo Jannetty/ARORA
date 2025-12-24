@@ -19,6 +19,7 @@ from param_est.fitness_functions import (
     preprocess_ARORA_sim_output,
     get_min_y,
     parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point,
+    file_extract_values
 )
 
 
@@ -390,3 +391,22 @@ class TestFitnessFunctions(unittest.TestCase):
         mock_read_csv.assert_called()
         mock_preprocess_ARORA_sim_output.assert_called()
         mock_find_closest_cell.assert_called()
+
+    def test_file_extract_values_empty_file_empty_array(self):
+        # empty input file
+        empty_output = file_extract_values("param_est/test_data/empty.csv")
+        empty = np.array([])
+        np.testing.assert_array_equal(empty_output, empty)
+
+    def test_file_extract_values_square_file_square_array(self):
+        # square array, decimal value, no spaces
+        output1 = file_extract_values("param_est/test_data/testdata1.csv")
+        expected1 = np.array([[0., 1., 2.], [3., 4.1231232, 5.], [6., 7., 8.]])
+        np.testing.assert_array_equal(output1, expected1)
+
+    def test_file_extract_values_asymmetrical_file_asymmetrical_array(self):
+        # not square array, spaces
+        output2 = file_extract_values("param_est/test_data/testdata2.csv")
+        expected2 = np.array([[1., 1., 1., 1.], [2., 2., 2., 2.], [1., 1., 1., 1.], [2., 2., 2., 2.],
+                            [0., 0., 0., 0.], [1., 1., 1., 1.], [2., 2., 2., 2.]])
+        np.testing.assert_array_equal(output2, expected2)
