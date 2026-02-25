@@ -272,7 +272,5 @@ class VertexMover:
         """
         for cell in cells:
             if cell.get_dev_zone() == "meristematic":
-                if cell.get_quad_perimeter().get_area() >= (
-                    2 * cell.get_quad_perimeter().get_init_area()
-                ):
+                if cell.get_quad_perimeter().get_height() >= cell.division_height:
                     self.sim.get_divider().add_cell(cell)

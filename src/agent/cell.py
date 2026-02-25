@@ -157,6 +157,10 @@ class Cell(Sprite):
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
 
+        self.birth_height = self.quad_perimeter.get_height()
+        self.birth_height = self.birth_height / 1.5
+        self.division_height = 2.0 * self.birth_height
+
         # Type hint circ_mod to accept any class that implements the CirculateModule protocol
         self.circ_mod: CirculateModule
         circ_mod_name = simulation.get_circ_mod()

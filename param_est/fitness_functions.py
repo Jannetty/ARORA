@@ -223,10 +223,9 @@ def preprocess_ARORA_sim_output(sim_output_df):
     sim_output_df['adj_centroid'] = sim_output_df.apply(
         lambda row: [row['centroid_x'], row['centroid_y'] - (row['min_y'] + VDB_Y_min)], axis=1
     )
-    
     return sim_output_df
 
-    
+
 def find_closest_ARORA_pericycle_cell(centroid_y_locations, arora_df_ONLY_PERI):
     closest_cells = []
     # Make a copy of the DataFrame to avoid the SettingWithCopyWarning
@@ -270,7 +269,7 @@ def find_ARORA_cell_closest_to_centroid(arora_centroid_location, arora_df):
 
 def get_min_y(locations):
     return min(y for loc in locations for _, y in loc)
-    
+
 def parse_and_compute_centroid(location):
         # Convert points into a NumPy array for easier manipulation
         points_array = np.array(location)

@@ -5,6 +5,8 @@ import csv
 import glob
 from skimage.draw import polygon
 import matplotlib.pyplot as plt
+from pathlib import Path
+from datetime import datetime
 
 from src.arora_enums import CircModEnum, PinLocalizationRulesetEnum
 
@@ -61,12 +63,47 @@ def make_dumpable(obj): # lol we have to change the name of this but right now t
     raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 class ARORAGeneticAlgImposedAuxinSynDegExport:
-    def __init__(self, filename: str):
+    def __init__(
+        self,
+        filename: str,
+        out_dir: str = "param_est/ga_runs",
+        run_name: str | None = None,
+        plots_dirname: str = "plots",
+    ):
         self.ga_instance = None
-        self.filename = filename
+        self.filename = filename  # existing json population dump
         self.population = []
         self.param_names = AUX_SYN_DEG_EXPORT_PARAM_NAMES
         self.cleanup = True
+
+        out_dir = Path(out_dir).expanduser().resolve()
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        if run_name is None:
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            run_name = f"run_{ts}"
+        self.run_name = run_name
+
+        self.run_dir = out_dir / run_name
+        self.run_dir.mkdir(parents=True, exist_ok=True)
+
+        self.plots_dir = self.run_dir / plots_dirname
+        self.plots_dir.mkdir(parents=True, exist_ok=True)
+
+        # one-line-per-eval log (CSV)
+        self.runs_csv_path = self.run_dir / "runs.csv"
+
+        # text summary for best params + ranges
+        self.best_txt_path = self.run_dir / "best_summary.txt"
+
+        # store the gene space so we can report it later
+        self.genespace = None
+
+        # write CSV header once
+        if not self.runs_csv_path.exists():
+            with open(self.runs_csv_path, "w", newline="") as f:
+                w = csv.writer(f)
+                w.writerow(["timestamp", "generation", "sol_idx", *self.param_names, "fitness", "finished", "tick", "exception"])
 
     def fitness_function(self, ga_instance, solution, solution_idx):
         print(f"-----------------------{solution_idx}---------------------------")
@@ -85,10 +122,30 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             fitness = self._run_ARORA(params, chromosome)
         chromosome["fitness"] = fitness
         self.population.append(chromosome)
+        self._append_run_row(chromosome)
         print(f"Chromosome entry: {chromosome}")
         with open(self.filename, "w") as f:
             json.dump(self.population, f, indent=4, default=make_dumpable)
         return fitness
+
+    def _append_run_row(self, chromosome: dict) -> None:
+        """Append one row to runs.csv for every fitness eval."""
+        row = [
+            datetime.now().isoformat(timespec="seconds"),
+            chromosome.get("generation"),
+            chromosome.get("sol_idx"),
+        ]
+        for p in self.param_names:
+            row.append(chromosome.get(p))
+        row.extend([
+            chromosome.get("fitness"),
+            chromosome.get("finished"),
+            chromosome.get("tick"),
+            chromosome.get("exception"),
+        ])
+
+        with open(self.runs_csv_path, "a", newline="") as f:
+            csv.writer(f).writerow(row)
 
     def _check_constraints(self, params, chromosome):
         # Check constraints here
@@ -265,6 +322,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
     def run_genetic_alg(self):
         genespace = self.make_paramspace_aux_syn_deg_trans()
+        self.genespace = genespace
         # make GA hyperparameters
         num_generations = 20
         num_parents_mating = 25
@@ -343,9 +401,51 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
         return float(arr[r, c])
 
+    def _format_gene_space(self) -> str:
+        """Strict, human-readable summary of gene_space."""
+        if self.genespace is None:
+            return "gene_space: <not set>\n"
+
+        lines = []
+        for name, space in zip(self.param_names, self.genespace):
+            # constants (0, 1, etc.)
+            if isinstance(space, (int, float, np.integer, np.floating)):
+                lines.append(f"{name}: constant = {float(space)}")
+                continue
+
+            # list/ndarray of allowed values
+            if isinstance(space, (list, tuple, np.ndarray)):
+                arr = np.array(space, dtype=float)
+                lines.append(
+                    f"{name}: n={len(arr)} min={arr.min():.6g} max={arr.max():.6g} first={arr[0]:.6g} last={arr[-1]:.6g}"
+                )
+                continue
+
+            # fallback
+            lines.append(f"{name}: {repr(space)}")
+
+        return "gene_space:\n  " + "\n  ".join(lines) + "\n"
+
+    def _write_best_summary(self, solution: np.ndarray, solution_fitness: float, solution_idx: int) -> None:
+        p = self.best_txt_path
+        with open(p, "w") as f:
+            f.write(f"run_dir: {self.run_dir}\n")
+            f.write(f"best_solution_idx: {solution_idx}\n")
+            f.write(f"best_fitness: {solution_fitness}\n\n")
+
+            f.write("best_parameters:\n")
+            for name, val in zip(self.param_names, solution):
+                f.write(f"  {name}: {float(val)}\n")
+            f.write("\n")
+            f.write(self._format_gene_space())
+
+        print(f"Saved: {p}")
+
     def analyze_results(self):
         print("Generating plot of best fitness per generation.")
         solution, solution_fitness, solution_idx = self.ga_instance.best_solution()
+
+        self._write_best_summary(solution, solution_fitness, solution_idx)
 
         print("Parameters of the best solution : {solution}".format(solution=solution))
         print(
@@ -364,16 +464,10 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         # ---------------------------
         # pygad keeps this as a list of best fitness values (one per generation)
         best_fitness = self.ga_instance.best_solutions_fitness
+        plot1_path = self.plots_dir / f"best_fitness_per_generation_{self.run_name}.png"
 
         if best_fitness is None or len(best_fitness) == 0:
-            # fallback: pygad also exposes plot_fitness(), but we keep this robust
-            print("Warning: ga_instance.best_solutions_fitness not found or empty; trying ga_instance.plot_fitness().")
-            try:
-                self.ga_instance.plot_fitness()
-                plt.title("GA fitness over generations")
-                plt.show()
-            except Exception as e:
-                print(f"Could not plot fitness automatically: {e}")
+            print("Warning: best_solutions_fitness empty; skipping plot.")
         else:
             gens = np.arange(1, len(best_fitness) + 1)
             plt.figure()
@@ -382,7 +476,9 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             plt.ylabel("Best fitness")
             plt.title("Best fitness per generation")
             plt.tight_layout()
-            plt.show()
+            plt.savefig(plot1_path, dpi=200)
+            plt.close()
+            print(f"Saved: {plot1_path}")
 
         # ---------------------------
         # Plot 2: Auxin at location (336, 56) over time for BEST params
@@ -431,10 +527,14 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             aux_vals.append(a)
             times_hrs.append(tick * timestep)
 
+        plot2_path = self.plots_dir / f"auxin_timecourse_row{row}_col{col}_{self.run_name}.png"
+
         plt.figure()
         plt.plot(times_hrs, aux_vals)
-        plt.xlabel("Time (hours?)")
+        plt.xlabel("Time (hours)")
         plt.ylabel(f"Auxin at (row={row}, col={col})")
         plt.title("Auxin time course at a fixed location (best solution)")
         plt.tight_layout()
-        plt.show()
+        plt.savefig(plot2_path, dpi=200)
+        plt.close()
+        print(f"Saved: {plot2_path}")
