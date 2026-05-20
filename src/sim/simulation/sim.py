@@ -126,7 +126,8 @@ class GrowingSim(Window):
         gparam_series: pandas.core.series.Series | str = "",
         geometry: str = "",
         output_file: str = "output",
-        output_frequency: int = 1
+        output_frequency: int = 1,
+        max_hours: float = 26.0,
     ):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
@@ -155,6 +156,7 @@ class GrowingSim(Window):
         self.output = Output(self, f"{output_file}.csv", f"{output_file}.json")
         self.exit_flag = False
         self.output_frequency = output_frequency
+        self.max_hours = max_hours
 
     def get_root_midpointx(self) -> float:
         """
@@ -260,7 +262,18 @@ class GrowingSim(Window):
         This method is called to (re)start the simulation, setting up initial cell configurations,
         and preparing the simulation environment.
         """
-        if len(self.cell_list) != 0:
+        # Guard against the *doubling* failure mode: calling setup()
+        # a second time on a sim that was constructed with
+        # input_from_file=True would re-read the init JSON and load
+        # every cell a second time. That guard does *not* apply when
+        # cells were added programmatically (e.g., from unit tests
+        # that build a small toy geometry by hand) — re-running
+        # setup() on those is a no-op for cell_list and just re-inits
+        # tick, helpers, and root_tip_y / root_midpointx. (Prior to
+        # 2026-05-20 this guard raised for *any* non-empty cell_list,
+        # which broke a number of unit tests; scoped to the actual
+        # doubling case now.)
+        if self.input_from_file and len(self.cell_list) != 0:
             raise Exception("Setup is being called twice. This can lead to doubling instances of cells if using default setup files. Reminder setup is called during simulation initialization. Please remove second setup call.")
         # find midpoint x of root basd on vertices that exist
         self.tick = 0
@@ -350,7 +363,7 @@ class GrowingSim(Window):
         if self.tick % self.output_frequency == 0:
             self.output.output_cells()
         self.tick += 1
-        max_tick = 26 / self.get_timestep_hours() # number of timesteps to reach 26 hours, adjust as you see fit
+        max_tick = self.max_hours / self.get_timestep_hours()
         try:
             if self.tick < max_tick:
                 print(f"tick: {self.tick}")
