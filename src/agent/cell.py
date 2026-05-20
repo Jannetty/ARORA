@@ -6,6 +6,9 @@ from src.agent.circ_module_universal_syndeg import CirculateModuleUniversalSynDe
 from src.agent.circ_module_indep_syn_deg import CirculateModuleIndSynDeg
 from src.agent.circ_module_aux_syn_deg_only import CirculateModuleAuxinSynDegOnly
 from src.agent.circ_module_aux_syn_deg_export import CirculateModuleAuxinSynDegExport
+from src.agent.circ_module_imposed_pin_arr_activity import (
+    CirculateModuleImposedPinArrActivity,
+)
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 from src.agent.circ_module import CirculateModule
@@ -173,6 +176,8 @@ class Cell(Sprite):
                 self.circ_mod = CirculateModuleAuxinSynDegOnly(self, init_vals)
             case CircModEnum.AUX_SYN_DEG_EXP:
                 self.circ_mod = CirculateModuleAuxinSynDegExport(self, init_vals)
+            case CircModEnum.IMPOSED_PIN_ARR_ACTIVITY:
+                self.circ_mod = CirculateModuleImposedPinArrActivity(self, init_vals)
             case _:
                 raise SyntaxError(f"Unknown circ mod '{circ_mod_name}'")
 
@@ -727,6 +732,7 @@ class Cell(Sprite):
         - 'differentiation': Otherwise.
         """
         root_cap_cells = [
+            # Original 14 LRC cells (left, then right):
             60,
             90,
             120,
@@ -741,6 +747,37 @@ class Cell(Sprite):
             181,
             225,
             311,
+            # Extended LRC chain (Plan 2, option γ — 14 cells per side):
+            # left side, bottom-to-top
+            830,
+            832,
+            834,
+            836,
+            838,
+            840,
+            842,
+            844,
+            846,
+            848,
+            850,
+            852,
+            854,
+            856,
+            # right side, bottom-to-top
+            831,
+            833,
+            835,
+            837,
+            839,
+            841,
+            843,
+            845,
+            847,
+            849,
+            851,
+            853,
+            855,
+            857,
         ]
         if self.c_id in root_cap_cells:
             return "roottip"

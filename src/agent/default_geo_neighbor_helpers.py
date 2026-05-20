@@ -12,6 +12,7 @@ class NeighborHelpers:
     """
 
     ROOTCAP_CELL_IDs = [
+        # Original 14 LRC cells (left, then right):
         60,
         90,
         120,
@@ -26,6 +27,37 @@ class NeighborHelpers:
         181,
         225,
         311,
+        # Extended LRC chain (Plan 2, option γ — 14 cells per side):
+        # left side, bottom-to-top
+        830,
+        832,
+        834,
+        836,
+        838,
+        840,
+        842,
+        844,
+        846,
+        848,
+        850,
+        852,
+        854,
+        856,
+        # right side, bottom-to-top
+        831,
+        833,
+        835,
+        837,
+        839,
+        841,
+        843,
+        845,
+        847,
+        849,
+        851,
+        853,
+        855,
+        857,
     ]
 
     @staticmethod
