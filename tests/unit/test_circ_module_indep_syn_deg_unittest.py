@@ -187,18 +187,45 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         auxlax = 0.3
         pindi = 0.4
         neighbors = [self.neighbor_mock]
+        # Two production changes since this test was written:
+        #
+        # (1) In 48d42dc the per-membrane flux became
+        #         auxin_{influx,efflux} = rate * dt_hours
+        #     so the call signature gained a dt_hours arg and
+        #     the expected values need an explicit dt_hours factor.
+        #     dt_hours=1.0 here is just so the numeric expectations
+        #     stay simple (factor of 1).
+        #
+        # (2) The current timestep-aware production formula at
+        #     circ_module.py:300 is
+        #         influx_rate = neighbor_aux * al * memfrac * k_al
+        #     i.e. it uses the *receiving* cell's memfrac ONCE.
+        #     An older formula used both memfracs
+        #     (neighbor_aux * neighbor_memfrac * al * memfrac * k_al),
+        #     which is the formula this test originally encoded.
+        #     The neighbor_memfrac assignment still exists in the
+        #     production loop (line 296) but is discarded — see
+        #     ASSUMPTIONS.md §6 for the discussion. The expected
+        #     value below matches the current production formula.
+        dt_hours = 1.0
+        neighbor_aux = 0.5  # = self.neighbor_circ_mod_mock.get_auxin.return_value
+        memfrac = 0.2       # value the patch.object below installs
 
         with unittest.mock.patch.object(
-            self.circ_mod, "calculate_neighbor_memfrac", return_value=0.2
+            self.circ_mod, "calculate_neighbor_memfrac", return_value=memfrac
         ):
-            expected_auxin_influx = (0.5 * 0.2) * (auxlax * 0.2) * self.circ_mod.k_al
+            expected_auxin_influx = (
+                neighbor_aux * auxlax * memfrac * self.circ_mod.k_al * dt_hours
+            )
             expected_pin_activity = pindi * self.circ_mod.k_pin
-            expected_accessible_auxin = self.circ_mod.auxin * 0.2
-            expected_auxin_efflux = expected_accessible_auxin * expected_pin_activity
+            expected_accessible_auxin = self.circ_mod.auxin * memfrac
+            expected_auxin_efflux = expected_accessible_auxin * expected_pin_activity * dt_hours
             expected_neighbor_aux_exchange = round_to_sf(
                 expected_auxin_influx - expected_auxin_efflux, 5
             )
-            aux_exchange = self.circ_mod.get_aux_exchange_across_membrane(auxlax, pindi, neighbors)
+            aux_exchange = self.circ_mod.get_aux_exchange_across_membrane(
+                auxlax, pindi, neighbors, dt_hours
+            )
             self.assertIn(self.neighbor_mock, aux_exchange)
             self.assertAlmostEqual(
                 aux_exchange[self.neighbor_mock], expected_neighbor_aux_exchange, places=5
@@ -231,7 +258,13 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         self.circ_mod.update_circ_contents(soln)
         self.assertAlmostEqual(self.circ_mod.arr, round_to_sf(0.21, 5))
         self.assertAlmostEqual(self.circ_mod.auxlax, round_to_sf(0.31, 5))
-        self.assertAlmostEqual(self.circ_mod.pin, round_to_sf(0.41, 5) - 0.4)
+        # In 48d42dc, the base-class update_circ_contents at
+        # circ_module.py:382 was changed from the delta form
+        # (self.pin = round_to_sf(last[3], 5) - self.pin) to the
+        # absolute form (self.pin = round_to_sf(last[3], 5)).
+        # See ASSUMPTIONS.md §7.3 for the discussion of why this
+        # matters; for the test we just match the new code.
+        self.assertAlmostEqual(self.circ_mod.pin, round_to_sf(0.41, 5))
         self.assertAlmostEqual(self.circ_mod.pina, round_to_sf(0.51, 5))
         self.assertAlmostEqual(self.circ_mod.pinb, round_to_sf(0.61, 5))
         self.assertAlmostEqual(self.circ_mod.pinl, round_to_sf(0.71, 5))
@@ -268,10 +301,26 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         )
         self.circ_mod.auxin = 0.1
         self.circ_mod.auxlax = 0.3
+        # NB: In 48d42dc, update_auxin stopped reading directly from
+        # circ_mod.pin{a,b,l,m} and instead reads from
+        #     reg * self.cell.get_pin_weights()[direction]
+        # where reg = self.get_pin_reg_factor(). The per-direction
+        # pin values still need to be set on the module (other code
+        # uses them), but the *call* to get_aux_exchange_across_membrane
+        # now uses reg * pin_weights[dir]. We mock both inputs to
+        # known values so the assertions can compute the exact
+        # expected per-direction PIN factor.
         self.circ_mod.pina = 0.4
         self.circ_mod.pinb = 0.6
         self.circ_mod.pinl = 0.7
         self.circ_mod.pinm = 0.8
+
+        reg = 1.0
+        pin_weights = {"a": 0.4, "b": 0.6, "l": 0.7, "m": 0.8}
+        dt_hours = 1.0
+        self.circ_mod.get_pin_reg_factor = MagicMock(return_value=reg)
+        self.cell_mock.get_pin_weights = MagicMock(return_value=pin_weights)
+        self.cell_mock.get_sim.return_value.get_timestep_hours.return_value = dt_hours
 
         # Mocking methods to return known values
         auxina_exchange = {self.neighbors_a[0]: 0.05}
@@ -287,18 +336,22 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
 
         self.circ_mod.update_auxin(soln)
 
-        # Verify that get_aux_exchange_across_membrane was called with correct parameters
+        # Verify that get_aux_exchange_across_membrane was called
+        # with correct parameters. The expected PIN factor per
+        # direction is reg * pin_weights[dir]; with reg=1.0 and
+        # pin_weights matching the old per-direction pin attrs,
+        # the numeric values are unchanged.
         self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
-            self.circ_mod.auxlax, self.circ_mod.pina, self.neighbors_a
+            self.circ_mod.auxlax, reg * pin_weights["a"], self.neighbors_a, dt_hours
         )
         self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
-            self.circ_mod.auxlax, self.circ_mod.pinb, self.neighbors_b
+            self.circ_mod.auxlax, reg * pin_weights["b"], self.neighbors_b, dt_hours
         )
         self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
-            self.circ_mod.auxlax, self.circ_mod.pinl, self.neighbors_l
+            self.circ_mod.auxlax, reg * pin_weights["l"], self.neighbors_l, dt_hours
         )
         self.circ_mod.get_aux_exchange_across_membrane.assert_any_call(
-            self.circ_mod.auxlax, self.circ_mod.pinm, self.neighbors_m
+            self.circ_mod.auxlax, reg * pin_weights["m"], self.neighbors_m, dt_hours
         )
 
         # Verify calculate_delta_auxin was called with correct parameters
@@ -444,12 +497,20 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
         )
         mock_odeint.return_value = mock_solution
 
+        # In 48d42dc solve_equations gained a dt_hours arg and the
+        # time array dropped from np.linspace(0, 1, 1001) to just
+        # [0.0, dt_hours] (two points). The ODE solver now returns
+        # state at t=0 and t=dt_hours; the older fine-grained time
+        # grid was unused downstream and was replaced by a single
+        # endpoint evaluation.
+        dt_hours = 1.0
+
         # Expected initial conditions and time array
         expected_y0 = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-        expected_t = np.linspace(0, 1.0, int(1.0 / 0.001) + 1)
+        expected_t = np.array([0.0, dt_hours], dtype=float)
 
         # Call the function
-        result = self.circ_mod.solve_equations()
+        result = self.circ_mod.solve_equations(dt_hours=dt_hours)
 
         # Verify the correct calls to odeint
         args, kwargs = mock_odeint.call_args

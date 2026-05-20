@@ -159,11 +159,20 @@ class TestOutput(unittest.TestCase):
 
     def test_output_cells(self):
         self.output.output_cells()
-        # Check if files are created and not empty
+        # In 48d42dc, Output.output_cells was changed to write one
+        # JSON file per tick (path computed via _json_filename_for_tick).
+        # The bare self.output_json path is no longer written; the
+        # actual JSON file for the current tick is at the suffixed
+        # location. Check that suffixed path instead.
+        tick_json = self.output._json_filename_for_tick(self.sim.get_tick())
         self.assertTrue(os.path.isfile(self.output_csv))
-        self.assertTrue(os.path.isfile(self.output_json))
+        self.assertTrue(os.path.isfile(tick_json))
         self.assertGreater(os.path.getsize(self.output_csv), 0)
-        self.assertGreater(os.path.getsize(self.output_json), 0)
+        self.assertGreater(os.path.getsize(tick_json), 0)
+        # Clean up the tick-suffixed JSON the test just created
+        # (tearDown only knows about the bare path).
+        if os.path.isfile(tick_json):
+            os.remove(tick_json)
 
     def test_get_division_number(self):
         # TODO: Implement
