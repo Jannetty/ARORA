@@ -912,6 +912,35 @@ class TestInitializationSymmetry(unittest.TestCase):
             225,
             296,
             311,
+            # Extended LRC chain (Plan 2, option γ — left then right):
+            830,
+            832,
+            834,
+            836,
+            838,
+            840,
+            842,
+            844,
+            846,
+            848,
+            850,
+            852,
+            854,
+            856,
+            831,
+            833,
+            835,
+            837,
+            839,
+            841,
+            843,
+            845,
+            847,
+            849,
+            851,
+            853,
+            855,
+            857,
         ]
 
         # Check that Auxin production weights are assigned correctly.
@@ -931,6 +960,129 @@ class TestInitializationSymmetry(unittest.TestCase):
             if cell.get_c_id() not in (qc_ids + col_ids + lrc_ids)
         ]:
             assert cell.get_circ_mod().get_auxin_w() == 1
+
+    def test_plan2_lrc_extension_invariants(self):
+        """Plan 2 (extend LRC geometry, option γ) atlas-level invariants.
+
+        Asserts the seven invariants listed in
+        docs/plans/design_plans/2_2026-05-20_extend_LRC_geometry.md
+        §4 Phase D.1, on a freshly-initialized simulation.
+
+        Implementation: this method exists *in addition* to the
+        symmetry tables in test_initial_symmetry / test_symmetry_after_updates,
+        which were not extended for the new pairs. Symmetry of the
+        new pairs is checked here directly (state equality + matched
+        y-ranges).
+        """
+        timestep = 1
+        vis = False
+        cell_val_file = "src/sim/input/default_init_vals.json"
+        v_file = "src/sim/input/default_vs.json"
+        gparam_series = None
+        simulation = GrowingSim(
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT,
+            SCREEN_TITLE,
+            timestep,
+            vis,
+            PIN_LOC_RULES,
+            CIRC_MOD,
+            cell_val_file,
+            v_file,
+            gparam_series,
+            geometry="default",
+        )
+
+        # Pair-wise (left, right) IDs for the 14 new LRC cells, in
+        # order bottom-to-top up the chain.
+        new_lrc_pairs = [
+            (830, 831),
+            (832, 833),
+            (834, 835),
+            (836, 837),
+            (838, 839),  # OZ XPP target row
+            (840, 841),
+            (842, 843),  # T-E boundary
+            (844, 845),
+            (846, 847),
+            (848, 849),
+            (850, 851),
+            (852, 853),
+            (854, 855),
+            (856, 857),  # topmost — terminal dumpers
+        ]
+        new_lrc_ids = [cid for pair in new_lrc_pairs for cid in pair]
+
+        # ---- Invariant 1: cell count ---------------------------------
+        # 830 original + 2N new (N = 14 for option γ) = 858
+        assert len(simulation.get_cell_list()) == 858, (
+            f"expected 858 cells, got {len(simulation.get_cell_list())}"
+        )
+
+        # ---- Invariant 2: new IDs are dev_zone "roottip" -------------
+        for cid in new_lrc_ids:
+            cell = simulation.get_cell_by_ID(cid)
+            assert cell.get_dev_zone() == "roottip", (
+                f"cell {cid} expected dev_zone='roottip', got {cell.get_dev_zone()!r}"
+            )
+            assert cell.get_cell_type() == "roottip", (
+                f"cell {cid} expected cell_type='roottip', got {cell.get_cell_type()!r}"
+            )
+
+        # ---- Invariant 3: OZ-row LRC has matched-epi as neighbor -----
+        #   cell 838 (left) <-> cell 690 (left epi, y=[346,369])
+        #   cell 839 (right) <-> cell 703 (right epi mirror)
+        for lrc_id, epi_id in [(838, 690), (839, 703)]:
+            lrc = simulation.get_cell_by_ID(lrc_id)
+            epi = simulation.get_cell_by_ID(epi_id)
+            assert epi in lrc.get_all_neighbors(), (
+                f"epi cell {epi_id} not in LRC {lrc_id} neighbors"
+            )
+            # ---- Invariant 4: matched epi reciprocates ---------------
+            assert lrc in epi.get_all_neighbors(), (
+                f"LRC cell {lrc_id} not in epi {epi_id} neighbors (reciprocity broken)"
+            )
+
+        # ---- Invariant 5: left/right pair symmetry --------------------
+        # For each new pair, the two cells must have the same y-range
+        # (mirror x via the inferred convention).
+        for lcid, rcid in new_lrc_pairs:
+            l = simulation.get_cell_by_ID(lcid).get_quad_perimeter()
+            r = simulation.get_cell_by_ID(rcid).get_quad_perimeter()
+            assert l.get_min_y() == r.get_min_y(), (
+                f"y-min mismatch in pair ({lcid},{rcid}): "
+                f"{l.get_min_y()} vs {r.get_min_y()}"
+            )
+            assert l.get_max_y() == r.get_max_y(), (
+                f"y-max mismatch in pair ({lcid},{rcid}): "
+                f"{l.get_max_y()} vs {r.get_max_y()}"
+            )
+            # circ_mod state should be identical for symmetric pairs
+            assert (
+                simulation.get_cell_by_ID(lcid).get_circ_mod().get_state()
+                == simulation.get_cell_by_ID(rcid).get_circ_mod().get_state()
+            ), f"circ_mod state mismatch in pair ({lcid},{rcid})"
+
+        # ---- Invariant 6: cells 296 and 311 flipped to apical-dominant
+        for cid in (296, 311):
+            cm = simulation.get_cell_by_ID(cid).get_circ_mod()
+            state = cm.get_state()
+            assert state["pina"] == 1.0, (
+                f"cell {cid} expected pina=1.0 (flipped), got {state['pina']}"
+            )
+            assert state["pinm"] == 0.1, (
+                f"cell {cid} expected pinm=0.1 (flipped), got {state['pinm']}"
+            )
+
+        # ---- Invariant 7: topmost new cell on each side is terminal dumper
+        for cid in (856, 857):
+            state = simulation.get_cell_by_ID(cid).get_circ_mod().get_state()
+            assert state["pina"] == 0.0, (
+                f"topmost cell {cid} expected pina=0.0 (terminal dumper), got {state['pina']}"
+            )
+            assert state["pinm"] == 1.0, (
+                f"topmost cell {cid} expected pinm=1.0 (terminal dumper), got {state['pinm']}"
+            )
 
     def test_symmetry_after_updates(self):
         timestep = 1

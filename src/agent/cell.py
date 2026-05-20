@@ -493,22 +493,7 @@ class Cell(Sprite):
             The lateral neighbor to add to the cell's lateral neighbor list.
         """
         assert self.get_sim().geometry == "default"
-        assert neighbor.get_c_id() in [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        assert neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
         self.l_neighbors.append(neighbor)
 
     def add_m_neighbor(self, neighbor: "Cell") -> None:
@@ -524,22 +509,7 @@ class Cell(Sprite):
             The medial neighbor to add to the cell's medial neighbor list.
         """
         assert self.get_sim().geometry == "default"
-        assert self.get_c_id() in [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        assert self.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
         self.m_neighbors.append(neighbor)
 
     def remove_m_neighbor(self, neighbor: "Cell") -> None:
@@ -555,22 +525,7 @@ class Cell(Sprite):
             The medial neighbor to remove from the cell's medial neighbor list.
         """
         assert self.get_sim().geometry == "default"
-        assert self.get_c_id() in [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        assert self.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
         self.m_neighbors.remove(neighbor)
 
     def remove_l_neighbor(self, neighbor: "Cell") -> None:
@@ -586,22 +541,7 @@ class Cell(Sprite):
             The lateral neighbor to remove from the cell's lateral neighbor list.
         """
         assert self.get_sim().geometry == "default"
-        assert neighbor.get_c_id() in [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        assert neighbor.get_c_id() in NeighborHelpers.ROOTCAP_CELL_IDs
         self.l_neighbors.remove(neighbor)
 
     def remove_neighbor(self, cell: "Cell") -> None:
@@ -731,54 +671,7 @@ class Cell(Sprite):
         - 'elongation': If the distance to the root tip is less than ELONGATION_MAX_DIST_FROM_TIP.
         - 'differentiation': Otherwise.
         """
-        root_cap_cells = [
-            # Original 14 LRC cells (left, then right):
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-            # Extended LRC chain (Plan 2, option γ — 14 cells per side):
-            # left side, bottom-to-top
-            830,
-            832,
-            834,
-            836,
-            838,
-            840,
-            842,
-            844,
-            846,
-            848,
-            850,
-            852,
-            854,
-            856,
-            # right side, bottom-to-top
-            831,
-            833,
-            835,
-            837,
-            839,
-            841,
-            843,
-            845,
-            847,
-            849,
-            851,
-            853,
-            855,
-            857,
-        ]
+        root_cap_cells = NeighborHelpers.ROOTCAP_CELL_IDs
         if self.c_id in root_cap_cells:
             return "roottip"
         if dist_to_root_tip < ROOT_TIP_DIST_FROM_TIP:

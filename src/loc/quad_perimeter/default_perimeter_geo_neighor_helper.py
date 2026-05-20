@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from src.agent.default_geo_neighbor_helpers import NeighborHelpers
+
 if TYPE_CHECKING:
     from src.agent.cell import Cell
     from src.loc.vertex.vertex import Vertex
@@ -29,22 +31,7 @@ class PerimeterNeighborHelpers:
             The length of the perimeter shared by the `cell` and its `neighbor`.
         """
         length = 0.0
-        rootcap_cell_ids = [
-            60,
-            90,
-            120,
-            136,
-            166,
-            210,
-            296,
-            75,
-            105,
-            135,
-            151,
-            181,
-            225,
-            311,
-        ]
+        rootcap_cell_ids = NeighborHelpers.ROOTCAP_CELL_IDs
         cellqp = cell.get_quad_perimeter()
         neighborqp = neighbor.get_quad_perimeter()
 
