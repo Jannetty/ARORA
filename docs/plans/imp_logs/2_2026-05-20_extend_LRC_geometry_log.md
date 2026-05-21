@@ -672,32 +672,24 @@ After committing:
 
 ### E.3 — Commit Phase E
 
-Suggested commands (on Sophia's Mac). Per Sophia's request on
-2026-05-20, **CLAUDE.md is intentionally excluded** from this
-commit — its changes from E.2 stay in the working tree for now
-and can be committed (or further edited) on their own later.
+Suggested commands (on Sophia's Mac):
 
 ```sh
 cd /Users/skjannetty/bagherilab/ARORA
-git add ASSUMPTIONS.md docs/plans/
-git commit -m "document LRC-geometry extension (Plan 2 phase E)
-
-Add §15 to ASSUMPTIONS.md covering: 28 new LRC cells stacked
-above 296/311 to reach y=1025, PIN flip on 296/311
-(apical-dominant now), new terminal dumpers at 856/857, and
-updates to assumptions §2.6/§2.7 (collapsed to one canonical
-LRC ID list) and §13.2 (atlas now extends through OZ).
-
-Also commits the plan + implementation log so the docs/plans/
-tree is no longer untracked. Resolves Phase E."
+git add docs/plans/
+git commit -m "document LRC-geometry extension (Plan 2 phase E)"
 ```
+
+Note: this commit will sweep in the entire `docs/plans/` tree
+(the two plan documents and this implementation log), which were
+all untracked until now. If a smaller granularity is preferred,
+split into two commits: (1) `ASSUMPTIONS.md` + `CLAUDE.md` for
+the documentation update, and (2) `docs/plans/` for the
+plan-tree intake.
 
 After committing, fill in:
 
-- **Phase E commit SHA:** _fill in_
-- **CLAUDE.md status:** intentionally not in this commit per
-  Sophia's preference; changes remain in the working tree as
-  untracked-with-edits.
+- **Phase E commit SHA:** bc571b3
 
 ---
 
@@ -717,78 +709,147 @@ If different parameters were used, record them here and explain why.
 ### E1 — Sanity check (~30 min)
 
 - **Plan reference:** §8 E1
-- **Run command:** _fill in_
+- **Circ_mod deviation:** plan §8 specifies `AUX_SYN_DEG_EXP` but
+  CLAUDE.md (post-circuit-fix) and the GA runner both use
+  `IMPOSED_PIN_ARR_ACTIVITY`. E1 was run with
+  `IMPOSED_PIN_ARR_ACTIVITY` to match what the actual oscillation
+  diagnostic uses.
+- **Parameters:** osc_search_03 best chromosome (8 values from
+  `param_est/ga_runs/osc_search_03/best_summary.txt`).
+- **Run command:**
+  ```sh
+  uv run python3 scripts/run_e1_sanity_check.py
+  ```
+- **Run on 2026-05-21.** 5 ticks at dt=1/9 h.
 - **Checks:**
 
   | Check | Expected | Observed | Pass? |
   |---|---|---|---|
-  | `len(sim.cell_list) == 830 + 2N` | 858 (γ) | _fill_ | _y/n_ |
-  | LRC at OZ-row has matched epi in m-neighbors | yes | _fill_ | _y/n_ |
-  | Epi 690 has new LRC in l-neighbors | yes | _fill_ | _y/n_ |
-  | Cell 693 has cell 690 in l-neighbors | yes (unchanged) | _fill_ | _y/n_ |
-  | LRC chain visible in tick-5 auxin field | yes | _fill_ | _y/n_ |
-  | Topmost new LRC: `pinm == 1.0` | yes | _fill_ | _y/n_ |
-  | Cell 296: `pina == 1.0` after PIN flip | yes | _fill_ | _y/n_ |
+  | `len(sim.cell_list) == 830 + 2N` | 858 (γ) | 858 | y |
+  | LRC at OZ-row (c838) has matched epi (c690) in neighbors AND auxin > 0 | yes | 690 in c838.neighbors; c838.auxin=45.421 | y |
+  | Epi 690 has new LRC (c838) in neighbors | yes | yes | y |
+  | c693 reachable from new LRC via 5-hop reflux path (c693→c692→c691→c690→c838) | yes | each hop present | y |
+  | LRC chain + OZ-epi auxin all > 0 at tick 5 | yes | c838.aux=45.421, c856.aux=45.123, c690.aux=18.445 | y |
+  | Topmost new LRC: `pinm == 1.0` | yes | c856.pinm=1.0, c857.pinm=1.0 | y |
+  | c296 & c311 are apical-dominant (post-flip) | yes | c296: pina=0.909 pinm=0.091; c311: pina=0.909 pinm=0.091 | y |
 
-- **Outcome:** _pass / fail_
-- **Plots saved to:** _path_
+- **Outcome:** PASS (7 / 7)
+- **Plan §8 E1 text corrections discovered during E1:**
+  1. Step 4 says "c693 has c690 in l-neighbors (unchanged)". This
+     is incorrect — c693 (XPP/pericycle) and c690 (epidermis) are
+     4 cell-files apart with endodermis + cortex between. The
+     actual reflux path is 5 hops: c693→c692→c691→c690→c838. The
+     E1 script was updated accordingly. The pre-existing Phase D
+     test was already renamed to
+     `test_oz_xpp_target_reachable_from_lrc` for this same reason.
+  2. Step 7 says "Cell 296: pina == 1.0 after PIN flip". The
+     init-file PIN values are normalized by
+     `Cell.calculate_pin_weights()` so the runtime state returns
+     `pina = 1.0 / (1.0 + 0.1) ≈ 0.909`. The check was updated to
+     "c296 & c311 are apical-dominant" (pina > 0.5 and
+     pina > pinm), which is the actual invariant the plan was
+     trying to test.
+- **Auxin snapshot at tick 5 (excerpt):**
+  ```
+  c 60  roottip      auxin=365.868  arr=0.105
+  c296  roottip      auxin= 43.606  arr=0.061  pina=0.91 pinm=0.09
+  c311  roottip      auxin= 43.606  arr=0.061  pina=0.91 pinm=0.09
+  c634  transition   auxin= 18.372  arr=0.036  (epi, root-tip row)
+  c690  transition   auxin= 18.445  arr=0.037  (epi, OZ row)
+  c693  transition   auxin= 18.329  arr=0.036  (XPP target)
+  c830  roottip      auxin= 45.465  (new LRC bottom)
+  c838  roottip      auxin= 45.421  (new LRC at OZ row)
+  c856  roottip      auxin= 45.123  pina=0.00 pinm=1.00 (new terminal dumper)
+  c857  roottip      auxin= 45.123  pina=0.00 pinm=1.00 (new terminal dumper)
+  ```
+  Total auxin trend across ticks 1-5: 87108 → 81077 (gradually
+  declining as the system relaxes toward steady state under
+  un-tuned defaults — expected behaviour, not a concern at this
+  stage).
 
-### E2 — Baseline (~1 hr, on base branch)
-
-Switch branches (`git checkout <base-branch>`) before running.
+### E2 — Baseline — **SKIPPED** per Sophia's direction 2026-05-21
 
 - **Plan reference:** §8 E2
-- **Run command:** _fill in_
-- **`FFT_baseline` value:** _fill in_
-- **Pass criterion: `FFT_baseline < 10`?** _yes / no_
-- **Time-series plot saved to:** _path_
-- **Time-series CSV saved to:** `evaluation/baseline_run.csv`
-- **Outcome:** _baseline confirmed non-oscillatory / baseline shows oscillation (parameter set must be revisited)_
+- **Why skipped:** Sophia chose to skip the on-base-branch baseline
+  and trust CLAUDE.md's account that ARORA-without-LRC-extension is
+  non-oscillatory in this regime (which is the whole motivation
+  for Plan 2 existing). All comparisons below are
+  intervention-only.
+- **Consequence:** The E3 / E4 pass criterion
+  `FFT_intervention > 3 × FFT_baseline` is N/A; the absolute-threshold
+  criterion `FFT_intervention > 10` is reported on its own.
 
-### E3 — Intervention (~1 hr, on `lrc-geometry-extension`)
-
-Switch branches (`git checkout lrc-geometry-extension`) before running.
+### E3 — Intervention on `lrc-geometry-extension`
 
 - **Plan reference:** §8 E3
-- **Run command:** _fill in_
-- **`FFT_intervention` value:** _fill in_
+- **Circ_mod deviation:** Plan §8 specifies `AUX_SYN_DEG_EXP` but
+  CLAUDE.md (post-circuit-fix) and the GA runner both use
+  `IMPOSED_PIN_ARR_ACTIVITY`. E3 used `IMPOSED_PIN_ARR_ACTIVITY` to
+  match what the actual oscillation diagnostic uses.
+- **Parameters:** osc_search_03 best chromosome.
+- **Run command:**
+  ```sh
+  uv run python3 scripts/run_e3_intervention.py
+  ```
+- **234 ticks** at dt=1/9 h (= 26 h simulated).
+- **Results:**
+  - `oscillation_score_from_csv = 0.1840` (out of [0, 1])
+  - `legacy FFT peak at final tick = 85.4950`
 - **Pass criteria:**
 
   | Criterion | Threshold | Observed | Pass? |
   |---|---|---|---|
-  | `FFT_intervention > 10` | 10 | _fill_ | _y/n_ |
-  | `FFT_intervention > 3 × FFT_baseline` | _3 × baseline_ | _fill_ | _y/n_ |
-  | ≥ 2 peaks of similar amplitude in 2nd half | visual | _fill_ | _y/n_ |
+  | `FFT_intervention > 10` | 10 | 85.50 | **y, but misleading** (legacy FFT measures spatial alternation at a single tick, not temporal oscillation; rises mechanically with cell-to-cell variance even when no cycles exist) |
+  | `FFT_intervention > 3 × FFT_baseline` | — | — | N/A (E2 skipped) |
+  | ≥ 2 peaks of similar amplitude in 2nd half | visual | none — c693 monotonically decays from ~20 to ~1 over 26 h | **n** |
 
-- **Time-series plot saved to:** _path_
-- **CSV saved to:** `evaluation/intervention_run.csv`
-- **Outcome:** _pass / fail_
+- **Files:**
+  - Plot: `evaluation/intervention_c693_auxin.png`
+  - Per-tick aggregate CSV: `evaluation/intervention_run.csv`
+  - Summary text: `evaluation/intervention_summary.txt`
+- **Outcome:** **FAIL** (no temporal oscillation; auxin in OZ XPP
+  monotonically decays to <2 a.u. by t≈20 h).
+- **Notable finding:** The legacy CLAUDE.md threshold "FFT > 10"
+  passes trivially even when there is no temporal oscillation. The
+  cycle-counting + CoV `oscillation_score_from_csv` (existing in
+  `param_est/fitness_functions.py`) is the right metric for the
+  plan's "two peaks of similar amplitude" criterion; this run
+  scored 0.184, with cycle_score ≈ 0 and cov_score ≈ 0.46.
 
-### E4 — Sensitivity sweep (~1 day)
+### E4 — Sensitivity sweep on `lrc-geometry-extension`
 
 - **Plan reference:** §8 E4
-- **10 chromosomes used:**
-
-  | # | ks_aux | kd_aux | k5 | k6 | FFT_baseline | FFT_intervention | Δ |
-  |---|---|---|---|---|---|---|---|
-  | 1 (default) | 0.110 | 0.164 | 0.023 | 0.020 | _fill_ | _fill_ | _fill_ |
-  | 2 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 3 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 4 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 5 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 6 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 7 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 8 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 9 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-  | 10 | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ | _fill_ |
-
-- **Aggregate stats:**
-  - Pairs with `FFT_intervention > FFT_baseline`: _N / 10_
-  - Mean (intervention − baseline): _fill in_
-  - Median (intervention − baseline): _fill in_
-  - Runs with `FFT_intervention > 10`: _N / 10_
-- **Scatter plot (baseline x vs. intervention y) saved to:** _path_
-- **Verdict:** _pass / partial pass / fail (per plan §8 E4)_
+- **Run command:**
+  ```sh
+  uv run python3 scripts/run_e4_sensitivity.py
+  ```
+- **Scope:** intervention-only (E2 baseline skipped); 10
+  chromosomes, 26-hour run each. Total wall-clock ~50 min on
+  Sophia's Mac.
+- **Chromosome plan:**
+  - #1 = osc_search_03 best (re-runs E3 for in-table consistency)
+  - #2 = plan-§8 fallback midpoints (geometric means of GA ranges)
+  - #3-10 = log-uniform random samples from the 8-param GA space
+    (seed `20260521`)
+- **Result table:** see `evaluation/e4_sensitivity.csv`.
+- **Aggregate verdict:**
+  - oscillation_score ≥ 0.3 (rough "has cycles" threshold): **0 / 10**
+  - legacy FFT > 10: 10 / 10 (every run passes mechanically)
+  - auxin collapsed to mean < 1.0 by t=26 h: 3 / 10
+  - oscillation AND auxin held: **0 / 10**
+  - best oscillation_score: #1 (osc_search_03 best) at 0.184
+- **Scatter plot:** `evaluation/e4_scatter.png` — every chromosome
+  falls well below `oscillation_score = 0.3`, regardless of legacy
+  FFT value. The two metrics are visibly orthogonal (#5 has FFT
+  ≈ 4500 but oscillation_score ≈ 0.02; #1 has FFT ≈ 80 but the
+  highest cycle-score at 0.184).
+- **Per-chromosome plots:** `evaluation/e4_chrom_<i>_auxin.png`
+  (visual inspection confirms no oscillation in any run; all
+  curves are monotonic decay, monotonic rise to saturation, or
+  near-flat).
+- **Verdict per plan §8 E4 table:** **FAIL** (≤ 50 % of pairs
+  show intervention > baseline AND no run hits the absolute
+  threshold for genuine oscillation).
 
 ### E5 — GA convergence (optional)
 
@@ -810,12 +871,58 @@ Switch branches (`git checkout lrc-geometry-extension`) before running.
 
 ### Evaluation conclusion
 
-- **(E3, E4) outcome quadrant:** _(Pass, Pass) / (Pass, Partial) / (Pass, Fail) / (Fail, Fail) / (Fail, Partial) / (Fail, Pass)_
-- **Implication per plan §8 table:** _fill in_
-- **Recommendation for next steps:** _fill in_ (e.g.,
-  "Plan 1 is unnecessary," "proceed to Plan 1," "try Variant 2
-  variant" — but Variant 2 is now the only implementation, so a
-  failure here points directly at Plan 1).
+- **(E3, E4) outcome quadrant:** **(Fail, Fail)**
+- **Implication per plan §8 table:** the geometry extension alone
+  — even with the ARR-coupling circuit fix already in place in
+  `IMPOSED_PIN_ARR_ACTIVITY` (CLAUDE.md) — is **not** sufficient
+  to enable temporal oscillation in OZ XPP cells across the GA's
+  full 8-D parameter space.
+- **Robustness:** the null result is strong. 10/10 chromosomes
+  fail to reach `oscillation_score = 0.3`, spanning a 4-order-of-magnitude
+  range of legacy FFT values (40 → 4500). The two GA-credible
+  chromosomes (the search-best and the geometric midpoints) score
+  no better than randomly-sampled chromosomes.
+- **What the data shows is happening:** every run produces
+  *spatial* alternation in auxin across OZ XPP cells (the legacy
+  FFT > 10 check passes mechanically). What's missing is *temporal*
+  cycling — auxin in any given OZ XPP cell monotonically
+  approaches steady state (either decaying to ~0 or saturating
+  near the synthesis ceiling).
+- **Recommendation for Plan 1 / next steps:**
+  - Plan 1 (modify LRC behavior — make LRC cells participate in
+    growth, division, or active transport) is now the indicated
+    next intervention. Plan 2 confirmed the necessary-but-not-sufficient
+    role of LRC presence at the OZ.
+  - The CLAUDE.md "known limitations" — particularly (2)
+    meristematic cell-size alternation not modeled and (3)
+    `auxin_w` not zone-dependent — are likely the missing
+    mechanisms. Both are non-trivial to add but both align with
+    the paper's primary oscillation mechanism (Mechanism 1 in
+    CLAUDE.md §1).
+  - The legacy CLAUDE.md FFT-based pass criterion ("FFT > 10")
+    should be retired in favour of the existing
+    `oscillation_score_from_csv` — see follow-up F-008 below.
+
+### Dissertation-relevant takeaways
+
+For Sophia's dissertation conclusion (the emergent-vs-tunable
+validation theme):
+
+1. ARORA passes every *tunable* metric used in prior GA runs
+   (parity with VDB MZ data, baseline auxin distribution, no
+   exceptions during 26 h simulation) but fails the **emergent**
+   metric (oscillation appearing on its own from the structural
+   biology) even after the targeted structural intervention this
+   plan implemented.
+2. This is the cleanest empirical illustration of the
+   emergent-vs-tunable distinction: a model can score arbitrarily
+   well on hand-crafted similarity metrics while failing the one
+   structural prediction the source paper is about.
+3. The result is consistent with the dissertation's broader
+   argument: ABMs whose validation criteria are emergent must be
+   stress-tested explicitly for whether that emergent behaviour
+   appears; passing all the tunable metrics does not imply the
+   emergent behaviour will follow.
 
 ---
 
@@ -985,8 +1092,8 @@ implementation diverged from `2_2026-05-20_extend_LRC_geometry.md`.
   doesn't reduce coverage of what Phase D is supposed to verify.
   But the diagnostic stages E1–E4 in §8 of the plan *do* require
   running the simulation under `AUX_SYN_DEG_EXP` — those stages
-  cannot run until F-005 is resolved. F-005 below describes the
-  fix.
+  were blocked until F-005 was resolved (2026-05-21). F-005 below
+  describes the fix.
 
 ### D-005 — Phase B commit deferred to Sophia (sandbox cannot mutate `.git/`)
 
@@ -1087,30 +1194,91 @@ this plan and should be filed for later work.
   matches in this log are inside historical D-003 prose, which is
   intentional.
 
-### F-005 — Extend `indep_syndeg_init_vals.json` to include the 28 new LRC cells
+### F-005 — Extend `indep_syndeg_init_vals.json` to include the 28 new LRC cells  *(RESOLVED 2026-05-21)*
 
 - **Description:** Phase B's geometry extension only modified
   `src/sim/input/default_init_vals.json` (used by `cont` /
   `UNIVERSAL_SYN_DEG` / `INDEP_SYN_DEG` modes). The
-  `AUX_SYN_DEG_EXP` mode reads `src/sim/input/indep_syndeg_init_vals.json`,
-  which still has 830 cells and no entries for IDs 830–857. As a
-  result, Plan 2's §8 evaluation (E1–E4: the actual oscillation
-  diagnostic, which Sophia needs to run under `AUX_SYN_DEG_EXP`)
-  cannot run yet.
+  `AUX_SYN_DEG_EXP` mode (specifically the §8 GA runner
+  `param_est/ARORA_genetic_alg_imposed_auxsyndegexport.py`)
+  reads `src/sim/input/indep_syndeg_init_vals.json`, which still
+  had 830 cells and no entries for IDs 830–857. As a result,
+  Plan 2's §8 evaluation (E1–E4) could not run.
 - **Where:** `src/sim/input/indep_syndeg_init_vals.json`
-- **Suggested next step:** Generalize the Phase B script
-  (`scripts/extend_lrc_geometry.py`) to also process
-  `indep_syndeg_init_vals.json`, OR write a small companion script
-  that reads the existing extended `default_init_vals.json` and
-  produces a matching `indep_syndeg_init_vals.json` (the field
-  list differs — indep has `ks_aux`, `kd_aux`, etc., but the
-  geometry/neighbor/PIN structure should be inherited 1-to-1).
-  Estimated effort: 1–2 hours including a parity test that
-  asserts the two files share the same cell IDs, vertex IDs, and
-  neighbor topology.
-- **Blocking:** F-005 blocks §8 stages E1–E4 (the actual diagnostic
-  experiment). It does not block Plan 2 Phases A–E (those
-  complete with this commit).
+- **Resolution:** Wrote a dedicated companion patch script
+  `scripts/extend_lrc_geometry_indep_syndeg.py` that reads the
+  already-extended `default_init_vals.json` and applies the same
+  cell-level changes to `indep_syndeg_init_vals.json` with schema
+  translation (drops `k_s` / `k_d`, adds the 9 indep_syndeg rate
+  keys `ks_aux, kd_aux, ks_arr, kd_arr, ks_pinu, kd_pinu,
+  kd_pinloc, ks_auxlax, kd_auxlax`, sets `circ_mod="indep_syndeg"`).
+  The script is **not** idempotent — it refuses to run if indep
+  already has 858 cells. The vertices file (`default_vs.json`) is
+  shared across all circ_mods and already has the new vertices
+  918–973 from Phase B, so it needed no further changes.
+- **Run output (2026-05-21):**
+  ```
+  # extend_lrc_geometry_indep_syndeg.py
+  # before: indep cells = 830
+  # flipped indep cell 296 PIN: pina/pinb/pinl/pinm (0.0, 0.0, 0.0, 1.0) -> (1.0, 0.0, 0.0, 0.1)
+  # flipped indep cell 311 PIN: pina/pinb/pinl/pinm (0.0, 0.0, 0.0, 1.0) -> (1.0, 0.0, 0.0, 0.1)
+  # appended 30 new neighbor references to existing indep cells
+  # appended 28 new LRC cells (IDs 830-857) to indep
+  # after: indep cells = 858
+  OK
+  ```
+- **Static verification (sandbox, no arcade/pyglet runtime
+  available):** 8 invariants verified — cell count = 858, all
+  new-cell vertex refs exist in `default_vs.json`, all new-cell
+  neighbor refs are bidirectional, all new cells have correct
+  indep_syndeg schema (no `k_s`/`k_d`, has `ks_aux`/etc), PIN
+  distribution matches default for new cells, cells 296/311 are
+  apical-dominant in indep, cells 856/857 are terminal dumpers in
+  indep, all new cells share the schema of the existing-LRC
+  template (cell 60).
+- **Runtime verification:** the sandbox cannot load
+  `arcade`/`pyglet` (no EGL library), so a full `GrowingSim`
+  instantiation under `INDEP_SYN_DEG` was run on Sophia's Mac
+  via `scripts/verify_indep_syndeg_extension.py`. **Result (2026-05-21):**
+  ```
+  cells: 858
+  id range: 0 - 857
+  cells with id >= 830: 28
+  cell 856: pina=0.00, pinm=1.00 (terminal dumper) — dev_zone=roottip, cell_type=roottip
+  cell 296: pina=1.00, pinm=0.10 (apical-dominant)
+  cell 693: dev_zone=transition, cell_type=peri (OZ XPP target unchanged)
+  PASS
+  ```
+  Two gotchas discovered during runtime verification, recorded
+  here so future debugging is faster:
+  - `GrowingSim(...)` *constructor* takes a `geometry` kwarg
+    that defaults to `""`. Only `sim.main()` derives
+    `geometry="default"` by string-matching the v_file. When the
+    constructor is called directly (as test code and verify
+    scripts do), `geometry` must be passed explicitly or
+    `Cell.__init__` sets `dev_zone=""` and the imposed-PIN
+    branch raises `SyntaxError("Dev zone error cannot get
+    imposed PIN pattern")`.
+  - `GrowingSim.__init__` already calls `self.setup()` at line
+    155; calling `sim.setup()` again from user code trips the
+    F-006 doubling-guard.
+- **Commit instructions (on Sophia's Mac):**
+  ```sh
+  cd /Users/skjannetty/bagherilab/ARORA
+  git add scripts/extend_lrc_geometry_indep_syndeg.py \
+          scripts/verify_indep_syndeg_extension.py \
+          src/sim/input/indep_syndeg_init_vals.json
+  git commit -m "extend indep_syndeg init file to match Plan 2 geometry (F-005)"
+  ```
+  **F-005 commit SHA:** `2825664`
+- **Caveat — other init files not patched:** `main.py` routes
+  `AUX_SYN_DEG_EXP` (when invoked directly, not through the GA) to
+  `aux_syndegonly_init_vals.json`, not `indep_syndeg_init_vals.json`.
+  That file still has 830 cells. The §8 GA path is unaffected
+  (it uses indep), but anyone running the diagnostic via main.py
+  with `--circ_mod aux_syndegtrans` would still see the
+  unextended geometry. Not addressed here; can be filed as F-005b
+  if needed.
 
 ### F-006 — Pre-existing test failures from commit `48d42dc`, unrelated to LRC work  *(largely RESOLVED 2026-05-20)*
 

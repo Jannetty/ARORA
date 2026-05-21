@@ -1,0 +1,11 @@
+E4 sensitivity sweep — verdict
+  chromosomes run: 10
+  branch: lrc-geometry-extension
+  circ_mod: IMPOSED_PIN_ARR_ACTIVITY
+
+  oscillation_score >= 0.3: 0/10
+  legacy FFT > 10:           10/10
+  auxin collapsed (tf < 1):  3/10
+  oscillation AND auxin held: 0/10
+
+  best oscillation_score: #1 (osc_search_03_best) score=0.1840
