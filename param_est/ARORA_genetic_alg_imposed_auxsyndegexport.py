@@ -22,7 +22,8 @@ from param_est.fitness_functions import (
     avg_auxin_root_tip_greater_than_elsewhere,
     parity_of_mz_auxin_concentrations_with_VDB_data,
     parity_of_auxin_c_for_xpp_boundary_cell_at_each_time_point,
-    arora_vdb_ssd
+    arora_vdb_ssd,
+    oscillation_score_from_csv,
 )
 from src.sim.simulation.sim import GrowingSim
 
@@ -32,13 +33,12 @@ SCREEN_TITLE = "ARORA"
 
 DEFAULT_PARAM_NAMES = ["k_s", "k_d", "k1", "k2", "k3", "k4", "k5", "k6", "tau"]
 
-AUX_SYN_DEG_EXPORT_PARAM_NAMES = [
+IMPOSED_PIN_ARR_ACTIVITY_PARAM_NAMES = [
     "ks_aux",
     "kd_aux",
+    "ks_arr",
+    "kd_arr",
     "k1",
-    "k2",
-    "k3",
-    "k4",
     "k5",
     "k6",
     "tau",
@@ -69,12 +69,14 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         out_dir: str = "param_est/ga_runs",
         run_name: str | None = None,
         plots_dirname: str = "plots",
+        fitness_mode: str = "oscillation",
     ):
         self.ga_instance = None
         self.filename = filename  # existing json population dump
         self.population = []
-        self.param_names = AUX_SYN_DEG_EXPORT_PARAM_NAMES
+        self.param_names = IMPOSED_PIN_ARR_ACTIVITY_PARAM_NAMES
         self.cleanup = True
+        self.fitness_mode = fitness_mode  # "oscillation" | "vdb_ssd"
 
         out_dir = Path(out_dir).expanduser().resolve()
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -180,10 +182,15 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
     def _run_ARORA(self, params, chromosome):
         timestep = 1/9 # 6.6 minutes, this is less frequent than VDB outputs.
         vis = False
-        cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
+        cell_val_file = "src/sim/input/indep_syndeg_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
         gparam_series = params
         geometry = "default"
+        # Oscillation search uses 18 h (≈ 162 ticks) so each eval takes ~55 % of
+        # the time a full 26-h run would take, while still allowing ≥2 cycles for
+        # oscillations with periods up to ~8 h.  Full VDB comparison still needs
+        # the full 26 h run to generate all required reference-aligned ticks.
+        max_hours = 18 if self.fitness_mode == "oscillation" else 26
 
         simulation = GrowingSim(
             width=SCREEN_WIDTH,
@@ -196,17 +203,20 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             gparam_series=gparam_series,
             geometry=geometry,
             output_file=f"param_est/ARORA_output_{chromosome['sol_idx']}",
-            circ_mod=CircModEnum.AUX_SYN_DEG_EXP,
+            circ_mod=CircModEnum.IMPOSED_PIN_ARR_ACTIVITY,
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
-            output_frequency=1 # outputting every 6.6 minutes
+            output_frequency=1,
+            max_hours=max_hours,
         )
 
         try:
             simulation.run_sim()
             chromosome["finished"] = True
-            ticks = range(simulation.get_tick())
-            for tick in ticks:
-                self.create_arora_csv(f"param_est/ARORA_output_{chromosome['sol_idx']}_tick_{tick}.json", chromosome['sol_idx'], tick)
+            chromosome["tick"] = simulation.get_tick()
+            if self.fitness_mode == "vdb_ssd":
+                ticks = range(simulation.get_tick())
+                for tick in ticks:
+                    self.create_arora_csv(f"param_est/ARORA_output_{chromosome['sol_idx']}_tick_{tick}.json", chromosome['sol_idx'], tick)
             fitness = self._calculate_fitness(simulation, chromosome)
         except Exception as e:
             print(e)
@@ -279,10 +289,14 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
 
 
     def _calculate_fitness(self, simulation, chromosome):
-        fitness = arora_vdb_ssd(chromosome['sol_idx'])
-        return fitness
+        if self.fitness_mode == "vdb_ssd":
+            return arora_vdb_ssd(chromosome["sol_idx"])
+        elif self.fitness_mode == "oscillation":
+            return oscillation_score_from_csv(simulation.output.filename_csv)
+        else:
+            raise ValueError(f"Unknown fitness_mode: {self.fitness_mode!r}")
 
-    def make_paramspace_aux_syn_deg_trans(self):
+    def make_paramspace_imposed_pin_arr_activity(self):
         # ks_aux: auxin synthesis rate [a.u./h].
         # Chosen so that A_ss = ks_aux * auxin_w / kd_aux spans ~1–200 a.u. over kd_aux range.
         ks_aux_range = np.geomspace(0.1, 10.0, 100).astype(float)
@@ -291,48 +305,70 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         # Half-life = ln(2)/kd_aux ≈ 1.4–13.9 h → “few hours to half-day” auxin turnover.
         kd_aux_range = np.geomspace(0.05, 0.5, 100).astype(float)
 
-        # --- Parameters not used by this circ mod ---
+        # ARR turnover rates control dynamic transport activity through reg factor.
+        ks_arr_range = np.geomspace(0.01, 1.0, 100).astype(float)
+        kd_arr_range = np.geomspace(0.01, 1.0, 100).astype(float)
 
-        # k1–k4: ARR / AUX-LAX / PIN regulatory couplings.
-        k1_range = 0
-        k2_range = 0
-        k3_range = 0
-        k4_range = 0
+        # k1: ARR self-repression saturation constant.
+        k1_range = np.geomspace(1.0, 200.0, 80).astype(float)
 
         # k5: k_al, AUX/LAX-mediated exchange factor [1/h].
-        k5_range = 1
+        k5_range = np.geomspace(0.02, 1.0, 80).astype(float)
 
         # k6: k_pin, PIN-mediated export factor [1/h].
-        k_pin_range = np.geomspace(0.05, 0.5, 40)
+        k_pin_range = np.geomspace(0.02, 1.0, 80).astype(float)
 
-        # tau: time course of ARR's self- repression
-        tau_range = 1
+        # tau: delay for ARR self-repression.
+        # Minimum 5 ticks (33 min) to ensure a meaningful delay; maximum 36 ticks (4 h)
+        # extended from 24 to allow longer delays that can support slower oscillations.
+        tau_range = np.arange(5, 37, dtype=int)
 
         return [
             ks_aux_range,
             kd_aux_range,
+            ks_arr_range,
+            kd_arr_range,
             k1_range,
-            k2_range,
-            k3_range,
-            k4_range,
             k5_range,
             k_pin_range,
             tau_range,
         ]
 
     def run_genetic_alg(self):
-        genespace = self.make_paramspace_aux_syn_deg_trans()
+        genespace = self.make_paramspace_imposed_pin_arr_activity()
         self.genespace = genespace
-        # make GA hyperparameters
-        num_generations = 20
-        num_parents_mating = 25
-        sol_per_pop = 50
-        fitness_function = "descriptive string" # also dummy :)
-        mutation_percent_genes = 5 # this is really low
+
+        # Hyperparameters tuned for oscillation search:
+        #   - Higher mutation (20 %) explores the parameter space more broadly
+        #     than the default 5 %, which was effectively no exploration.
+        #   - Tournament selection balances exploitation and exploration.
+        #   - keep_elitism=2 preserves the two best solutions each generation
+        #     so good oscillatory solutions are not lost.
+        #   - Smaller population (25) and fewer generations (10) keeps the
+        #     total number of ~21 s evaluations around 275, finishing in ~2 h.
+        #     The 18-hour simulation window (set in _run_ARORA) halves the cost
+        #     per evaluation while still allowing ≥2 cycles for 1–8 h oscillations.
+        #   - on_generation callback prints progress.
+        if self.fitness_mode == "oscillation":
+            num_generations = 20
+            num_parents_mating = 15
+            sol_per_pop = 30
+            mutation_percent_genes = 20
+            parent_selection_type = "tournament"
+            keep_elitism = 3
+        else:  # vdb_ssd: original conservative settings
+            num_generations = 20
+            num_parents_mating = 25
+            sol_per_pop = 50
+            mutation_percent_genes = 5
+            parent_selection_type = "sss"
+            keep_elitism = 1
+
+        fitness_function_label = self.fitness_mode
         save_best_solutions = False
-        parent_selection_type = "sss"
+
         ga_parameters = {
-            "num_generations":num_generations,
+            "num_generations": num_generations,
             "num_parents_mating": num_parents_mating,
             "fitness_func": self.fitness_function,
             "sol_per_pop": sol_per_pop,
@@ -341,23 +377,27 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             "mutation_percent_genes": mutation_percent_genes,
             "save_best_solutions": save_best_solutions,
             "parent_selection_type": parent_selection_type,
+            "keep_elitism": keep_elitism,
+            "on_generation": self.on_gen,
         }
         ga_parameters_for_saving = {
             "num_generations": num_generations,
             "num_parents_mating": num_parents_mating,
-            "fitness_func": fitness_function,
-            "sol_per_pop":sol_per_pop,
+            "fitness_func": fitness_function_label,
+            "sol_per_pop": sol_per_pop,
             "num_genes": len(genespace),
             "gene_space": genespace,
             "mutation_percent_genes": mutation_percent_genes,
             "save_best_solutions": save_best_solutions,
             "parent_selection_type": parent_selection_type,
-            "initialization_file": "aux_syndegonly_init_vals.json",
+            "keep_elitism": keep_elitism,
+            "initialization_file": "indep_syndeg_init_vals.json",
             "hours_per_simulation": 27,
+            "fitness_mode": self.fitness_mode,
         }
         self.population.append(ga_parameters_for_saving)
         self.ga_instance = pygad.GA(**ga_parameters)
-        print("Running GA!")
+        print(f"Running GA (fitness_mode={self.fitness_mode})!")
         self.ga_instance.run()
 
     def on_gen(self, ga_instance):
@@ -481,21 +521,17 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             print(f"Saved: {plot1_path}")
 
         # ---------------------------
-        # Plot 2: Auxin at location (336, 56) over time for BEST params
+        # Plot 2: Mean OZ XPP auxin + ARR over time (what the fitness function measures)
         # ---------------------------
-        print("Generating plot of auxin concentration at location (336, 56)")
+        print("Re-running best solution (26 h) to generate detailed time-course plots.")
 
-        row, col = 336, 56
-
-        # Re-run ARORA using the best set of parameters (and keep outputs so we can read per-tick JSONs)
-        timestep = 1 / 9  # hours
+        timestep = 1 / 9  # hours per tick
         vis = False
-        cell_val_file = "src/sim/input/aux_syndegonly_init_vals.json"
+        cell_val_file = "src/sim/input/indep_syndeg_init_vals.json"
         v_file = "src/sim/input/default_vs.json"
         geometry = "default"
 
         best_params = pd.Series(solution, index=self.param_names)
-
         out_base = "param_est/ARORA_best_solution"
 
         simulation = GrowingSim(
@@ -509,32 +545,118 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             gparam_series=best_params,
             geometry=geometry,
             output_file=out_base,
-            circ_mod=CircModEnum.AUX_SYN_DEG_EXP,
+            circ_mod=CircModEnum.IMPOSED_PIN_ARR_ACTIVITY,
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
             output_frequency=1,
         )
-
         simulation.run_sim()
-
-        # Extract auxin at (r_query, c_query) for every tick
         n_ticks = simulation.get_tick()
-        aux_vals = []
-        times_hrs = []
 
-        for tick in range(n_ticks):
-            tick_json = f"{out_base}_tick_{tick}.json"
-            a = self._auxin_at_rc_from_tick_json(tick_json, r=row, c=col)
-            aux_vals.append(a)
-            times_hrs.append(tick * timestep)
+        # --- Read output CSV and compute OZ XPP statistics per tick ---
+        out_csv = f"{out_base}.csv"
+        try:
+            df_out = pd.read_csv(out_csv)
+            xpp_oz = df_out[
+                df_out["dev_zone"].isin(["transition", "elongation"]) &
+                (df_out["cell_type"] == "peri")
+            ]
+            agg_aux = (
+                xpp_oz.groupby("tick")["auxin"]
+                .agg(["mean", "std"])
+                .sort_index()
+            )
+            agg_arr = (
+                xpp_oz.groupby("tick")["arr"]
+                .agg(["mean"])
+                .sort_index()
+            )
+            times_csv = agg_aux.index.values * timestep
+            has_csv_data = True
+        except Exception as exc:
+            print(f"Warning: could not read CSV for time-course plot: {exc}")
+            has_csv_data = False
 
-        plot2_path = self.plots_dir / f"auxin_timecourse_row{row}_col{col}_{self.run_name}.png"
+        # --- Plot: mean OZ XPP auxin, ±1 SD, and mean ARR ---
+        plot2_path = self.plots_dir / f"oz_xpp_timecourse_{self.run_name}.png"
+        if has_csv_data:
+            fig, axes = plt.subplots(2, 1, figsize=(10, 8), sharex=True)
 
-        plt.figure()
-        plt.plot(times_hrs, aux_vals)
-        plt.xlabel("Time (hours)")
-        plt.ylabel(f"Auxin at (row={row}, col={col})")
-        plt.title("Auxin time course at a fixed location (best solution)")
-        plt.tight_layout()
-        plt.savefig(plot2_path, dpi=200)
-        plt.close()
-        print(f"Saved: {plot2_path}")
+            # Auxin panel
+            ax_aux = axes[0]
+            ax_aux.plot(times_csv, agg_aux["mean"].values, label="Mean auxin")
+            ax_aux.fill_between(
+                times_csv,
+                agg_aux["mean"].values - agg_aux["std"].fillna(0).values,
+                agg_aux["mean"].values + agg_aux["std"].fillna(0).values,
+                alpha=0.25,
+                label="±1 SD",
+            )
+            ax_aux.set_ylabel("Auxin (a.u.)")
+            ax_aux.set_title(
+                f"OZ XPP cells — mean auxin and ARR over time (best solution)\n"
+                f"ks_aux={solution[0]:.4g}, kd_aux={solution[1]:.4g}, "
+                f"ks_arr={solution[2]:.4g}, kd_arr={solution[3]:.4g}, tau={solution[7]:.0f}"
+            )
+            ax_aux.legend(fontsize=8)
+
+            # ARR panel
+            ax_arr = axes[1]
+            ax_arr.plot(times_csv, agg_arr["mean"].values, color="tab:orange", label="Mean ARR")
+            ax_arr.set_ylabel("ARR (a.u.)")
+            ax_arr.set_xlabel("Time (hours)")
+            ax_arr.legend(fontsize=8)
+
+            plt.tight_layout()
+            plt.savefig(plot2_path, dpi=200)
+            plt.close()
+            print(f"Saved: {plot2_path}")
+
+        # --- Also plot spatial CoV over time ---
+        plot3_path = self.plots_dir / f"oz_xpp_cov_{self.run_name}.png"
+        if has_csv_data:
+            cov_ts = agg_aux["std"].fillna(0).values / (agg_aux["mean"].values + 1e-10)
+            plt.figure(figsize=(10, 4))
+            plt.plot(times_csv, cov_ts)
+            plt.xlabel("Time (hours)")
+            plt.ylabel("Spatial CoV (std/mean)")
+            plt.title("Spatial coefficient of variation of auxin across OZ XPP cells")
+            plt.tight_layout()
+            plt.savefig(plot3_path, dpi=200)
+            plt.close()
+            print(f"Saved: {plot3_path}")
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run ARORA genetic algorithm.")
+    parser.add_argument(
+        "--mode",
+        choices=["oscillation", "vdb_ssd"],
+        default="oscillation",
+        help="Fitness mode: 'oscillation' (default) targets temporal oscillation in "
+             "XPP OZ cells; 'vdb_ssd' minimises SSD against VDB reference images.",
+    )
+    parser.add_argument(
+        "--run-name",
+        default=None,
+        help="Optional label for the run directory (default: run_<timestamp>).",
+    )
+    parser.add_argument(
+        "--out-dir",
+        default="param_est/ga_runs",
+        help="Output directory for GA run artefacts.",
+    )
+    args = parser.parse_args()
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    pop_file = f"param_est/ARORA_population_{args.mode}_{ts}.json"
+
+    ga = ARORAGeneticAlgImposedAuxinSynDegExport(
+        filename=pop_file,
+        out_dir=args.out_dir,
+        run_name=args.run_name,
+        fitness_mode=args.mode,
+    )
+    ga.run_genetic_alg()
+    ga.analyze_results()

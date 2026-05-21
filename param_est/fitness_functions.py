@@ -3,6 +3,7 @@ import pandas as pd
 import ast
 import csv
 from scipy.stats import spearmanr
+from scipy import signal as sg
 
 from src.sim.simulation.sim import GrowingSim
 from src.agent.cell import Cell
@@ -304,3 +305,126 @@ def get_filenames(stringstart, t_start, tstep, t_total): # changed
         filename = stringstart + str(t).zfill(8) + ".csv" # if we decide to change number of digits in filename later, change this line
         filenames.append(filename)
     return filenames
+
+
+def oscillation_score_from_csv(output_csv_path: str) -> float:
+    """
+    Measures oscillatory behavior in XPP cells in the oscillation zone (OZ).
+
+    Combines two independent signals from the output CSV, both bounded in [0, 1]:
+
+    1. Peak-counting score (cycle_score, 60%): counts genuine oscillation cycles
+       (up-then-down excursions) in the mean OZ XPP auxin time series.
+       Requires the LINEARLY-DETRENDED signal to have ≥2 peaks AND ≥2 troughs
+       with inter-peak spacing in the 1.5–13 h range and minimum prominence
+       ≥ 20% of the signal's standard deviation.
+
+       This metric cannot be fooled by a monotonically declining (or rising)
+       transient because linear detrending of a convex/concave monotone curve
+       produces at most one arch-shaped residual, which has at most one peak
+       and one trough — scoring 0.
+
+    2. Spatial CoV score (cov_score, 40%): mean coefficient-of-variation of auxin
+       across OZ XPP cells at each tick, clipped to [0, 1].  Rewards the
+       spatial alternating pattern (large cell ↔ small cell with differing auxin)
+       that is the hallmark of the paper's mechanical oscillation mechanism.
+
+    Both scores use the second half of the simulation (skip first half) to
+    exclude the initial transient.  The minimum-auxin guard (mean < 0.5 a.u.)
+    rejects degenerate near-zero solutions.
+
+    Returns
+    -------
+    float
+        0.6 × cycle_score + 0.4 × cov_score, both in [0, 1].
+        Returns -1.0 for degenerate inputs (empty OZ, too few ticks, low auxin).
+    """
+    try:
+        df = pd.read_csv(output_csv_path, usecols=["tick", "dev_zone", "cell_type", "auxin"])
+    except Exception:
+        return -1.0
+
+    xpp_oz = df[
+        df["dev_zone"].isin(["transition", "elongation"]) &
+        (df["cell_type"] == "peri")
+    ]
+
+    if xpp_oz.empty:
+        return -1.0
+
+    agg = (
+        xpp_oz.groupby("tick")["auxin"]
+        .agg(["mean", "std"])
+        .sort_index()
+        .reset_index()
+    )
+    n = len(agg)
+    if n < 30:
+        return -1.0
+
+    mean_ts = agg["mean"].values
+    std_ts = agg["std"].fillna(0.0).values
+
+    if float(np.mean(mean_ts)) < 0.5:
+        return -1.0
+
+    timestep = 1.0 / 9.0  # hours per tick
+
+    # Use the second half of the simulation only (skip the initial transient).
+    # For an 18 h run (162 ticks) this gives a 9 h steady-state window.
+    skip = n // 2
+    mean_ts_ss = mean_ts[skip:]
+    std_ts_ss = std_ts[skip:]
+    n_ss = len(mean_ts_ss)
+    if n_ss < 20:
+        return -1.0
+
+    mean_ss = float(np.mean(mean_ts_ss))
+    if mean_ss < 0.5:
+        return -1.0
+
+    # --- Score 1: cycle count after quadratic detrending ---
+    #
+    # WHY quadratic, not linear?
+    # Auxin relaxes from initial conditions via an approximately exponential
+    # decay.  Linear detrend leaves a convex arch residual, which scipy's
+    # find_peaks can detect as 2–3 spurious peaks.  A quadratic fit captures
+    # the curved shape of the transient well, leaving only genuinely periodic
+    # components in the residual.
+    #
+    # WHY 5%-of-mean minimum prominence?
+    # After quadratic detrend the arch residual is typically < 1% of the mean
+    # auxin.  Requiring peaks to be ≥ 5% of mean rejects that noise and any
+    # remnant arch artifact, while accepting real oscillations which typically
+    # have amplitude ≥ 10–20% of the mean.
+    t = np.arange(n_ss, dtype=float)
+    trend_poly = np.polyfit(t, mean_ts_ss, deg=2)
+    trend = np.polyval(trend_poly, t)
+    detrended = mean_ts_ss - trend
+
+    # min_dist: at least 1.5 h between consecutive peaks (avoids double-counting)
+    min_dist_ticks = max(1, int(np.floor(1.5 / timestep)))
+    # min_prominence: peaks must correspond to ≥ 5% amplitude in the mean auxin
+    min_prom = max(1e-6, 0.05 * mean_ss)
+
+    peaks,   _ = sg.find_peaks( detrended, distance=min_dist_ticks, prominence=min_prom)
+    troughs, _ = sg.find_peaks(-detrended, distance=min_dist_ticks, prominence=min_prom)
+
+    def count_valid_intervals(indices: np.ndarray) -> int:
+        """Count inter-index spacings in the 1.5–13 h biological range."""
+        if len(indices) < 2:
+            return 0
+        spacings_h = np.diff(indices) * timestep
+        return int(np.sum((spacings_h >= 1.5) & (spacings_h <= 13.0)))
+
+    # Require BOTH peaks AND troughs for genuine up-down cycles.
+    # Score saturates at 1.0 when ≥2 valid intervals of each type are found
+    # (equivalent to ≥3 peaks and ≥3 troughs = at least 2 full cycles visible).
+    n_cycles = min(count_valid_intervals(peaks), count_valid_intervals(troughs))
+    cycle_score = float(min(1.0, n_cycles / 2.0))
+
+    # --- Score 2: mean spatial CoV, clipped to [0, 1] ---
+    cov_ts = std_ts_ss / (mean_ts_ss + 1e-10)
+    cov_score = float(min(np.mean(cov_ts), 1.0))
+
+    return float(0.6 * cycle_score + 0.4 * cov_score)
