@@ -102,6 +102,7 @@ class Divider:
                     new_upper_vs,
                     cell.get_circ_mod().get_state(),
                     self.sim.get_next_cell_id(),
+                    from_division=True,
                 )
 
                 new_top_cell.set_growing(cell.get_growing())
@@ -110,6 +111,7 @@ class Divider:
                     new_lower_vs,
                     cell.get_circ_mod().get_state(),
                     self.sim.get_next_cell_id(),
+                    from_division=True,
                 )
 
                 # TODO: reconsider why I am setting growing here as opposed to when the cells are made?

@@ -136,6 +136,7 @@ class Cell(Sprite):
         corners: list["Vertex"],
         init_vals: dict[str, Any],
         c_id: int,
+        from_division: bool = False,
     ):
         """
         Initializes a new instance of the Cell class.
@@ -161,8 +162,13 @@ class Cell(Sprite):
         simulation.increment_next_cell_id()
         self.quad_perimeter = QuadPerimeter(corners)
 
-        self.birth_height = self.quad_perimeter.get_height()
-        self.birth_height = self.birth_height / 1.5
+        h = self.quad_perimeter.get_height()
+        if from_division:
+            # daughter cell: h is the true birth height, divide at 2× that
+            self.birth_height = h
+        else:
+            # file-loaded cell: h is the midpoint of the growth cycle (= 1.5× birth)
+            self.birth_height = h / 1.5
         self.division_height = 2.0 * self.birth_height
 
         # Type hint circ_mod to accept any class that implements the CirculateModule protocol
