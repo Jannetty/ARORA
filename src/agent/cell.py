@@ -9,6 +9,7 @@ from src.agent.circ_module_aux_syn_deg_export import CirculateModuleAuxinSynDegE
 from src.agent.circ_module_imposed_pin_arr_activity import (
     CirculateModuleImposedPinArrActivity,
 )
+from src.agent.circ_module_imposed_pin_no_arr import CirculateModuleImposedPinNoArr
 from src.loc.quad_perimeter.quad_perimeter import QuadPerimeter
 from src.agent.default_geo_neighbor_helpers import NeighborHelpers
 from src.agent.circ_module import CirculateModule
@@ -178,6 +179,8 @@ class Cell(Sprite):
                 self.circ_mod = CirculateModuleAuxinSynDegExport(self, init_vals)
             case CircModEnum.IMPOSED_PIN_ARR_ACTIVITY:
                 self.circ_mod = CirculateModuleImposedPinArrActivity(self, init_vals)
+            case CircModEnum.IMPOSED_PIN_NO_ARR:
+                self.circ_mod = CirculateModuleImposedPinNoArr(self, init_vals)
             case _:
                 raise SyntaxError(f"Unknown circ mod '{circ_mod_name}'")
 

@@ -7,6 +7,7 @@ class CircModEnum(Enum):
     AUX_SYN_DEG_ONLY = 3
     AUX_SYN_DEG_EXP = 4
     IMPOSED_PIN_ARR_ACTIVITY = 5
+    IMPOSED_PIN_NO_ARR = 6
 
 
 class PinLocalizationRulesetEnum(Enum):
