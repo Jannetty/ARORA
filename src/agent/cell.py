@@ -849,12 +849,7 @@ class Cell(Sprite):
                 return {"a": 0.0, "b": 1.0, "l": 0.025, "m": 0.025}
 
         elif cell_type == "peri":
-            if row == 0:
-                return {"a": 0.0, "b": 1.0, "l": 0.35, "m": 0.5}
-            if row % 2 == 1:
-                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
-            else:
-                return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
 
         elif cell_type == "endo":
             if row == 0:
@@ -910,12 +905,7 @@ class Cell(Sprite):
             return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
 
         elif cell_type == "peri":
-            if row <= 22:
-                if row % 2 == 0:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
-                else:
-                    return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.1}
-            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
 
         elif cell_type == "endo":
             # rows 0–14: alternate (0,0) vs (0.1,0.35)
@@ -949,7 +939,7 @@ class Cell(Sprite):
                 else:
                     return {"a": 1.0, "b": 0.0, "l": 0.1, "m": 0.1}
             # upper transition epidermis matches elongation epidermis
-            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.5}
 
         # unknown types: raise exception
         raise SyntaxError(
@@ -963,13 +953,13 @@ class Cell(Sprite):
         if cell_type == "vasc":
             return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
         if cell_type == "peri":
-            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
         if cell_type == "endo":
             return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
         if cell_type == "cortex":
             return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
         if cell_type == "epidermis":
-            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.1}
+            return {"a": 1.0, "b": 0.0, "l": 0.0, "m": 0.5}
         raise SyntaxError("Vascular cell type unrecognized.")
 
     def _pin_differentiation(self, cell_type: str) -> Dict[str, float]:
@@ -979,7 +969,7 @@ class Cell(Sprite):
         if cell_type == "vasc":
             return {"a": 0.0, "b": 1.0, "l": 0.0525, "m": 0.0525}
         if cell_type == "peri":
-            return {"a": 0.0, "b": 1.0, "l": 0.1, "m": 0.1}
+            return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.0}
         if cell_type == "endo":
             return {"a": 0.0, "b": 1.0, "l": 0.0, "m": 0.35}
         if cell_type == "cortex":

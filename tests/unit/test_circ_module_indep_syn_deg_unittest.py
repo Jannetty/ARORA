@@ -172,7 +172,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
     def test_calculate_neighbor_memfrac(self):
         neighbor_mock = MagicMock()
         neighbor_mock.get_c_id.return_value = 2
-        self.circ_mod.cell.quad_perimeter.get_perimeter_len.return_value = 100.0
+        self.circ_mod.cell.quad_perimeter.get_area.return_value = 500.0
         with unittest.mock.patch(
             "src.agent.circ_module.get_len_perimeter_in_common", return_value=25.0
         ) as mock_get_len_perimeter_in_common:
@@ -180,7 +180,7 @@ class TestCirculateModuleIndSynDeg(unittest.TestCase):
             mock_get_len_perimeter_in_common.assert_called_once_with(
                 self.circ_mod.cell, neighbor_mock
             )
-            expected_memfrac = 25.0 / 100.0
+            expected_memfrac = 25.0 / 500.0
             self.assertAlmostEqual(memfrac, expected_memfrac, places=6)
 
     def test_get_aux_exchange_across_membrane(self):

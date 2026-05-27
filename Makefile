@@ -1,6 +1,7 @@
-.PHONY: clean build docs
+.PHONY: clean build docs evaluate
 
 clean: # clean all build, python, and testing files
+	rm -f evaluation/*
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
@@ -23,3 +24,13 @@ build: # run tox tests and lint
 docs: # generates documentation
 	sphinx-apidoc -o docs/ ./src/ -f -M -e
 	make -C docs html
+
+evaluate: # regenerate all noARR evaluation figures in evaluation/
+	uv run python3 scripts/check_cell_size_alternation.py
+	uv run python3 scripts/check_cell_size_alternation_byfile.py
+	uv run python3 scripts/run_e1_noARR.py
+	uv run python3 scripts/run_e3_noARR.py
+	uv run python3 scripts/run_e4_noARR.py
+	uv run python3 scripts/check_reflux_loop.py
+	uv run python3 scripts/make_kymograph.py
+	uv run python3 scripts/track_xpp_oz_trajectories.py

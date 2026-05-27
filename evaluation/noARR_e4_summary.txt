@@ -8,6 +8,6 @@ E4_noARR sensitivity sweep — verdict (Plan 3 §5 E3)
   auxin collapsed (tf < 1):  1/10
   oscillation AND auxin held: 0/10
 
-  best oscillation_score: #8 (random_6) score=0.2244
+  best oscillation_score: #8 (random_6) score=0.2247
 
   Compare to Plan 2 E4 (ARR-coupled): 0/10 scored >= 0.3 (best = 0.1840, chromosome #1)

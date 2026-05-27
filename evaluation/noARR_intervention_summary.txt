@@ -7,7 +7,7 @@ E3_noARR intervention summary (Plan 3 §5 E2)
   OZ XPP cells observed: 74
 
   oscillation_score_from_csv: 0.1840
-  legacy FFT peak (final tick): 85.7263
+  legacy FFT peak (final tick): 85.7349
 
   Plan 3 §5 E2 pass criteria:
     oscillation_score >= 0.3  ->  0.1840  FAIL

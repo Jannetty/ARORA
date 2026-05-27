@@ -237,8 +237,14 @@ class CirculateModule(ABC):
 
     def calculate_neighbor_memfrac(self, neighbor: "Cell") -> float:
         """
-        Calculate the fraction of the total cell membrane that is shared with a
+        Calculate the transport coefficient for the membrane shared with a
         specified neighbor cell.
+
+        Returns shared membrane length divided by this cell's area (µm⁻¹),
+        matching VDB's permeability×area/volume formulation. For a rectangular
+        cell of height h and width w, this equals 1/w for lateral/medial faces
+        (constant with elongation) and 1/h for apical/basal faces (decreases
+        as cells elongate), giving the correct size-dependent auxin accumulation.
 
         Parameters
         ----------
@@ -248,10 +254,9 @@ class CirculateModule(ABC):
         Returns
         -------
         float
-            The fraction of the total cell membrane shared with the neighbor,
-            rounded to six significant figures.
+            Shared membrane length / cell area, rounded to six significant figures.
         """
-        cell_perimeter = self.cell.quad_perimeter.get_perimeter_len()
+        cell_area = self.cell.quad_perimeter.get_area()
         try:
             common_perimeter = get_len_perimeter_in_common(self.cell, neighbor)
         except Exception as e:
@@ -262,8 +267,7 @@ class CirculateModule(ABC):
                 neighbor.get_c_id(),
             )
             raise e
-        memfrac = common_perimeter / cell_perimeter
-        return round_to_sf(memfrac, 6)
+        return round_to_sf(common_perimeter / cell_area, 6)
 
     def get_aux_exchange_across_membrane(
         self, al: float, pindi: float, neighbors: list, dt_hours: float
@@ -293,7 +297,6 @@ class CirculateModule(ABC):
         neighbor_dict = {}
         for neighbor in neighbors:
             memfrac = self.calculate_neighbor_memfrac(neighbor)
-            neighbor_memfrac = neighbor.get_circ_mod().calculate_neighbor_memfrac(self.cell)
             neighbor_aux = neighbor.get_circ_mod().get_auxin()
 
             # Per-hour rates:
