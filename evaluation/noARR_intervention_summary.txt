@@ -1,0 +1,16 @@
+E3_noARR intervention summary (Plan 3 §5 E2)
+  branch: lrc-geometry-extension
+  circ_mod: IMPOSED_PIN_NO_ARR  (ARR clamped to 0, VDB-aligned)
+  params: osc_search_03 best trimmed to 4 (ks_aux, kd_aux, k5, k6)
+  ticks: 234  dt: 0.1111 h  total: 26.0 h
+  cells: 1194
+  OZ XPP cells observed: 74
+
+  oscillation_score_from_csv: 0.1840
+  legacy FFT peak (final tick): 85.7263
+
+  Plan 3 §5 E2 pass criteria:
+    oscillation_score >= 0.3  ->  0.1840  FAIL
+    >= 2 visible peaks in 2nd half  ->  see plot
+
+  Compare to Plan 2 E3 (ARR-coupled): oscillation_score = 0.1840

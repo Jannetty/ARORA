@@ -322,6 +322,7 @@ Source: `param_est/ga_runs/osc_search_03/best_summary.txt`, trimmed from
   auxin is circulating through the LRC → epidermis → XPP path as expected.
   Note: during the inline run, `c.id` raised `AttributeError` — the correct accessor
   is `c.get_c_id()`. The committed script uses `get_c_id()` throughout.
+- **Commit SHA:** ad371a9
 
 ### E2 — E3_noARR (26 h run)
 
@@ -330,18 +331,27 @@ Source: `param_est/ga_runs/osc_search_03/best_summary.txt`, trimmed from
   ```sh
   uv run python3 scripts/run_e3_noARR.py
   ```
-- **Run date:** _fill in_
+- **Run date:** 2026-05-27
 - **Results:**
-  - `oscillation_score_from_csv = _fill in_` (pass threshold: ≥ 0.3)
-  - Visual: `evaluation/noARR_intervention_c693_auxin.png` — _describe_
+  - `oscillation_score_from_csv = 0.1840` (pass threshold: ≥ 0.3)
+  - `legacy FFT peak at final tick = 85.7263` (high spatial alternation)
+  - 858 cells, 74 unique OZ XPP cells observed across 235 ticks
+  - `arr` stayed 0 throughout (post-run assertion passed)
+  - Visual: `evaluation/noARR_intervention_c693_auxin.png`
 - **Pass criteria:**
 
   | Criterion | Threshold | Observed | Pass? |
   |---|---|---|---|
-  | `oscillation_score ≥ 0.3` | 0.3 | _fill in_ | _y/n_ |
-  | ≥ 2 visible peaks in 2nd half | visual | _fill in_ | _y/n_ |
+  | `oscillation_score ≥ 0.3` | 0.3 | 0.1840 | **n** |
+  | ≥ 2 visible peaks in 2nd half | visual | inspect plot | — |
 
-- **Outcome:** _fill in_
+- **Outcome:** FAIL. `oscillation_score = 0.1840`, below the 0.3 pass threshold.
+  Notably, this is identical to Plan 2's ARR-coupled result (also 0.1840).
+  The high legacy FFT (85.7) indicates strong spatial alternation between
+  neighbouring OZ XPP cells at the final tick, but the temporal
+  peak-counting score is below threshold — the spatial pattern does not
+  translate into detectable temporal oscillations at a fixed cell.
+  Proceed to E3 (sensitivity sweep) per plan §5 decision table.
 
 ### E3 — E4_noARR sensitivity sweep (10 × 26 h)
 
@@ -350,35 +360,58 @@ Source: `param_est/ga_runs/osc_search_03/best_summary.txt`, trimmed from
   ```sh
   uv run python3 scripts/run_e4_noARR.py
   ```
-- **Run date:** _fill in_
+- **Run date:** 2026-05-27
 - **Results:** see `evaluation/noARR_e4_sensitivity.csv`
-  - Chromosomes with `oscillation_score ≥ 0.3`: _fill in_ / 10
-  - Best `oscillation_score`: _fill in_ (chromosome #_fill in_)
+  - Chromosomes with `oscillation_score ≥ 0.3`: **0 / 10**
+  - Best `oscillation_score`: **0.2244** (chromosome #8, random_6:
+    ks_aux=0.101, kd_aux=0.1085, k5=0.0944, k6=0.1494)
+  - `legacy FFT > 10`: 10/10 (all have spatial alternation)
+  - Auxin collapsed (tf < 1.0): 1/10
+  - Oscillation AND auxin held: 0/10
+
+  | # | label | osc_score | FFT | mean_aux_tf |
+  |---|---|---|---|---|
+  | 1 | osc_search_03_best_trimmed | 0.1840 | 85.7 | 1.19 |
+  | 2 | plan_fallback_midpoints | 0.0568 | 507.5 | 7.05 |
+  | 3 | random_1 | 0.1649 | 131.2 | 1.82 |
+  | 4 | random_2 | 0.0408 | 1467.1 | 20.38 |
+  | 5 | random_3 | 0.0130 | 866.1 | 12.03 |
+  | 6 | random_4 | 0.0209 | 4950.5 | 68.76 |
+  | 7 | random_5 | 0.0354 | 353.6 | 4.91 |
+  | **8** | **random_6** | **0.2244** | **228.4** | **3.17** |
+  | 9 | random_7 | 0.0139 | 39.6 | 0.55 |
+  | 10 | random_8 | 0.0242 | 1898.2 | 26.36 |
+
 - **Scatter plot:** `evaluation/noARR_e4_scatter.png`
-- **Outcome:** _fill in_
+- **Outcome:** FAIL — 0/10 chromosomes scored ≥ 0.3 (pass threshold: ≥ 5/10).
+  Best score (0.2244) is marginally higher than Plan 2's best (0.1840) but
+  still clearly below threshold. Proceed to evaluation conclusion.
 
 ### E4 — Full GA run (conditional)
 
-- **Run?** _yes / no_ (run if E2/E3 are inconclusive)
-- **If yes:**
-  - **Command:**
-    ```sh
-    uv run python3 -m param_est.ARORA_genetic_alg_imposed_auxsyndegexport \
-        --mode oscillation_no_arr --run-name noarr_osc_search_01
-    ```
-  - Number of generations: _fill in_
-  - Best fitness: _fill in_
-  - Best chromosome (4 params): _fill in_
-  - Output directory: `param_est/ga_runs/noarr_osc_search_01/`
+- **Run?** No — E2 and E3 are conclusive failures (not inconclusive).
+  0/10 chromosomes in E3 met the threshold; the best (0.2244) is well
+  below 0.3 and consistent with a structural limitation, not a
+  parameter-search limitation.
 
 ### Evaluation conclusion
 
-- **E2 outcome:** _Pass / Fail_
-- **E3 outcome:** _Pass (≥ 5/10) / Fail (< 5/10)_
-- **Interpretation (per plan §5 table):** _fill in_
-- **Comparison to Plan 2:** Plan 2 scored oscillation_score = 0.184 (best
-  of 10 chromosomes, ARR-coupled model). Plan 3 scores: _fill in_.
-  Delta interpretation: _fill in_ (ARR coupling helped / hurt / neutral).
+- **E2 outcome:** Fail (`oscillation_score = 0.1840`, threshold 0.3)
+- **E3 outcome:** Fail (0/10 ≥ 0.3, best = 0.2244; threshold ≥ 5/10)
+- **Interpretation (per plan §5 table):** The LRC geometry extension
+  does not rescue oscillations in the ARR-free (VDB-aligned) model.
+  Clamping ARR to 0 made no difference: the oscillation score is
+  indistinguishable from Plan 2's ARR-coupled result. The failure
+  is structural, not a parameter-tuning artefact.
+- **Comparison to Plan 2:** Plan 2 (ARR-coupled): best = 0.1840.
+  Plan 3 (ARR-free): best = 0.2244. The ARR-free model is marginally
+  higher (Δ = +0.04) but the difference is within noise given the
+  10-chromosome sample. Neither model achieves temporal oscillations.
+- **Delta interpretation:** ARR coupling is **neutral** on oscillation
+  outcome. Removing ARR does not hurt and does not help. The limiting
+  factor is not the ARR feedback loop but something upstream — most
+  likely the absence of genuine meristematic cell-size alternation
+  (the primary VDB 2021 mechanism) or the static `auxin_w` assignments.
 
 ---
 

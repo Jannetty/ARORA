@@ -1,0 +1,13 @@
+E4_noARR sensitivity sweep — verdict (Plan 3 §5 E3)
+  chromosomes run: 10
+  branch: lrc-geometry-extension
+  circ_mod: IMPOSED_PIN_NO_ARR (ARR=0, VDB-aligned)
+
+  oscillation_score >= 0.3: 0/10  (Plan 3 pass threshold: >= 5/10)
+  legacy FFT > 10:           10/10
+  auxin collapsed (tf < 1):  1/10
+  oscillation AND auxin held: 0/10
+
+  best oscillation_score: #8 (random_6) score=0.2244
+
+  Compare to Plan 2 E4 (ARR-coupled): 0/10 scored >= 0.3 (best = 0.1840, chromosome #1)
