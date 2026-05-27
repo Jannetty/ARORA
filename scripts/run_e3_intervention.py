@@ -58,7 +58,7 @@ BEST_PARAMS = pd.Series(
     index=PARAM_NAMES,
 )
 
-MAX_HOURS = 26.0
+MAX_HOURS = 144.0
 DT_HOURS = 1.0 / 9.0
 N_TICKS = int(MAX_HOURS / DT_HOURS)   # 234
 

@@ -50,7 +50,7 @@ from param_est.fitness_functions import oscillation_score_from_csv
 # Configuration
 # ----------------------------------------------------------------------
 
-MAX_HOURS = 26.0
+MAX_HOURS = 144.0
 DT_HOURS = 1.0 / 9.0
 N_TICKS = int(MAX_HOURS / DT_HOURS)   # 234
 N_CHROMOSOMES = 10

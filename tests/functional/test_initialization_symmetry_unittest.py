@@ -1085,7 +1085,7 @@ class TestInitializationSymmetry(unittest.TestCase):
             )
 
     def test_symmetry_after_updates(self):
-        timestep = 1
+        timestep = 1 / 9
         vis = False
         cell_val_file = "src/sim/input/default_init_vals.json"
         v_file = "src/sim/input/default_vs.json"

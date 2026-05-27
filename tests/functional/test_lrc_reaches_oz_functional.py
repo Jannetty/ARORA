@@ -75,7 +75,7 @@ def _make_sim():
         SCREEN_WIDTH,
         SCREEN_HEIGHT,
         SCREEN_TITLE,
-        timestep=1,
+        timestep=1 / 9,
         vis=False,
         pin_loc_rules=PIN_LOC_RULES,
         circ_mod=CIRC_MOD,

@@ -195,7 +195,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         # the time a full 26-h run would take, while still allowing ≥2 cycles for
         # oscillations with periods up to ~8 h.  Full VDB comparison still needs
         # the full 26 h run to generate all required reference-aligned ticks.
-        max_hours = 18 if self.fitness_mode == "oscillation" else 26
+        max_hours = 72 if self.fitness_mode == "oscillation" else 144
 
         simulation = GrowingSim(
             width=SCREEN_WIDTH,

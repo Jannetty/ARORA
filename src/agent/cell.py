@@ -733,13 +733,13 @@ class Cell(Sprite):
 
         Note
         ----
-        Growth is exponential: dL/dt = r * L, so
-        ΔL ≈ r * L * Δt.
+        VDB super-exponential growth: dh/dt = r * h², so
+        Δh ≈ r * h² * Δt.
         """
         dist_to_root_tip = self.get_distance_from_tip()
         self.dev_zone = self.calculate_dev_zone(dist_to_root_tip)
 
-        # Relative growth rate (1/hour)
+        # Relative growth rate (1/h/µm, VDB Table 1 units)
         rate = self.get_growth_rate()
         if rate == 0.0:
             return 0.0
@@ -750,8 +750,8 @@ class Cell(Sprite):
         # Biological time for one tick (hours)
         dt_hours = self.get_sim().get_timestep_hours()
 
-        # Exponential growth step: ΔL = r * L * Δt
-        return rate * height * dt_hours
+        # VDB growth step: Δh = r * h² * Δt
+        return rate * height * height * dt_hours
 
     def calculate_pin_weights(self) -> dict:
         """

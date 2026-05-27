@@ -127,7 +127,7 @@ class GrowingSim(Window):
         geometry: str = "",
         output_file: str = "output",
         output_frequency: int = 1,
-        max_hours: float = 26.0,
+        max_hours: float = 144.0,
     ):
         """
         Initializes a new instance of the GrowingSim class, setting up the simulation environment and parameters.
