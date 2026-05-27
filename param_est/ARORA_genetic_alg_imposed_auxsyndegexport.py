@@ -44,6 +44,8 @@ IMPOSED_PIN_ARR_ACTIVITY_PARAM_NAMES = [
     "tau",
 ]
 
+IMPOSED_PIN_NO_ARR_PARAM_NAMES = ["ks_aux", "kd_aux", "k5", "k6"]
+
 def make_dumpable(obj): # lol we have to change the name of this but right now this dumbness is keeping me going
     import numpy as np
 
@@ -74,7 +76,10 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         self.ga_instance = None
         self.filename = filename  # existing json population dump
         self.population = []
-        self.param_names = IMPOSED_PIN_ARR_ACTIVITY_PARAM_NAMES
+        if fitness_mode == "oscillation_no_arr":
+            self.param_names = IMPOSED_PIN_NO_ARR_PARAM_NAMES
+        else:
+            self.param_names = IMPOSED_PIN_ARR_ACTIVITY_PARAM_NAMES
         self.cleanup = True
         self.fitness_mode = fitness_mode  # "oscillation" | "vdb_ssd"
 
@@ -203,7 +208,11 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             gparam_series=gparam_series,
             geometry=geometry,
             output_file=f"param_est/ARORA_output_{chromosome['sol_idx']}",
-            circ_mod=CircModEnum.IMPOSED_PIN_ARR_ACTIVITY,
+            circ_mod=(
+                CircModEnum.IMPOSED_PIN_NO_ARR
+                if self.fitness_mode == "oscillation_no_arr"
+                else CircModEnum.IMPOSED_PIN_ARR_ACTIVITY
+            ),
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
             output_frequency=1,
             max_hours=max_hours,
@@ -334,8 +343,20 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             tau_range,
         ]
 
+    def make_paramspace_imposed_pin_no_arr(self):
+        # Ranges match the ARR-coupled module for the shared parameters
+        # so GA searches across both models are directly comparable.
+        ks_aux_range = np.geomspace(0.1, 10.0, 100).astype(float)
+        kd_aux_range = np.geomspace(0.05, 0.5, 100).astype(float)
+        k5_range     = np.geomspace(0.02, 1.0, 80).astype(float)
+        k_pin_range  = np.geomspace(0.02, 1.0, 80).astype(float)
+        return [ks_aux_range, kd_aux_range, k5_range, k_pin_range]
+
     def run_genetic_alg(self):
-        genespace = self.make_paramspace_imposed_pin_arr_activity()
+        if self.fitness_mode == "oscillation_no_arr":
+            genespace = self.make_paramspace_imposed_pin_no_arr()
+        else:
+            genespace = self.make_paramspace_imposed_pin_arr_activity()
         self.genespace = genespace
 
         # Hyperparameters tuned for oscillation search:
@@ -349,7 +370,7 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
         #     The 18-hour simulation window (set in _run_ARORA) halves the cost
         #     per evaluation while still allowing ≥2 cycles for 1–8 h oscillations.
         #   - on_generation callback prints progress.
-        if self.fitness_mode == "oscillation":
+        if self.fitness_mode in ("oscillation", "oscillation_no_arr"):
             num_generations = 20
             num_parents_mating = 15
             sol_per_pop = 30
@@ -545,7 +566,11 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
             gparam_series=best_params,
             geometry=geometry,
             output_file=out_base,
-            circ_mod=CircModEnum.IMPOSED_PIN_ARR_ACTIVITY,
+            circ_mod=(
+                CircModEnum.IMPOSED_PIN_NO_ARR
+                if self.fitness_mode == "oscillation_no_arr"
+                else CircModEnum.IMPOSED_PIN_ARR_ACTIVITY
+            ),
             pin_loc_rules=PinLocalizationRulesetEnum.IMPOSED,
             output_frequency=1,
         )
@@ -592,10 +617,12 @@ class ARORAGeneticAlgImposedAuxinSynDegExport:
                 label="±1 SD",
             )
             ax_aux.set_ylabel("Auxin (a.u.)")
+            param_summary = ", ".join(
+                f"{k}={v:.4g}" for k, v in zip(self.param_names, solution)
+            )
             ax_aux.set_title(
                 f"OZ XPP cells — mean auxin and ARR over time (best solution)\n"
-                f"ks_aux={solution[0]:.4g}, kd_aux={solution[1]:.4g}, "
-                f"ks_arr={solution[2]:.4g}, kd_arr={solution[3]:.4g}, tau={solution[7]:.0f}"
+                f"{param_summary}"
             )
             ax_aux.legend(fontsize=8)
 
@@ -632,10 +659,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run ARORA genetic algorithm.")
     parser.add_argument(
         "--mode",
-        choices=["oscillation", "vdb_ssd"],
+        choices=["oscillation", "oscillation_no_arr", "vdb_ssd"],
         default="oscillation",
-        help="Fitness mode: 'oscillation' (default) targets temporal oscillation in "
-             "XPP OZ cells; 'vdb_ssd' minimises SSD against VDB reference images.",
+        help="Fitness mode: 'oscillation' targets temporal oscillation (ARR-coupled "
+             "model); 'oscillation_no_arr' same but ARR clamped to 0 (VDB-aligned, "
+             "4 params: ks_aux, kd_aux, k5, k6); 'vdb_ssd' minimises SSD against "
+             "VDB reference images.",
     )
     parser.add_argument(
         "--run-name",
