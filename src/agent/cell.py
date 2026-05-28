@@ -18,17 +18,17 @@ if TYPE_CHECKING:
     from src.sim.simulation.sim import GrowingSim
     from src.loc.vertex.vertex import Vertex
 
-# Growth rate of cells in meristematic zone in um per um per hour from Van den Berg et al. 2018
-MERISTEMATIC_GROWTH_RATE: float = -0.0179
+# Exponential growth rate constants (hr⁻¹) for dh/dt = r * h.
+# VDB Table 1 gives r_VDB in hr⁻¹µm⁻¹; their discrete formula adds 2µm every 1/(r_VDB*h)
+# hours, equivalent to dh/dt = 2*r_VDB*h.  Multiply by 2 to absorb VDB's 2µm grid step.
+# MZ cell cycle (8→16µm): ln(2)/0.0358 ≈ 19.4 hr  ✓ (VDB ~20 hr)
+MERISTEMATIC_GROWTH_RATE: float = -0.0358   # 2 × 0.0179 hr⁻¹
 
-# Growth rate cells in transition zone in um per um per hour from Van den Berg et al. 2018
-TRANSITION_GROWTH_RATE: float = -0.0179
+TRANSITION_GROWTH_RATE: float = -0.0358     # same as MZ (TZ: cytoplasmic growth, no division)
 
-# Growth rate cells in elongation zone in um per um per hour from Van den Berg et al. 2018
-ELONGATION_GROWTH_RATE: float = -0.00112
+ELONGATION_GROWTH_RATE: float = -0.00224    # 2 × 0.00112 hr⁻¹
 
-# Growth rate cells in differentiation zone in um per um per hour from Van den Berg et al. 2018
-DIFFERENTIATION_GROWTH_RATE: float = -0.00112
+DIFFERENTIATION_GROWTH_RATE: float = -0.00224  # same as EZ
 
 
 # um Y distance from tip at which cells pass from root tip to meristematic zone
@@ -733,13 +733,13 @@ class Cell(Sprite):
 
         Note
         ----
-        VDB super-exponential growth: dh/dt = r * h², so
-        Δh ≈ r * h² * Δt.
+        VDB exponential growth (constant elemental growth rate): dh/dt = r * h, so
+        Δh ≈ r * h * Δt.
         """
         dist_to_root_tip = self.get_distance_from_tip()
         self.dev_zone = self.calculate_dev_zone(dist_to_root_tip)
 
-        # Relative growth rate (1/h/µm, VDB Table 1 units)
+        # Relative growth rate (hr⁻¹); see rate-constant comments above.
         rate = self.get_growth_rate()
         if rate == 0.0:
             return 0.0
@@ -750,8 +750,8 @@ class Cell(Sprite):
         # Biological time for one tick (hours)
         dt_hours = self.get_sim().get_timestep_hours()
 
-        # VDB growth step: Δh = r * h² * Δt
-        return rate * height * height * dt_hours
+        # VDB growth: Δh = r * h * Δt  (exponential / constant elemental growth rate)
+        return rate * height * dt_hours
 
     def calculate_pin_weights(self) -> dict:
         """
@@ -1070,6 +1070,7 @@ class Cell(Sprite):
         str
             The direction of the neighbor.
         """
+        neighbor_direction = ""
         if (
             self.get_quad_perimeter().get_top_left()
             == neighbor.get_quad_perimeter().get_top_right()
